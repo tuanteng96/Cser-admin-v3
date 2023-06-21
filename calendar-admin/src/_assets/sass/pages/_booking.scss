@@ -1,0 +1,40 @@
+.booking {
+    height: 100vh;
+    &-body {
+        height: calc(100% - 80px);
+        overflow-y: auto;
+    }
+}
+
+.listtime-lock {
+    padding-left: 30px;
+    padding-top: 10px;
+    position: relative;
+    &::before {
+        content: "";
+        position: absolute;
+        width: 1px;
+        height: calc(100% - 20px);
+        background: #E4E6EF;
+        left: 15px;
+        top: 0;
+    }
+    &__item {
+        position: relative;
+        &::before {
+            content: "";
+            position: absolute;
+            width: 15px;
+            height: 1px;
+            background: #E4E6EF;
+            left: -15px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    }
+}
+
+body .ant-picker-separator {
+    display: flex;
+    align-items: center;
+}

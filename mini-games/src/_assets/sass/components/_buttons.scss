@@ -1,0 +1,16 @@
+.btn {
+  border-radius: 0.225rem;
+  padding: 0.575rem 0.85rem;
+  .btn-check:focus + .btn,
+  &:focus,
+  &:active {
+    box-shadow: none !important;
+  }
+  &.btn-xs {
+    padding: 0.115rem 0.45rem;
+    font-size: 12px;
+  }
+  &.btn-pill {
+    border-radius: 2rem;
+  }
+}

@@ -1,0 +1,9 @@
+// Bootstrap mixins and function
+@import '~bootstrap/scss/functions';
+@import '~bootstrap/scss/mixins';
+@import './base/mixins';
+@import './components/mixins';
+
+// Global variables
+@import './components/variables.bootstrap';
+@import './components/variables.custom';

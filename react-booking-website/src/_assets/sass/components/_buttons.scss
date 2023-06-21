@@ -1,0 +1,26 @@
+.btn {
+  border-radius: 0.225rem;
+  padding: 0.575rem 0.85rem;
+  .btn-check:focus + .btn,
+  &:focus,
+  &:active {
+    box-shadow: none !important;
+  }
+  &.btn-xs {
+    padding: 0.115rem 0.45rem 0;
+    font-size: 11px;
+  }
+  &-ezs {
+    color: $white;
+    background-color: $ezs;
+    border-color: $ezs;
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      color: $white;
+      background-color: var(--ezs-color-gradient);
+      border-color: var(--ezs-color-gradient);
+    }
+  }
+}

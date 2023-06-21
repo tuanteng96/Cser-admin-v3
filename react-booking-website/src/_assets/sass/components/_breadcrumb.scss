@@ -1,0 +1,23 @@
+.breadcrumb-solid {
+  list-style: none;
+  li {
+    position: relative;
+    padding-right: 25px;
+    &::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      position: absolute;
+      background: #a3a3a3;
+      border-radius: 100%;
+      right: 12px;
+      top: 8px;
+    }
+    &:last-child {
+      padding-right: 0;
+      &::before {
+        display: none;
+      }
+    }
+  }
+}

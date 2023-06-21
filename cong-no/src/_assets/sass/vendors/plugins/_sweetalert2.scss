@@ -1,0 +1,31 @@
+body {
+  .swal2-container {
+    @media (min-width: 1200px) {
+      height: calc(100% - 110px);
+      top: 110px;
+    }
+    height: calc(100% - 55px);
+    top: 55px;
+    z-index: 999;
+    .swal2-title {
+      text-transform: uppercase;
+      font-size: 18px;
+      color: #f27474;
+      margin: 2rem 0 0 0;
+      padding: 0;
+    }
+    .swal2-html-container {
+      max-width: 300px;
+      margin: 12px auto 10px auto;
+      color: #3f4254;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .swal2-footer {
+      display: flex;
+      font-weight: 500;
+      font-size: 13px;
+      border-top: 1px solid #ebedf3;
+    }
+  }
+}

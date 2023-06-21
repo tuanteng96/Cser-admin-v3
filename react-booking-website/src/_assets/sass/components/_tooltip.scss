@@ -1,0 +1,23 @@
+.tooltip {
+  padding: 0.4rem 0;
+  &-inner {
+    -webkit-box-shadow: 0px 0px 20px 0px rgb(0 0 0 / 15%);
+    box-shadow: 0px 0px 20px 0px rgb(0 0 0 / 15%);
+    max-width: 200px;
+    padding: 0.75rem 1rem;
+    color: #3f4254;
+    text-align: center;
+    background-color: #ffffff;
+    border-radius: 3px;
+    font-weight: 500;
+  }
+  &.bs-tooltip-top {
+    .tooltip-arrow {
+      &:before {
+        top: 0;
+        border-width: 0.4rem 0.4rem 0;
+        border-top-color: #ffffff;
+      }
+    }
+  }
+}

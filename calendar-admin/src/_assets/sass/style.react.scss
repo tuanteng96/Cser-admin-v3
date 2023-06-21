@@ -1,0 +1,26 @@
+//
+// Main Styles
+//
+////////////////////////////////////////////////////////////////
+///////////// DO NOT MODIFY BELOW INCLUDE ORDER ////////////////
+////////////////////////////////////////////////////////////////
+// 1: Initialize
+@import "init";
+// 2: Bootstrap/Material framework includes
+@import "~bootstrap/scss/bootstrap";
+// 3: Components
+@import "./components/utilities",
+"./components/forms",
+"./components/buttons",
+"./components/modal",
+"./components/dropdown",
+"./components/spinner",
+"./components/label",
+"./components/checkbox",
+"./components/switch";
+// 4: Plugin
+@import "./vendors/plugins/fullcalendar",
+"./vendors/plugins/react-select",
+"./vendors/plugins/datepicker",
+"./vendors/plugins/toastify",
+"./vendors/plugins/perfect-scrollbar";

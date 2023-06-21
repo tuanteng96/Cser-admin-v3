@@ -1,0 +1,44 @@
+.ant-picker-dropdown {
+  z-index: 1080;
+  .ant-picker-panel-container {
+    border-radius: 0.25rem;
+    font-family: $font-family-number;
+    -webkit-box-shadow: 0px 0px 50px 0px rgb(82 63 105 / 15%);
+    box-shadow: 0px 0px 50px 0px rgb(82 63 105 / 15%);
+    .ant-picker-time-panel {
+      padding-top: 0;
+    }
+    .ant-picker-time-panel-column {
+      //margin: 0;
+    }
+  }
+  .ant-picker-time-range-wrapper {
+    min-width: 170px !important;
+  }
+  .ant-picker-time-panel-cell-selected {
+    .ant-picker-time-panel-cell-inner {
+      background: $primary !important;
+      color: #fff !important;
+      border-radius: 0.25rem;
+    }
+  }
+}
+
+.ant-picker-range {
+  border: 1px solid #e4e6ef;
+  width: 100%;
+  min-height: 41.89px;
+  border-radius: 0.25rem;
+  .ant-picker-separator {
+    display: flex;
+  }
+  &.ant-picker-focused {
+    box-shadow: none;
+  }
+  .ant-picker-active-bar {
+    height: 1px;
+  }
+  input {
+    font-family: $font-family-number;
+  }
+}

@@ -1,0 +1,8 @@
+//
+// Table
+//
+.table {
+     :not(:first-child) {
+        border-top: 0;
+    }
+}

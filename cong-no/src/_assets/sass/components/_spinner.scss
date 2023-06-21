@@ -1,0 +1,55 @@
+.spinner {
+  position: relative;
+  &:before {
+    content: '';
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    border-radius: 50%;
+    border: 2px solid #d1d3e0;
+    border-right: 2px solid transparent;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin-top: -0.75rem;
+    -webkit-animation: animation-spinner 0.5s linear infinite;
+    animation: animation-spinner 0.5s linear infinite;
+  }
+  &.spinner-right {
+    &.btn:not(.btn-block) {
+      padding-right: 3.5rem;
+    }
+    &:before {
+      left: auto;
+      right: 1rem;
+    }
+  }
+  &.spinner-white {
+    &:before {
+      border: 2px solid #ffffff;
+      border-right: 2px solid transparent;
+    }
+  }
+  // State Colors
+  @each $name, $color in $theme-colors {
+    &.spinner-#{$name} {
+      &:before {
+        border: 2px solid $color;
+        border-right: 2px solid transparent;
+      }
+    }
+    &.spinner-darker-#{$name} {
+      &:before {
+        border: 2px solid darken($color, 7%);
+        border-right: 2px solid transparent;
+      }
+    }
+  }
+}
+
+@keyframes animation-spinner {
+  to {
+    transform: rotate(360deg);
+  }
+}

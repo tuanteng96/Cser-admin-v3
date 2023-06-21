@@ -1,0 +1,15 @@
+.nav {
+  &.nav-pills {
+    li {
+      margin: 0 0.15rem;
+      a {
+        border-radius: 0.25rem;
+        cursor: pointer;
+        color: #b5b5c3;
+        &:hover:not(.active) {
+          color: #337ab7;
+        }
+      }
+    }
+  }
+}

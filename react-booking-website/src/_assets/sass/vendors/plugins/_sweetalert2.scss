@@ -1,0 +1,32 @@
+body {
+  .swal2-container {
+    z-index: 999;
+    .swal2-title {
+      text-transform: uppercase;
+      font-size: 18px;
+      color: #222222;
+      margin: 2rem 0 0 0;
+      padding: 0;
+    }
+    .swal2-html-container {
+      max-width: 300px;
+      margin: 12px auto 10px auto;
+      color: #3f4254;
+      font-size: 14px;
+      line-height: 20px;
+    }
+    .swal2-footer {
+      display: flex;
+      font-weight: 500;
+      font-size: 13px;
+      border-top: 1px solid #ebedf3;
+    }
+  }
+  .swal2-styled.swal2-confirm:focus {
+    box-shadow: none !important;
+  }
+  .swal2-container .swal2-html-container {
+    max-width: 80%;
+    line-height: 25px;
+  }
+}

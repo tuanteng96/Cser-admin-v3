@@ -1,0 +1,50 @@
+//
+@each $breakpoint in map-keys($grid-breakpoints) {
+  @include media-breakpoint-up($breakpoint) {
+    $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+    @each $name, $size in $config-font-size {
+      // Size text
+      .font#{$infix}-#{$name} {
+        font-size: $size !important;
+      }
+    }
+  }
+}
+
+//
+@each $name, $config in $config-text {
+  // Base text
+  @include createClasses($config);
+}
+
+//
+@each $name, $config in $config-line-text {
+  // Base text
+  .line-height-#{$name} {
+    line-height: $config !important;
+  }
+}
+
+//
+.text-muted2 {
+  color: #b5b5c3;
+}
+
+// Global More
+.cursor-pointer {
+  cursor: pointer;
+}
+
+// Font Family
+.font-number {
+  font-family: $font-family-number;
+}
+
+//
+.vertical-align-middle {
+  vertical-align: middle;
+}
+
+.vertical-align-text-top {
+  vertical-align: text-top;
+}

@@ -1,0 +1,78 @@
+// Gray colors
+$gray-100: #f3f6f9 !default;
+$gray-200: #ebedf3 !default;
+$gray-300: #e4e6ef !default;
+$gray-400: #d1d3e0 !default;
+$gray-500: #b5b5c3 !default;
+$gray-600: #7e8299 !default;
+$gray-700: #5e6278 !default;
+$gray-800: #3f4254 !default;
+$gray-900: #181c32 !default;
+// Dark colors
+$dark: $gray-900 !default;
+$dark-75: $gray-800 !default; // Custom variable
+$dark-65: $gray-700 !default; // Custom variable
+$dark-50: $gray-600 !default; // Custom variable
+$dark-25: $gray-400 !default; // Custom variable
+//
+$font-family-base: 'Manrope',
+sans-serif;
+$font-family-number: 'Poppins',
+sans-serif;
+$font-family-title: 'Roboto',
+sans-serif;
+// Settings for the `<body>` element.
+$body-bg: $white !default;
+$body-color: $dark-75 !default;
+//
+$ki-types: ( arrowDown: '\f109', arrowUp: '\f10e', arrowBack: '\f106', arrowNext: '\f105', boldClose: '\f113', close: '\f130', plus: '\f10d', minus: '\f10a', check: '\f108', hide: '\f115', code: '\f116', copy: '\f117') !default;
+// Heights & Widths
+$heights-and-widths: ( 100: 100%, 80: 80%, 70: 70%, 60: 60%, 50: 50%, 30: 30%, 20: 20%, 15: 15%, 10: 10%, auto: auto, 0: 0px, 1px: 1px, 2px: 2px, 3px: 3px, 4px: 4px, 5px: 5px, 6px: 6px, 8px: 8px, 10px: 10px, 12px: 12px, 15px: 15px, 20px: 20px, 25px: 25px, 30px: 30px, 35px: 35px, 40px: 40px, 42px: 42px, 45px: 45px, 48px: 48px, 50px: 50px, 55px: 55px, 60px: 60px, 65px: 65px, 70px: 70px, 75px: 75px, 80px: 80px, 85px: 85px, 90px: 90px, 95px: 95px, 100px: 100px, 105px: 105px, 110px: 110px, 115px: 115px, 120px: 120px, 125px: 125px, 130px: 130px, 135px: 135px, 140px: 140px, 145px: 145px, 150px: 150px, 155px: 155px, 160px: 160px, 165px: 165px, 176px: 170px, 175px: 175px, 180px: 180px, 200px: 200px, 215px: 215px, 225px: 225px, 235px: 235px, 250px: 250px, 255px: 255px, 260px: 260px, 265px: 265px, 275px: 275px, 280px: 280px, 295px: 295px, 300px: 300px, 325px: 325px, 350px: 350px, 375px: 375px, 400px: 400px, 425px: 425px, 450px: 450px, 475px: 475px, 500px: 500px, 550px: 550px, 600px: 600px, 650px: 650px, 700px: 700px, 750px: 750px, 800px: 800px, 850px: 850px, 900px: 900px, 950px: 950px, 1000px: 1000px) !default;
+// Position
+$positon-and: ( -1: -1px, -5: -5px, -10: -10px, 0: 0, 1px: 1px, 2px: 2px, 3px: 3px, 4px: 4px, 5px: 5px, 6px: 6px, 7px: 7px, 8px: 8px, 9px: 9px, 10px: 10px, 15px: 15px, 20px: 20px, 25px: 25px, 100: 100%) !default;
+// Shadow
+$shadows: 0px 10px 30px 0px rgb(82 63 105 / 8%);
+// Typography
+$config-text: ( font-weight: ( 'name': 'font-weight', 'prefix': 'fw-', 'values': ( '200': 200, '300': 300, '400': 400, '500': 500, '600': 600, '700': 700)), text-transform: ( 'name': 'text-transform', 'prefix': 'text-', 'values': ( 'capitalize': 'capitalize', 'uppercase': 'uppercase', 'lowercase': 'lowercase', 'none': 'none')), text-decoration: ( 'name': 'text-decoration', 'prefix': 'text-', 'values': ( 'underline': 'underline', 'line-through': 'line-through', 'dnone': 'dnone')), font-style: ( 'name': 'font-style', 'prefix': 'text-', 'values': ( 'italic': 'italic', 'initial': 'initial')));
+$config-line-text: ( 'auto': initial, 'xs': 16px, 'sm': 20px, 'md': 22px, 'lg': 25px, 'xl': 28px, 'xxl': 35px);
+$font-size-base: 1rem !default; // Assumes the browser default, typically `13px`
+$font-size-xs: $font-size-base * 0.75 !default;
+$font-size-sm: $font-size-base * 0.825 !default;
+$font-size-smm: $font-size-base * 0.905 !default;
+$font-size-md: $font-size-base * 1.15 !default;
+$font-size-lg: $font-size-base * 1.2 !default;
+$font-size-xl: $font-size-base * 1.4 !default;
+$h1-font-size: $font-size-base * 3.5 !default; // 26px
+$h2-font-size: $font-size-base * 2 !default; // 22.75px
+$h3-font-size: $font-size-base * 1.6 !default; // 19.5px
+$h4-font-size: $font-size-base * 1.5 !default; // 17.55px
+$h5-font-size: $font-size-base * 1.45 !default; // 16.25px
+$h6-font-size: $font-size-base * 1.3 !default; // 15.275px
+$config-font-size: ( 'size-min': 11px, 'size-xs': $font-size-xs, 'size-sm': $font-size-sm, 'size-15px': 15px, 'size-md': $font-size-md, 'size-mdd': 1.1rem, 'size-lg': $font-size-lg, 'size-xl': $font-size-xl, 'size-h6': $h6-font-size, 'size-h5': $h5-font-size, 'size-h4': $h4-font-size, 'size-h3': $h3-font-size, 'size-h2': $h2-font-size, 'size-h1': $h1-font-size, 'size-25': 25px, 'size-30': 30px, 'size-35': 35px, 'size-50': 50px);
+// Transition
+$transition: all 0.15s ease !default; // Custom variable
+$transition-link: color 0.15s ease,
+background-color 0.15s ease,
+border-color 0.15s ease,
+box-shadow 0.15s ease !default; // Custom variable
+$transition-input: color 0.15s ease,
+background-color 0.15s ease,
+border-color 0.15s ease,
+box-shadow 0.15s ease !default; // Custom variable
+// Input
+$input-readonly-bg: $white !default; // Custom variable
+$input-solid-bg: $gray-100; // Custom variable
+$input-solid-bg-focus: $gray-200; // Custom variable
+$input-solid-placeholder-color: $input-placeholder-color; // Custom variable
+$input-solid-color: $dark-75; // Custom variable
+// Forms
+$form-group-margin-bottom: 1.75rem !default;
+$form-label-font-size: 1rem !default; // Custom variable
+$form-label-font-weight: 400 !default; // Custom variable
+$form-feedback-font-size: 0.9rem !default; // Custom variable
+$form-feedback-font-weight: 400 !default; // Custom variable
+$form-text-font-size: 0.9rem !default; // Custom variable
+$form-text-font-weight: 400 !default; // Custom variable
+$form-validation-input-shadow: false; // Custom variable
+// Buttons
+$btn-icon-size-xs: 24px !default; //custom parameter

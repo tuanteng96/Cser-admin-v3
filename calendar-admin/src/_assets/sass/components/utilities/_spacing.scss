@@ -1,0 +1,51 @@
+$spacing-width-height: (24px: 24px);
+//
+// Custom spacing helpers
+//
+// Responsive spacing
+@each $breakpoint in map-keys($grid-breakpoints) {
+    @include media-breakpoint-up($breakpoint) {
+        $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+        @each $name,
+        $value in $heights-and-widths {
+            .p#{$infix}-#{$name} {
+                padding: $value !important;
+            }
+            .pt#{$infix}-#{$name} {
+                padding-top: $value !important;
+            }
+            .px#{$infix}-#{$name} {
+                padding-left: $value !important;
+                padding-right: $value !important;
+            }
+            .py#{$infix}-#{$name} {
+                padding-top: $value !important;
+                padding-bottom: $value !important;
+            }
+            .pb#{$infix}-#{$name} {
+                padding-bottom: $value !important;
+            }
+            .pl#{$infix}-#{$name} {
+                padding-left: $value !important;
+            }
+            .pr#{$infix}-#{$name} {
+                padding-right: $value !important;
+            }
+            .m#{$infix}-#{$name} {
+                padding: $value !important;
+            }
+            .mt#{$infix}-#{$name} {
+                margin-top: $value !important;
+            }
+            .mb#{$infix}-#{$name} {
+                margin-bottom: $value !important;
+            }
+            .ml#{$infix}-#{$name} {
+                margin-left: $value !important;
+            }
+            .mr#{$infix}-#{$name} {
+                margin-right: $value !important;
+            }
+        }
+    }
+}

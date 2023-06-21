@@ -1,0 +1,14 @@
+.MuiPagination-root {
+  .MuiPagination-ul {
+    li {
+      .MuiPaginationItem-outlined {
+        border: 1px solid #ebedf3;
+      }
+      .Mui-selected {
+        background-color: #3699ff;
+        color: #ffffff;
+        border: 1px solid #3699ff;
+      }
+    }
+  }
+}

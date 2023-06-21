@@ -1,0 +1,12 @@
+// Opacity
+@for $opacity from 0 through 100 {
+  .opacity-#{$opacity} {
+    opacity: calc($opacity / 100) !important;
+  }
+  .hover-opacity-#{$opacity} {
+    &.active,
+    &:hover {
+      opacity: calc($opacity / 100) !important;
+    }
+  }
+}

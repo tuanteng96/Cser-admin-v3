@@ -1,0 +1,30 @@
+//
+// Demo
+//
+.overlay {
+  position: relative;
+  .overlay-wrapper {
+  }
+  .overlay-layer {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba($black, 0.05);
+    transition: all 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    &.overlay-block {
+      transition: all 0.3s ease;
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  &.overlay-block {
+    cursor: wait;
+  }
+}

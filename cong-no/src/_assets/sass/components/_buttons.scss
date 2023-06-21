@@ -1,0 +1,35 @@
+.btn {
+  border-radius: 0.225rem;
+  padding: 0.575rem 0.85rem;
+  .btn-check:focus + .btn,
+  &:focus,
+  &:active {
+    box-shadow: none !important;
+  }
+  &.btn-xs {
+    padding: 0.115rem 0.45rem;
+    font-size: 12px;
+  }
+}
+
+.btn-light-primary {
+  color: #3699ff;
+  background-color: #e1f0ff;
+  border-color: transparent;
+  &:hover {
+    color: #ffffff;
+    background-color: #3699ff;
+    border-color: transparent;
+  }
+}
+
+.btn-light-danger {
+  color: #f64e60;
+  background-color: #ffe2e5;
+  border-color: transparent;
+  &:hover {
+    color: #ffffff;
+    background-color: #f64e60;
+    border-color: transparent;
+  }
+}

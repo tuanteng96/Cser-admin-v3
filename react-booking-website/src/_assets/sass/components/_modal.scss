@@ -1,0 +1,89 @@
+.modal {
+  .modal-dialog {
+    .modal-content {
+      border-radius: 0.25rem;
+      border: 0;
+      .modal-header {
+        .btn-close {
+          &:focus {
+            box-shadow: none;
+          }
+        }
+      }
+    }
+  }
+  &.modal-view-mobile {
+    height: 100vh;
+    .modal-dialog {
+      height: 100%;
+      margin: 0;
+      .modal-content {
+        height: 100%;
+        border-radius: 0;
+        border: 0;
+      }
+    }
+    .modal-view-head {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: space-between;
+      -webkit-box-shadow: 0px 10px 30px 0px rgb(82 63 105 / 8%);
+      box-shadow: 0px 10px 30px 0px rgb(82 63 105 / 8%);
+    }
+    .modal-view-body {
+      position: relative;
+      flex: 1 1 auto;
+    }
+  }
+}
+
+//
+.modal-content-right {
+  margin: 0;
+  max-height: calc(100vh);
+  height: 100%;
+  float: right;
+  width: 100%;
+  .modal-content {
+    max-height: 100vh;
+    height: 100%;
+    border-radius: 0 !important;
+  }
+  @media (max-width: 767px) {
+    max-height: calc(100vh);
+  }
+}
+
+.modal.fade .modal-dialog.modal-content-right {
+  transform: translate(50px, 0);
+}
+
+.modal.fade.show .modal-dialog.modal-content-right {
+  transform: none;
+}
+
+// Responsive breakpoints
+@include media-breakpoint-up(xl) {
+  .modal-dialog.modal-xl {
+    max-width: map-get($grid-breakpoints, xl) - 100px;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .modal-dialog.modal-max-lg {
+    max-width: map-get($grid-breakpoints, md) + 250px;
+  }
+}
+
+@include media-breakpoint-up(sm) {
+  .modal-dialog.modal-max-md {
+    max-width: map-get($grid-breakpoints, sm) + 150px;
+  }
+  .modal-dialog.modal-max-sm {
+    max-width: 425px;
+  }
+  .modal-dialog.modal-max2-sm {
+    max-width: 450px;
+  }
+}

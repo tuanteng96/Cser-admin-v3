@@ -1,0 +1,26 @@
+//
+// Main Styles
+//
+////////////////////////////////////////////////////////////////
+///////////// DO NOT MODIFY BELOW INCLUDE ORDER ////////////////
+////////////////////////////////////////////////////////////////
+// 1: Initialize
+@import "init";
+// 2: Bootstrap framework includes
+@import "~bootstrap/scss/bootstrap";
+// 3: Components
+@import "./components/utilities",
+"./components/backdrop",
+"./components/forms",
+"./components/button",
+"./components/modal",
+"./components/dropdown",
+"./components/table",
+"./components/spinner";
+// 4: Plugins
+@import "./vendors/plugins/perfect-scrollbar",
+"./vendors/plugins/toastify",
+"./vendors/plugins/sweetalert2",
+"./vendors/plugins/react-select";
+// 5: Layout
+@import "./layout/init";

@@ -1,0 +1,29 @@
+.popover {
+  min-width: 280px;
+  max-width: 350px;
+  border: 1px solid #ffffff;
+  border-radius: 0.42rem;
+  -webkit-box-shadow: 0px 0px 20px 0px rgb(0 0 0 / 15%);
+  box-shadow: 0px 0px 20px 0px rgb(0 0 0 / 15%);
+  &-header {
+    font-size: 1rem;
+    font-weight: 500;
+    border-bottom: 1px solid #ebedf3;
+    background: #fff;
+  }
+  &-arrow {
+    &:before {
+      border-top-color: #fff !important;
+    }
+  }
+  &.bs-popover-bottom {
+    .popover-arrow {
+      &:before {
+        border-bottom-color: #fff !important;
+      }
+    }
+  }
+  &.popover-md {
+    max-width: 300px;
+  }
+}

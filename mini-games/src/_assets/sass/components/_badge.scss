@@ -1,0 +1,27 @@
+.badge {
+  border-radius: 3px;
+  line-height: 13px;
+  padding: 0.2em 0.65em;
+  // Theme colors
+  @each $name, $color in $theme-colors {
+    // Solid style
+    &.badge-#{$name} {
+      color: theme-inverse-color($name);
+      background-color: $color;
+    }
+    // Outline style
+    &.badge-outline-#{$name} {
+      background-color: transparent;
+      color: theme-outline-inverse-color($name);
+      border: 1px solid $color;
+      &.badge-outline-2x {
+        border: 2px solid $color;
+      }
+    }
+    // Light style
+    &.badge-light-#{$name} {
+      color: $color;
+      background-color: theme-light-color($name);
+    }
+  }
+}

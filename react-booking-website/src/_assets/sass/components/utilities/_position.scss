@@ -1,0 +1,41 @@
+//
+// Positions
+//
+$positon-key: (top, left, right, bottom) !default;
+@each $key in $positon-key {
+  @each $name, $value in $heights-and-widths {
+    .#{$key}-#{$name} {
+      #{$key}: #{$value} !important;
+    }
+    .#{$key}--#{$name} {
+      #{$key}: -#{$value} !important;
+    }
+  }
+}
+
+.position-fixed {
+  position: fixed !important;
+}
+
+.position-relative {
+  position: relative !important;
+}
+
+.position-absolute {
+  position: absolute !important;
+}
+
+// z index
+@for $index from 0 through 100 {
+  .zindex-#{$index} {
+    z-index: $index !important;
+  }
+}
+
+.zindex-1001 {
+  z-index: 1001 !important;
+}
+
+.zindex-1002 {
+  z-index: 1002 !important;
+}
