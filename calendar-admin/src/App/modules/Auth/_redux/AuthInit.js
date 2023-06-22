@@ -84,6 +84,7 @@ function AuthInit({ isConfig, children }) {
             kpiFinish: "Khách đến làm dịch vụ",
             kpiCancel: "Khách hủy",
             kpiCancelFinish: "Khách không đến",
+            kpiSuccess: "Đặt lịch thành công"
           },
         };
       }

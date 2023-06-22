@@ -368,7 +368,7 @@ function CalendarPage(props) {
       });
 
       if (values.Status === "KHACH_KHONG_DEN") {
-        if (window?.GlobalConfig?.Admin?.kpiCancelFinish && values?.CreateBy) {
+        if (window?.top?.GlobalConfig?.Admin?.kpiCancelFinish && values?.CreateBy) {
           let newData = {
             update: [
               {
@@ -469,7 +469,7 @@ function CalendarPage(props) {
         u_id_z4aDf2,
       });
 
-      if (window?.GlobalConfig?.Admin?.kpiFinish && values?.CreateBy) {
+      if (window?.top?.GlobalConfig?.Admin?.kpiFinish && values?.CreateBy) {
         let newData = {
           update: [
             {
@@ -534,8 +534,7 @@ function CalendarPage(props) {
         CurrentStockID,
         u_id_z4aDf2,
       });
-
-      if (window?.GlobalConfig?.Admin?.kpiCancel && values?.CreateBy) {
+      if (window?.top?.GlobalConfig?.Admin?.kpiCancel && values?.CreateBy) {
         let newData = {
           update: [
             {
@@ -564,6 +563,7 @@ function CalendarPage(props) {
         onHideModal();
       });
     } catch (error) {
+      console.log(error);
       setBtnLoading((prevState) => ({
         ...prevState,
         isBtnDelete: false,
