@@ -69,39 +69,41 @@ function TimekeepingMember(props) {
 
   return (
     <div className="card h-100 timekeeping">
-      <div className="card-header">
-        <h3 className="text-uppercase">
-          <div className="d-flex align-items-baseline">
-            <div
-              className="d-flex cursor-pointer"
-              onClick={() => navigate('/')}
-            >
-              <div className="w-20px">
-                <i className="fa-regular fa-chevron-left ml-0 vertical-align-middle text-muted"></i>
+      <div className="card-header d-block p-20px min-h-125px min-h-md-auto">
+        <div className="d-flex w-full justify-content-between flex-column flex-md-row">
+          <h3 className="text-uppercase">
+            <div className="d-flex align-items-baseline">
+              <div
+                className="d-flex cursor-pointer"
+                onClick={() => navigate('/')}
+              >
+                <div className="w-20px">
+                  <i className="fa-regular fa-chevron-left ml-0 vertical-align-middle text-muted"></i>
+                </div>
+                {loading ? 'Đang tải ...' : CurrentUser?.FullName}
               </div>
-              {loading ? 'Đang tải ...' : CurrentUser?.FullName}
+              {!loading && (
+                <span className="text-muted text-capitalize fw-500 font-size-sm pl-5px">
+                  {CurrentUser?.StockTitle}
+                </span>
+              )}
             </div>
-            {!loading && (
-              <span className="text-muted text-capitalize fw-500 font-size-sm pl-5px">
-                {CurrentUser?.StockTitle}
-              </span>
-            )}
+          </h3>
+          <div className="d-flex align-items-center justify-content-center mt-5px mt-md-0">
+            <div className="position-relative">
+              <DatePicker
+                locale="vi"
+                className="form-control form-control-solid fw-500"
+                dateFormat={'MM/yyyy'}
+                showMonthYearPicker
+                selected={CrDate}
+                onChange={date => setCrDate(date)}
+              />
+              <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+            </div>
+            <div className="h-40px w-1px border-right mx-15px"></div>
+            <Navbar />
           </div>
-        </h3>
-        <div className="d-flex align-items-center justify-content-center">
-          <div className="position-relative">
-            <DatePicker
-              locale="vi"
-              className="form-control form-control-solid fw-500"
-              dateFormat={'MM/yyyy'}
-              showMonthYearPicker
-              selected={CrDate}
-              onChange={date => setCrDate(date)}
-            />
-            <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
-          </div>
-          <div className="h-40px w-1px border-right mx-15px"></div>
-          <Navbar />
         </div>
       </div>
       <div className="card-body overflow-auto p-0 overlay">
@@ -191,8 +193,8 @@ function TimekeepingMember(props) {
       </div>
       <div className="card-footer d-flex flex-column px-0 overflow-hidden">
         <div className="d-flex h-100">
-          <div className="py-0 w-280px"></div>
-          <div className="py-0 w-215px"></div>
+          <div className="py-0 w-280px d-none d-xl-block"></div>
+          <div className="py-0 w-215px d-none d-lg-block"></div>
           <div className="px-20px flex-grow-1 d-flex flex-column justify-content-center">
             <div className="name-control mb-5px">Tổng công</div>
             {loading ? (

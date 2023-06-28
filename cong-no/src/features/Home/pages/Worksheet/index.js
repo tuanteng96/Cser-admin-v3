@@ -241,8 +241,8 @@ function Worksheet(props) {
 
   return (
     <div className="card h-100 card-timesheets">
-      <div className="card-header">
-        <Dropdown className="d-inline mx-2">
+      <div className="card-header p-20px">
+        <Dropdown className="d-inline mx-0 mx-md-2">
           <Dropdown.Toggle className="btn-none">
             <h3 className="text-uppercase">
               {filters.StockID?.Title}
@@ -272,14 +272,14 @@ function Worksheet(props) {
           <Navbar />
         </div>
       </div>
-      <div className="card-body">
-        <div className="d-flex justify-content-between">
-          <div className="d-flex">
-            <div className="mr-8px position-relative date-range">
+      <div className="card-body p-20px">
+        <div className="d-flex flex-column flex-md-row justify-content-between">
+          <div className="d-flex mb-md-0 mb-12px">
+            <div className="mr-8px position-relative date-range flex-1">
               <DatePicker
                 selected={CrDate}
                 onChange={date => setCrDate(date)}
-                className="form-control w-250px"
+                className="form-control w-100 w-md-200px w-lg-250px"
                 dateFormat={'dd/MM/yyyy'}
               />
               <div className="date-current fw-500">
@@ -306,14 +306,14 @@ function Worksheet(props) {
           </div>
           <div className="d-flex">
             <button
-              className="btn btn-light-danger fw-600 mr-8px"
+              className="btn btn-light-danger fw-600 mr-8px w-120px"
               onClick={() => onOpenModalHoliday()}
             >
               Tạo ngày nghỉ
             </button>
-            <div className="position-relative">
+            <div className="position-relative flex-1">
               <input
-                className="form-control w-300px"
+                className="form-control w-100 w-lg-300px"
                 type="text"
                 placeholder="Nhập tên nhân viên"
                 onChange={evt => {

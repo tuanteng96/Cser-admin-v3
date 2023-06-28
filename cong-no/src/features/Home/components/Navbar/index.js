@@ -22,7 +22,7 @@ function Navbar(props) {
       </NavLink> */}
       <NavLink
         className={({ isActive }) =>
-          `btn mr-8px fw-600 ${isActive ? 'btn-primary' : 'btn-light-primary'}`
+          `btn fw-600 ${isActive ? 'btn-primary' : 'btn-light-primary'}`
         }
         to="/duyet-luong"
       >

@@ -31,6 +31,9 @@ $border-color: #f4f4f4;
     padding-top: 20px;
     position: relative;
     &__sidebar {
+        @media (max-width: 767px) {
+            width: 80px;
+        }
         width: $width-timesheets-sidebar;
         height: 100%;
         border: 1px solid $border-color;
@@ -257,6 +260,11 @@ $border-color: #f4f4f4;
             min-width: 280px;
             max-width: 280px;
             width: 280px;
+            @media (max-width: 767px) {
+                min-width: 200px;
+                max-width: 200px;
+                width: 200px;
+            }
         }
         &.col-file {
             min-width: 300px;

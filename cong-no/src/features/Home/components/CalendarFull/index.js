@@ -180,7 +180,7 @@ function CalendarFull({
       >
         <div className="d-flex flex-column cld-timesheets__sidebar">
           <div className="cld-timesheets__sidebar-title bg--member">
-            Danh sách nhân viên
+            <div className="text-truncate">Danh sách nhân viên</div>
           </div>
           <ScrollSyncPane>
             <div className="cld-timesheets__sidebar-list overflow-scroll flex-grow-1 bg--member">
@@ -189,9 +189,9 @@ function CalendarFull({
                   <div className="cld-row" key={index}>
                     <NavLink
                       to={`/cham-cong/${member.UserID}`}
-                      className="fw-700 text-truncate text-name text-decoration-none text-black name text-capitalize"
+                      className="fw-700 text-name text-decoration-none text-black name text-capitalize w-100"
                     >
-                      {member.FullName}
+                      <div className="text-truncate">{member.FullName}</div>
                     </NavLink>
                   </div>
                 ))}

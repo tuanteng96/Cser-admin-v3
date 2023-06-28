@@ -13,6 +13,7 @@ import uuid from 'react-uuid'
 
 import moment from 'moment'
 import 'moment/locale/vi'
+import { Button, OverlayTrigger, Popover } from 'react-bootstrap'
 
 moment.locale('vi')
 
@@ -172,66 +173,136 @@ function SalaryApproval(props) {
       {formikProps => {
         // errors, touched, handleChange, handleBlur
         const { values } = formikProps
-        console.log(values)
+
         return (
           <Form className="h-100" autoComplete="off">
             <div className="card h-100">
-              <div className="card-header">
-                <h3 className="text-uppercase">Duyệt lương</h3>
-                <div className="d-flex align-items-center justify-content-center">
-                  <div className="position-relative">
-                    <input
-                      className="form-control form-control-solid w-250px"
-                      type="text"
-                      placeholder="Nhập tên nhân viên"
-                      onChange={evt => {
-                        setLoading(true)
-                        if (typingTimeoutRef.current) {
-                          clearTimeout(typingTimeoutRef.current)
-                        }
-                        typingTimeoutRef.current = setTimeout(() => {
-                          setFilters(prevState => ({
-                            ...prevState,
-                            key: evt.target.value
-                          }))
-                        }, 800)
-                      }}
-                    />
-                    <i className="fa-regular fa-magnifying-glass position-absolute w-30px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
-                  </div>
-                  <div className="w-225px mx-15px">
-                    <Select
-                      options={StocksList}
-                      className="select-control select-control-solid"
-                      classNamePrefix="select"
-                      placeholder="Chọn cơ sở"
-                      value={filters.StockID}
-                      onChange={otp =>
-                        setFilters(prevState => ({
-                          ...prevState,
-                          StockID: otp
-                        }))
+              <div className="card-header min-h-100px min-h-sm-70px">
+                <div className="d-flex align-items-xl-center justify-content-center justify-content-sm-between w-100 flex-column flex-sm-row align-items-baseline align-items-sm-center">
+                  <h3 className="text-uppercase">Duyệt lương</h3>
+                  <div className="d-flex align-items-center justify-content-center">
+                    <div className="d-none d-xl-flex">
+                      <div className="position-relative">
+                        <input
+                          className="form-control form-control-solid w-250px"
+                          type="text"
+                          placeholder="Nhập tên nhân viên"
+                          onChange={evt => {
+                            setLoading(true)
+                            if (typingTimeoutRef.current) {
+                              clearTimeout(typingTimeoutRef.current)
+                            }
+                            typingTimeoutRef.current = setTimeout(() => {
+                              setFilters(prevState => ({
+                                ...prevState,
+                                key: evt.target.value
+                              }))
+                            }, 800)
+                          }}
+                        />
+                        <i className="fa-regular fa-magnifying-glass position-absolute w-30px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+                      </div>
+                      <div className="w-225px mx-15px">
+                        <Select
+                          options={StocksList}
+                          className="select-control select-control-solid"
+                          classNamePrefix="select"
+                          placeholder="Chọn cơ sở"
+                          value={filters.StockID}
+                          onChange={otp =>
+                            setFilters(prevState => ({
+                              ...prevState,
+                              StockID: otp
+                            }))
+                          }
+                        />
+                      </div>
+                      <div className="mr-8px position-relative max-w-150px">
+                        <DatePicker
+                          locale="vi"
+                          className="form-control form-control-solid fw-500"
+                          dateFormat={'MM/yyyy'}
+                          showMonthYearPicker
+                          selected={filters.Mon}
+                          onChange={date =>
+                            setFilters(prevState => ({
+                              ...prevState,
+                              Mon: date
+                            }))
+                          }
+                        />
+                        <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+                      </div>
+                      <div className="h-40px w-1px border-right mx-15px"></div>
+                    </div>
+                    <Navbar />
+                    <OverlayTrigger
+                      trigger="click"
+                      placement="bottom"
+                      overlay={
+                        <Popover
+                          id="popover-positioned-bottom"
+                          title="Popover bottom"
+                        >
+                          <div className="p-10px">
+                            <div className="position-relative mb-10px">
+                              <input
+                                className="form-control form-control-solid w-100"
+                                type="text"
+                                placeholder="Nhập tên nhân viên"
+                                onChange={evt => {
+                                  setLoading(true)
+                                  if (typingTimeoutRef.current) {
+                                    clearTimeout(typingTimeoutRef.current)
+                                  }
+                                  typingTimeoutRef.current = setTimeout(() => {
+                                    setFilters(prevState => ({
+                                      ...prevState,
+                                      key: evt.target.value
+                                    }))
+                                  }, 800)
+                                }}
+                              />
+                              <i className="fa-regular fa-magnifying-glass position-absolute w-30px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+                            </div>
+                            <Select
+                              options={StocksList}
+                              className="select-control select-control-solid mb-10px"
+                              classNamePrefix="select"
+                              placeholder="Chọn cơ sở"
+                              value={filters.StockID}
+                              onChange={otp =>
+                                setFilters(prevState => ({
+                                  ...prevState,
+                                  StockID: otp
+                                }))
+                              }
+                            />
+                            <div className="position-relative">
+                              <DatePicker
+                                locale="vi"
+                                className="form-control form-control-solid fw-500"
+                                dateFormat={'MM/yyyy'}
+                                showMonthYearPicker
+                                selected={filters.Mon}
+                                onChange={date =>
+                                  setFilters(prevState => ({
+                                    ...prevState,
+                                    Mon: date
+                                  }))
+                                }
+                              />
+                              <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+                            </div>
+                          </div>
+                        </Popover>
                       }
-                    />
+                    >
+                      <Button className="ml-8px d-block d-xl-none">
+                        <i className="far fa-filter"></i>
+                      </Button>
+                    </OverlayTrigger>
                   </div>
-                  <div className="mr-8px position-relative max-w-150px">
-                    <DatePicker
-                      locale="vi"
-                      className="form-control form-control-solid fw-500"
-                      dateFormat={'MM/yyyy'}
-                      showMonthYearPicker
-                      selected={filters.Mon}
-                      onChange={date =>
-                        setFilters(prevState => ({
-                          ...prevState,
-                          Mon: date
-                        }))
-                      }
-                    />
-                    <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
-                  </div>
-                  <div className="h-40px w-1px border-right mx-15px"></div>
-                  <Navbar />
                 </div>
               </div>
               <div className="card-body overflow-auto p-0 overlay">
