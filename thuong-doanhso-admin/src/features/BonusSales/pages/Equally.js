@@ -86,10 +86,15 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                   Value:
                                     surplus > 0
                                       ? i === option.length - 1
-                                        ? Math.round(100 / option.length) +
-                                          surplus
-                                        : Math.round(100 / option.length)
-                                      : Math.round(100 / option.length),
+                                        ? Number(
+                                            (100 / option.length).toFixed(1)
+                                          ) + (surplus/10)
+                                        : Number(
+                                            (100 / option.length).toFixed(1)
+                                          )
+                                      : Number(
+                                          (100 / option.length).toFixed(1)
+                                        ),
                                 }))
                               : [];
                           if (option && option.length > 0) {
