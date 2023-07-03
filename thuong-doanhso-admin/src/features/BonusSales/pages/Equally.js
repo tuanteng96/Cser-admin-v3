@@ -78,11 +78,18 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                         placeholder="Chọn Nhân viên"
                         noOptionsMessage={() => "Không có lựa chọn"}
                         onChange={(option) => {
+                          let surplus = 100 % option.length;
                           const newOption =
                             option && option.length > 0
-                              ? option.map((item) => ({
+                              ? option.map((item, i) => ({
                                   ...item,
-                                  Value: Math.round(100 / option.length),
+                                  Value:
+                                    surplus > 0
+                                      ? i === option.length - 1
+                                        ? Math.round(100 / option.length) +
+                                          surplus
+                                        : Math.round(100 / option.length)
+                                      : Math.round(100 / option.length),
                                 }))
                               : [];
                           if (option && option.length > 0) {

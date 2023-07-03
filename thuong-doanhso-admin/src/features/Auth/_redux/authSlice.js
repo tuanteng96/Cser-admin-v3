@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const OrderInfo = window.top.OrderBonus23Info || {
-  OrderID: 42827,
+  OrderID: 42906,
 };
 const CrStockID = window.top?.Info?.CrStockID || 8975;
 const Info = window.top?.Info || {
