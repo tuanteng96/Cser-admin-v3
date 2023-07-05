@@ -14,6 +14,7 @@ import { toUrlServer } from "../../helpers/AssetsHelpers";
 import ModalCreateMember from "../ModalCreateMember/ModalCreateMember";
 import SelectStaffsService from "../Select/SelectStaffsService/SelectStaffsService";
 import SelectStocks from "../Select/SelectStocks/SelectStocks";
+import { toast } from "react-toastify";
 moment.locale("vi");
 
 ModalCalendar.propTypes = {
@@ -77,6 +78,8 @@ function ModalCalendar({
     Phone: "",
     PassersBy: false, // Khách vãng lai
   });
+
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (show) {
@@ -303,6 +306,25 @@ function ModalCalendar({
     StockID: Yup.string().required("Vui lòng chọn cơ sở."),
   });
 
+  const onChangeStatusTele = () => {
+    setLoading(true);
+    let newData = {
+      update: [
+        {
+          BookId: initialValue?.ID,
+          Status: window?.top?.GlobalConfig?.Admin?.kpiChot,
+        },
+      ],
+    };
+    CalendarCrud.editTagsMember(newData).then((res) => {
+      setLoading(false);
+      toast.success("Cập nhập thành công !", {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1500,
+      });
+    });
+  };
+
   return (
     <Fragment>
       <Modal
@@ -385,7 +407,11 @@ function ModalCalendar({
                           ? "Không có khách hàng"
                           : "Không tìm thấy khách hàng"
                       }
-                      isValidNewOption={(inputValue, selectValue, selectOptions) => inputValue && selectOptions.length === 0}
+                      isValidNewOption={(
+                        inputValue,
+                        selectValue,
+                        selectOptions
+                      ) => inputValue && selectOptions.length === 0}
                     />
                     {values.MemberID && (
                       <div className="d-flex mt-2 font-size-xs">
@@ -605,6 +631,21 @@ function ModalCalendar({
                         Hủy lịch
                       </button>
                     )}
+
+                    {values?.CreateBy &&
+                      window?.top?.GlobalConfig?.Admin?.kpiChot && (
+                        <button
+                          type="button"
+                          onClick={onChangeStatusTele}
+                          className={`btn btn-sm btn-secondary ${
+                            loading ? "spinner spinner-white spinner-right" : ""
+                          } w-auto my-0 mr-2 h-auto`}
+                          disabled={loading}
+                        >
+                          Khách có chốt
+                        </button>
+                      )}
+
                     <button
                       type="button"
                       className="btn btn-sm btn-secondary d-md-none"
