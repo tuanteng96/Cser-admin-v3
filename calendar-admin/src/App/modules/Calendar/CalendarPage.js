@@ -372,7 +372,7 @@ function CalendarPage(props) {
           let newData = {
             update: [
               {
-                MemberID: values?.CreateBy,
+                BookId: values?.ID,
                 Status: window?.top?.GlobalConfig?.Admin?.kpiCancelFinish,
               },
             ]
@@ -473,7 +473,7 @@ function CalendarPage(props) {
         let newData = {
           update: [
             {
-              MemberID: values?.CreateBy,
+              BookId: values?.ID,
               Status: window?.top?.GlobalConfig?.Admin?.kpiFinish,
             },
           ],
@@ -538,7 +538,7 @@ function CalendarPage(props) {
         let newData = {
           update: [
             {
-              MemberID: values?.CreateBy,
+              BookId: values?.ID,
               Status: window?.top?.GlobalConfig?.Admin?.kpiCancel,
             },
           ],
