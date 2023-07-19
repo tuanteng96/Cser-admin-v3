@@ -36,7 +36,7 @@ function CheckInPage(props) {
       CrStockID: Auth.CrStockID,
     })
   );
-  const [initialValues,] = useState({ Key: "", Type: "" });
+  const [initialValues] = useState({ Key: "", Type: "" });
 
   const dispatch = useDispatch();
 
@@ -150,39 +150,70 @@ function CheckInPage(props) {
                       {item.FullName}
                     </div>
                     <div className="font-number font-size-13px text-dark-50">
-                      {item.MobilePhone} - Checkin
-                      <span className="text-danger font-weight-bold font-number pl-5px">
-                        {moment(item?.CheckIn?.CreateDate).format("HH:mm")}
-                      </span>
+                      {item.MobilePhone} -
+                      {item?.CheckIn?.CheckOutTime ? (
+                        <>
+                          <span className="pl-5px">Đã CheckOut</span>
+                          <span className="text-danger font-weight-bold font-number pl-5px">
+                            {moment(item?.CheckIn?.CheckOutTime).format(
+                              "HH:mm"
+                            )}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span className="pl-5px">Checkin</span>
+                          <span className="text-danger font-weight-bold font-number pl-5px">
+                            {moment(item?.CheckIn?.CreateDate).format("HH:mm")}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                   <div className="w-95px d-flex justify-content-end">
-                    {item?.CheckIn?.OrderCheckInID ? (
-                      <button
-                        className="btn btn-icon btn-light-success btn-circle position-relative"
-                        onClick={() => {
-                          window.top.location.href = `/admin/?mdl=store&act=sell#mp:${item.ID}/payorder/${item?.CheckIn?.OrderCheckInID}`;
-                          window.top &&
-                            window.top.ShowCheckInDiv &&
-                            window.top.ShowCheckInDiv(false);
-                        }}
-                      >
-                        <i className="far fa-comment-alt-dollar font-size-16px position-absolute top-12px"></i>
-                      </button>
+                    {item?.CheckIn?.CheckOutTime ? (
+                      <>
+                        <button
+                          className="btn btn-icon btn-light-danger btn-circle position-relative"
+                          onClick={() => {
+                            window.top &&
+                              window.top.ShowCheckInDiv &&
+                              window.top.ShowCheckInDiv(false);
+                          }}
+                        >
+                          <i className="fa-regular fa-user-xmark font-size-16px position-absolute top-12px"></i>
+                        </button>
+                      </>
                     ) : (
-                      ""
+                      <>
+                        {item?.CheckIn?.OrderCheckInID ? (
+                          <button
+                            className="btn btn-icon btn-light-success btn-circle position-relative"
+                            onClick={() => {
+                              window.top.location.href = `/admin/?mdl=store&act=sell#mp:${item.ID}/payorder/${item?.CheckIn?.OrderCheckInID}`;
+                              window.top &&
+                                window.top.ShowCheckInDiv &&
+                                window.top.ShowCheckInDiv(false);
+                            }}
+                          >
+                            <i className="far fa-comment-alt-dollar font-size-16px position-absolute top-12px"></i>
+                          </button>
+                        ) : (
+                          ""
+                        )}
+                        <button
+                          className="btn btn-icon btn-light-primary btn-circle position-relative ml-8px"
+                          onClick={() => {
+                            window.top.location.href = `/admin/?mdl=store&act=sell#mp:${item.ID}`;
+                            window.top &&
+                              window.top.ShowCheckInDiv &&
+                              window.top.ShowCheckInDiv(false);
+                          }}
+                        >
+                          <i className="far fa-arrow-right font-size-15px position-absolute top-13px"></i>
+                        </button>
+                      </>
                     )}
-                    <button
-                      className="btn btn-icon btn-light-primary btn-circle position-relative ml-8px"
-                      onClick={() => {
-                        window.top.location.href = `/admin/?mdl=store&act=sell#mp:${item.ID}`;
-                        window.top &&
-                          window.top.ShowCheckInDiv &&
-                          window.top.ShowCheckInDiv(false);
-                      }}
-                    >
-                      <i className="far fa-arrow-right font-size-15px position-absolute top-13px"></i>
-                    </button>
                   </div>
                 </div>
               ))
