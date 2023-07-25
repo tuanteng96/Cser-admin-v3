@@ -51,9 +51,7 @@ function Booking({ formikProps, nextStep, BookSet }) {
       >
         <ListStocks formikProps={formikProps} />
         <DateTime formikProps={formikProps} BookSet={BookSet} />
-        {window.GlobalConfig?.Admin?.dat_lich_nhan_vien === 1 && (
-          <StaffAtHome formikProps={formikProps} />
-        )}
+        <StaffAtHome formikProps={formikProps} />
         <InfoBook formikProps={formikProps} />
       </PerfectScrollbar>
       <div>

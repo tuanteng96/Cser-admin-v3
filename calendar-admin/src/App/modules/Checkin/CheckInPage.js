@@ -176,9 +176,11 @@ function CheckInPage(props) {
                         <button
                           className="btn btn-icon btn-light-danger btn-circle position-relative"
                           onClick={() => {
+                            
                             window.top &&
                               window.top.ShowCheckInDiv &&
                               window.top.ShowCheckInDiv(false);
+                              window.top && window.top.MemberCloseBill && window.top.MemberCloseBill(item.ID, item)
                           }}
                         >
                           <i className="fa-regular fa-user-xmark font-size-16px position-absolute top-12px"></i>

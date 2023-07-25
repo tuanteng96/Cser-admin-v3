@@ -27,7 +27,7 @@ const CustomOption = ({ children, data, ...props }) => {
 }
 
 function StaffAtHome({ formikProps }) {
-  const { values, setFieldValue } = formikProps
+  const { values, setFieldValue, handleBlur } = formikProps
   const [ListStaff, setListStaff] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -56,23 +56,45 @@ function StaffAtHome({ formikProps }) {
   return (
     <div className="bg-white mt-1px pt-15px pl-15px pr-15px pb-10px date-time">
       <div className="fw-700 text-uppercase mb-10px">
-        3. Nhân viên thực hiện
+        3. {window.GlobalConfig?.Admin?.dat_lich_nhan_vien === 1 ? "Nhân viên thực hiện" : "Loại dịch vụ" }
       </div>
-      <div>
-        <Select
-          isLoading={loading}
-          isClearable
-          className="select-control"
-          classNamePrefix="select"
-          options={ListStaff}
-          menuPlacement="top"
-          placeholder="Chọn nhân viên"
-          value={values.UserServiceIDs}
-          onChange={value => setFieldValue('UserServiceIDs', value)}
-          components={{ Option: CustomOption }}
-          noOptionsMessage={() => 'Không có nhân viên.'}
-        />
-      </div>
+      {window.GlobalConfig?.Admin?.dat_lich_nhan_vien === 1 && (
+        <>
+          <div>
+            <Select
+              isLoading={loading}
+              isClearable
+              className="select-control"
+              classNamePrefix="select"
+              options={ListStaff}
+              menuPlacement="top"
+              placeholder="Chọn nhân viên"
+              value={values.UserServiceIDs}
+              onChange={value => setFieldValue('UserServiceIDs', value)}
+              components={{ Option: CustomOption }}
+              noOptionsMessage={() => 'Không có nhân viên.'}
+            />
+          </div>
+        </>
+      )}
+
+      {window.GlobalConfig?.APP?.Booking?.AtHome && (
+        <div className="d-flex align-items-center justify-content-between mt-3">
+          <label className="mr-3">Sử dụng dịch vụ tại nhà</label>
+          <span className="switch switch-sm switch-icon">
+            <label>
+              <input
+                type="checkbox"
+                name="AtHome"
+                onChange={evt => setFieldValue('AtHome', evt.target.checked)}
+                onBlur={handleBlur}
+                checked={values.AtHome}
+              />
+              <span />
+            </label>
+          </span>
+        </div>
+      )}
     </div>
   )
 }
