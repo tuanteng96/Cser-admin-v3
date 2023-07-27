@@ -93,7 +93,7 @@ function SidebarCalendar({
       <div className="header-sidebar p-15px">
         <div className="d-flex justify-content-between align-items-center">
           {!isTelesales && (
-            <Dropdown className="w-md-100 w-auto">
+            <Dropdown className="w-xl-100 w-auto">
               <Dropdown.Toggle className="btn btn-primary btn-sm h-42px btn-shadow px-15px w-100 hide-icon-after">
                 {width > 1200 ? "Tạo mới" : <i className="fal fa-plus"></i>}
               </Dropdown.Toggle>
