@@ -121,32 +121,9 @@ function CalendarPage(props) {
   const [ListLock, setListLock] = useState({
     ListLocks: [],
   });
-  const [lstTeles, setLstTeles] = useState([]);
   const [btnLoadingLock, setBtnLoadingLock] = useState(false);
   const calendarRef = useRef("");
   const { isTelesales } = useContext(AppContext);
-
-  useEffect(() => {
-    async function getLstTeles() {
-      const { data } = await CalendarCrud.getConfigName("tagkh");
-      if (data && data.length > 0) {
-        const result = JSON.parse(data[0].Value);
-        const newResult = result.map((item) => ({
-          value: item.Title,
-          label: item.Title,
-          options:
-            item.Children &&
-            item.Children.map((o) => ({
-              value: o.Title,
-              label: o.Title,
-            })),
-        }));
-        setLstTeles(newResult);
-      }
-    }
-
-    getLstTeles();
-  }, []);
 
   //Get Staff Full
   useEffect(() => {
@@ -1058,6 +1035,13 @@ function CalendarPage(props) {
                 }
                 setInitialView(view.type);
                 setFilters(newFilters);
+                if(calendarRef?.current) {
+                  let calendarApi = calendarRef.current.getApi();
+                  setHeaderTitle(
+                    calendarApi.currentDataManager.data?.viewTitle
+                  );
+                }
+                
               }}
             />
             {initialView === "resourceTimelineDay" && (

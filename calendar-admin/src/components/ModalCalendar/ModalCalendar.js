@@ -228,70 +228,6 @@ function ModalCalendar({
     );
   };
 
-  const renderFooterModal = (Status, formikProps) => {
-    const { submitForm, setFieldValue, values } = formikProps;
-    if (!Status) {
-      return (
-        <Fragment>
-          <button
-            type="submit"
-            className={`btn btn-sm btn-primary mr-2 ${
-              btnLoading.isBtnBooking
-                ? "spinner spinner-white spinner-right"
-                : ""
-            } w-auto my-0 mr-0 h-auto`}
-            disabled={btnLoading.isBtnBooking}
-          >
-            Đặt lịch
-          </button>
-        </Fragment>
-      );
-    }
-    if (Status === "CHUA_XAC_NHAN") {
-      return (
-        <Fragment>
-          <button
-            type="submit"
-            className={`btn btn-sm btn-primary mr-2 ${
-              btnLoading.isBtnBooking
-                ? "spinner spinner-white spinner-right"
-                : ""
-            } w-auto my-0 mr-0 h-auto`}
-            disabled={btnLoading.isBtnBooking}
-            onClick={() => {
-              setFieldValue("Status", "XAC_NHAN", submitForm()); //submitForm()
-            }}
-          >
-            Xác nhận
-          </button>
-        </Fragment>
-      );
-    }
-    return (
-      <Fragment>
-        <button
-          type="submit"
-          className={`btn btn-sm btn-primary mr-2 ${
-            btnLoading.isBtnBooking ? "spinner spinner-white spinner-right" : ""
-          } w-auto my-0 mr-0 h-auto`}
-          disabled={btnLoading.isBtnBooking}
-        >
-          Lưu
-        </button>
-        <button
-          type="button"
-          className={`btn btn-sm btn-primary mr-2 ${
-            btnLoading.isBtnBooking ? "spinner spinner-white spinner-right" : ""
-          } w-auto my-0 mr-0 h-auto`}
-          disabled={btnLoading.isBtnBooking}
-          onClick={() => onFinish(values)}
-        >
-          Thực hiện
-        </button>
-      </Fragment>
-    );
-  };
-
   const CalendarSchema = Yup.object().shape({
     BookDate: Yup.string().required("Vui lòng chọn ngày đặt lịch."),
     MemberID: Yup.object()
@@ -358,7 +294,7 @@ function ModalCalendar({
                 </Modal.Header>
                 <Modal.Body className="p-0">
                   <div className="form-group form-group-ezs px-6 pt-3 mb-3">
-                    <label className="mb-1 d-none d-md-block">Khách hàng</label>
+                    {/* <label className="mb-1 d-none d-md-block">Khách hàng</label> */}
                     <AsyncCreatableSelect
                       className={`select-control ${
                         errors.MemberID && touched.MemberID
@@ -395,7 +331,7 @@ function ModalCalendar({
                       }}
                       formatCreateLabel={(inputValue) => (
                         <span className="text-primary">
-                          Tạo mới "{inputValue}"
+                          Không thấy - Tạo mới "{inputValue}"
                         </span>
                       )}
                       menuPosition="fixed"
@@ -602,7 +538,7 @@ function ModalCalendar({
                       {!values?.IsMemberCurrent?.IsAnonymous && (
                         <div className="w-120px">
                           <label className="mb-1 d-none d-md-block">
-                            Đặt lịch thành công
+                            Chỉ số Booking
                           </label>
                           <div className="mt-2px font-weight-bolder">
                             {initialValue?.BookCount?.Done || 0}
@@ -615,46 +551,168 @@ function ModalCalendar({
                   )}
                 </Modal.Body>
                 <Modal.Footer className="justify-content-between">
-                  <div>
-                    {renderFooterModal(initialValues.Status, formikProps)}
-                    {values.ID && (
-                      <button
-                        type="button"
-                        className={`btn btn-sm btn-danger mr-2 ${
-                          btnLoading.isBtnDelete
-                            ? "spinner spinner-white spinner-right"
-                            : ""
-                        } w-auto my-0 mr-0 h-auto`}
-                        disabled={btnLoading.isBtnDelete}
-                        onClick={() => onDelete(values)}
-                      >
-                        Hủy lịch
-                      </button>
-                    )}
+                  <div className="d-flex w-100">
+                    <div className="flex-1">
+                      {!values?.ID && (
+                        <div className="d-flex w-100">
+                          <button
+                            type="button"
+                            className="btn btn-sm btn-secondary mr-2"
+                            onClick={onHide}
+                          >
+                            Hủy
+                          </button>
+                          <button
+                            type="submit"
+                            className={`btn btn-sm btn-primary flex-1 ${
+                              btnLoading.isBtnBooking
+                                ? "spinner spinner-white spinner-right"
+                                : ""
+                            } w-auto my-0 mr-0 h-auto`}
+                            disabled={btnLoading.isBtnBooking}
+                          >
+                            Đặt lịch ngay
+                          </button>
+                        </div>
+                      )}
+                      {values?.ID && (
+                        <div className="w-100 d-flex">
+                          {initialValues.Status === "CHUA_XAC_NHAN" ? (
+                            <>
+                              <button
+                                type="submit"
+                                className={`btn btn-sm btn-primary mr-2 flex-1 ${
+                                  btnLoading.isBtnBooking
+                                    ? "spinner spinner-white spinner-right"
+                                    : ""
+                                } w-auto my-0 mr-0 h-auto`}
+                                disabled={btnLoading.isBtnBooking}
+                                onClick={() => {
+                                  setFieldValue(
+                                    "Status",
+                                    "XAC_NHAN",
+                                    formikProps.submitForm()
+                                  ); //submitForm()
+                                }}
+                              >
+                                Xác nhận
+                              </button>
+                              <button
+                                type="button"
+                                className={`btn btn-sm btn-danger ${
+                                  btnLoading.isBtnDelete
+                                    ? "spinner spinner-white spinner-right"
+                                    : ""
+                                } w-auto my-0 mr-0 h-auto`}
+                                disabled={btnLoading.isBtnDelete}
+                                onClick={() => onDelete(values)}
+                              >
+                                Hủy lịch
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                type="submit"
+                                className={`btn btn-sm btn-success mr-2 text-truncate ${
+                                  btnLoading.isBtnBooking &&
+                                  values.Status !== "KHACH_KHONG_DEN" &&
+                                  values.Status !== "TU_CHOI" &&
+                                  values.Status !== "KHACH_DEN"
+                                    ? "spinner spinner-white spinner-right"
+                                    : ""
+                                } w-auto my-0 mr-0 h-auto`}
+                                disabled={
+                                  btnLoading.isBtnBooking &&
+                                  values.Status !== "KHACH_KHONG_DEN" &&
+                                  values.Status !== "TU_CHOI" &&
+                                  values.Status !== "KHACH_DEN"
+                                }
+                              >
+                                Cập nhập
+                              </button>
+                              <Dropdown>
+                                <Dropdown.Toggle
+                                  className={`btn btn-danger hide-icon-after text-truncate ${((btnLoading.isBtnBooking &&
+                                    values.Status === "KHACH_KHONG_DEN") ||
+                                    btnLoading.isBtnDelete) &&
+                                    "spinner spinner-white spinner-right"}`}
+                                  disabled={
+                                    (btnLoading.isBtnBooking &&
+                                      values.Status === "KHACH_KHONG_DEN") ||
+                                    btnLoading.isBtnDelete
+                                  }
+                                >
+                                  Hủy
+                                  {((btnLoading.isBtnBooking &&
+                                    values.Status === "KHACH_KHONG_DEN") ||
+                                    btnLoading.isBtnDelete) && (
+                                    <div
+                                      class="spinner-border"
+                                      role="status"
+                                    ></div>
+                                  )}
+                                </Dropdown.Toggle>
+
+                                <Dropdown.Menu className="w-100" variant="dark">
+                                  <Dropdown.Item
+                                    href="#"
+                                    onClick={() => {
+                                      setFieldValue(
+                                        "Status",
+                                        "KHACH_KHONG_DEN",
+                                        formikProps.submitForm()
+                                      );
+                                    }}
+                                  >
+                                    Khách không đến
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    className="text-danger"
+                                    href="#"
+                                    onClick={() => onDelete(values)}
+                                  >
+                                    Hủy lịch
+                                  </Dropdown.Item>
+                                </Dropdown.Menu>
+                              </Dropdown>
+                              <button
+                                type="button"
+                                className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
+                                  btnLoading.isBtnBooking &&
+                                  values.Status === "KHACH_DEN"
+                                    ? "spinner spinner-white spinner-right"
+                                    : ""
+                                } w-auto my-0 mr-0 h-auto`}
+                                disabled={
+                                  btnLoading.isBtnBooking &&
+                                  values.Status === "KHACH_DEN"
+                                }
+                                onClick={() => onFinish(values)}
+                              >
+                                Check In
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
                     {values?.CreateBy &&
                       window?.top?.GlobalConfig?.Admin?.kpiChot && (
                         <button
                           type="button"
                           onClick={onChangeStatusTele}
-                          className={`btn btn-sm btn-secondary ${
+                          className={`btn btn-sm btn-secondary ml-2 ${
                             loading ? "spinner spinner-white spinner-right" : ""
-                          } w-auto my-0 mr-2 h-auto`}
+                          } w-auto my-0 h-auto`}
                           disabled={loading}
                         >
-                          Khách có chốt
+                          Khách chốt
                         </button>
                       )}
-
-                    <button
-                      type="button"
-                      className="btn btn-sm btn-secondary d-md-none"
-                      onClick={onHide}
-                    >
-                      Đóng
-                    </button>
                   </div>
-                  <div></div>
+                  
                 </Modal.Footer>
                 <ModalCreateMember
                   show={isModalCreate}

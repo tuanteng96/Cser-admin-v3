@@ -38,7 +38,7 @@ $checkbox-config: ( transition: all 0.3s ease, itemSpace: 1rem, labelSpace: 0.75
 // Radio
 $radio-config: ( transition: all 0.3s ease, itemSpace: 1rem, inlineItemSpace: 0.35rem, labelSpace: 0.75rem, types: ( solid: ( theme: ( base-color: $gray-200), sizes: ( default: ( base: 18px, tick: 6px, ), lg: ( base: 24px, tick: 8px, ))), outline: ( theme: ( base-color: $gray-400), sizes: ( default: ( base: 18px, tick: 6px, ), lg: ( base: 24px, tick: 8px, ))), accent: ( borderWidth: 3px, sizes: ( default: ( base: 24px, tick: 14px, ), lg: ( base: 30px, tick: 10px, ))))) !default;
 // Switch
-$switch-config: ( color: $gray-200, tick: $primary) !default;
+$switch-config: ( color: $gray-400, tick: $primary) !default;
 // Scrolltop
 $scrolltop-config: ( bottom: ( desktop: 40px, tablet-and-mobile: 30px), right: ( desktop: 20px, tablet-and-mobile: 15px), size: ( desktop: 36px, tablet-and-mobile: 30px)) !default;
 // Sticky Toolbar

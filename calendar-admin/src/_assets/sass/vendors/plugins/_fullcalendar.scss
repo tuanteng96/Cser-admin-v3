@@ -600,7 +600,7 @@
             .fc-button {
                 outline: none !important;
                 height: 42px;
-                padding: 0 1.25rem;
+                padding: 0 .9rem;
                 font-size: 1rem;
                 &.fc-corner-left {
                     @include border-top-left-radius($border-radius);
@@ -986,32 +986,37 @@
         // Toolbar
         .fc-toolbar {
             .fc-button {
-                color: $text-muted !important;
-                background: transparent !important;
-                border: 1px solid $gray-200 !important;
+                color: #8561f9 !important;
+                background: rgba(133, 97, 249, .15) !important;
+                border: 0;
                 text-shadow: none !important;
                 box-shadow: none !important;
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: 400;
+                transition: all .3s ease;
                 .fc-icon {
                     color: $text-muted;
                 }
                 &:hover {
                     border: 0;
-                    background: $gray-100;
-                    border: 1px solid $gray-200;
-                    color: $text-muted;
+                    background: #8561f9 !important;
+                    border: 0 !important;
+                    color: #fff !important;
                 }
                 &:focus,
                 &:active,
                 &.fc-button-active {
                     //background-color: $primary !important;
-                    color: $primary !important;
+                    color: #fff !important;
                     //border: 1px solid $primary !important;
                     box-shadow: none;
                     text-shadow: none;
+                    background: #8561f9 !important;
                     .fc-icon {
                         color: $primary;
+                    }
+                    .span {
+                        color: #fff !important;
                     }
                 }
                 &.fc-button-disabled {
@@ -1109,6 +1114,17 @@
             .fc-toolbar .fc-button {
                 padding: 0 10px;
             }
+        }
+    }
+}
+
+@media (max-width: 767px) {
+    .hide-icon-after {
+        &::after {
+            display: none !important;
+        }
+        i {
+            padding: 0 !important;
         }
     }
 }

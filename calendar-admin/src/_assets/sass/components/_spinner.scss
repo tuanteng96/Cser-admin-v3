@@ -4,6 +4,15 @@
 // Spinner Default
 .spinner {
     position: relative;
+    .spinner-border {
+        width: 1.5rem;
+        height: 1.5rem;
+        border: 0.15em solid currentColor;
+        border-right-color: transparent;
+        position: absolute;
+        right: 1rem;
+        top: 9px;
+    }
     &:before {
         content: '';
         box-sizing: border-box;

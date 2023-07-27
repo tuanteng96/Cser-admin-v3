@@ -10,9 +10,6 @@ import { Dropdown } from "react-bootstrap";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { AppContext } from "../../App/App";
 import SelectStocksTelesale from "../Select/SelectStocksTelesale/SelectStocksTelesale";
-import SelectStaffsService from "../Select/SelectStaffsService/SelectStaffsService";
-import SelectMember from "../Select/SelectMember/SelectMember";
-import SelectStaffsTelesale from "../Select/SelectStaffsTelesale/SelectStaffsTelesale";
 
 SidebarCalendar.propTypes = {
   onOpenModal: PropTypes.func,
@@ -32,19 +29,6 @@ const perfectScrollbarOptions = {
   wheelPropagation: false,
 };
 
-const CustomOptionStaff = ({ children, ...props }) => {
-  const { Thumbnail, label } = props.data;
-  return (
-    <components.Option {...props}>
-      <div className="d-flex align-items-center">
-        <div className="w-20px h-20px mr-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
-          <img className="w-100" src={Thumbnail} alt={label} />
-        </div>
-        {children}
-      </div>
-    </components.Option>
-  );
-};
 
 const Control = ({ children, ...props }) => {
   // @ts-ignore
@@ -60,21 +44,6 @@ const Control = ({ children, ...props }) => {
     </components.Control>
   );
 };
-
-// const CustomOption = ({ children, ...props }) => {
-//   const { color } = props.data;
-//   return (
-//     <components.Option {...props}>
-//       <div className="d-flex align-items-center">
-//         <div
-//           className="w-20px h-15px rounded-2px mr-2"
-//           style={{ background: color }}
-//         ></div>
-//         {children}
-//       </div>
-//     </components.Option>
-//   );
-// };
 
 const ValueChangeListener = () => {
   const { submitForm, values } = useFormikContext();
@@ -124,12 +93,12 @@ function SidebarCalendar({
       <div className="header-sidebar p-15px">
         <div className="d-flex justify-content-between align-items-center">
           {!isTelesales && (
-            <Dropdown>
-              <Dropdown.Toggle className="btn btn-primary btn-sm h-42px btn-shadow px-15px">
+            <Dropdown className="w-md-100 w-auto">
+              <Dropdown.Toggle className="btn btn-primary btn-sm h-42px btn-shadow px-15px w-100 hide-icon-after">
                 {width > 1200 ? "Tạo mới" : <i className="fal fa-plus"></i>}
               </Dropdown.Toggle>
 
-              <Dropdown.Menu variant="dark">
+              <Dropdown.Menu className="w-100" variant="dark">
                 <Dropdown.Item
                   href="#"
                   onClick={() => {
@@ -146,6 +115,11 @@ function SidebarCalendar({
                 <Dropdown.Item href="#" onClick={onOpenModal}>
                   Đặt lịch mới
                 </Dropdown.Item>
+                {!isTelesales && (
+                  <Dropdown.Item href="#" onClick={onOpenModalLock}>
+                    Cài đặt khóa lịch
+                  </Dropdown.Item>
+                )}
               </Dropdown.Menu>
             </Dropdown>
           )}
@@ -156,7 +130,7 @@ function SidebarCalendar({
             className="btn btn-info h-40px d-xl-none w-45px p-0 d-xl-none"
             onClick={onOpenFilter}
           >
-            <i className="fas fa-sort-amount-down p-0 font-size-md"></i>
+            <i className="fa-regular fa-magnifying-glass p-0 font-size-md"></i>
           </button>
         </div>
       </div>
@@ -208,34 +182,7 @@ function SidebarCalendar({
                           menuPortalTarget={document.body}
                         />
                       )}
-                      {!isTelesales && (
-                        <SelectMember
-                          classIcon="far fa-user-alt"
-                          menuPlacement="bottom"
-                          isMulti
-                          className="select-control mb-8px"
-                          classNamePrefix="select"
-                          name="MemberID"
-                          value={values.MemberID}
-                          onChange={(option) =>
-                            setFieldValue("MemberID", option, false)
-                          }
-                          isClearable
-                          isSearchable
-                          components={{
-                            Option: CustomOptionStaff,
-                            Control,
-                          }}
-                          placeholder="Khách hàng"
-                          noOptionsMessage={({ inputValue }) =>
-                            !inputValue
-                              ? "Không có khách hàng"
-                              : "Không tìm thấy khách hàng"
-                          }
-                          menuPortalTarget={document.body}
-                        />
-                      )}
-                      {isTelesales ? (
+                      {/* {isTelesales ? (
                         <SelectStaffsTelesale
                           classIcon="far fa-user-cog"
                           menuPlacement="bottom"
@@ -289,20 +236,11 @@ function SidebarCalendar({
                           }
                           menuPortalTarget={document.body}
                         />
-                      )}
+                      )} */}
                     </div>
                   </div>
                   <AdvancedList formikProps={formikProps} />
                   <StatusList />
-                  {!isTelesales && (
-                    <div
-                      className="font-size-xs font-weight-bold mt-15px text-primary text-decoration-underline cursor-pointer"
-                      onClick={onOpenModalLock}
-                    >
-                      <i className="fas fa-tools font-size-xs pr-8px"></i>Cài
-                      đặt khóa lịch
-                    </div>
-                  )}
                 </div>
               </PerfectScrollbar>
               {width > 991 ? (
@@ -317,7 +255,7 @@ function SidebarCalendar({
                       } w-auto my-0 mr-0 h-auto`}
                       disabled={loading}
                     >
-                      Lọc ngay
+                      Tìm kiếm
                     </button>
                     <button
                       type="button"

@@ -31,7 +31,11 @@ const groupbyTIME = (arr) => {
 function CheckInPage(props) {
   const { ListCheckIn, loading, CrStockID } = useSelector(
     ({ CheckIn, Auth }) => ({
-      ListCheckIn: groupbyTIME(CheckIn.ListFilters ?? CheckIn.ListCheckIn),
+      ListCheckIn: groupbyTIME(
+        CheckIn.ListFilters ||
+          (CheckIn.ListCheckIn &&
+            CheckIn.ListCheckIn.filter((x) => !x?.CheckIn?.CheckOutTime))
+      ),
       loading: CheckIn.loading,
       CrStockID: Auth.CrStockID,
     })
@@ -65,8 +69,8 @@ function CheckInPage(props) {
       } h-100vh d-flex flex-column`}
     >
       <div className="shadow">
-        <div className="d-flex justify-content-between align-items-center border-bottom py-17px px-15px">
-          <div className="text-uppercase font-weight-bold pt-3px">
+        <div className="d-flex justify-content-between align-items-center border-bottom py-17px px-15px bg-primary">
+          <div className="text-uppercase font-weight-bold pt-3px text-white">
             Khách đang Check In
           </div>
           <div
@@ -77,7 +81,7 @@ function CheckInPage(props) {
               window.top.ShowCheckInDiv(false)
             }
           >
-            <i className="ki ki-close icon-xs text-muted font-size-md"></i>
+            <i className="ki ki-close icon-xs text-white font-size-md"></i>
           </div>
         </div>
         <div className="py-12px px-15px">
@@ -147,24 +151,33 @@ function CheckInPage(props) {
                   </div>
                   <div className="px-15px flex-1">
                     <div className="text-dark-75 font-weight-bold font-size-15px">
-                      {item.FullName}
+                      {item.FullName} - {item.MobilePhone}
                     </div>
                     <div className="font-number font-size-13px text-dark-50">
-                      {item.MobilePhone} -
-                      {item?.CheckIn?.CheckOutTime ? (
+                      <span className="font-weight-800">
+                        <span className="pl-5px">In</span>
+                        <span className="text-success font-number pl-5px">
+                          {moment(item?.CheckIn?.CreateDate).format("HH:mm")}
+                        </span>
+                      </span>
+
+                      {item?.CheckIn?.CheckOutTime && (
                         <>
-                          <span className="pl-5px">Đã CheckOut</span>
-                          <span className="text-danger font-weight-bold font-number pl-5px">
-                            {moment(item?.CheckIn?.CheckOutTime).format(
-                              "HH:mm"
-                            )}
+                          <span className="pl-2 pr-1">
+                            <i
+                              style={{
+                                fontSize: "14px",
+                              }}
+                              className="fa-regular fa-arrow-right-long"
+                            ></i>
                           </span>
-                        </>
-                      ) : (
-                        <>
-                          <span className="pl-5px">Checkin</span>
-                          <span className="text-danger font-weight-bold font-number pl-5px">
-                            {moment(item?.CheckIn?.CreateDate).format("HH:mm")}
+                          <span className="font-weight-800">
+                            <span className="pl-5px">Out</span>
+                            <span className="text-danger font-number pl-5px">
+                              {moment(item?.CheckIn?.CheckOutTime).format(
+                                "HH:mm"
+                              )}
+                            </span>
                           </span>
                         </>
                       )}
@@ -176,11 +189,12 @@ function CheckInPage(props) {
                         <button
                           className="btn btn-icon btn-light-danger btn-circle position-relative"
                           onClick={() => {
-                            
                             window.top &&
                               window.top.ShowCheckInDiv &&
                               window.top.ShowCheckInDiv(false);
-                              window.top && window.top.MemberCloseBill && window.top.MemberCloseBill(item.ID, item)
+                            window.top &&
+                              window.top.MemberCloseBill &&
+                              window.top.MemberCloseBill(item.ID, item);
                           }}
                         >
                           <i className="fa-regular fa-user-xmark font-size-16px position-absolute top-12px"></i>

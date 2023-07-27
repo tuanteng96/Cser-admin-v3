@@ -42,6 +42,12 @@
     }
 }
 
+.select-control.select-border-none {
+    .select__control {
+        border: none
+    }
+}
+
 .css-1pahdxg-control:hover {
     border-color: $input-focus-border-color !important;
 }

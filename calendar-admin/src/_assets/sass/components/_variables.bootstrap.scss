@@ -88,6 +88,10 @@ $white-inverse: $dark-75 !default; // Custom variable
 // Bootstrap theme colors
 $theme-colors: ( "white": $white, // custom color type
 "primary": $primary, "secondary": $secondary, "success": $success, "info": $info, "warning": $warning, "danger": $danger, "light": $light, "dark": $dark, "ezs-orange": $orangeEzs, "ezs-cyan": $cyanEzs) !default;
+$theme-colors-calendar: ( "white": $white, // custom color type
+"primary": #E1F0FF, "secondary": #EBEDF3, "success": #C9F7F5, "info": #EEE5FF, "warning": #FFF4DE, "danger": #FFE2E5, "light": $light, "dark": $dark, "ezs-orange": $orangeEzs, "ezs-cyan": $cyanEzs) !default;
+$theme-colors-calendar2: ( "white": $white, // custom color type
+"primary": #3699FF, "secondary": #92929e, "success": #1bc5bd, "info": #8950FC, "warning": #FFA800, "danger": #F64E60, "light": $light, "dark": $dark, "ezs-orange": $orangeEzs, "ezs-cyan": $cyanEzs) !default;
 // Extended hover colors for Bootstrap theme colors
 $theme-hover-colors: ( "white": $white-hover, // custom color type
 "primary": $primary-hover, "secondary": $secondary-hover, "success": $success-hover, "info": $info-hover, "warning": $warning-hover, "danger": $danger-hover, "light": $light-hover, "dark": $dark-hover, "ezs-orange": $orangeEzs-hover, "ezs-cyan": $cyanEzs-hover) !default; // Custom variable
@@ -206,9 +210,6 @@ $body-color: $dark-75 !default;
 //
 // Font, line-height, and color for body text, headings, and more.
 // Font family
-$font-family-base: Poppins,
-Helvetica,
-"sans-serif" !default;
 $font-size-base: 1rem !default; // Assumes the browser default, typically `13px`
 $font-size-md: $font-size-base * 1.1 !default;
 $font-size-lg: $font-size-base * 1.08 !default; // 15px
@@ -312,7 +313,7 @@ $btn-border-radius-sm: $border-radius !default;
 $input-plaintext-color: $dark-75 !default;
 $input-placeholder-color: $text-muted !default;
 $input-color: $dark-75 !default;
-$input-border-color: $gray-300 !default;
+$input-border-color: $gray-400 !default;
 $input-border-width: $input-btn-border-width !default;
 $input-box-shadow: none !default;
 $input-focus-border-color: lighten($primary, 10%);

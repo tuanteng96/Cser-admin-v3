@@ -61,6 +61,10 @@ function CheckInFilter({ onSubmit, initialValues }) {
                       label: "Không phát sinh",
                       value: 1,
                     },
+                    {
+                      label: "CheckOut chưa hoàn thành",
+                      value: 2,
+                    },
                   ]}
                 />
               </div>

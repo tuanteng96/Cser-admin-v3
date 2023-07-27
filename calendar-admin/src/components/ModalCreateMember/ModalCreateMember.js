@@ -47,88 +47,99 @@ function ModalCreateMember({ show, onHide, onSubmit, initialDefault }) {
                         setFieldValue,
                     } = formikProps;
                     return (
-                        <Form className="h-100 d-flex flex-column">
-                            <Modal.Header className="open-close" closeButton>
-                                <Modal.Title className="text-uppercase">
-                                    Tạo mới khách hàng
-                                </Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body className="p-0">
-                                <div className="form-group form-group-ezs px-6 pt-3 mb-3">
-                                    <label className="mb-1 d-none d-md-block">
-                                        Tên khách hàng
-                                    </label>
-                                    <input
-                                        className={`form-control ${errors.FullName && touched.FullName
-                                            ? "is-invalid solid-invalid"
-                                            : ""
-                                            }`}
-                                        name="FullName"
-                                        value={values.FullName}
-                                        placeholder="Nhập họ tên"
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        autoComplete="off"
-                                    ></input>
+                      <Form className="h-100 d-flex flex-column">
+                        <Modal.Header className="open-close" closeButton>
+                          <Modal.Title className="text-uppercase">
+                            Thông tin khách hàng
+                          </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body className="p-0">
+                          <div className="form-group form-group-ezs px-6 pt-3 mb-3">
+                            <label className="mb-1 d-none d-md-block">
+                              Tên khách hàng
+                            </label>
+                            <input
+                              className={`form-control ${
+                                errors.FullName && touched.FullName
+                                  ? "is-invalid solid-invalid"
+                                  : ""
+                              }`}
+                              name="FullName"
+                              value={values.FullName}
+                              placeholder="Nhập họ tên"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              autoComplete="off"
+                            ></input>
+                          </div>
+                          <div className="form-group form-group-ezs px-6 pt-3 mb-3">
+                            <label className="mb-1 d-none d-md-block">
+                              Số điện thoại
+                            </label>
+                            <input
+                              className={`form-control ${
+                                errors.Phone && touched.Phone
+                                  ? "is-invalid solid-invalid"
+                                  : ""
+                              }`}
+                              name="Phone"
+                              value={values.Phone}
+                              placeholder="Nhập số điện thoại"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              autoComplete="off"
+                            ></input>
+                            <div className="d-flex align-items-center justify-content-between mt-4">
+                              <label className="mr-3">
+                                <div>Tạo đặt cho khách lẻ</div>
+                                <div className="text-muted font-weight-light">
+                                  Mặc định sẽ tạo khách hàng mới
                                 </div>
-                                <div className="form-group form-group-ezs px-6 pt-3 mb-3">
-                                    <label className="mb-1 d-none d-md-block">
-                                        Số điện thoại
-                                    </label>
-                                    <input
-                                        className={`form-control ${errors.Phone && touched.Phone
-                                            ? "is-invalid solid-invalid"
-                                            : ""
-                                            }`}
-                                        name="Phone"
-                                        value={values.Phone}
-                                        placeholder="Nhập số điện thoại"
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        autoComplete="off"
-                                    ></input>
-                                    <div className="d-flex align-items-center justify-content-between mt-4">
-                                        <label className="mr-3">Chưa tạo khách hàng mới, chỉ tạo lịch hẹn</label>
-                                        <span className="switch switch-sm switch-icon">
-                                            <label>
-                                                <input
-                                                    type="checkbox"
-                                                    name="PassersBy"
-                                                    onChange={(evt) =>
-                                                        setFieldValue("PassersBy", evt.target.checked)
-                                                    }
-                                                    onBlur={handleBlur}
-                                                    checked={values.PassersBy}
-                                                />
-                                                <span />
-                                            </label>
-                                        </span>
-                                    </div>
-                                </div>
-                            </Modal.Body>
-                            <Modal.Footer className="justify-content-between">
-                                <div>
-                                    <button
-                                        type="submit"
-                                        className={`btn btn-sm btn-primary mr-2 ${2 === 3
-                                            ? "spinner spinner-white spinner-right"
-                                            : ""
-                                            } w-auto my-0 mr-0 h-auto`}
-                                        disabled={false}
-                                    >
-                                        Tạo mới
-                                    </button>
-                                    <button
-                                        type="button"
-                                        className="btn btn-sm btn-secondary"
-                                        onClick={onHide}
-                                    >
-                                        Đóng
-                                    </button>
-                                </div>
-                                <div></div>
-                            </Modal.Footer>
-                        </Form>
+                              </label>
+                              <span className="switch switch-sm switch-icon">
+                                <label>
+                                  <input
+                                    type="checkbox"
+                                    name="PassersBy"
+                                    onChange={(evt) =>
+                                      setFieldValue(
+                                        "PassersBy",
+                                        evt.target.checked
+                                      )
+                                    }
+                                    onBlur={handleBlur}
+                                    checked={values.PassersBy}
+                                  />
+                                  <span />
+                                </label>
+                              </span>
+                            </div>
+                          </div>
+                        </Modal.Body>
+                        <Modal.Footer className="justify-content-between">
+                          <div>
+                            <button
+                              type="submit"
+                              className={`btn btn-sm btn-primary mr-2 ${
+                                2 === 3
+                                  ? "spinner spinner-white spinner-right"
+                                  : ""
+                              } w-auto my-0 mr-0 h-auto`}
+                              disabled={false}
+                            >
+                              Tạo mới
+                            </button>
+                            <button
+                              type="button"
+                              className="btn btn-sm btn-secondary"
+                              onClick={onHide}
+                            >
+                              Đóng
+                            </button>
+                          </div>
+                          <div></div>
+                        </Modal.Footer>
+                      </Form>
                     );
                 }}
             </Formik>
