@@ -72,10 +72,10 @@ const getStatusClss = (Status, item) => {
     return "danger";
   }
   if (Status === "KHACH_DEN") {
-    return "success";
+    return "info";
   }
   if (Status === "doing") {
-    return "info";
+    return "success";
   }
   if (Status === "done") {
     return "secondary";

@@ -91,7 +91,7 @@ function ModalCreateMember({ show, onHide, onSubmit, initialDefault }) {
                             ></input>
                             <div className="d-flex align-items-center justify-content-between mt-4">
                               <label className="mr-3">
-                                <div>Tạo đặt cho khách lẻ</div>
+                                <div>Tạo đặt lịch cho khách lẻ</div>
                                 <div className="text-muted font-weight-light">
                                   Mặc định sẽ tạo khách hàng mới
                                 </div>
