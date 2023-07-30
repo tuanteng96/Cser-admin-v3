@@ -612,6 +612,7 @@
                 }
                 .fc-icon {
                     font-size: 1.1rem;
+                    
                     &:after {
                         display: none;
                     }
@@ -995,13 +996,16 @@
                 font-weight: 400;
                 transition: all .3s ease;
                 .fc-icon {
-                    color: $text-muted;
+                    color: #8561f9;
                 }
                 &:hover {
                     border: 0;
                     background: #8561f9 !important;
                     border: 0 !important;
                     color: #fff !important;
+                    .fc-icon {
+                        color: #fff !important;
+                    }
                 }
                 &:focus,
                 &:active,

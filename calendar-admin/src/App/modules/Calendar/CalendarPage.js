@@ -136,7 +136,7 @@ function CalendarPage(props) {
         Array.isArray(data) && data.length > 0
           ? data.map((item) => ({ id: item.id, title: item.text }))
           : [];
-      setStaffFull(newData);
+      setStaffFull([{ id: 0, title: "Chưa chọn nhân viên" }, ...newData]);
     }
 
     getStaffFull();
@@ -609,7 +609,7 @@ function CalendarPage(props) {
                     Array.isArray(item.UserServices) &&
                     item.UserServices.length > 0
                       ? item.UserServices.map((item) => item.ID)
-                      : [],
+                      : [0],
                   MemberCurrent: {
                     FullName:
                       item?.IsAnonymous ||
@@ -648,7 +648,7 @@ function CalendarPage(props) {
                 resourceIds:
                   item.staffs && Array.isArray(item.staffs)
                     ? item.staffs.map((staf) => staf.ID)
-                    : [],
+                    : [0],
               }))
             : [];
         setEvents([...dataBooks, ...dataBooksAuto]);

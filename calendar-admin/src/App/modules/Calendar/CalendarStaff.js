@@ -167,10 +167,12 @@ function CalendarStaff({
           (event) =>
             (event.staffs && event.staffs.some((o) => o.ID === item.id)) ||
             (event.UserServices &&
-              event.UserServices.some((o) => o.ID === item.id))
+              event.UserServices.some((o) => o.ID === item.id)) ||
+            (item.id === 0 && event.resourceIds.includes(item.id))
         ),
       }))
     );
+    //console.log(events)
   }, [events]);
 
   useEffect(() => {
@@ -344,7 +346,8 @@ function CalendarStaff({
     styles.top = `${(TotalTime / TotalSeconds) * 100}%`;
     if (
       moment().format("DD-MM-YYYY") !==
-      moment(filters.From).format("DD-MM-YYYY")
+        moment(filters.From).format("DD-MM-YYYY") ||
+      (TotalTime / TotalSeconds) * 100 > 100
     ) {
       styles.display = "none";
     }
@@ -468,7 +471,7 @@ function CalendarStaff({
                                 <div>
                                   <span className="fullname">
                                     {service.AtHome
-                                      ? `<i className="fas fa-home text-white font-size-xs"></i>`
+                                      ? <i className="fas fa-home text-white font-size-xs"></i>
                                       : ""}{" "}
                                     {service.Star ? `(${service.Star})` : ""}
                                     {service.MemberCurrent.FullName}
@@ -491,10 +494,12 @@ function CalendarStaff({
                                 </div>
                                 <div className="flex-1 text-truncate">
                                   -{" "}
-                                  {service.RootTitles ? service.RootMinutes ??
-                                    service?.os?.RootMinutes ??
-                                    60 : 30}
-                                  p - {service.RootTitles || 'Không xác định'}
+                                  {service.RootTitles
+                                    ? service.RootMinutes ??
+                                      service?.os?.RootMinutes ??
+                                      60
+                                    : 30}
+                                  p - {service.RootTitles || "Không xác định"}
                                 </div>
                               </div>
                             </div>

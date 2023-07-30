@@ -69,8 +69,8 @@ function CheckInPage(props) {
       } h-100vh d-flex flex-column`}
     >
       <div className="shadow">
-        <div className="d-flex justify-content-between align-items-center border-bottom py-17px px-15px bg-primary">
-          <div className="text-uppercase font-weight-bold pt-3px text-white">
+        <div className="d-flex justify-content-between align-items-center border-bottom px-15px checkin-head">
+          <div className="checkin-title">
             Khách đang Check In
           </div>
           <div
@@ -81,7 +81,7 @@ function CheckInPage(props) {
               window.top.ShowCheckInDiv(false)
             }
           >
-            <i className="ki ki-close icon-xs text-white font-size-md"></i>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
           </div>
         </div>
         <div className="py-12px px-15px">
@@ -150,13 +150,13 @@ function CheckInPage(props) {
                     />
                   </div>
                   <div className="px-15px flex-1">
-                    <div className="text-dark-75 font-weight-bold font-size-15px">
+                    <div className="text-app font-weight-bold font-size-15px">
                       {item.FullName} - {item.MobilePhone}
                     </div>
-                    <div className="font-number font-size-13px text-dark-50">
-                      <span className="font-weight-800">
-                        <span className="pl-5px">In</span>
-                        <span className="text-success font-number pl-5px">
+                    <div className="font-size-13px text-dark-50">
+                      <span>
+                        <span>In</span>
+                        <span className="text-success pl-5px">
                           {moment(item?.CheckIn?.CreateDate).format("HH:mm")}
                         </span>
                       </span>

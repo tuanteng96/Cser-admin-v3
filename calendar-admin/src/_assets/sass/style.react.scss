@@ -24,3 +24,21 @@
 "./vendors/plugins/datepicker",
 "./vendors/plugins/toastify",
 "./vendors/plugins/perfect-scrollbar";
+
+.checkin-head {
+    min-height: 80px;
+    @media (max-width: 767px) {
+        min-height: 70px;
+    }
+    .checkin-title {
+        font-size: 1.25rem;
+        line-height: 1.75rem;
+        font-weight: 600;
+    }
+    svg {
+        transition: all .2s ease-in-out;
+    }
+    svg:hover {
+        stroke: $primary;
+    }
+}
