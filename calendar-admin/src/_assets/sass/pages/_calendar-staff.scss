@@ -4,7 +4,12 @@ $width-time: 65px;
 $calendar-border-color: #ddd;
 $width-col: 220px;
 $width-col-mobile: 135px;
-$height-grid: 24px;
+$height-grid: 40px;
+
+.fc .fc-timegrid-slot {
+    height: $height-grid;
+}
+
 .calendar-staff {
     &-time {
         width: $width-time;

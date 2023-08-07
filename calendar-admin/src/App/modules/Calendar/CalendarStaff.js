@@ -160,8 +160,8 @@ function CalendarStaff({
   const { width } = useWindowSize();
 
   useEffect(() => {
-    setNewResources((prevState) =>
-      prevState.map((item) => ({
+    setNewResources(() =>
+      resources.map((item) => ({
         ...item,
         Services: events.filter(
           (event) =>
@@ -172,8 +172,7 @@ function CalendarStaff({
         ),
       }))
     );
-    //console.log(events)
-  }, [events]);
+  }, [events, resources]);
 
   useEffect(() => {
     const {
@@ -470,9 +469,11 @@ function CalendarStaff({
                               <div className="d-flex justify-content-between">
                                 <div>
                                   <span className="fullname">
-                                    {service.AtHome
-                                      ? <i className="fas fa-home text-white font-size-xs"></i>
-                                      : ""}{" "}
+                                    {service.AtHome ? (
+                                      <i className="fas fa-home text-white font-size-xs"></i>
+                                    ) : (
+                                      ""
+                                    )}{" "}
                                     {service.Star ? `(${service.Star})` : ""}
                                     {service.MemberCurrent.FullName}
                                   </span>

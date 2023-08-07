@@ -102,7 +102,7 @@ function CalendarPage(props) {
   const [initialValue, setInitialValue] = useState({});
   const [Events, setEvents] = useState([]);
   const [StaffFull, setStaffFull] = useState([]);
-  const [initialView, setInitialView] = useState("timeGridWeek");
+  const [initialView, setInitialView] = useState(window.innerWidth > 767 ? "resourceTimelineDay" : "timeGridDay"); //timeGridWeek
   const [headerTitle, setHeaderTitle] = useState("");
   const [StaffOffline, setStaffOffline] = useState([]);
   const [isModalLock, setIsModalLock] = useState(false);
@@ -141,7 +141,7 @@ function CalendarPage(props) {
 
     getStaffFull();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [initialView]);
 
   useEffect(() => {
     if (filters && filters.From) {
@@ -345,14 +345,17 @@ function CalendarPage(props) {
       });
 
       if (values.Status === "KHACH_KHONG_DEN") {
-        if (window?.top?.GlobalConfig?.Admin?.kpiCancelFinish && values?.CreateBy) {
+        if (
+          window?.top?.GlobalConfig?.Admin?.kpiCancelFinish &&
+          values?.CreateBy
+        ) {
           let newData = {
             update: [
               {
                 BookId: values?.ID,
                 Status: window?.top?.GlobalConfig?.Admin?.kpiCancelFinish,
               },
-            ]
+            ],
           };
           await CalendarCrud.editTagsMember(newData);
         }
@@ -522,7 +525,7 @@ function CalendarPage(props) {
         };
         await CalendarCrud.editTagsMember(newData);
       }
-      
+
       window.top.bodyEvent &&
         window.top.bodyEvent("ui_changed", {
           name: "cld_huy_lich",
@@ -1035,17 +1038,17 @@ function CalendarPage(props) {
                 }
                 setInitialView(view.type);
                 setFilters(newFilters);
-                if(calendarRef?.current) {
+                if (calendarRef?.current) {
                   let calendarApi = calendarRef.current.getApi();
                   setHeaderTitle(
                     calendarApi.currentDataManager.data?.viewTitle
                   );
                 }
-                
               }}
             />
             {initialView === "resourceTimelineDay" && (
               <CalendarStaff
+                initialView={initialView}
                 filters={filters}
                 StaffOffline={StaffOffline}
                 loading={loading}
