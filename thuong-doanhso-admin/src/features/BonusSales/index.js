@@ -12,10 +12,15 @@ const isVisible = (Type) => {
 };
 
 const BonusSales = () => {
-  const { OrderID, CrStockID, UserID } = useSelector(({ Auth }) => ({
+  const { OrderID, UserID, hideButton } = useSelector(({ Auth }) => ({
     OrderID: Auth.OrderID,
     CrStockID: Auth.CrStockID,
     UserID: Auth?.User?.ID,
+    hideButton:
+      (Auth?.Order?.Status === "finish" &&
+        Auth?.Order?.AdminAction === "TANG_DH_KET_THUC_NO") ||
+      (Auth?.Order?.Status === "finish" &&
+        Auth?.Order?.AdminAction === "KHOA_NO_KET_THUC_NO"),
   }));
   const [OrderInfo, setOrderInfo] = useState({});
   const [Type, setType] = useState([
@@ -296,7 +301,7 @@ const BonusSales = () => {
           Value: item.Value,
           ReceiverUserID: item.User?.ID,
           OrderItemID: item.OrderItemID,
-          KpiType: item.Type ? item.Type.value : ''
+          KpiType: item.Type ? item.Type.value : "",
         })).filter((o) => o.Value !== null),
       },
     };
@@ -419,28 +424,30 @@ const BonusSales = () => {
 
   return (
     <div className="container-fluid p-4">
-      <div className="mb-3">
-        {isVisible(Type) && (
-          <button
-            className="btn btn-secondary me-2 mb-2 mb-sm-0"
-            onClick={onToBack}
-          >
-            <i className="icon-xs ki ki-bold-arrow-back"></i> Quay lại
-          </button>
-        )}
-        {Type.filter((item) => !item.Visible && !item.Hide).map(
-          (item, index) => (
+      {!hideButton && (
+        <div className="mb-3">
+          {isVisible(Type) && (
             <button
-              className={`${item.className} d-block d-md-inline-block w-100 w-md-auto me-2 mb-2 mb-md-0`}
-              key={index}
-              onClick={() => handleType(item)}
-              disabled={item.IsActive}
+              className="btn btn-secondary me-2 mb-2 mb-sm-0"
+              onClick={onToBack}
             >
-              {item.Title}
+              <i className="icon-xs ki ki-bold-arrow-back"></i> Quay lại
             </button>
-          )
-        )}
-      </div>
+          )}
+          {Type.filter((item) => !item.Visible && !item.Hide).map(
+            (item, index) => (
+              <button
+                className={`${item.className} d-block d-md-inline-block w-100 w-md-auto me-2 mb-2 mb-md-0`}
+                key={index}
+                onClick={() => handleType(item)}
+                disabled={item.IsActive}
+              >
+                {item.Title}
+              </button>
+            )
+          )}
+        </div>
+      )}
       {!isVisible(Type) && (
         <BounsSalesIn OrderInfo={OrderInfo} onSubmit={onSubmitUpdate} />
       )}

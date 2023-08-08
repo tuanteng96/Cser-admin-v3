@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { Suspense, lazy, useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import AuthInit from "./modules/Auth/_redux/AuthInit";
-import BookingPage from "./modules/Booking/BookingPage";
-import CalendarPage from "./modules/Calendar/CalendarPage";
-import CheckInPage from "./modules/Checkin/CheckInPage";
+import TopBarProgress from "react-topbar-progress-indicator";
+
+const BookingPage = lazy(() => import("./modules/Booking/BookingPage"));
+const CalendarPage = lazy(() => import("./modules/Calendar/CalendarPage"));
+const CheckInPage = lazy(() => import("./modules/Checkin/CheckInPage"));
 
 export const AppContext = React.createContext();
 
@@ -12,6 +14,17 @@ const getParamsURL = (name) => {
   const URL_STRING = window.location.href;
   var URL_NEW = new URL(URL_STRING);
   return URL_NEW.searchParams.get(name);
+};
+
+const SuspensedView = ({ children }) => {
+  TopBarProgress.config({
+    barColors: {
+      0: "#3699ff",
+    },
+    barThickness: 1,
+    shadowBlur: 5,
+  });
+  return <Suspense fallback={<TopBarProgress />}>{children}</Suspense>;
 };
 
 function App({ store, basename }) {
@@ -43,21 +56,23 @@ function App({ store, basename }) {
           isTelesales,
         }}
       >
-        {!NameCurrent && (
-          <AuthInit>
-            <CalendarPage />
-          </AuthInit>
-        )}
-        {NameCurrent === "POPUP" && (
-          <AuthInit>
-            <BookingPage />
-          </AuthInit>
-        )}
-        {NameCurrent === "CHECKIN" && (
-          <AuthInit>
-            <CheckInPage />
-          </AuthInit>
-        )}
+        <AuthInit>
+          {!NameCurrent && (
+            <SuspensedView>
+              <CalendarPage />
+            </SuspensedView>
+          )}
+          {NameCurrent === "POPUP" && (
+            <SuspensedView>
+              <BookingPage />
+            </SuspensedView>
+          )}
+          {NameCurrent === "CHECKIN" && (
+            <SuspensedView>
+              <CheckInPage />
+            </SuspensedView>
+          )}
+        </AuthInit>
         <ToastContainer />
       </AppContext.Provider>
     </Provider>

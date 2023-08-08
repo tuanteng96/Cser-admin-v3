@@ -93,15 +93,6 @@ function AuthInit({ isConfig, children }) {
         dispatch(setInfo(window.top.Info));
         setShowSplashScreen(false);
       });
-      // AuthCrud.getJsonConfig()
-      //   .then((data) => {
-      //     checkInfo(() => {
-      //       dispatch(setConfig(data));
-      //       dispatch(setInfo(window.top.Info));
-      //       setShowSplashScreen(false);
-      //     });
-      //   })
-      //   .catch((error) => console.log(error));
     }
 
     if (Token) {

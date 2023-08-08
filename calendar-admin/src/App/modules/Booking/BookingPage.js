@@ -14,6 +14,7 @@ import moment from "moment";
 import "moment/locale/vi";
 import SelectStocks from "../../../components/Select/SelectStocks/SelectStocks";
 import SelectStaffsService from "../../../components/Select/SelectStaffsService/SelectStaffsService";
+import { Dropdown } from "react-bootstrap";
 moment.locale("vi");
 
 const StatusArr = [
@@ -30,6 +31,11 @@ const StatusArr = [
   {
     value: "KHACH_KHONG_DEN",
     label: "Khách không đến",
+    color: "#F64E60",
+  },
+  {
+    value: "TU_CHOI",
+    label: "Khách hủy",
     color: "#F64E60",
   },
 ];
@@ -94,7 +100,7 @@ function BookingPage() {
           value: item.ID,
           label: item.FullName,
         })),
-        AtHome: Book.AtHome
+        AtHome: Book.AtHome,
       }));
     } else {
       setInitialValues((prevState) => ({
@@ -111,22 +117,6 @@ function BookingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [Book, BookMember, AuthCrStockID]);
 
-  const loadOptionsStaff = (inputValue, callback, stockID) => {
-    const filters = {
-      key: inputValue,
-      StockID: stockID,
-    };
-    setTimeout(async () => {
-      const { data } = await CalendarCrud.getStaffs(filters);
-      const dataResult = data.map((item) => ({
-        value: item.id,
-        label: item.text,
-        Thumbnail: toUrlServer("/images/user.png"),
-      }));
-      callback(dataResult);
-    }, 300);
-  };
-
   const loadOptionsServices = (inputValue, callback, stockID, MemberID) => {
     const filters = {
       Key: inputValue,
@@ -141,77 +131,6 @@ function BookingPage() {
       }));
       callback(dataResult);
     }, 300);
-  };
-
-  const renderFooterModal = (Status, formikProps) => {
-    const { submitForm, setFieldValue } = formikProps;
-    if (!Status) {
-      return (
-        <Fragment>
-          <button
-            type="submit"
-            className={`btn btn-sm btn-primary mr-2 ${
-              btnLoading.isBtnBooking
-                ? "spinner spinner-white spinner-right"
-                : ""
-            } w-auto my-0 mr-0 h-auto`}
-            disabled={btnLoading.isBtnBooking}
-          >
-            Đặt lịch
-          </button>
-        </Fragment>
-      );
-    }
-    if (Status === "CHUA_XAC_NHAN") {
-      return (
-        <Fragment>
-          <button
-            type="submit"
-            className={`btn btn-sm btn-primary mr-2 ${
-              btnLoading.isBtnBooking
-                ? "spinner spinner-white spinner-right"
-                : ""
-            } w-auto my-0 mr-0 h-auto`}
-            disabled={btnLoading.isBtnBooking}
-            onClick={() => {
-              setFieldValue("Status", "XAC_NHAN", submitForm()); //submitForm()
-            }}
-          >
-            Xác nhận
-          </button>
-        </Fragment>
-      );
-    }
-    if (Status === "XAC_NHAN") {
-      return (
-        <Fragment>
-          <button
-            type="submit"
-            className={`btn btn-sm btn-primary mr-2 ${
-              btnLoading.isBtnBooking
-                ? "spinner spinner-white spinner-right"
-                : ""
-            } w-auto my-0 mr-0 h-auto`}
-            disabled={btnLoading.isBtnBooking}
-          >
-            Lưu
-          </button>
-        </Fragment>
-      );
-    }
-    return (
-      <Fragment>
-        <button
-          type="submit"
-          className={`btn btn-sm btn-primary mr-2 ${
-            btnLoading.isBtnBooking ? "spinner spinner-white spinner-right" : ""
-          } w-auto my-0 mr-0 h-auto`}
-          disabled={btnLoading.isBtnBooking}
-        >
-          Lưu
-        </button>
-      </Fragment>
-    );
   };
 
   const onSubmitBooking = async (values) => {
@@ -236,11 +155,13 @@ function BookingPage() {
         },
       ],
     };
+
     try {
       await CalendarCrud.postBooking(dataPost, {
         CurrentStockID,
         u_id_z4aDf2,
       });
+
       setBtnLoading((prevState) => ({
         ...prevState,
         isBtnBooking: false,
@@ -250,7 +171,71 @@ function BookingPage() {
           name: "s_dat_lich",
           mid: values.MemberID.value,
         });
-      window.top.toastr.success("Đặt lịch thành công.", "", { timeOut: 2000 });
+      window.top.toastr.success(
+        values?.ID ? "Cập nhập thành công." : "Đặt lịch thành công.",
+        "",
+        { timeOut: 2000 }
+      );
+      window?.top?.MemberBookInfo && window.top.MemberBookInfo.callback();
+    } catch (error) {
+      setBtnLoading((prevState) => ({
+        ...prevState,
+        isBtnBooking: false,
+      }));
+    }
+  };
+
+  const onFinish = async (values) => {
+    setBtnLoading((prevState) => ({
+      ...prevState,
+      isBtnBooking: true,
+    }));
+    const CurrentStockID = Cookies.get("StockID");
+    const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
+
+    const dataPost = {
+      booking: [
+        {
+          ...values,
+          MemberID: values.MemberID.value,
+          RootIdS: values.RootIdS.map((item) => item.value).toString(),
+          UserServiceIDs:
+            values.UserServiceIDs && values.UserServiceIDs.length > 0
+              ? values.UserServiceIDs.map((item) => item.value).toString()
+              : "",
+          BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+          Status: "KHACH_DEN"
+        },
+      ],
+    };
+
+    var bodyFormCheckIn = new FormData();
+    bodyFormCheckIn.append("cmd", "checkin");
+    bodyFormCheckIn.append("mid", values.MemberID.value);
+    bodyFormCheckIn.append("desc", "");
+
+    try {
+      await CalendarCrud.postBooking(dataPost, {
+        CurrentStockID,
+        u_id_z4aDf2,
+      });
+      
+      await CalendarCrud.checkinMember(bodyFormCheckIn);
+
+      setBtnLoading((prevState) => ({
+        ...prevState,
+        isBtnBooking: false,
+      }));
+      window.top?.bodyEvent &&
+        window.top?.bodyEvent("ui_changed", {
+          name: "s_dat_lich",
+          mid: values.MemberID.value,
+        });
+      window.top.toastr.success(
+        values?.ID ? "Cập nhập thành công." : "Đặt lịch thành công.",
+        "",
+        { timeOut: 2000 }
+      );
       window?.top?.MemberBookInfo && window.top.MemberBookInfo.callback();
     } catch (error) {
       setBtnLoading((prevState) => ({
@@ -321,6 +306,7 @@ function BookingPage() {
     //   .nullable(),
     StockID: Yup.string().required("Vui lòng chọn cơ sở."),
   });
+
   return (
     <div className="booking">
       <Formik
@@ -518,7 +504,154 @@ function BookingPage() {
                 </div>
               </div>
               <div className="px-6 py-5 border-top booking-footer">
-                {renderFooterModal(initialValues.Status, formikProps)}
+                <div className="flex-1 w-100">
+                  {!values?.ID && (
+                    <div className="d-flex w-100">
+                      <button
+                        type="button"
+                        className="btn btn-sm btn-secondary mr-2"
+                        onClick={() =>
+                          window?.top?.MemberBookInfo &&
+                          window?.top?.MemberBookInfo?.callback()
+                        }
+                      >
+                        Hủy
+                      </button>
+                      <button
+                        type="submit"
+                        className={`btn btn-sm btn-primary flex-1 ${
+                          btnLoading.isBtnBooking
+                            ? "spinner spinner-white spinner-right"
+                            : ""
+                        } w-auto my-0 mr-0 h-auto`}
+                        disabled={btnLoading.isBtnBooking}
+                      >
+                        Đặt lịch ngay
+                      </button>
+                    </div>
+                  )}
+                  {values?.ID && (
+                    <div className="w-100 d-flex">
+                      {initialValues.Status === "CHUA_XAC_NHAN" ? (
+                        <>
+                          <button
+                            type="submit"
+                            className={`btn btn-sm btn-primary mr-2 flex-1 ${
+                              btnLoading.isBtnBooking
+                                ? "spinner spinner-white spinner-right"
+                                : ""
+                            } w-auto my-0 mr-0 h-auto`}
+                            disabled={btnLoading.isBtnBooking}
+                            onClick={() => {
+                              setFieldValue(
+                                "Status",
+                                "XAC_NHAN",
+                                formikProps.submitForm()
+                              ); //submitForm()
+                            }}
+                          >
+                            Xác nhận
+                          </button>
+                          <button
+                            type="button"
+                            className={`btn btn-sm btn-danger ${
+                              btnLoading.isBtnDelete
+                                ? "spinner spinner-white spinner-right"
+                                : ""
+                            } w-auto my-0 mr-0 h-auto`}
+                            disabled={btnLoading.isBtnDelete}
+                            onClick={() => onDelete(values)}
+                          >
+                            Hủy lịch
+                          </button>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            type="submit"
+                            className={`btn btn-sm btn-success mr-2 text-truncate ${
+                              btnLoading.isBtnBooking &&
+                              values.Status !== "KHACH_KHONG_DEN" &&
+                              values.Status !== "TU_CHOI" &&
+                              values.Status !== "KHACH_DEN"
+                                ? "spinner spinner-white spinner-right"
+                                : ""
+                            } w-auto my-0 mr-0 h-auto`}
+                            disabled={
+                              btnLoading.isBtnBooking &&
+                              values.Status !== "KHACH_KHONG_DEN" &&
+                              values.Status !== "TU_CHOI" &&
+                              values.Status !== "KHACH_DEN"
+                            }
+                          >
+                            Cập nhập
+                          </button>
+                          <Dropdown>
+                            <Dropdown.Toggle
+                              className={`btn btn-danger hide-icon-after text-truncate ${((btnLoading.isBtnBooking &&
+                                values.Status === "KHACH_KHONG_DEN") ||
+                                btnLoading.isBtnDelete) &&
+                                "spinner spinner-white spinner-right"}`}
+                              disabled={
+                                (btnLoading.isBtnBooking &&
+                                  values.Status === "KHACH_KHONG_DEN") ||
+                                btnLoading.isBtnDelete
+                              }
+                            >
+                              Hủy
+                              {((btnLoading.isBtnBooking &&
+                                values.Status === "KHACH_KHONG_DEN") ||
+                                btnLoading.isBtnDelete) && (
+                                <div class="spinner-border" role="status"></div>
+                              )}
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu className="w-100" variant="dark">
+                              <Dropdown.Item
+                                href="#"
+                                onClick={() => {
+                                  setFieldValue(
+                                    "Status",
+                                    "KHACH_KHONG_DEN",
+                                    formikProps.submitForm()
+                                  );
+                                }}
+                              >
+                                Khách không đến
+                              </Dropdown.Item>
+                              <Dropdown.Item
+                                className="text-danger"
+                                href="#"
+                                onClick={() => onDelete(values)}
+                              >
+                                Hủy lịch
+                              </Dropdown.Item>
+                            </Dropdown.Menu>
+                          </Dropdown>
+                          <button
+                            type="button"
+                            className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
+                              btnLoading.isBtnBooking &&
+                              values.Status === "KHACH_DEN"
+                                ? "spinner spinner-white spinner-right"
+                                : ""
+                            } w-auto my-0 mr-0 h-auto`}
+                            disabled={
+                              btnLoading.isBtnBooking &&
+                              values.Status === "KHACH_DEN"
+                            }
+                            onClick={() =>
+                              setFieldValue("Status", "KHACH_DEN", onFinish(values))
+                            }
+                          >
+                            Check In
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {/* {renderFooterModal(initialValues.Status, formikProps)}
                 {values.ID && (
                   <button
                     type="button"
@@ -532,7 +665,7 @@ function BookingPage() {
                   >
                     Hủy lịch
                   </button>
-                )}
+                )} */}
               </div>
             </Form>
           );
