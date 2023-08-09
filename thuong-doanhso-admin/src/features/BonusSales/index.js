@@ -6,6 +6,7 @@ import BonusSaleCrud from "./_redux/BonusSaleCrud";
 import BounsSalesIn from "./pages/BounsSalesIn";
 import Equally from "./pages/Equally";
 import AutoBouns from "./pages/AutoBouns";
+import { Dropdown } from "react-bootstrap";
 
 const isVisible = (Type) => {
   return Type.some((item) => item.Visible);
@@ -425,19 +426,20 @@ const BonusSales = () => {
   return (
     <div className="container-fluid p-4">
       {!hideButton && (
-        <div className="mb-3">
+        <div className="mb-3 d-flex">
           {isVisible(Type) && (
             <button
               className="btn btn-secondary me-2 mb-2 mb-sm-0"
               onClick={onToBack}
             >
-              <i className="icon-xs ki ki-bold-arrow-back"></i> Quay lại
+              <i className="icon-xs ki ki-bold-arrow-back"></i>
+              <span className="d-none d-md-inline-block">Quay lại</span>
             </button>
           )}
           {Type.filter((item) => !item.Visible && !item.Hide).map(
             (item, index) => (
               <button
-                className={`${item.className} d-block d-md-inline-block w-100 w-md-auto me-2 mb-2 mb-md-0`}
+                className={`${item.className} d-none d-md-inline-block w-100 w-md-auto me-2 mb-2 mb-md-0`}
                 key={index}
                 onClick={() => handleType(item)}
                 disabled={item.IsActive}
@@ -446,6 +448,30 @@ const BonusSales = () => {
               </button>
             )
           )}
+          <Dropdown
+            className={`d-md-none flex-1 ${
+              isVisible(Type) ? "hidden-arrow" : ""
+            }`}
+          >
+            <Dropdown.Toggle
+              className="w-100 text-truncate"
+              variant="primary"
+              id="dropdown-basic"
+            >
+              {isVisible(Type) ? getNameActive().Title : "Thêm mới"}
+            </Dropdown.Toggle>
+            {!isVisible(Type) && (
+              <Dropdown.Menu>
+                {Type.filter((item) => !item.Visible && !item.Hide).map(
+                  (item, index) => (
+                    <Dropdown.Item key={index} onClick={() => handleType(item)}>
+                      {item.Title}
+                    </Dropdown.Item>
+                  )
+                )}
+              </Dropdown.Menu>
+            )}
+          </Dropdown>
         </div>
       )}
       {!isVisible(Type) && (

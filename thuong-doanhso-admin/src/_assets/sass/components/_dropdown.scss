@@ -2,7 +2,21 @@
     // Dropdown
     //
     // Base
+    .dropdown {
+        &.hidden-arrow {
+            .dropdown-toggle:after {
+                display: none !important;
+            }
+        }
+    }
+    
     .dropdown-menu {
+        box-shadow: 0 0 50px 0 rgba(82, 63, 105, .15);
+        border: 0;
+        .dropdown-item {
+            color: #181c32;
+            padding: 0.75rem 1.25rem;
+        }
         &:before,
         &:after {
             display: none !important;

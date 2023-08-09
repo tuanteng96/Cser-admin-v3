@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { Table } from "react-bootstrap";
+import { OverlayTrigger, Popover, Table } from "react-bootstrap";
 import Select from "react-select";
 import NumberFormat from "react-number-format";
 import { Formik, FieldArray, Form } from "formik";
@@ -120,7 +120,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                         menuPosition="fixed"
                       />
                     </div>
-                    <div className="d-flex mb-3">
+                    <div className="d-flex">
                       <Select
                         classNamePrefix="select"
                         className={`select-control flex-1`}
@@ -210,33 +210,17 @@ function Equally({ OrderInfo, onSubmit, loading }) {
               const { values, handleBlur, setFieldValue } = formikProps;
               return (
                 <Form className="overflow-auto">
-                  <Table bordered responsive>
-                    <thead>
-                      <tr>
-                        <th className="min-w-250px w-20">Sản phẩm</th>
-                        <th className="text-center min-w-250px w-40">
-                          Hoa hồng
-                        </th>
-                        <th
-                          className="text-center w-40"
-                          style={{
-                            minWidth: window.top?.GlobalConfig?.Admin
-                              ?.thuong_ds_theo_loai
-                              ? "450px"
-                              : "250px",
-                          }}
-                        >
-                          Doanh số
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {values.equally.map((item, index) => (
-                        <tr key={index}>
-                          <td className="vertical-align-middle font-weight-boldest">
-                            {item.Product.ProdTitle}
-                          </td>
-                          <td>
+                  <div className="d-md-none">
+                    {values.equally.map((item, index) => (
+                      <div className="border rounded mb-3" key={index}>
+                        <div className="p-3 border-bottom line-height-sm font-weight-boldest w-100 line-height-lg bg-light">
+                          {item.Product.ProdTitle}
+                        </div>
+                        <div className="p-3 border-bottom">
+                          <div className="text-truncate font-weight-boldest w-100 text-muted">
+                            Hoa hồng
+                          </div>
+                          <div>
                             <FieldArray
                               name={`equally[${index}].Hoa_Hong`}
                               render={(arrayHelpers) =>
@@ -275,8 +259,13 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                 ))
                               }
                             />
-                          </td>
-                          <td>
+                          </div>
+                        </div>
+                        <div className="p-3 border-bottom">
+                          <div className="text-truncate font-weight-boldest w-100 text-muted">
+                            Doanh số
+                          </div>
+                          <div>
                             <FieldArray
                               name={`equally[${index}].Doanh_So`}
                               render={(arrayHelpers) =>
@@ -327,11 +316,135 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                 ))
                               }
                             />
-                          </td>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="d-none d-md-block">
+                    <Table bordered responsive>
+                      <thead>
+                        <tr>
+                          <th className="min-w-250px w-20">Sản phẩm</th>
+                          <th className="text-center min-w-250px w-40">
+                            Hoa hồng
+                          </th>
+                          <th
+                            className="text-center w-40"
+                            style={{
+                              minWidth: window.top?.GlobalConfig?.Admin
+                                ?.thuong_ds_theo_loai
+                                ? "450px"
+                                : "250px",
+                            }}
+                          >
+                            Doanh số
+                          </th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </Table>
+                      </thead>
+                      <tbody>
+                        {values.equally.map((item, index) => (
+                          <tr key={index}>
+                            <td className="vertical-align-middle font-weight-boldest">
+                              {item.Product.ProdTitle}
+                            </td>
+                            <td>
+                              <FieldArray
+                                name={`equally[${index}].Hoa_Hong`}
+                                render={(arrayHelpers) =>
+                                  item.Hoa_Hong.map((sub, idx) => (
+                                    <div
+                                      className="d-flex align-items-center my-2"
+                                      key={idx}
+                                    >
+                                      <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                        {sub.Staff.Fn}
+                                      </label>
+                                      <NumberFormat
+                                        allowNegative={false}
+                                        name={`equally[${index}].Hoa_Hong[${idx}].Value`}
+                                        placeholder={"Nhập giá trị"}
+                                        className={`form-control flex-1`}
+                                        isNumericString={true}
+                                        thousandSeparator={true}
+                                        value={sub.Value}
+                                        onValueChange={(val) => {
+                                          setFieldValue(
+                                            `equally[${index}].Hoa_Hong[${idx}].Value`,
+                                            val.floatValue
+                                              ? val.floatValue
+                                              : val.value,
+                                            false
+                                          );
+                                        }}
+                                        onBlur={handleBlur}
+                                        disabled={
+                                          window.top?.GlobalConfig?.Admin
+                                            ?.thuong_ds_nang_cao && UserID !== 1
+                                        }
+                                      />
+                                    </div>
+                                  ))
+                                }
+                              />
+                            </td>
+                            <td>
+                              <FieldArray
+                                name={`equally[${index}].Doanh_So`}
+                                render={(arrayHelpers) =>
+                                  item.Doanh_So.map((sub, idx) => (
+                                    <div
+                                      className="d-flex align-items-center my-2"
+                                      key={idx}
+                                    >
+                                      <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                        {sub.Staff.Fn}
+                                      </label>
+                                      <NumberFormat
+                                        allowNegative={false}
+                                        name={`equally[${index}].Doanh_So[${idx}].Value`}
+                                        placeholder={"Nhập giá trị"}
+                                        className={`form-control flex-1`}
+                                        isNumericString={true}
+                                        thousandSeparator={true}
+                                        value={sub.Value}
+                                        onValueChange={(val) => {
+                                          setFieldValue(
+                                            `equally[${index}].Doanh_So[${idx}].Value`,
+                                            val.floatValue
+                                              ? val.floatValue
+                                              : val.value,
+                                            false
+                                          );
+                                        }}
+                                        onBlur={handleBlur}
+                                        disabled={
+                                          window.top?.GlobalConfig?.Admin
+                                            ?.thuong_ds_nang_cao && UserID !== 1
+                                        }
+                                      />
+                                      <SelectType
+                                        name={`equally[${index}].Doanh_So[${idx}].Type`}
+                                        value={sub.Type}
+                                        placeholder="Chọn loại"
+                                        onChange={(option) => {
+                                          setFieldValue(
+                                            `equally[${index}].Doanh_So[${idx}].Type`,
+                                            option,
+                                            false
+                                          );
+                                        }}
+                                      />
+                                    </div>
+                                  ))
+                                }
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
                   <div>
                     <button
                       className={`btn btn-success ${

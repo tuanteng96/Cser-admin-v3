@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const OrderInfo = window.top.OrderBonus23Info || {
-  OrderID: 43296,
+  OrderID: 43311,
   Order: {
-    Status: "finish",
-    AdminAction: "TANG_DH_KET_THUC_NO",
+    //Status: "finish",
+    //AdminAction: "TANG_DH_KET_THUC_NO",
   },
 };
 const CrStockID = window.top?.Info?.CrStockID || 8975;
