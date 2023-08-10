@@ -77,7 +77,7 @@ function AuthInit({ isConfig, children }) {
           APP: {
             Working: {
               TimeClose: "21:00:00",
-              TimeOpen: "10:00:00",
+              TimeOpen: "8:00:00",
             },
           },
           Admin: {

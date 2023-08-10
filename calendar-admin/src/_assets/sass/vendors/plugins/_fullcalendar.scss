@@ -2,6 +2,10 @@
 // Fullcalendar
 //
 // Base
+.fc .fc-timegrid-slot {
+    height: 40px!important;
+}
+
 @mixin fullcalendar-base() {
     $cell-space-x: 0.5rem;
     $cell-space-y: 0.5rem;
@@ -95,6 +99,123 @@
                             background-color: #fff;
                         }
                     }
+                }
+            }
+        }
+        .fc-resourceTimeGridDay-view {
+            .fc-scrollgrid-section-header {
+                .fc-scroller {
+                    &::-webkit-scrollbar-track {
+                        background-color: #fff;
+                    }
+                    &::-webkit-scrollbar {
+                        background-color: #fff;
+                    }
+                    &::-webkit-scrollbar-thumb {
+                        background-color: #fff;
+                    }
+                }
+            }
+            >table {
+                >tbody {
+                    >tr {
+                        td:first-child {
+                            .fc-scroller-liquid-absolute {
+                                &::-webkit-scrollbar-track {
+                                    border-radius: 10px;
+                                    background-color: #fff;
+                                }
+                                &::-webkit-scrollbar {
+                                    background-color: #fff;
+                                }
+                                &::-webkit-scrollbar-thumb {
+                                    border-radius: 10px;
+                                    background-color: #fff;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .fc-timegrid-axis {
+                &::before {
+                    content: "";
+                    position: absolute;
+                    bottom: -1px;
+                    right: -1px;
+                    background: #dadce0;
+                    width: 1px;
+                    height: 20px;
+                }
+            }
+            .fc-scrollgrid-section-header thead tr>th {
+                border-bottom: 1px solid #dadce0;
+                &::before {
+                    content: "";
+                    position: absolute;
+                    bottom: -1px;
+                    right: -1px;
+                    background: #dadce0;
+                    width: 1px;
+                    height: 20px;
+                }
+            }
+            th {
+                border-color: #fff;
+                position: relative;
+            }
+            >.fc-scrollgrid {
+                border: 0;
+            }
+            .fc-timegrid-axis-chunk .fc-timegrid-slot-minor:first-child {
+                border-top: 0;
+            }
+            .fc-timegrid-axis-chunk>table>tbody>tr:first-child .fc-timegrid-slot-label .gird-time {
+                display: none;
+            }
+            .title-staff {
+                font-size: 13px;
+                color: #222;
+                margin-top: 5px;
+            }
+            .fc-scrollgrid-section-header {
+                >th {
+                    position: relative;
+                    &::before {
+                        content: "";
+                        position: absolute;
+                        bottom: -1px;
+                        right: -1px;
+                        background: #dadce0;
+                        width: 1px;
+                        height: 20px;
+                    }
+                    >.fc-scroller-harness {
+                        height: 100%;
+                        >.fc-scroller {
+                            height: 100%;
+                            border-bottom: 0;
+                            >table {
+                                height: 100%;
+                                .fc-timegrid-axis-frame {
+                                    height: 100% !important;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .fc-timegrid-slot {
+                position: relative;
+                .gird-time {
+                    position: absolute;
+                    left: 0;
+                    top: -8px;
+                    width: calc(100% - 12px);
+                    background: #fff;
+                    padding-right: 8px;
+                    font-weight: 400;
+                    color: #70757a;
                 }
             }
         }
@@ -612,7 +733,6 @@
                 }
                 .fc-icon {
                     font-size: 1.1rem;
-                    
                     &:after {
                         display: none;
                     }

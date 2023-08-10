@@ -5,7 +5,6 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import listPlugin from "@fullcalendar/list";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
-import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import interactionPlugin from "@fullcalendar/interaction";
 import ModalCalendar from "../../../components/ModalCalendar/ModalCalendar";
 import SidebarCalendar from "../../../components/SidebarCalendar/SidebarCalendar";
@@ -15,9 +14,9 @@ import "../../../_assets/sass/pages/_calendar.scss";
 import CalendarCrud from "./_redux/CalendarCrud";
 import { useWindowSize } from "../../../hooks/useWindowSize";
 import _ from "lodash";
-import CalendarStaff from "./CalendarStaff";
 import { AppContext } from "../../App";
 import ModalCalendarLock from "../../../components/ModalCalendarLock/ModalCalendarLock";
+import scrollGridPlugin from "@fullcalendar/scrollgrid";
 
 import moment from "moment";
 import "moment/locale/vi";
@@ -102,9 +101,10 @@ function CalendarPage(props) {
   const [initialValue, setInitialValue] = useState({});
   const [Events, setEvents] = useState([]);
   const [StaffFull, setStaffFull] = useState([]);
-  const [initialView, setInitialView] = useState(window.innerWidth > 767 ? "resourceTimelineDay" : "timeGridDay"); //timeGridWeek
+  const [initialView, setInitialView] = useState(
+    window.innerWidth > 767 ? "resourceTimeGridDay" : "timeGridDay"
+  ); //timeGridWeek
   const [headerTitle, setHeaderTitle] = useState("");
-  const [StaffOffline, setStaffOffline] = useState([]);
   const [isModalLock, setIsModalLock] = useState(false);
   const { width } = useWindowSize();
 
@@ -116,8 +116,6 @@ function CalendarPage(props) {
       TimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
     })
   );
-
-  const [elmHeight, setElmHeight] = useState(0);
   const [ListLock, setListLock] = useState({
     ListLocks: [],
   });
@@ -592,7 +590,22 @@ function CalendarPage(props) {
 
     CalendarCrud.getBooking(newFilters)
       .then((data) => {
-        setStaffOffline(data?.dayOffs ?? []);
+        let dataOffline = [];
+        if (initialView === "resourceTimeGridDay") {
+          dataOffline =
+            data?.dayOffs && data?.dayOffs.length > 0
+              ? data?.dayOffs.map((item) => ({
+                  start: item.From,
+                  end: item.To,
+                  resourceIds: [item.UserID],
+                  display: "background",
+                  extendedProps: {
+                    noEvent: true,
+                  },
+                  className: ["fc-no-event"],
+                }))
+              : [];
+        }
         const dataBooks =
           data.books && Array.isArray(data.books)
             ? data.books
@@ -654,14 +667,13 @@ function CalendarPage(props) {
                     : [0],
               }))
             : [];
-        setEvents([...dataBooks, ...dataBooksAuto]);
+        setEvents([...dataBooks, ...dataBooksAuto, ...dataOffline]);
         setLoading(false);
         isFilter && onHideFilter();
         fn && fn();
       })
       .catch((error) => console.log(error));
   };
-
   const GenerateName = (name) => {
     if (width > 767) {
       return `<span class="text-capitalize">${name}</span>`;
@@ -682,6 +694,15 @@ function CalendarPage(props) {
     }</div>`;
   };
 
+  const getLastFirst = (text) => {
+    if (!text) return;
+    const arrText = text.split(" ");
+    if (arrText.length > 1) {
+      return arrText[0].charAt(0) + arrText[arrText.length - 1].charAt(0);
+    }
+    return arrText[0].charAt(0);
+  };
+
   const onOpenModalLock = () => {
     setIsModalLock(true);
   };
@@ -697,14 +718,9 @@ function CalendarPage(props) {
   //   calendarApi.prev()
   //   calendarApi.changeView("dayGridDay");
   // }
-  //console.log(Events)
 
   return (
-    <div
-      className={`ezs-calendar ${
-        initialView === "resourceTimelineDay" ? "show-calendar-staff" : ""
-      }`}
-    >
+    <div className={`ezs-calendar`}>
       <div className="container-fluid h-100 px-0">
         <div className="d-flex flex-column flex-xl-row h-100">
           <SidebarCalendar
@@ -724,6 +740,7 @@ function CalendarPage(props) {
               "loading"} position-relative`}
           >
             <FullCalendar
+              firstDay={1}
               handleWindowResize={true}
               ref={calendarRef}
               themeSystem="unthemed"
@@ -735,7 +752,6 @@ function CalendarPage(props) {
               editable={false}
               navLinks={true}
               allDaySlot={false}
-              firstDay={1}
               views={{
                 dayGridMonth: {
                   dayMaxEvents: 2,
@@ -825,47 +841,94 @@ function CalendarPage(props) {
                   slotMaxTime: TimeClose,
                 },
                 resourceTimeGridDay: {
+                  dayMinWidth: width > 768 ? 300 : 200,
+                  allDaySlot: false,
                   type: "resourceTimeline",
-                  buttonText: "Nhân viên",
-                  resourceAreaHeaderContent: () => "Nhân viên",
                   nowIndicator: true,
                   now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
                   scrollTime: moment(new Date()).format("HH:mm"),
-                  resourceAreaWidth: "300px",
+                  resourceAreaWidth: width > 768 ? "300px" : "200px",
                   stickyHeaderDates: true,
                   slotMinTime: TimeOpen,
                   slotMaxTime: TimeClose,
-                },
-                resourceTimelineDay: {
-                  type: "resourceTimeline",
                   buttonText: "Nhân viên",
-                  resourceAreaHeaderContent: () =>
-                    width > 1200 ? "Nhân viên" : "N.Viên",
-                  nowIndicator: true,
-                  now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
-                  scrollTime: moment(new Date()).format("HH:mm"),
-                  resourceAreaWidth: width > 767 ? "180px" : "70px",
-                  slotMinWidth: width > 767 ? "60" : "35",
-                  dateClick: ({ date }) => {
-                    if (isTelesales) return;
+                  resourceAreaHeaderContent: () => "Nhân viên",
+                  resourceLabelContent: ({ resource }) => {
+                    return (
+                      <div className="d-flex align-items-center flex-column">
+                        <div
+                          className="p-1 border border-primary"
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            borderRadius: "100%",
+                          }}
+                        >
+                          <div
+                            className="w-100 h-100 d-flex align-items-center justify-content-center text-uppercase text-primary"
+                            style={{
+                              borderRadius: "100%",
+                              background: "#e1f0ff",
+                              fontSize: "13px",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            {getLastFirst(resource._resource.title)}
+                          </div>
+                        </div>
+                        <div className="title-staff">
+                          {resource._resource.title}
+                        </div>
+                      </div>
+                    );
+                  },
+                  slotLabelContent: ({ date, text }) => {
+                    return (
+                      <>
+                        <span className="font-size-min gird-time font-number">
+                          {text} {moment(date).format("A")}
+                        </span>
+                        <span className="font-size-min font-number w-55px d-block"></span>
+                      </>
+                    );
+                  },
+                  dateClick: ({ date, dayEl }) => {
+                    if (isTelesales || dayEl.innerHTML.includes("fc-no-event"))
+                      return;
                     setInitialValue({ ...initialValue, BookDate: date });
                     onOpenModal();
                   },
-                  resourceLabelDidMount: ({ el, fieldValue, ...arg }) => {
-                    el.querySelector(
-                      ".fc-datagrid-cell-main"
-                    ).innerHTML = `${GenerateName(fieldValue)}`;
-                  },
-                  slotLabelDidMount: ({ text, date, el, ...arg }) => {
-                    el.querySelector(
-                      ".fc-timeline-slot-cushion"
-                    ).innerHTML = `<span class="gird-time font-number">
-                        ${text} ${moment(date).format("A")}
-                      </span>`;
-                  },
-                  slotMinTime: TimeOpen,
-                  slotMaxTime: TimeClose,
                 },
+                // resourceTimelineDay: {
+                //   type: "resourceTimeline",
+                //   buttonText: "Nhân viên",
+                //   resourceAreaHeaderContent: () =>
+                //     width > 1200 ? "Nhân viên" : "N.Viên",
+                //   nowIndicator: true,
+                //   now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                //   scrollTime: moment(new Date()).format("HH:mm"),
+                //   resourceAreaWidth: width > 767 ? "180px" : "70px",
+                //   slotMinWidth: width > 767 ? "60" : "35",
+                //   dateClick: ({ date }) => {
+                //     if (isTelesales) return;
+                //     setInitialValue({ ...initialValue, BookDate: date });
+                //     onOpenModal();
+                //   },
+                //   resourceLabelDidMount: ({ el, fieldValue, ...arg }) => {
+                //     el.querySelector(
+                //       ".fc-datagrid-cell-main"
+                //     ).innerHTML = `${GenerateName(fieldValue)}`;
+                //   },
+                //   slotLabelDidMount: ({ text, date, el, ...arg }) => {
+                //     el.querySelector(
+                //       ".fc-timeline-slot-cushion"
+                //     ).innerHTML = `<span class="gird-time font-number">
+                //         ${text} ${moment(date).format("A")}
+                //       </span>`;
+                //   },
+                //   slotMinTime: TimeOpen,
+                //   slotMaxTime: TimeClose,
+                // },
               }}
               plugins={[
                 dayGridPlugin,
@@ -873,7 +936,8 @@ function CalendarPage(props) {
                 timeGridPlugin,
                 listPlugin,
                 resourceTimeGridPlugin,
-                resourceTimelinePlugin,
+                // resourceTimelinePlugin,
+                scrollGridPlugin,
               ]}
               resources={StaffFull}
               events={Events}
@@ -881,7 +945,7 @@ function CalendarPage(props) {
                 left: "prev,next today",
                 center: "title",
                 right:
-                  "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimelineDay", //resourceTimeGridDay
+                  "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay", //resourceTimeGridDay
               }}
               selectable={true}
               selectMirror={true}
@@ -917,47 +981,48 @@ function CalendarPage(props) {
                   if (view.type !== "listWeek") {
                     italicEl.innerHTML = `<div class="fc-title">
                     <div class="d-flex justify-content-between"><div><span class="fullname">${
-                      extendedProps.AtHome
+                      extendedProps?.AtHome
                         ? `<i class="fas fa-home text-white font-size-xs"></i>`
                         : ""
-                    } ${extendedProps.Star ? `(${extendedProps.Star})` : ""} ${
-                      extendedProps.MemberCurrent.FullName
+                    } ${extendedProps?.Star ? `(${extendedProps.Star})` : ""} ${
+                      extendedProps?.MemberCurrent?.FullName
                     }</span><span class="d-none d-md-inline"> - ${
-                      extendedProps.MemberCurrent?.MobilePhone
-                    }</span></div><span class="${!extendedProps.isBook &&
+                      extendedProps?.MemberCurrent?.MobilePhone
+                    }</span></div><span class="${!extendedProps?.isBook &&
                       "d-none"}">${extendedProps?.BookCount?.Done ||
                       0}/${extendedProps?.BookCount?.Total || 0}</span></div>
                     <div class="d-flex">
                       <div class="w-35px">${moment(
-                        extendedProps.BookDate
+                        extendedProps?.BookDate
                       ).format("HH:mm")} </div>
                       <div class="flex-1 text-truncate pl-5px"> - ${
-                        extendedProps.RootTitles
-                          ? extendedProps.RootMinutes ??
+                        extendedProps?.RootTitles
+                          ? extendedProps?.RootMinutes ??
                             extendedProps?.os?.RootMinutes ??
                             60
                           : 30
-                      }p - ${extendedProps.RootTitles || "Không xác định"}</div>
+                      }p - ${extendedProps?.RootTitles ||
+                      "Không xác định"}</div>
                     </div>
                   </div>`;
                   } else {
                     italicEl.innerHTML = `<div class="fc-title">
                     <div><span class="fullname">${
-                      extendedProps.AtHome
+                      extendedProps?.AtHome
                         ? `<i class="fas fa-home font-size-xs"></i>`
                         : ""
-                    } ${extendedProps.Star ? `(${extendedProps.Star})` : ""} ${
-                      extendedProps.MemberCurrent.FullName
+                    } ${extendedProps?.Star ? `(${extendedProps.Star})` : ""} ${
+                      extendedProps?.MemberCurrent.FullName
                     }</span><span class="d-none d-md-inline"> - ${
-                      extendedProps.MemberCurrent?.MobilePhone
+                      extendedProps?.MemberCurrent?.MobilePhone
                     }</span><span> - ${
-                      extendedProps.RootTitles
-                        ? extendedProps.RootMinutes ??
+                      extendedProps?.RootTitles
+                        ? extendedProps?.RootMinutes ??
                           extendedProps?.os?.RootMinutes ??
                           60
                         : 30
-                    }p - ${extendedProps.RootTitles ||
-                      "Không xác định"}</span> <span class="${!extendedProps.isBook &&
+                    }p - ${extendedProps?.RootTitles ||
+                      "Không xác định"}</span> <span class="${!extendedProps?.isBook &&
                       "d-none"}">- ${extendedProps?.BookCount?.Done ||
                       0}/${extendedProps?.BookCount?.Total || 0}</span></div>
                   </div>`;
@@ -1026,15 +1091,9 @@ function CalendarPage(props) {
                   newFilters.From = moment(start).format("YYYY-MM-DD");
                   newFilters.To = moment(start).format("YYYY-MM-DD");
                 }
-                if (view.type === "resourceTimelineDay") {
+                if (view.type === "resourceTimeGridDay") {
                   newFilters.From = moment(start).format("YYYY-MM-DD");
                   newFilters.To = moment(start).format("YYYY-MM-DD");
-                }
-                if (view.type === "resourceTimelineDay") {
-                  setElmHeight(calendarElm[0].offsetHeight);
-                  calendarElm[0].style.display = "none";
-                } else {
-                  calendarElm[0].style.display = "block";
                 }
                 setInitialView(view.type);
                 setFilters(newFilters);
@@ -1046,7 +1105,7 @@ function CalendarPage(props) {
                 }
               }}
             />
-            {initialView === "resourceTimelineDay" && (
+            {/* {initialView === "resourceTimelineDay" && (
               <CalendarStaff
                 initialView={initialView}
                 filters={filters}
@@ -1074,7 +1133,7 @@ function CalendarPage(props) {
                   onOpenModal();
                 }}
               />
-            )}
+            )} */}
           </div>
         </div>
       </div>
