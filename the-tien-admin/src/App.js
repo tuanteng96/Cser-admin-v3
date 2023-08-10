@@ -33,25 +33,38 @@ function App() {
         </div>
       )}
       {!loading && (
-        <React.Fragment>
+        <>
           {ListMoneyCard && ListMoneyCard.length > 0 ? (
-            <React.Fragment>
-              <div className="list-moneycard">
-                <div className="table-responsive table-responsive-attr">
-                  <table className="table table-bordered">
+            <>
+              <div className="p-3 hidden md:block">
+                <div className="relative overflow-x-auto">
+                  <table className="w-full border rounded text-sm">
                     <thead>
                       <tr>
-                        <th scope="col">STT</th>
-                        <th scope="col">Tên thẻ tiền</th>
-                        <th scope="col">Giá trị</th>
-                        <th scope="col">Giá trị chi tiêu</th>
-                        <th scope="col">Còn lại</th>
+                        <th
+                          className="px-4 py-3 border min-w-[230px] text-left"
+                          scope="col"
+                        >
+                          Tên thẻ tiền
+                        </th>
+                        {/* <th className="px-4 py-3 border min-w-[230px] max-w-[230px]" scope="col">Giá trị</th> */}
+                        {/* <th className="px-4 py-3 border min-w-[230px] max-w-[230px]" scope="col">Giá trị chi tiêu</th> */}
+                        <th
+                          className="px-4 py-3 border min-w-[230px] text-left"
+                          scope="col"
+                        >
+                          Giá trị còn lại
+                        </th>
                         {window.top?.GlobalConfig?.Admin?.the_tien_nang_cao ? (
                           window.top?.Info?.User?.ID === 1 && (
-                            <th className="text-center">#</th>
+                            <th className="text-center px-4 py-3 border min-w-[160px] max-w-[160px] w-[160px]">
+                              #
+                            </th>
                           )
                         ) : (
-                          <th className="text-center">#</th>
+                          <th className="text-center px-4 py-3 border min-w-[170px] max-w-[170px] w-[170px]">
+                            #
+                          </th>
                         )}
                       </tr>
                     </thead>
@@ -68,13 +81,23 @@ function App() {
                   </table>
                 </div>
               </div>
-            </React.Fragment>
+              <div className="md:hidden p-3">
+                {ListMoneyCard.map((item, index) => (
+                  <ItemCard
+                    item={item}
+                    key={index}
+                    index={index}
+                    getMoneyCard={getMoneyCard}
+                  />
+                ))}
+              </div>
+            </>
           ) : (
             <div className="p-15px m-h-100 d-flex align-items-center justify-content-center">
               Chưa có thẻ tiền
             </div>
           )}
-        </React.Fragment>
+        </>
       )}
     </div>
   );
