@@ -62,7 +62,7 @@ function CheckInFilter({ onSubmit, initialValues }) {
                       value: 1,
                     },
                     {
-                      label: "CheckOut chưa hoàn thành",
+                      label: "Chưa hoàn thành",
                       value: 2,
                     },
                   ]}

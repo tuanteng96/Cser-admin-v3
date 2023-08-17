@@ -71,7 +71,7 @@ function CheckInPage(props) {
       <div className="shadow">
         <div className="d-flex justify-content-between align-items-center border-bottom px-15px checkin-head">
           <div className="checkin-title">
-            Khách đang Check In
+            Hóa đơn đang xử lý
           </div>
           <div
             className="cursor-pointer w-30px text-center"
