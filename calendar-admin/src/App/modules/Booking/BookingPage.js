@@ -204,7 +204,7 @@ function BookingPage() {
               ? values.UserServiceIDs.map((item) => item.value).toString()
               : "",
           BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-          Status: "KHACH_DEN"
+          Status: "KHACH_DEN",
         },
       ],
     };
@@ -219,7 +219,7 @@ function BookingPage() {
         CurrentStockID,
         u_id_z4aDf2,
       });
-      
+
       await CalendarCrud.checkinMember(bodyFormCheckIn);
 
       setBtnLoading((prevState) => ({
@@ -599,6 +599,7 @@ function BookingPage() {
                               }
                             >
                               Hủy
+                              <i className="fa-sharp fa-light fa-angle-down ml-1" style={{fontSize: '14px'}}></i>
                               {((btnLoading.isBtnBooking &&
                                 values.Status === "KHACH_KHONG_DEN") ||
                                 btnLoading.isBtnDelete) && (
@@ -641,10 +642,16 @@ function BookingPage() {
                               values.Status === "KHACH_DEN"
                             }
                             onClick={() =>
-                              setFieldValue("Status", "KHACH_DEN", onFinish(values))
+                              setFieldValue(
+                                "Status",
+                                "KHACH_DEN",
+                                onFinish(values)
+                              )
                             }
                           >
-                            Check In
+                            {Book.ID && Book.AtHome
+                              ? "Hoàn thành"
+                              : "Khách đến"}
                           </button>
                         </>
                       )}

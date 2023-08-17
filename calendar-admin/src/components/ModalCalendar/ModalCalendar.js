@@ -690,7 +690,9 @@ function ModalCalendar({
                                 }
                                 onClick={() => onFinish(values)}
                               >
-                                Check In
+                                {initialValue?.ID && initialValue?.AtHome
+                                  ? "Hoàn thành"
+                                  : "Check In"}
                               </button>
                             </>
                           )}
@@ -712,7 +714,6 @@ function ModalCalendar({
                         </button>
                       )}
                   </div>
-                  
                 </Modal.Footer>
                 <ModalCreateMember
                   show={isModalCreate}
