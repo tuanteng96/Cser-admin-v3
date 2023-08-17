@@ -569,7 +569,7 @@ function BookingPage() {
                         <>
                           <button
                             type="submit"
-                            className={`btn btn-sm btn-success mr-2 text-truncate ${
+                            className={`btn btn-sm btn-success text-truncate flex-1 ${
                               btnLoading.isBtnBooking &&
                               values.Status !== "KHACH_KHONG_DEN" &&
                               values.Status !== "TU_CHOI" &&
@@ -586,73 +586,83 @@ function BookingPage() {
                           >
                             Cập nhập
                           </button>
-                          <Dropdown>
-                            <Dropdown.Toggle
-                              className={`btn btn-danger hide-icon-after text-truncate ${((btnLoading.isBtnBooking &&
-                                values.Status === "KHACH_KHONG_DEN") ||
-                                btnLoading.isBtnDelete) &&
-                                "spinner spinner-white spinner-right"}`}
-                              disabled={
-                                (btnLoading.isBtnBooking &&
-                                  values.Status === "KHACH_KHONG_DEN") ||
-                                btnLoading.isBtnDelete
-                              }
-                            >
-                              Hủy
-                              <i className="fa-sharp fa-light fa-angle-down ml-1" style={{fontSize: '14px'}}></i>
-                              {((btnLoading.isBtnBooking &&
-                                values.Status === "KHACH_KHONG_DEN") ||
-                                btnLoading.isBtnDelete) && (
-                                <div class="spinner-border" role="status"></div>
-                              )}
-                            </Dropdown.Toggle>
+                          {initialValues.Status !== "KHACH_DEN" && (
+                            <>
+                              <Dropdown>
+                                <Dropdown.Toggle
+                                  className={`btn btn-danger hide-icon-after text-truncate ml-2 ${((btnLoading.isBtnBooking &&
+                                    values.Status === "KHACH_KHONG_DEN") ||
+                                    btnLoading.isBtnDelete) &&
+                                    "spinner spinner-white spinner-right"}`}
+                                  disabled={
+                                    (btnLoading.isBtnBooking &&
+                                      values.Status === "KHACH_KHONG_DEN") ||
+                                    btnLoading.isBtnDelete
+                                  }
+                                >
+                                  Hủy
+                                  <i
+                                    className="fa-sharp fa-light fa-angle-down ml-1"
+                                    style={{ fontSize: "14px" }}
+                                  ></i>
+                                  {((btnLoading.isBtnBooking &&
+                                    values.Status === "KHACH_KHONG_DEN") ||
+                                    btnLoading.isBtnDelete) && (
+                                    <div
+                                      class="spinner-border"
+                                      role="status"
+                                    ></div>
+                                  )}
+                                </Dropdown.Toggle>
 
-                            <Dropdown.Menu className="w-100" variant="dark">
-                              <Dropdown.Item
-                                href="#"
-                                onClick={() => {
+                                <Dropdown.Menu className="w-100" variant="dark">
+                                  <Dropdown.Item
+                                    href="#"
+                                    onClick={() => {
+                                      setFieldValue(
+                                        "Status",
+                                        "KHACH_KHONG_DEN",
+                                        formikProps.submitForm()
+                                      );
+                                    }}
+                                  >
+                                    Khách không đến
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    className="text-danger"
+                                    href="#"
+                                    onClick={() => onDelete(values)}
+                                  >
+                                    Hủy lịch
+                                  </Dropdown.Item>
+                                </Dropdown.Menu>
+                              </Dropdown>
+                              <button
+                                type="button"
+                                className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
+                                  btnLoading.isBtnBooking &&
+                                  values.Status === "KHACH_DEN"
+                                    ? "spinner spinner-white spinner-right"
+                                    : ""
+                                } w-auto my-0 mr-0 h-auto`}
+                                disabled={
+                                  btnLoading.isBtnBooking &&
+                                  values.Status === "KHACH_DEN"
+                                }
+                                onClick={() =>
                                   setFieldValue(
                                     "Status",
-                                    "KHACH_KHONG_DEN",
-                                    formikProps.submitForm()
-                                  );
-                                }}
+                                    "KHACH_DEN",
+                                    onFinish(values)
+                                  )
+                                }
                               >
-                                Khách không đến
-                              </Dropdown.Item>
-                              <Dropdown.Item
-                                className="text-danger"
-                                href="#"
-                                onClick={() => onDelete(values)}
-                              >
-                                Hủy lịch
-                              </Dropdown.Item>
-                            </Dropdown.Menu>
-                          </Dropdown>
-                          <button
-                            type="button"
-                            className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
-                              btnLoading.isBtnBooking &&
-                              values.Status === "KHACH_DEN"
-                                ? "spinner spinner-white spinner-right"
-                                : ""
-                            } w-auto my-0 mr-0 h-auto`}
-                            disabled={
-                              btnLoading.isBtnBooking &&
-                              values.Status === "KHACH_DEN"
-                            }
-                            onClick={() =>
-                              setFieldValue(
-                                "Status",
-                                "KHACH_DEN",
-                                onFinish(values)
-                              )
-                            }
-                          >
-                            {Book.ID && Book.AtHome
-                              ? "Hoàn thành"
-                              : "Khách đến"}
-                          </button>
+                                {Book.ID && Book.AtHome
+                                  ? "Hoàn thành"
+                                  : "Khách đến"}
+                              </button>
+                            </>
+                          )}
                         </>
                       )}
                     </div>
