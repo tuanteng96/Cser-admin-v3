@@ -223,6 +223,14 @@ function ModalCalendar({
           >
             Hoàn thành
           </Dropdown.Item>
+          <Dropdown.Item
+            className="font-weight-bold"
+            eventKey="4"
+            active={Status === "TU_CHOI"}
+            onClick={() => setFieldValue("Status", "TU_CHOI", false)}
+          >
+            Hủy lịch
+          </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
     );
