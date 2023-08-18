@@ -331,7 +331,7 @@ export default function ItemCard({ item, getMoneyCard, index }) {
     <>
       <tr className="border-b">
         <td className="px-4 py-3 border" data-title="Tên thẻ tiền">
-          <div>
+          <div className="flex flex-wrap items-center">
             <span className="font-medium text-xs bg-success-light !text-success text-mini py-px px-1.5 !rounded font-medium inline-block mr-1.5">
               #{item.id}
             </span>

@@ -187,7 +187,7 @@ function ModalCalendar({
         <Dropdown.Toggle
           className={`bg-transparent p-0 border-0 modal-dropdown-title ${
             Status === "XAC_NHAN" ? "text-primary" : ""
-          } ${Status === "KHACH_KHONG_DEN" ? "text-danger" : ""} ${
+          } ${(Status === "KHACH_KHONG_DEN" || Status === "TU_CHOI") ? "text-danger" : ""} ${
             Status === "KHACH_DEN" ? "text-success" : ""
           }`}
           id="dropdown-custom-1"
@@ -196,6 +196,7 @@ function ModalCalendar({
             {Status === "XAC_NHAN" ? "Đã xác nhận" : ""}
             {Status === "KHACH_KHONG_DEN" ? "Khách hàng không đến" : ""}
             {Status === "KHACH_DEN" ? "Hoàn thành" : ""}
+            {Status === "TU_CHOI" ? "Hủy lịch" : ""}
           </span>
         </Dropdown.Toggle>
         <Dropdown.Menu className="super-colors">
