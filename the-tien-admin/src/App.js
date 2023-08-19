@@ -93,7 +93,7 @@ function App() {
               </div>
             </>
           ) : (
-            <div className="p-15px m-h-100 d-flex align-items-center justify-content-center">
+            <div className="p-15px m-h-100 d-flex align-items-center justify-content-center texts-m">
               Chưa có thẻ tiền
             </div>
           )}
