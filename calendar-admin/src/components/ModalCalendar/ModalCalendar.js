@@ -187,9 +187,11 @@ function ModalCalendar({
         <Dropdown.Toggle
           className={`bg-transparent p-0 border-0 modal-dropdown-title ${
             Status === "XAC_NHAN" ? "text-primary" : ""
-          } ${(Status === "KHACH_KHONG_DEN" || Status === "TU_CHOI") ? "text-danger" : ""} ${
-            Status === "KHACH_DEN" ? "text-success" : ""
-          }`}
+          } ${
+            Status === "KHACH_KHONG_DEN" || Status === "TU_CHOI"
+              ? "text-danger"
+              : ""
+          } ${Status === "KHACH_DEN" ? "text-success" : ""}`}
           id="dropdown-custom-1"
         >
           <span>
@@ -541,6 +543,11 @@ function ModalCalendar({
                             <span className="font-weight-bolder">
                               Đặt lịch Online
                             </span>
+                          )}
+                        </div>
+                        <div className="font-size-xs">
+                          {moment(initialValue.CreateDate).format(
+                            "HH:mm DD/MM/YYYY"
                           )}
                         </div>
                       </div>
