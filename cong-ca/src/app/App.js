@@ -11,6 +11,7 @@ import AuthenticateGuard from 'src/guards/AuthenticateGuard'
 import Authentication from 'src/features/Authentication'
 import UnauthenticateGuard from 'src/guards/UnauthenticateGuard'
 import ScrollToTop from 'src/layout/_core/ScrollToTop'
+import ShiftWorks from 'src/features/Home/pages/ShiftWorks'
 
 function App({ store }) {
   return (
@@ -29,6 +30,7 @@ function App({ store }) {
               <Route index element={<Navigate to="bang-cham-cong" />} />
               <Route path="bang-cham-cong" element={<Timekeeping />}>
                 <Route index element={<TimekeepingHome />} />
+                <Route path="ca-lam-viec" element={<ShiftWorks />}></Route>
                 <Route path=":id" element={<TimekeepingMember />}></Route>
               </Route>
               <Route

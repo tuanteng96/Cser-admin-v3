@@ -4,7 +4,7 @@ import 'src/_assets/sass/pages/_home.scss'
 
 export default function Home() {
   return (
-    <div className="h-100 p-15px">
+    <div className="h-100">
       <Outlet />
     </div>
   )

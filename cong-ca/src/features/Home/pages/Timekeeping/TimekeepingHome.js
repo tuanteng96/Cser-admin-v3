@@ -212,7 +212,7 @@ function TimekeepingHome(props) {
                     />
                     <i className="fa-regular fa-magnifying-glass position-absolute w-30px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
                   </div>
-                  <div className="w-250px mx-15px">
+                  <div className="w-225px mx-15px">
                     <Select
                       options={StocksList}
                       className="select-control select-control-solid"
@@ -227,7 +227,7 @@ function TimekeepingHome(props) {
                       }
                     />
                   </div>
-                  <div className="position-relative">
+                  <div className="position-relative w-140px">
                     <DatePicker
                       selected={CrDate}
                       onChange={date => setCrDate(date)}
@@ -240,7 +240,7 @@ function TimekeepingHome(props) {
                   <div className="h-40px w-1px border-right mx-15px"></div>
                   <NavLink
                     to="ca-lam-viec"
-                    className="btn btn-light border fw-600 mr-10px"
+                    className="btn btn-light border fw-500 mr-10px"
                   >
                     <i className="fa-regular fa-gear mr-8px"></i>
                     Ca làm việc
@@ -263,7 +263,7 @@ function TimekeepingHome(props) {
                           <div className="timekeeping-item" key={index}>
                             <div className="timekeeping-col col-name">
                               <NavLink
-                                to={`/bang-cham-cong/${index}`}
+                                to={`/bang-cham-cong/${item.UserID}`}
                                 className="fw-700 text-truncate text-name text-decoration-none text-black font-size-15px text-capitalize"
                               >
                                 {item.FullName}
