@@ -240,125 +240,133 @@ function Worksheet(props) {
   }
 
   return (
-    <div className="card h-100 card-timesheets">
-      <div className="card-header p-20px">
-        <Dropdown className="d-inline mx-0 mx-md-2">
-          <Dropdown.Toggle className="btn-none">
-            <h3 className="text-uppercase">
-              {filters.StockID?.Title}
-              <i className="fa-regular fa-chevron-down pl-3px"></i>
-            </h3>
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            {StocksList &&
-              StocksList.map((o, index) => (
-                <Dropdown.Item
-                  href="#"
-                  key={index}
-                  active={o.ID === filters.StockID.ID}
-                  onClick={() =>
-                    setFilters(prevState => ({
-                      ...prevState,
-                      StockID: o
-                    }))
-                  }
-                >
-                  {o.Title}
-                </Dropdown.Item>
-              ))}
-          </Dropdown.Menu>
-        </Dropdown>
-        <div className="d-flex align-items-center justify-content-center">
-          <Navbar />
+    <>
+      <div className="card h-100 card-timesheets">
+        <div className="card-header p-20px">
+          <Dropdown className="d-inline mx-0 mx-md-2">
+            <Dropdown.Toggle className="btn-none">
+              <h3 className="text-uppercase">
+                {filters.StockID?.Title}
+                <i className="fa-regular fa-chevron-down pl-3px"></i>
+              </h3>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              {StocksList &&
+                StocksList.map((o, index) => (
+                  <Dropdown.Item
+                    href="#"
+                    key={index}
+                    active={o.ID === filters.StockID.ID}
+                    onClick={() =>
+                      setFilters(prevState => ({
+                        ...prevState,
+                        StockID: o
+                      }))
+                    }
+                  >
+                    {o.Title}
+                  </Dropdown.Item>
+                ))}
+            </Dropdown.Menu>
+          </Dropdown>
+          <div className="d-flex align-items-center justify-content-center">
+            <Navbar />
+          </div>
         </div>
-      </div>
-      <div className="card-body p-20px">
-        <div className="d-flex flex-column flex-md-row justify-content-between">
-          <div className="d-flex mb-md-0 mb-12px">
-            <div className="mr-8px position-relative date-range flex-1">
-              <DatePicker
-                selected={CrDate}
-                onChange={date => setCrDate(date)}
-                className="form-control w-100 w-md-200px w-lg-250px"
-                dateFormat={'dd/MM/yyyy'}
-              />
-              <div className="date-current fw-500">
-                {filters.From} - {filters.To}
+        <div className="card-body p-20px">
+          <div className="d-flex flex-column flex-md-row justify-content-between">
+            <div className="d-flex mb-md-0 mb-12px">
+              <div className="mr-8px position-relative date-range flex-1">
+                <DatePicker
+                  selected={CrDate}
+                  onChange={date => setCrDate(date)}
+                  className="form-control w-100 w-md-200px w-lg-250px"
+                  dateFormat={'dd/MM/yyyy'}
+                />
+                <div className="date-current fw-500">
+                  {filters.From} - {filters.To}
+                </div>
+                <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
               </div>
-              <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+              <button
+                className="btn btn-light w-35px border"
+                onClick={() =>
+                  setCrDate(moment(CrDate).subtract(1, 'weeks').toDate())
+                }
+                disabled={loading}
+              >
+                <i className="fa-regular fa-angle-left text-muted"></i>
+              </button>
+              <button
+                className="btn btn-light ml-5px w-35px border"
+                onClick={() =>
+                  setCrDate(moment(CrDate).add(1, 'weeks').toDate())
+                }
+                disabled={loading}
+              >
+                <i className="fa-regular fa-angle-right text-muted"></i>
+              </button>
             </div>
-            <button
-              className="btn btn-light w-35px border"
-              onClick={() =>
-                setCrDate(moment(CrDate).subtract(1, 'weeks').toDate())
-              }
-              disabled={loading}
-            >
-              <i className="fa-regular fa-angle-left text-muted"></i>
-            </button>
-            <button
-              className="btn btn-light ml-5px w-35px border"
-              onClick={() => setCrDate(moment(CrDate).add(1, 'weeks').toDate())}
-              disabled={loading}
-            >
-              <i className="fa-regular fa-angle-right text-muted"></i>
-            </button>
-          </div>
-          <div className="d-flex">
-            <button
-              className="btn btn-light-danger fw-600 mr-8px w-120px"
-              onClick={() => onOpenModalHoliday()}
-            >
-              Tạo ngày nghỉ
-            </button>
-            <div className="position-relative flex-1">
-              <input
-                className="form-control w-100 w-lg-300px"
-                type="text"
-                placeholder="Nhập tên nhân viên"
-                onChange={evt => {
-                  setLoading(true)
-                  if (typingTimeoutRef.current) {
-                    clearTimeout(typingTimeoutRef.current)
-                  }
-                  typingTimeoutRef.current = setTimeout(() => {
-                    setFilters(prevState => ({
-                      ...prevState,
-                      Key: evt.target.value
-                    }))
-                  }, 800)
-                }}
-              />
-              <i className="fa-regular fa-magnifying-glass position-absolute w-30px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+            <div className="d-flex">
+              <button className="btn btn-light border fw-600 mr-10px">
+                <i className="fa-regular fa-gear mr-8px"></i>
+                Ca làm việc
+              </button>
+              <button
+                className="btn btn-light-danger fw-600 mr-8px w-120px"
+                onClick={() => onOpenModalHoliday()}
+              >
+                Tạo ngày nghỉ
+              </button>
+              <div className="position-relative flex-1">
+                <input
+                  className="form-control w-100 w-lg-300px"
+                  type="text"
+                  placeholder="Nhập tên nhân viên"
+                  onChange={evt => {
+                    setLoading(true)
+                    if (typingTimeoutRef.current) {
+                      clearTimeout(typingTimeoutRef.current)
+                    }
+                    typingTimeoutRef.current = setTimeout(() => {
+                      setFilters(prevState => ({
+                        ...prevState,
+                        Key: evt.target.value
+                      }))
+                    }, 800)
+                  }}
+                />
+                <i className="fa-regular fa-magnifying-glass position-absolute w-30px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+              </div>
             </div>
           </div>
+          <CalendarFull
+            data={List}
+            loading={loading}
+            CrDate={CrDate}
+            onOpenModalKeep={onOpenModalKeep}
+            onOpenModalHoliday={onOpenModalHoliday}
+          />
         </div>
-        <CalendarFull
-          data={List}
-          loading={loading}
-          CrDate={CrDate}
-          onOpenModalKeep={onOpenModalKeep}
-          onOpenModalHoliday={onOpenModalHoliday}
+        <ModalHolidaySchedule
+          show={ModalHoliday.show}
+          onHide={onHideModalHoliday}
+          onSubmit={onSubmitHoliday}
+          onDelete={onDeleteHoliday}
+          loading={ModalHoliday.loading}
+          initialModal={ModalHoliday.initialValues}
+        />
+        <ModalTimeKeeping
+          show={ModalKeep.show}
+          initialModal={ModalKeep.initialValues}
+          onHide={onHideModalKeep}
+          onSubmit={onSubmitKeep}
+          onDelete={onDeleteKeep}
+          loading={ModalKeep.loading}
+          loadingDelete={ModalKeep.delete}
         />
       </div>
-      <ModalHolidaySchedule
-        show={ModalHoliday.show}
-        onHide={onHideModalHoliday}
-        onSubmit={onSubmitHoliday}
-        onDelete={onDeleteHoliday}
-        loading={ModalHoliday.loading}
-        initialModal={ModalHoliday.initialValues}
-      />
-      <ModalTimeKeeping
-        show={ModalKeep.show}
-        initialModal={ModalKeep.initialValues}
-        onHide={onHideModalKeep}
-        onSubmit={onSubmitKeep}
-        onDelete={onDeleteKeep}
-        loading={ModalKeep.loading}
-        loadingDelete={ModalKeep.delete}
-      />
-    </div>
+    </>
   )
 }
 

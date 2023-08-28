@@ -8,25 +8,17 @@ function Navbar(props) {
         className={({ isActive }) =>
           `btn mr-8px fw-600 ${isActive ? 'btn-primary' : 'btn-light-primary'}`
         }
-        to="/"
+        to="/bang-cham-cong"
       >
-        Công ca
+        Bảng chấm công
       </NavLink>
-      {/* <NavLink
-        className={({ isActive }) =>
-          `btn mr-8px fw-600 ${isActive ? 'btn-primary' : 'btn-light-primary'}`
-        }
-        to="/cham-cong"
-      >
-        Chấm công
-      </NavLink> */}
       <NavLink
         className={({ isActive }) =>
           `btn fw-600 ${isActive ? 'btn-primary' : 'btn-light-primary'}`
         }
-        to="/duyet-luong"
+        to="/duyet-cham-cong"
       >
-        Duyệt lương
+        Duyệt chấm công
       </NavLink>
     </Fragment>
   )

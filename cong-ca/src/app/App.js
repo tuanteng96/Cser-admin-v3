@@ -26,12 +26,15 @@ function App({ store }) {
                 </UnauthenticateGuard>
               }
             >
-              <Route index element={<Worksheet />} />
-              <Route path="cham-cong" element={<Timekeeping />}>
+              <Route index element={<Navigate to="bang-cham-cong" />} />
+              <Route path="bang-cham-cong" element={<Timekeeping />}>
                 <Route index element={<TimekeepingHome />} />
                 <Route path=":id" element={<TimekeepingMember />}></Route>
               </Route>
-              <Route path="duyet-luong" element={<SalaryApproval />}></Route>
+              <Route
+                path="duyet-cham-cong"
+                element={<SalaryApproval />}
+              ></Route>
             </Route>
             <Route
               path="/yeu-cau-quyen-truy-cap"

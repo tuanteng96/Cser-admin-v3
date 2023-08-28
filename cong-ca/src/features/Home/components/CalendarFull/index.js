@@ -188,7 +188,7 @@ function CalendarFull({
                 data.map((member, index) => (
                   <div className="cld-row" key={index}>
                     <NavLink
-                      to={`/cham-cong/${member.UserID}`}
+                      to={`/bang-cham-cong/${member.UserID}`}
                       className="fw-700 text-name text-decoration-none text-black name text-capitalize w-100"
                     >
                       <div className="text-truncate">{member.FullName}</div>

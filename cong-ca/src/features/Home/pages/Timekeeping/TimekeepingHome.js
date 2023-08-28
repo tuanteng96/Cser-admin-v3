@@ -238,6 +238,13 @@ function TimekeepingHome(props) {
                     <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
                   </div>
                   <div className="h-40px w-1px border-right mx-15px"></div>
+                  <NavLink
+                    to="ca-lam-viec"
+                    className="btn btn-light border fw-600 mr-10px"
+                  >
+                    <i className="fa-regular fa-gear mr-8px"></i>
+                    Ca làm việc
+                  </NavLink>
                   <Navbar />
                 </div>
               </div>
@@ -256,7 +263,7 @@ function TimekeepingHome(props) {
                           <div className="timekeeping-item" key={index}>
                             <div className="timekeeping-col col-name">
                               <NavLink
-                                to={`/cham-cong/${index}`}
+                                to={`/bang-cham-cong/${index}`}
                                 className="fw-700 text-truncate text-name text-decoration-none text-black font-size-15px text-capitalize"
                               >
                                 {item.FullName}
