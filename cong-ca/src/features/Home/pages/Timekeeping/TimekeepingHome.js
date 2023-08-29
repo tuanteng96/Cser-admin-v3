@@ -13,6 +13,7 @@ import { TimePicker } from 'antd'
 
 import moment from 'moment'
 import 'moment/locale/vi'
+import { useMutation, useQuery } from 'react-query'
 
 moment.locale('vi')
 
@@ -23,7 +24,6 @@ function TimekeepingHome(props) {
   }))
   const [StocksList, setStocksList] = useState([])
   const [CrDate, setCrDate] = useState(new Date())
-  const [loading, setLoading] = useState(false)
   const [filters, setFilters] = useState({
     From: '',
     To: '',
@@ -66,74 +66,70 @@ function TimekeepingHome(props) {
     }))
   }, [CrDate])
 
-  useEffect(() => {
-    getListWorkSheet()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters])
+  const { isLoading, refetch } = useQuery({
+    queryKey: ['ListWorkSheet', filters],
+    queryFn: async () => {
+      const newObj = {
+        ...filters,
+        From: filters.From,
+        To: filters.To,
+        StockID: filters.StockID ? filters.StockID.ID : ''
+      }
 
-  const getListWorkSheet = callback => {
-    if (!filters.StockID || !filters.From || !filters.To) return
-    !loading && setLoading(true)
-    const newObj = {
-      ...filters,
-      From: filters.From,
-      To: filters.To,
-      StockID: filters.StockID ? filters.StockID.ID : ''
+      const { data } = await worksheetApi.getAllWorkSheet(newObj)
+      return data || null
+    },
+    enabled: Boolean(filters.StockID && filters.From && filters.To),
+    onSuccess: data => {
+      if (data?.list) {
+        setInitialValues(prevState => ({
+          ...prevState,
+          list: data.list.map(item => {
+            let newObj = {
+              Date: CrDate,
+              Hours: [
+                ['', ''],
+                ['', '']
+              ],
+              Desc: '',
+              WorkQty: '',
+              WorkQty1: '',
+              WorkQty2: ''
+            }
+            if (item.Dates[0].UserWorks && item.Dates[0].UserWorks.length > 0) {
+              const newHours =
+                item.Dates[0].UserWorks[0].HourList.length > 0
+                  ? item.Dates[0].UserWorks[0].HourList.map(hour => [
+                      hour.From ? moment(hour.From, 'HH:mm:ss') : '',
+                      hour.To ? moment(hour.To, 'HH:mm:ss') : ''
+                    ])
+                  : []
+
+              newObj = {
+                ...item.Dates[0].UserWorks[0],
+                Hours: newHours
+                  ? newHours.length >= 2
+                    ? newHours
+                    : [...newHours, ['', '']]
+                  : [
+                      ['', ''],
+                      ['', '']
+                    ]
+              }
+            }
+            return {
+              ...item,
+              ...newObj
+            }
+          })
+        }))
+      }
     }
-    worksheetApi
-      .getAllWorkSheet(newObj)
-      .then(({ data }) => {
-        if (data.list) {
-          setInitialValues(prevState => ({
-            ...prevState,
-            list: data.list.map(item => {
-              let newObj = {
-                Date: CrDate,
-                Hours: [
-                  ['', ''],
-                  ['', '']
-                ],
-                Desc: '',
-                WorkQty: '',
-                WorkQty1: '',
-                WorkQty2: ''
-              }
-              if (
-                item.Dates[0].UserWorks &&
-                item.Dates[0].UserWorks.length > 0
-              ) {
-                const newHours =
-                  item.Dates[0].UserWorks[0].HourList.length > 0
-                    ? item.Dates[0].UserWorks[0].HourList.map(hour => [
-                        hour.From ? moment(hour.From, 'HH:mm:ss') : '',
-                        hour.To ? moment(hour.To, 'HH:mm:ss') : ''
-                      ])
-                    : []
+  })
 
-                newObj = {
-                  ...item.Dates[0].UserWorks[0],
-                  Hours: newHours
-                    ? newHours.length >= 2
-                      ? newHours
-                      : [...newHours, ['', '']]
-                    : [
-                        ['', ''],
-                        ['', '']
-                      ]
-                }
-              }
-              return {
-                ...item,
-                ...newObj
-              }
-            })
-          }))
-        }
-        setLoading(false)
-        callback && callback()
-      })
-      .catch(error => console.log(error))
-  }
+  const saveTimeKeepMutation = useMutation({
+    mutationFn: body => worksheetApi.checkinWorkSheet(body)
+  })
 
   const onSubmit = values => {
     const newValues = {
@@ -154,17 +150,19 @@ function TimekeepingHome(props) {
           }))
         : []
     }
-    worksheetApi
-      .checkinWorkSheet(newValues)
-      .then(({ data }) => {
-        getListWorkSheet(() => {
-          window.top.toastr &&
+
+    saveTimeKeepMutation.mutate(newValues, {
+      onSuccess: () => {
+        refetch().then(
+          () =>
+            window.top.toastr &&
             window.top.toastr.success('Cập nhập thành công !', {
               timeOut: 1500
             })
-        })
-      })
-      .catch(error => console.log(error))
+        )
+      },
+      onError: error => console.log(error)
+    })
   }
 
   return (
@@ -198,7 +196,6 @@ function TimekeepingHome(props) {
                       type="text"
                       placeholder="Nhập tên nhân viên"
                       onChange={evt => {
-                        setLoading(true)
                         if (typingTimeoutRef.current) {
                           clearTimeout(typingTimeoutRef.current)
                         }
@@ -207,7 +204,7 @@ function TimekeepingHome(props) {
                             ...prevState,
                             Key: evt.target.value
                           }))
-                        }, 800)
+                        }, 300)
                       }}
                     />
                     <i className="fa-regular fa-magnifying-glass position-absolute w-30px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
@@ -251,7 +248,7 @@ function TimekeepingHome(props) {
               <div
                 className={clsx(
                   'card-body p-0 overlay',
-                  loading ? 'overflow-hidden' : 'overflow-auto'
+                  isLoading ? 'overflow-hidden' : 'overflow-auto'
                 )}
               >
                 <FieldArray
@@ -269,6 +266,7 @@ function TimekeepingHome(props) {
                                 {item.FullName}
                               </NavLink>
                             </div>
+                            
                             <div className="timekeeping-col col-name">
                               {
                                 <FieldArray
@@ -432,7 +430,7 @@ function TimekeepingHome(props) {
                 <div
                   className={clsx(
                     'overlay-layer bg-dark-o-10 top-0 h-100 zindex-1001',
-                    loading && 'overlay-block'
+                    isLoading && 'overlay-block'
                   )}
                 >
                   <div className="spinner spinner-primary"></div>
@@ -441,10 +439,11 @@ function TimekeepingHome(props) {
               <div className="card-footer d-flex justify-content-end align-items-center">
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={saveTimeKeepMutation.isLoading}
                   className={clsx(
                     'btn btn-success fw-500',
-                    loading && 'spinner spinner-white spinner-right'
+                    saveTimeKeepMutation.isLoading &&
+                      'spinner spinner-white spinner-right'
                   )}
                 >
                   Lưu thay đổi
