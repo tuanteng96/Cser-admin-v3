@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import Navbar from '../../components/Navbar'
+// import Navbar from '../../components/Navbar'
 import { NumericFormat } from 'react-number-format'
 import { NavLink } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
@@ -14,6 +14,9 @@ import { TimePicker } from 'antd'
 import moment from 'moment'
 import 'moment/locale/vi'
 import { useMutation, useQuery } from 'react-query'
+import { Dropdown } from 'react-bootstrap'
+import PickerMachineCode from '../../components/Picker/PickerMachineCode'
+import PickerTypeShift from '../../components/Picker/PickerTypeShift'
 
 moment.locale('vi')
 
@@ -237,12 +240,12 @@ function TimekeepingHome(props) {
                   <div className="h-40px w-1px border-right mx-15px"></div>
                   <NavLink
                     to="ca-lam-viec"
-                    className="btn btn-light border fw-500 mr-10px"
+                    className="btn btn-light border fw-500"
                   >
                     <i className="fa-regular fa-gear mr-8px"></i>
                     Ca làm việc
                   </NavLink>
-                  <Navbar />
+                  {/* <Navbar /> */}
                 </div>
               </div>
               <div
@@ -259,14 +262,45 @@ function TimekeepingHome(props) {
                         values.list.map((item, index) => (
                           <div className="timekeeping-item" key={index}>
                             <div className="timekeeping-col col-name">
-                              <NavLink
-                                to={`/bang-cham-cong/${item.UserID}`}
-                                className="fw-700 text-truncate text-name text-decoration-none text-black font-size-15px text-capitalize"
-                              >
-                                {item.FullName}
-                              </NavLink>
+                              <div className="flex items-center">
+                                <NavLink
+                                  to={`/bang-cham-cong/${item.UserID}`}
+                                  className="font-semibold text-name text-decoration-none text-black font-size-15px text-capitalize d-block flex-1 pr-15px"
+                                >
+                                  {item.FullName}
+                                </NavLink>
+                                <Dropdown>
+                                  <Dropdown.Toggle
+                                    className="border !w-11 !h-11 !rounded-full flex items-center justify-center after:hidden !p-0 !text-[#7e8299]"
+                                    id="dropdown-basic"
+                                  >
+                                    <i className="fa-regular fa-gear"></i>
+                                  </Dropdown.Toggle>
+
+                                  <Dropdown.Menu>
+                                    {
+                                      <PickerTypeShift item={item}>
+                                        {({ open }) => (
+                                          <Dropdown.Item onClick={open}>
+                                            Loại công ca
+                                          </Dropdown.Item>
+                                        )}
+                                      </PickerTypeShift>
+                                    }
+                                    {
+                                      <PickerMachineCode item={item}>
+                                        {({ open }) => (
+                                          <Dropdown.Item onClick={open}>
+                                            Mã máy
+                                          </Dropdown.Item>
+                                        )}
+                                      </PickerMachineCode>
+                                    }
+                                  </Dropdown.Menu>
+                                </Dropdown>
+                              </div>
                             </div>
-                            
+
                             <div className="timekeeping-col col-name">
                               {
                                 <FieldArray

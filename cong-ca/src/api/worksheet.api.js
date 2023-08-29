@@ -24,6 +24,12 @@ const worksheetApi = {
   },
   addSalaryApproval: data => {
     return http.post('/api/v3/userwork23@UserMonth', JSON.stringify(data))
+  },
+  saveMachineCode: data => {
+    return http.post('/api/v3/user24@devices', JSON.stringify(data))
+  },
+  saveTypeShift: data => {
+    return http.post('/api/v3/user24@WorkTimeSetting', JSON.stringify(data))
   }
 }
 export default worksheetApi

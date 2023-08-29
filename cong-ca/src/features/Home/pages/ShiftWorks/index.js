@@ -184,7 +184,7 @@ function ShiftWorks(props) {
                         <div>
                           <input
                             type="text"
-                            className="form-control form-control-solid h-[45px] !bg-[#e9ecef]"
+                            className="form-control form-control-solid h-[45px]"
                             placeholder="Nhập tên loại ca làm việc"
                             value={textAdd}
                             onChange={e => setTextAdd(e.target.value)}
