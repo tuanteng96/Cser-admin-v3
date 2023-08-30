@@ -25,15 +25,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 const queryClient = new QueryClient()
 
 root.render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <SplashScreenProvider>
-        <BrowserRouter>
-          <App store={store} basename={PUBLIC_URL} />
-        </BrowserRouter>
-      </SplashScreenProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <SplashScreenProvider>
+      <BrowserRouter>
+        <App store={store} basename={PUBLIC_URL} />
+      </BrowserRouter>
+    </SplashScreenProvider>
+  </QueryClientProvider>
 )
 
 // If you want to start measuring performance in your app, pass a function

@@ -13,25 +13,42 @@ function PickerTypeShift({ children, item }) {
   const [visible, setVisible] = useState(false)
   const [initialValues, setInitialValues] = useState({
     UserID: '',
-    Ca_lam_viec: ''
+    Shift: ''
   })
 
   useEffect(() => {
-    setInitialValues({
-      UserID: item?.UserID,
-      Ca_lam_viec: item?.Ca_lam_viec || ''
-    })
+    if (item.WorkTimeSetting) {
+      let WorkTimeSetting = JSON.parse(item.WorkTimeSetting)
+      if (WorkTimeSetting.ShiftID) {
+        setInitialValues({
+          UserID: item?.UserID,
+          Shift: {
+            label: WorkTimeSetting.ShiftName,
+            value: WorkTimeSetting.ShiftID
+          }
+        })
+      }
+    }
   }, [item])
 
   const addTypeShiftMutation = useMutation({
     mutationFn: body => worksheetApi.saveTypeShift(body)
   })
 
+  const getTypeShiftMutation = useMutation({
+    mutationFn: name => moreApi.getNameConfig(name)
+  })
+
   const onSubmit = values => {
     addTypeShiftMutation.mutate(
       {
-        ...values,
-        Ca_lam_viec: values?.Ca_lam_viec?.value || ''
+        updateList: [
+          {
+            UserID: values.UserID,
+            ShiftName: values?.Shift?.label,
+            ShiftID: values?.Shift?.value
+          }
+        ]
       },
       {
         onSuccess: data => {
@@ -52,16 +69,21 @@ function PickerTypeShift({ children, item }) {
 
   const promiseOptions = () =>
     new Promise(resolve => {
-      moreApi.getNameConfig('calamviecconfig').then(({ data }) => {
-        let result = []
-        if (data.data && data.data.length > 0) {
-          result = JSON.parse(data.data[0].Value).map(x => ({
-            ...x,
-            label: x.Name,
-            value: x.ID
-          }))
+      getTypeShiftMutation.mutate('calamviecconfig', {
+        onSuccess: ({ data }) => {
+          let result = []
+          if (data.data && data.data.length > 0) {
+            result = JSON.parse(data.data[0].Value).map(x => ({
+              ...x,
+              label: x.Name,
+              value: x.ID
+            }))
+          }
+          resolve(result)
+        },
+        onError: error => {
+          console.log(error)
         }
-        resolve(result)
       })
     })
 
@@ -99,12 +121,12 @@ function PickerTypeShift({ children, item }) {
                         classNamePrefix="select"
                         placeholder="Chọn loại"
                         noOptionsMessage={() => 'Không có dữ liệu'}
-                        onChange={val => setFieldValue('Ca_lam_viec', val)}
-                        value={values.Ca_lam_viec}
+                        onChange={val => setFieldValue('Shift', val)}
+                        value={values.Shift}
                       />
                     </div>
                   </Modal.Body>
-                  <Modal.Footer className="justify-content-between">
+                  <Modal.Footer>
                     <Button
                       variant="secondary"
                       onClick={() => setVisible(false)}

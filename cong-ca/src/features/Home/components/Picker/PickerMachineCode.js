@@ -30,25 +30,37 @@ function PickerMachineCode({ children, item }) {
   })
 
   const onSubmit = values => {
-    saveMachineMutation.mutate(values, {
-      onSuccess: data => {
-        queryClient
-          .invalidateQueries({ queryKey: ['ListWorkSheet'] })
-          .then(() => {
-            setVisible(false)
-            window.top.toastr &&
-              window.top.toastr.success('Cập nhập thành công !', {
-                timeOut: 1500
-              })
-          })
+    saveMachineMutation.mutate(
+      {
+        updateList: [{ ...values }]
       },
-      onError: err => console.log(err)
-    })
+      {
+        onSuccess: data => {
+          queryClient
+            .invalidateQueries({ queryKey: ['ListWorkSheet'] })
+            .then(() => {
+              setVisible(false)
+              window.top.toastr &&
+                window.top.toastr.success('Cập nhập thành công !', {
+                  timeOut: 1500
+                })
+            })
+        },
+        onError: err => console.log(err)
+      }
+    )
   }
 
   const onDelete = () => {
     deleteMachineMutation.mutate(
-      { UserID: item?.UserID, DeviceIDs: '' },
+      {
+        updateList: [
+          {
+            UserID: item?.UserID,
+            DeviceIDs: ''
+          }
+        ]
+      },
       {
         onSuccess: data => {
           queryClient
@@ -80,7 +92,7 @@ function PickerMachineCode({ children, item }) {
         >
           {formikProps => {
             // errors, touched, handleChange, handleBlur
-            const { handleBlur, handleChange } = formikProps
+            const { handleBlur, handleChange, values } = formikProps
             return (
               <Modal show={visible} onHide={() => setVisible(false)} centered>
                 <Form className="h-100" autoComplete="off">
@@ -97,6 +109,7 @@ function PickerMachineCode({ children, item }) {
                         placeholder="Nhập mã máy"
                         onBlur={handleBlur}
                         onChange={handleChange}
+                        value={values.DeviceIDs}
                       />
                     </div>
                   </Modal.Body>
