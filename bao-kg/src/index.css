@@ -1,0 +1,17 @@
+@import url('/src/assets/plugins/react-select/react-select.css');
+@import url('/src/assets/plugins/react-datepicker/react-datepicker.css');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+html {
+    @apply text-sm
+}
+
+html,
+body {
+    @apply w-full h-full
+}
+
+#root {
+    @apply w-full h-full
+}
