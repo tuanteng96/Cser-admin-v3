@@ -33,8 +33,8 @@ const SelectMembers = ({ ...props }) => {
         menuPortalTarget={document.body}
         classNamePrefix="select"
         options={data || []}
-        placeholder="Chọn nhân viên"
-        noOptionsMessage={() => "Không có nhân viên"}
+        placeholder="Chọn khách hàng"
+        noOptionsMessage={() => "Không có khách hàng"}
         {...props}
       />
     </>

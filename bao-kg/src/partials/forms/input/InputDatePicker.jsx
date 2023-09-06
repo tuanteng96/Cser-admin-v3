@@ -1,7 +1,8 @@
 import { ExclamationCircleIcon } from '@heroicons/react/24/outline'
 import clsx from 'clsx'
-import DatePicker from 'react-datepicker'
+import DatePicker, { registerLocale } from 'react-datepicker'
 import Portal from 'react-overlays/cjs/Portal'
+import vi from "date-fns/locale/vi";
 
 const CalendarContainer = ({ children }) => {
   const el = document.getElementById('calendar-portal')
@@ -14,11 +15,12 @@ const InputDatePicker = ({ errorMessage, errorMessageForce, ...props }) => {
     <>
       <div className="relative">
         <DatePicker
+          locale={vi}
           className={clsx(
-            'w-full px-3 py-3 transition bg-white border rounded outline-none disabled:bg-gray-200 disabled:border-gray-200',
+            "w-full px-3 py-3 transition bg-white border rounded outline-none disabled:bg-gray-200 disabled:border-gray-200",
             errorMessageForce
-              ? 'border-danger'
-              : 'border-gray-300 dark:border-graydark-400 focus:border-primary dark:focus:border-primary'
+              ? "border-danger"
+              : "border-gray-300 dark:border-graydark-400 focus:border-primary dark:focus:border-primary"
           )}
           popperContainer={CalendarContainer}
           timeIntervals={5}
@@ -34,7 +36,7 @@ const InputDatePicker = ({ errorMessage, errorMessageForce, ...props }) => {
         <div className="mt-1.5 text-sm text-danger">{errorMessage}</div>
       )}
     </>
-  )
+  );
 }
 
 export { InputDatePicker }

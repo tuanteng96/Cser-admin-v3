@@ -3,7 +3,7 @@ import Table, { AutoResizer } from 'react-base-table'
 import Text from 'react-texty'
 import { Menu, Transition } from '@headlessui/react'
 import { ChevronUpIcon } from '@heroicons/react/24/outline'
-import { Fragment } from 'react'
+import { Fragment, useEffect, useRef } from 'react'
 import clsx from 'clsx'
 
 import '/src/assets/plugins/react-base-table/react-base-table.css'
@@ -36,11 +36,11 @@ function ReactBaseTable({
   pagination,
   ...props
 }) {
-  //const tableRef = useRef(null)
+  const tableRef = useRef(null)
 
-  //   useEffect(() => {
-  //     tableRef?.current?.scrollToRow(0, 'start')
-  //   }, [filters])
+    useEffect(() => {
+      tableRef?.current?.scrollToRow(0, "start");
+    }, [pageOffset, pageSizes]);
 
   const TableCell = ({ className, cellData }) => (
     <Text tooltipMaxWidth={280} className={className}>

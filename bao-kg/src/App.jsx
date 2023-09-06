@@ -5,18 +5,21 @@ import ReactBaseTable from "./partials/table/ReactBaseTable";
 import moment from "moment";
 import { useQuery } from "react-query";
 import MembersAPI from "./api/members.api";
+import { Cookies } from "./utils/cookies";
 
 const startCurrentMonth = moment().startOf("month").format("MM/DD/YYYY");
 const endCurrentMonth = moment().endOf("month").format("MM/DD/YYYY");
 
 function App() {
+  
+  let StockID = Cookies.get("MemberSelectStockID");
   const [filters, setFilters] = useState({
     pi: 1,
     ps: 25,
     filter: {
       MemberID: "",
       CreateDate: [startCurrentMonth, endCurrentMonth],
-      "m.ByStockID": "",
+      "m.ByStockID": StockID || null,
     },
   });
 
@@ -30,7 +33,7 @@ function App() {
           MemberID: filters.filter.MemberID
             ? filters.filter.MemberID?.value
             : null,
-          "m.ByStockID": "",
+          "m.ByStockID": StockID || null,
         },
       });
       return data || [];
@@ -50,16 +53,16 @@ function App() {
         sortable: false,
       },
       {
-        key: "Note",
+        key: "Member.FullName",
         title: "Khách hàng",
-        dataKey: "Note",
-        width: 280,
+        dataKey: "Member.FullName",
+        width: 250,
         sortable: false,
       },
       {
-        key: "User.FullName",
+        key: "Value",
         title: "Kilôgam",
-        dataKey: "User.FullName",
+        dataKey: "Value",
         cellRenderer: ({ rowData }) => `${rowData.Value} Kg`,
         width: 100,
         sortable: false,
@@ -76,7 +79,7 @@ function App() {
   return (
     <div className="h-full p-4 flex flex-col">
       <div className="flex items-center mb-4">
-        <div className="w-[300px]">
+        <div className="flex-1">
           <SelectMembers
             isClearable
             className="select-control"
@@ -134,7 +137,13 @@ function App() {
         pageCount={data?.pCount}
         pageOffset={Number(filters.pi)}
         pageSizes={Number(filters.ps)}
-        onChange={({ pageIndex, pageSize }) => {}}
+        onChange={({ pageIndex, pageSize }) => {
+          setFilters((prevState) => ({
+            ...prevState,
+            pi: pageIndex,
+            ps: pageSize,
+          }));
+        }}
         rowClassName={rowClassName}
       />
     </div>

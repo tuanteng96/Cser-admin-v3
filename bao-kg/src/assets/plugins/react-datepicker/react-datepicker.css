@@ -377,9 +377,13 @@ html.dark {
 
 .react-datepicker__month .react-datepicker__month-text,
 .react-datepicker__month .react-datepicker__quarter-text {
-    display: inline-block;
+    display: block;
     margin: 2px;
-    padding: 3px 8px;
+    padding: 5px 8px;
+}
+
+.react-datepicker__month {
+    margin: 0;
 }
 
 .react-datepicker__input-time-container {

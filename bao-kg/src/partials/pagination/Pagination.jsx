@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
 
-const RANGE = 3
+const RANGE = 1
 
 function Pagination({ pageCount, pageOffset = 1, pageSizes = 15, onChange }) {
   const renderPagination = () => {
