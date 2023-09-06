@@ -11,7 +11,6 @@ const startCurrentMonth = moment().startOf("month").format("MM/DD/YYYY");
 const endCurrentMonth = moment().endOf("month").format("MM/DD/YYYY");
 
 function App() {
-  
   let StockID = Cookies.get("MemberSelectStockID");
   const [filters, setFilters] = useState({
     pi: 1,
@@ -36,40 +35,49 @@ function App() {
           "m.ByStockID": StockID || null,
         },
       });
-      return data || [];
+      return data || {};
     },
     keepPreviousData: true,
   });
 
   const columns = useMemo(
-    () => [
-      {
-        key: "CreateDate",
-        title: "Ngày",
-        dataKey: "CreateDate",
-        cellRenderer: ({ rowData }) =>
-          moment(rowData?.CreateDate).format("DD-MM-YYYY"),
-        width: 135,
-        sortable: false,
-      },
-      {
-        key: "Member.FullName",
-        title: "Khách hàng",
-        dataKey: "Member.FullName",
-        width: 250,
-        sortable: false,
-      },
-      {
-        key: "Value",
-        title: "Kilôgam",
-        dataKey: "Value",
-        cellRenderer: ({ rowData }) => `${rowData.Value} Kg`,
-        width: 100,
-        sortable: false,
-      },
-    ],
+    () => {
+      let daysInMonth = moment(
+        filters.filter.CreateDate[0],
+        "MM/DD/YYYY"
+      ).daysInMonth();
+      let column = [
+        {
+          key: "Member.FullName",
+          title: "Khách hàng",
+          dataKey: "Member.FullName",
+          width: 250,
+          sortable: false,
+          frozen: "left",
+          style: {
+            fontWeight: 600,
+          },
+        },
+      ];
+      for (let i = 0; i < daysInMonth; i++) {
+        moment().startOf("month").format("YYYY-MM-DD hh:mm");
+        let newObj = {
+          key: "Day-" + i + 1,
+          title: moment().startOf("month").add(i, "days").format("DD/MM/YYYY"),
+          dataKey: "Day-" + i + 1,
+          cellRenderer: ({ rowData }) =>
+            rowData.Dates && rowData.Dates[i]
+              ? `${rowData.Dates[i].Value} Kg`
+              : "",
+          width: 130,
+          sortable: false,
+        };
+        column.push(newObj);
+      }
+      return column;
+    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [filters]
   );
 
   const rowClassName = ({ columns, rowData, rowIndex }) => {
@@ -103,6 +111,7 @@ function App() {
             placeholderText="Chọn tháng"
             dateFormat="MM/yyyy"
             onChange={(val) => {
+              if (!val) return;
               const startOfMonth = moment(val)
                 .startOf("month")
                 .format("MM/DD/YYYY");
