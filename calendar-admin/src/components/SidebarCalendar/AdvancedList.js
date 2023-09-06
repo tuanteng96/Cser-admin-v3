@@ -157,6 +157,7 @@ function AdvancedList({ formikProps }) {
               components={{
                 Control,
               }}
+              menuPortalTarget={document.body}
             />
             <Select
               classIcon="far fa-filter"
@@ -174,6 +175,7 @@ function AdvancedList({ formikProps }) {
               components={{
                 Control,
               }}
+              menuPortalTarget={document.body}
             />
             <Select
               classIcon="far fa-ballot-check"
@@ -193,6 +195,7 @@ function AdvancedList({ formikProps }) {
               components={{
                 Control,
               }}
+              menuPortalTarget={document.body}
             />
           </div>
         )}

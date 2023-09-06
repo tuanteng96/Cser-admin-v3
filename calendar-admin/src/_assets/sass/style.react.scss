@@ -24,6 +24,10 @@
 "./vendors/plugins/datepicker",
 "./vendors/plugins/toastify",
 "./vendors/plugins/perfect-scrollbar";
+#root {
+    position: relative;
+    z-index: 1;
+}
 
 .checkin-head {
     min-height: 80px;

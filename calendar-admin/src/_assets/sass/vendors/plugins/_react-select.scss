@@ -1,5 +1,6 @@
 .select-control,
 .select__menu-portal {
+    z-index: 100 !important;
     .select__control {
         box-shadow: none !important;
         .select__single-value {
