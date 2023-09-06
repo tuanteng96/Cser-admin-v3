@@ -63,14 +63,21 @@ function App() {
         moment().startOf("month").format("YYYY-MM-DD hh:mm");
         let newObj = {
           key: "Day-" + i + 1,
-          title: moment().startOf("month").add(i, "days").format("DD/MM/YYYY"),
+          title: moment().startOf("month").add(i, "days").format("DD-MM-YYYY"),
           dataKey: "Day-" + i + 1,
           cellRenderer: ({ rowData }) =>
-            rowData.Dates && rowData.Dates[i]
+            rowData.Dates && rowData.Dates[i] && rowData.Dates[i]["Value"]
               ? `${rowData.Dates[i].Value} Kg`
               : "",
-          width: 130,
+          width: 125,
           sortable: false,
+          style: {
+            backgroundColor:
+              moment().startOf("month").add(i, "days").format("DD/MM/YYYY") ===
+              moment().format("DD/MM/YYYY")
+                ? "#fffadf"
+                : "",
+          },
         };
         column.push(newObj);
       }
