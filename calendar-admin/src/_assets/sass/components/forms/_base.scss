@@ -50,7 +50,7 @@
             }
         }
         .form-control:not(textarea) {
-            height: 40px !important;
+            height: 45px !important;
             border-radius: 5px;
             font-size: 14px;
         }
@@ -108,7 +108,7 @@
         }
     }
     &.form-control-ezs {
-        height: 40px !important;
+        height: 45px !important;
         font-size: 14px !important;
         border-radius: 4px !important;
         //focus
@@ -312,6 +312,9 @@
     .select__control {
         border-color: $input-border-color;
         min-height: $input-height;
+        .select__value-container {
+            padding: 8px .8rem;
+        }
         .select__indicator-separator {
             background-color: $input-border-color;
         }

@@ -71,7 +71,7 @@ function AuthInit({ isConfig, children }) {
             },
           },
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwMzExNDEwMzk3MSIsIm5iZiI6MTY5MDU1MzA3MywiZXhwIjoxNjkxMTU3ODczLCJpYXQiOjE2OTA1NTMwNzN9.S6CDC23RLIL0qD43_tRr9iieI5bgMOS9KRXGe9cWajY",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwMzExNDEwNDY2OCIsIm5iZiI6MTY5NDkxODYxOCwiZXhwIjoxNjk1NTIzNDE4LCJpYXQiOjE2OTQ5MTg2MTh9.HcodUvtaW2WcItds7a9ni3AFm9vL32cfkqZ6OKW4X2g",
         };
         window.GlobalConfig = {
           APP: {
@@ -84,7 +84,8 @@ function AuthInit({ isConfig, children }) {
             kpiFinish: "Khách đến làm dịch vụ",
             kpiCancel: "Khách hủy",
             kpiCancelFinish: "Khách không đến",
-            kpiSuccess: "Đặt lịch thành công"
+            kpiSuccess: "Đặt lịch thành công",
+            isRooms: true
           },
         };
       }

@@ -8,7 +8,7 @@ export const jsonSlice = createSlice({
         setConfig: (state, { payload }) => {
             return {
                 ...state,
-                APP: payload?.APP
+                ...payload
             }
         }
     },

@@ -78,6 +78,13 @@ const editTagsMember = (data) => {
   );
 };
 
+const updateRoom = (data) => {
+  return axiosClient.post(
+    `/api/v3/MBookAdmin?cmd=UpdateRoom`,
+    JSON.stringify(data)
+  );
+};
+
 const CalendarCrud = {
   getMembers,
   getStaffs,
@@ -90,5 +97,6 @@ const CalendarCrud = {
   getConfigName,
   saveConfigName,
   editTagsMember,
+  updateRoom
 };
 export default CalendarCrud;

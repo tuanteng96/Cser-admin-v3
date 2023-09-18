@@ -5,18 +5,28 @@ import App from "./App/App";
 import reportWebVitals from "./reportWebVitals";
 import store from "./redux/store";
 import { SplashScreenProvider } from "./layout/_core/SplashScreen";
-import * as _redux from './redux/index'
+import * as _redux from "./redux/index";
 import axiosClient from "./redux/axioClient";
+import {
+  QueryClient,
+  QueryClientProvider,
+} from 'react-query'
+
 
 const { PUBLIC_URL } = process.env;
 
 _redux.setupAxios(axiosClient, store);
 
+const queryClient = new QueryClient()
+
+
 ReactDOM.render(
   <React.StrictMode>
-    <SplashScreenProvider>
-      <App store={store} basename={PUBLIC_URL} />
-    </SplashScreenProvider>
+    <QueryClientProvider client={queryClient}>
+      <SplashScreenProvider>
+        <App store={store} basename={PUBLIC_URL} />
+      </SplashScreenProvider>
+    </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById("root")
 );

@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
+import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import listPlugin from "@fullcalendar/list";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -17,9 +18,12 @@ import _ from "lodash";
 import { AppContext } from "../../App";
 import ModalCalendarLock from "../../../components/ModalCalendarLock/ModalCalendarLock";
 import scrollGridPlugin from "@fullcalendar/scrollgrid";
+import { useQuery } from "react-query";
+import Swal from "sweetalert2";
 
 import moment from "moment";
 import "moment/locale/vi";
+import ModalRoom from "../../../components/ModalRoom/ModalRoom";
 
 moment.locale("vi");
 
@@ -106,16 +110,19 @@ function CalendarPage(props) {
   ); //timeGridWeek
   const [headerTitle, setHeaderTitle] = useState("");
   const [isModalLock, setIsModalLock] = useState(false);
+  const [isModalRoom, setIsModalRoom] = useState(false);
   const { width } = useWindowSize();
 
-  const { AuthCrStockID, TimeOpen, TimeClose, StocksList } = useSelector(
+  const { AuthCrStockID, TimeOpen, TimeClose, StocksList, isRooms } = useSelector(
     ({ Auth, JsonConfig }) => ({
       AuthCrStockID: Auth.CrStockID,
       StocksList: Auth?.Stocks.filter((x) => x.ParentID !== 0),
       TimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
       TimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
+      isRooms: JsonConfig?.Admin?.isRooms,
     })
   );
+  
   const [ListLock, setListLock] = useState({
     ListLocks: [],
   });
@@ -159,6 +166,44 @@ function CalendarPage(props) {
     getListLock();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [AuthCrStockID]);
+
+  const ListRooms = useQuery({
+    queryKey: ["ListRooms", AuthCrStockID],
+    queryFn: async () => {
+      let { data } = await CalendarCrud.getConfigName(`room`);
+      let rs = [
+        {
+          RoomTitle: "Room Trống",
+          id: 0,
+          title: "Chưa chọn Room",
+        },
+      ];
+      if (data && data.length > 0) {
+        const result = JSON.parse(data[0].Value);
+        let indexStock = result.findIndex((x) => x.StockID === AuthCrStockID);
+        if (indexStock > -1 && result[indexStock]) {
+          if (
+            result[indexStock].ListRooms &&
+            result[indexStock].ListRooms.length > 0
+          ) {
+            for (let Room of result[indexStock].ListRooms) {
+              if (Room.Children && Room.Children.length > 0) {
+                for (let cls of Room.Children) {
+                  rs.push({
+                    ...cls,
+                    RoomTitle: Room.label,
+                    title: cls.label,
+                    id: cls.ID,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+      return rs || [];
+    },
+  });
 
   const getListLock = (callback) => {
     CalendarCrud.getConfigName(`giocam`)
@@ -606,6 +651,7 @@ function CalendarPage(props) {
                 }))
               : [];
         }
+
         const dataBooks =
           data.books && Array.isArray(data.books)
             ? data.books
@@ -621,9 +667,11 @@ function CalendarPage(props) {
                     item
                   )}`,
                   resourceIds:
-                    item.UserServices &&
-                    Array.isArray(item.UserServices) &&
-                    item.UserServices.length > 0
+                    initialView === "resourceTimelineDay"
+                      ? [-10]
+                      : item.UserServices &&
+                        Array.isArray(item.UserServices) &&
+                        item.UserServices.length > 0
                       ? item.UserServices.map((item) => item.ID)
                       : [0],
                   MemberCurrent: {
@@ -643,7 +691,7 @@ function CalendarPage(props) {
                 }))
                 .filter((item) => item.Status !== "TU_CHOI")
             : [];
-        const dataBooksAuto =
+        let dataBooksAuto =
           data.osList && Array.isArray(data.osList)
             ? data.osList.map((item) => ({
                 ...item,
@@ -662,36 +710,24 @@ function CalendarPage(props) {
                 RootTitles: item.os.ProdService2 || item.os.ProdService,
                 className: `fc-event-solid-${getStatusClss(item.os.Status)}`,
                 resourceIds:
-                  item.staffs && Array.isArray(item.staffs)
+                  initialView === "resourceTimelineDay"
+                    ? [item?.os?.RoomID || 0]
+                    : item.staffs && Array.isArray(item.staffs)
                     ? item.staffs.map((staf) => staf.ID)
                     : [0],
               }))
             : [];
+        if (initialView === "resourceTimelineDay") {
+          dataBooksAuto = dataBooksAuto.filter(
+            (x) => x.os && x.os.RoomStatus !== "done"
+          );
+        }
         setEvents([...dataBooks, ...dataBooksAuto, ...dataOffline]);
         setLoading(false);
         isFilter && onHideFilter();
         fn && fn();
       })
       .catch((error) => console.log(error));
-  };
-  const GenerateName = (name) => {
-    if (width > 767) {
-      return `<span class="text-capitalize">${name}</span>`;
-    }
-    const newName = name.split(" ");
-    const stringName = [];
-    for (var key in newName) {
-      if (Number(key) !== newName.length - 1) {
-        stringName.push(newName[key].charAt(0));
-      } else {
-        stringName.push(newName[key]);
-      }
-    }
-    return `<div class="text-capitalize">${stringName
-      .slice(0, stringName.length - 1)
-      .join(".")}</div><div class="text-capitalize">${
-      stringName[stringName.length - 1]
-    }</div>`;
   };
 
   const getLastFirst = (text) => {
@@ -712,6 +748,14 @@ function CalendarPage(props) {
     setBtnLoadingLock(false);
   };
 
+  const onOpenModalRoom = () => {
+    setIsModalRoom(true);
+  };
+
+  const onHideModalRoom = () => {
+    setIsModalRoom(false);
+  };
+
   // const someMethod = () => {
   //   let calendarApi = calendarRef.current.getApi()
   //   console.log(calendarApi)
@@ -721,7 +765,7 @@ function CalendarPage(props) {
 
   return (
     <div className={`ezs-calendar`}>
-      <div className="container-fluid h-100 px-0">
+      <div className="px-0 container-fluid h-100">
         <div className="d-flex flex-column flex-xl-row h-100">
           <SidebarCalendar
             filters={filters}
@@ -734,6 +778,8 @@ function CalendarPage(props) {
             isFilter={isFilter}
             headerTitle={headerTitle}
             onOpenModalLock={onOpenModalLock}
+            onOpenModalRoom={onOpenModalRoom}
+            isRooms={isRooms}
           />
           <div
             className={`ezs-calendar__content ${loading &&
@@ -899,36 +945,29 @@ function CalendarPage(props) {
                     onOpenModal();
                   },
                 },
-                // resourceTimelineDay: {
-                //   type: "resourceTimeline",
-                //   buttonText: "Nhân viên",
-                //   resourceAreaHeaderContent: () =>
-                //     width > 1200 ? "Nhân viên" : "N.Viên",
-                //   nowIndicator: true,
-                //   now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
-                //   scrollTime: moment(new Date()).format("HH:mm"),
-                //   resourceAreaWidth: width > 767 ? "180px" : "70px",
-                //   slotMinWidth: width > 767 ? "60" : "35",
-                //   dateClick: ({ date }) => {
-                //     if (isTelesales) return;
-                //     setInitialValue({ ...initialValue, BookDate: date });
-                //     onOpenModal();
-                //   },
-                //   resourceLabelDidMount: ({ el, fieldValue, ...arg }) => {
-                //     el.querySelector(
-                //       ".fc-datagrid-cell-main"
-                //     ).innerHTML = `${GenerateName(fieldValue)}`;
-                //   },
-                //   slotLabelDidMount: ({ text, date, el, ...arg }) => {
-                //     el.querySelector(
-                //       ".fc-timeline-slot-cushion"
-                //     ).innerHTML = `<span class="gird-time font-number">
-                //         ${text} ${moment(date).format("A")}
-                //       </span>`;
-                //   },
-                //   slotMinTime: TimeOpen,
-                //   slotMaxTime: TimeClose,
-                // },
+                resourceTimelineDay: {
+                  type: "resourceTimelineDay",
+                  nowIndicator: true,
+                  now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                  scrollTime: moment(new Date()).format("HH:mm"),
+                  resourceAreaWidth: width > 768 ? "220px" : "150px",
+                  slotMinWidth: 50,
+                  stickyHeaderDates: true,
+                  slotMinTime: TimeOpen,
+                  slotMaxTime: TimeClose,
+                  buttonText: "Rooms",
+                  resourceAreaHeaderContent: () => "Rooms",
+                  slotLabelContent: ({ date, text }) => {
+                    return (
+                      <>
+                        <span className="gird-time font-number text-primary">
+                          {moment(date).format("HH:mm")}
+                        </span>
+                        <span className="font-size-min font-number w-55px d-block"></span>
+                      </>
+                    );
+                  },
+                },
               }}
               plugins={[
                 dayGridPlugin,
@@ -936,16 +975,22 @@ function CalendarPage(props) {
                 timeGridPlugin,
                 listPlugin,
                 resourceTimeGridPlugin,
-                // resourceTimelinePlugin,
+                resourceTimelinePlugin,
                 scrollGridPlugin,
               ]}
-              resources={StaffFull}
+              resourceGroupField="RoomTitle"
+              resources={
+                initialView === "resourceTimelineDay"
+                  ? ListRooms.data
+                  : StaffFull
+              }
               events={Events}
               headerToolbar={{
                 left: "prev,next today",
                 center: "title",
-                right:
-                  "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay", //resourceTimeGridDay
+                right: isRooms
+                  ? "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay,resourceTimelineDay"
+                  : "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay", //resourceTimeGridDay
               }}
               selectable={true}
               selectMirror={true}
@@ -962,8 +1007,40 @@ function CalendarPage(props) {
                 if (isTelesales) return;
                 const { _def } = event;
                 if (_def.extendedProps.os) {
-                  window?.top?.BANGLICH_BUOI &&
-                    window?.top?.BANGLICH_BUOI(_def.extendedProps, onRefresh);
+                  if (_def.extendedProps.os.Status === "done") {
+                    let { ID, RoomID } = _def.extendedProps.os;
+                    Swal.fire({
+                      title: "Bàn đã dọn dẹp xong ?",
+                      text:
+                        "Xác nhận bàn đã dọn dẹp. Có thể tiếp nhận khách hàng !",
+                      icon: "warning",
+                      showCancelButton: true,
+                      confirmButtonColor: "#3085d6",
+                      cancelButtonColor: "#d33",
+                      confirmButtonText: "Xác nhận",
+                      cancelButtonText: "Huỷ",
+                      showLoaderOnConfirm: true,
+                      preConfirm: () =>
+                        new Promise((resolve, reject) => {
+                          CalendarCrud.updateRoom({
+                            rooms: [
+                              {
+                                ID: ID,
+                                RoomID: RoomID,
+                                RoomStatus: "done",
+                              },
+                            ],
+                          }).then(() => onRefresh(() => resolve()));
+                        }),
+                      allowOutsideClick: () => !Swal.isLoading(),
+                    }).then((result) => {
+                      if (result.isConfirmed)
+                        toast.success("Xác nhận thành công.");
+                    });
+                  } else {
+                    window?.top?.BANGLICH_BUOI &&
+                      window?.top?.BANGLICH_BUOI(_def.extendedProps, onRefresh);
+                  }
                   return;
                 }
                 setInitialValue(_def.extendedProps);
@@ -1064,7 +1141,7 @@ function CalendarPage(props) {
                 // Create Dom
               }}
               datesSet={({ view, start, end, ...arg }) => {
-                let calendarElm = document.querySelectorAll(".fc-view-harness");
+                //let calendarElm = document.querySelectorAll(".fc-view-harness");
                 const newFilters = {
                   ...filters,
                   StockID: AuthCrStockID,
@@ -1153,6 +1230,12 @@ function CalendarPage(props) {
         onSubmit={onSubmitLock}
         btnLoadingLock={btnLoadingLock}
         AuthCrStockID={AuthCrStockID}
+      />
+      <ModalRoom
+        show={isModalRoom}
+        onHide={onHideModalRoom}
+        AuthCrStockID={AuthCrStockID}
+        StocksList={StocksList}
       />
     </div>
   );

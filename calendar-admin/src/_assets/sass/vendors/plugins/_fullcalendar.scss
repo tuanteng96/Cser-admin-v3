@@ -585,6 +585,79 @@
                     //border-right: 0;
                 }
             }
+            &.fc-resourceTimelineDay-view {
+                .fc-scrollgrid-section-header {
+                    .fc-scroller-harness {
+                        height:100%;
+                        .fc-scroller {
+                            height:100%;
+                            .fc-timeline-header {
+                                height:100%;
+                                .fc-scrollgrid-sync-table {
+                                    height:100%;
+                                    .fc-timeline-slot-frame {
+                                        align-items: center;
+                                        height: 100%;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .fc-scrollgrid-liquid > tbody .fc-scrollgrid-section > td:first-child .fc-datagrid-cell-frame .fc-datagrid-cell-cushion {
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: left;
+                }
+                .fc-scrollgrid-section-header .fc-scroller {
+                    border-bottom: 0;
+                }
+                > table {
+                    >thead {
+                        > tr {
+                            > th {
+                                .fc-scroller {
+                                    -ms-overflow-style: none;  /* IE and Edge */
+                                    scrollbar-width: none;  /* Firefox */
+                
+                                    &::-webkit-scrollbar
+                                    {
+                                        width: 0px;
+                                        display: none;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    >tbody {
+                        > tr {
+                            > td:first-child {
+                                .fc-scroller {
+                                    -ms-overflow-style: none;  /* IE and Edge */
+                                    scrollbar-width: none;  /* Firefox */
+                
+                                    &::-webkit-scrollbar
+                                    {
+                                        width: 0px;
+                                        display: none;
+                                    }
+            
+                                }
+                            }   
+                        }
+                    }
+                }
+                .fc-scrollgrid-liquid {
+                    .fc-resource-group:not([rowspan]) {
+                        .fc-datagrid-cell-frame {
+                            height: 49px !important;
+                        }
+                    }
+                }
+                .fc-timeline-body > .fc-scrollgrid-sync-table tr td {
+                    height: 50px !important;
+                }
+            }
         }
         .fc-resourceTimeGridDay-view {
             &.fc-view {
@@ -1148,30 +1221,30 @@
                 }
             }
         }
-        .fc-resourceTimelineDay-view {
-            .fc-datagrid-header {
-                .fc-datagrid-cell {
-                    border-bottom: 0;
-                }
-            }
-            .fc-datagrid-cell-cushion {
-                padding: 8px 12px;
-                overflow: hidden;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-            }
-            .fc-datagrid-cell-main {
-                font-size: 14px;
-                font-weight: 600;
-            }
-            .fc-scrollgrid-section-header {
-                .fc-datagrid-cell-main {
-                    text-transform: uppercase;
-                    font-size: 15px;
-                    color: #3699ff;
-                }
-            }
-        }
+        // .fc-resourceTimelineDay-view {
+        //     .fc-datagrid-header {
+        //         .fc-datagrid-cell {
+        //             border-bottom: 0;
+        //         }
+        //     }
+        //     .fc-datagrid-cell-cushion {
+        //         padding: 8px 12px;
+        //         overflow: hidden;
+        //         white-space: nowrap;
+        //         text-overflow: ellipsis;
+        //     }
+        //     .fc-datagrid-cell-main {
+        //         font-size: 14px;
+        //         font-weight: 600;
+        //     }
+        //     .fc-scrollgrid-section-header {
+        //         .fc-datagrid-cell-main {
+        //             text-transform: uppercase;
+        //             font-size: 15px;
+        //             color: #3699ff;
+        //         }
+        //     }
+        // }
         .fc-event-solid-primary1 {
             background: #007af7;
             .fc-title {

@@ -8,6 +8,7 @@
     border-radius: 4px;
     font-size: 14px;
     line-height: 1.4;
+    padding: 0.7rem 0.75rem;
     // Transition
     @include button-custom-transition($transition-link);
     &:focus:not(.btn-shadow):not(.btn-shadow-hover) {

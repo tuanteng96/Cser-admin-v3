@@ -70,13 +70,14 @@ function SidebarCalendar({
   onOpenModal,
   onSubmit,
   filters,
-  initialView,
   loading,
   onOpenFilter,
   onHideFilter,
   isFilter,
   headerTitle,
   onOpenModalLock,
+  onOpenModalRoom,
+  isRooms
 }) {
   const [initialValues, setInitialValues] = useState(initialDefault);
   const { width } = useWindowSize();
@@ -93,7 +94,7 @@ function SidebarCalendar({
       <div className="header-sidebar p-15px">
         <div className="d-flex justify-content-between align-items-center">
           {!isTelesales && (
-            <Dropdown className="w-xl-100 w-auto">
+            <Dropdown className="w-auto w-xl-100">
               <Dropdown.Toggle className="btn btn-primary btn-sm h-42px btn-shadow px-15px w-100 hide-icon-after">
                 {width > 1200 ? "Tạo mới" : <i className="fal fa-plus"></i>}
               </Dropdown.Toggle>
@@ -120,6 +121,11 @@ function SidebarCalendar({
                     Cài đặt khóa lịch
                   </Dropdown.Item>
                 )}
+                {!isTelesales && isRooms && (
+                  <Dropdown.Item href="#" onClick={onOpenModalRoom}>
+                    Cài đặt phòng
+                  </Dropdown.Item>
+                )}
               </Dropdown.Menu>
             </Dropdown>
           )}
@@ -127,10 +133,10 @@ function SidebarCalendar({
             {headerTitle}
           </div>
           <button
-            className="btn btn-info h-40px d-xl-none w-45px p-0 d-xl-none"
+            className="p-0 btn btn-info h-40px d-xl-none w-45px"
             onClick={onOpenFilter}
           >
-            <i className="fa-regular fa-magnifying-glass p-0 font-size-md"></i>
+            <i className="p-0 fa-regular fa-magnifying-glass font-size-md"></i>
           </button>
         </div>
       </div>
@@ -153,7 +159,7 @@ function SidebarCalendar({
                 style={{ position: "relative", touchAction: "none" }}
               >
                 <div className="px-15px">
-                  <div className="form-group form-group-ezs mb-0 mt-12px">
+                  <div className="mb-0 form-group form-group-ezs mt-12px">
                     {/* <label className="mb-1">Khách hàng</label> */}
                     <div>
                       {isTelesales && (

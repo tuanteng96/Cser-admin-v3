@@ -82,11 +82,11 @@ function ModalCalendarLock({
                                                 1 ===
                                               index
                                                 ? ""
-                                                : "mb-15px"
+                                                : "mb-20px"
                                             }`}
                                             key={index}
                                           >
-                                            <div className="d-flex">
+                                            <div className="d-flex mb-5px">
                                               <DatePicker
                                                 className="form-control font-size-sm"
                                                 selected={
@@ -124,7 +124,7 @@ function ModalCalendarLock({
                                                   })
                                                 }
                                               >
-                                                <i className="fal fa-plus pr-0 font-size-xs"></i>
+                                                <i className="pr-0 fal fa-plus font-size-xs"></i>
                                               </button>
                                               <button
                                                 type="button"
@@ -135,7 +135,7 @@ function ModalCalendarLock({
                                                   )
                                                 }
                                               >
-                                                <i className="far fa-trash-alt pr-0 font-size-xs"></i>
+                                                <i className="pr-0 far fa-trash-alt font-size-xs"></i>
                                               </button>
                                             </div>
 
@@ -143,7 +143,7 @@ function ModalCalendarLock({
                                               name={`ListLocks[${i}].ListDisable[${index}].TimeClose`}
                                               render={(TimeCloseHelpers) => (
                                                 <div
-                                                  className={`listtime-lock ${(!item.TimeClose ||
+                                                  className={`listtime-lock pl-20px ${(!item.TimeClose ||
                                                     item.TimeClose.length ===
                                                       0) &&
                                                     "d-none"}`}
@@ -158,7 +158,7 @@ function ModalCalendarLock({
                                                               1 ===
                                                             idx
                                                               ? ""
-                                                              : "mb-10px"
+                                                              : "mb-5px"
                                                           } listtime-lock__item`}
                                                           key={idx}
                                                         >
@@ -212,7 +212,6 @@ function ModalCalendarLock({
                                                               className="btn btn-light-success btn-sm ml-5px"
                                                               onClick={() =>
                                                                 TimeCloseHelpers.push(
-                                                                  idx,
                                                                   {
                                                                     Start: "",
                                                                     End: "",
@@ -220,7 +219,7 @@ function ModalCalendarLock({
                                                                 )
                                                               }
                                                             >
-                                                              <i className="fal fa-plus pr-0 font-size-xs"></i>
+                                                              <i className="pr-0 fal fa-plus font-size-xs"></i>
                                                             </button>
                                                             <button
                                                               type="button"
@@ -231,7 +230,7 @@ function ModalCalendarLock({
                                                                 )
                                                               }
                                                             >
-                                                              <i className="far fa-trash-alt pr-0 font-size-xs"></i>
+                                                              <i className="pr-0 far fa-trash-alt font-size-xs"></i>
                                                             </button>
                                                           </div>
                                                         </div>
@@ -248,7 +247,7 @@ function ModalCalendarLock({
                                         Bạn chưa có lịch khóa trong từ hôm nay
                                         cho tới các ngày sắp tới. Vui lòng
                                         <span
-                                          className="text-primary cursor-pointer font-weight-bold text-decoration-underline pl-5px"
+                                          className="cursor-pointer text-primary font-weight-bold text-decoration-underline pl-5px"
                                           onClick={() =>
                                             ListDisableHelpers.push({
                                               Date: "",

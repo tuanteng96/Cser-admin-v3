@@ -46,3 +46,17 @@
         stroke: $primary;
     }
 }
+
+div:where(.swal2-container) .swal2-html-container {
+    font-size: 14px !important;
+}
+div:where(.swal2-container) button:where(.swal2-styled).swal2-confirm,
+div:where(.swal2-container) button:where(.swal2-styled).swal2-cancel {
+    font-size: 14px !important;
+}
+
+div:where(.swal2-container) h2:where(.swal2-title) {
+    font-size: 26px !important;
+    color: #222 !important;
+}
+

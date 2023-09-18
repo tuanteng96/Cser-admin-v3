@@ -4,7 +4,6 @@ import * as Yup from "yup";
 import Select, { components } from "react-select";
 import AsyncSelect from "react-select/async";
 import CalendarCrud from "../Calendar/_redux/CalendarCrud";
-import { toUrlServer } from "../../../helpers/AssetsHelpers";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
 import "../../../_assets/sass/pages/_booking.scss";
@@ -45,7 +44,7 @@ const CustomOptionStaff = ({ children, ...props }) => {
   return (
     <components.Option {...props}>
       <div className="d-flex align-items-center">
-        <div className="w-20px h-20px mr-3 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+        <div className="mr-3 overflow-hidden w-20px h-20px rounded-circle d-flex align-items-center justify-content-center">
           <img className="w-100" src={Thumbnail} alt={label} />
         </div>
         {children}
@@ -328,7 +327,7 @@ function BookingPage() {
             <Form className="h-100 d-flex flex-column">
               <div className="booking-body">
                 {values.ID && (
-                  <div className="form-group form-group-ezs px-6 pt-3 border-bottom m-0 pb-4">
+                  <div className="px-6 pt-3 pb-4 m-0 form-group form-group-ezs border-bottom">
                     <label className="mb-1">Trạng thái</label>
                     <Select
                       className={`select-control ${
@@ -356,10 +355,10 @@ function BookingPage() {
                   </div>
                 )}
 
-                <div className="form-group form-group-ezs px-6 pt-3">
+                <div className="px-6 pt-3 form-group form-group-ezs">
                   <label className="mb-1 d-flex justify-content-between">
                     Thời gian / Cơ sở
-                    {/* <span className="btn btn-label btn-light-primary label-inline cursor-pointer">
+                    {/* <span className="cursor-pointer btn btn-label btn-light-primary label-inline">
                       Lặp lại
                     </span> */}
                   </label>
@@ -401,7 +400,7 @@ function BookingPage() {
                     onBlur={handleBlur}
                   />
                 </div>
-                <div className="form-group form-group-ezs border-top px-6 pt-3">
+                <div className="px-6 pt-3 form-group form-group-ezs border-top">
                   <label className="mb-1">Dịch vụ</label>
                   <AsyncSelect
                     key={`${
@@ -443,7 +442,7 @@ function BookingPage() {
                     }
                   />
 
-                  <div className="d-flex align-items-center justify-content-between mt-3">
+                  <div className="mt-3 d-flex align-items-center justify-content-between">
                     <label className="mr-3">Sử dụng dịch vụ tại nhà</label>
                     <span className="switch switch-sm switch-icon">
                       <label>
@@ -461,7 +460,7 @@ function BookingPage() {
                     </span>
                   </div>
                 </div>
-                <div className="form-group form-group-ezs px-6 pt-3 border-top">
+                <div className="px-6 pt-3 form-group form-group-ezs border-top">
                   <label className="mb-1">Nhân viên thực hiện</label>
                   <SelectStaffsService
                     className={`select-control ${
@@ -495,7 +494,7 @@ function BookingPage() {
                   <textarea
                     name="Desc"
                     value={values.Desc}
-                    className="form-control mt-2"
+                    className="mt-2 form-control"
                     rows="5"
                     placeholder="Nhập ghi chú"
                     onChange={handleChange}
@@ -509,7 +508,7 @@ function BookingPage() {
                     <div className="d-flex w-100">
                       <button
                         type="button"
-                        className="btn btn-sm btn-secondary mr-2"
+                        className="mr-2 btn btn-sm btn-secondary"
                         onClick={() =>
                           window?.top?.MemberBookInfo &&
                           window?.top?.MemberBookInfo?.callback()
@@ -602,7 +601,7 @@ function BookingPage() {
                                 >
                                   Hủy
                                   <i
-                                    className="fa-sharp fa-light fa-angle-down ml-1"
+                                    className="ml-1 fa-sharp fa-light fa-angle-down"
                                     style={{ fontSize: "14px" }}
                                   ></i>
                                   {((btnLoading.isBtnBooking &&
