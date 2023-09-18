@@ -200,7 +200,9 @@ function CalendarPage(props) {
             }
           }
         }
+        
       }
+      console.log(rs)
       return rs || [];
     },
   });
@@ -708,7 +710,7 @@ function CalendarPage(props) {
                 BookDate: item.os.BookDate,
                 title: item.os.Title,
                 RootTitles: item.os.ProdService2 || item.os.ProdService,
-                className: `fc-event-solid-${getStatusClss(item.os.Status)}`,
+                className: `fc-event-solid-${getStatusClss(item.os.Status)} ${item?.os?.RoomStatus === "done" ? 'bg-stripes' : ''}`,
                 resourceIds:
                   initialView === "resourceTimelineDay"
                     ? [item?.os?.RoomID || 0]
@@ -717,11 +719,6 @@ function CalendarPage(props) {
                     : [0],
               }))
             : [];
-        if (initialView === "resourceTimelineDay") {
-          dataBooksAuto = dataBooksAuto.filter(
-            (x) => x.os && x.os.RoomStatus !== "done"
-          );
-        }
         setEvents([...dataBooks, ...dataBooksAuto, ...dataOffline]);
         setLoading(false);
         isFilter && onHideFilter();
@@ -984,6 +981,7 @@ function CalendarPage(props) {
                   ? ListRooms.data
                   : StaffFull
               }
+              resourceOrder="title"
               events={Events}
               headerToolbar={{
                 left: "prev,next today",
@@ -1007,7 +1005,7 @@ function CalendarPage(props) {
                 if (isTelesales) return;
                 const { _def } = event;
                 if (_def.extendedProps.os) {
-                  if (_def.extendedProps.os.Status === "done") {
+                  if (_def.extendedProps.os?.Status === "done" && _def.extendedProps.os?.RoomStatus !== "done") {
                     let { ID, RoomID } = _def.extendedProps.os;
                     Swal.fire({
                       title: "Bàn đã dọn dẹp xong ?",
