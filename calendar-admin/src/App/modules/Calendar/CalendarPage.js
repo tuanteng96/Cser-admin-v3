@@ -1005,7 +1005,7 @@ function CalendarPage(props) {
                 if (isTelesales) return;
                 const { _def } = event;
                 if (_def.extendedProps.os) {
-                  if (_def.extendedProps.os?.Status === "done" && _def.extendedProps.os?.RoomStatus !== "done") {
+                  if (initialView === "resourceTimelineDay" && _def.extendedProps.os?.Status === "done" && _def.extendedProps.os?.RoomStatus !== "done") {
                     let { ID, RoomID } = _def.extendedProps.os;
                     Swal.fire({
                       title: "Bàn đã dọn dẹp xong ?",
