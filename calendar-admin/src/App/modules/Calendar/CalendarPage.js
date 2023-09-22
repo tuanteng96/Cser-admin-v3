@@ -202,7 +202,6 @@ function CalendarPage(props) {
         }
         
       }
-      console.log(rs)
       return rs || [];
     },
   });

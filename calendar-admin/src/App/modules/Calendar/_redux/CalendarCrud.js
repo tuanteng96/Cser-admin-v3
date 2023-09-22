@@ -35,6 +35,11 @@ const deleteBooking = (data, { CurrentStockID, u_id_z4aDf2 }) => {
   );
 };
 
+const getProcesingBook = () => axiosClient.get(`/api/v3/UnDone@get`);
+
+const updateProcesingBook = (data) =>
+  axiosClient.post(`/api/v3/UnDone@update`, JSON.stringify(data));
+
 const getBooking = ({
   MemberID,
   From,
@@ -97,6 +102,8 @@ const CalendarCrud = {
   getConfigName,
   saveConfigName,
   editTagsMember,
-  updateRoom
+  updateRoom,
+  getProcesingBook,
+  updateProcesingBook,
 };
 export default CalendarCrud;

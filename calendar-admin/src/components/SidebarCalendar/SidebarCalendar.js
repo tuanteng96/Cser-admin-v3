@@ -10,6 +10,7 @@ import { Dropdown } from "react-bootstrap";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { AppContext } from "../../App/App";
 import SelectStocksTelesale from "../Select/SelectStocksTelesale/SelectStocksTelesale";
+import ModalProcessingBook from "../ModalProcessingBook/ModalProcessingBook";
 
 SidebarCalendar.propTypes = {
   onOpenModal: PropTypes.func,
@@ -28,7 +29,6 @@ const perfectScrollbarOptions = {
   wheelSpeed: 2,
   wheelPropagation: false,
 };
-
 
 const Control = ({ children, ...props }) => {
   // @ts-ignore
@@ -77,7 +77,7 @@ function SidebarCalendar({
   headerTitle,
   onOpenModalLock,
   onOpenModalRoom,
-  isRooms
+  isRooms,
 }) {
   const [initialValues, setInitialValues] = useState(initialDefault);
   const { width } = useWindowSize();
@@ -247,6 +247,24 @@ function SidebarCalendar({
                   </div>
                   <AdvancedList formikProps={formikProps} />
                   <StatusList />
+                  <ModalProcessingBook>
+                    {({ open, hidden }) => (
+                      <>
+                        {!hidden && (
+                          <div className="mt-2 border-top">
+                            <button
+                              type="button"
+                              className="btn btn-warning w-100 mt-3"
+                              style={{ padding: "0.6rem 0.75rem" }}
+                              onClick={open}
+                            >
+                              Cần xử lý
+                            </button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </ModalProcessingBook>
                 </div>
               </PerfectScrollbar>
               {width > 991 ? (
