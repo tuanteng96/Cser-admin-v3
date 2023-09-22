@@ -251,15 +251,26 @@ function SidebarCalendar({
                     {({ open, hidden }) => (
                       <>
                         {!hidden && (
-                          <div className="mt-2 border-top">
-                            <button
-                              type="button"
-                              className="btn btn-warning w-100 mt-3"
-                              style={{ padding: "0.6rem 0.75rem" }}
-                              onClick={open}
-                            >
-                              Cần xử lý
-                            </button>
+                          <div className="mt-5 mb-6">
+                            <div className="relative px-4 pt-4 pb-7 border">
+                              <div className="absolute -top-[12px] left-2/4 -translate-x-2/4 bg-white px-2 uppercase text-danger font-bold">
+                                Cần xử lý
+                              </div>
+                              <div className="text-center text-[13px]">
+                                Một số ca thực hiện chưa được hoàn thành, đặt
+                                lịch chưa chuyển trạng.
+                              </div>
+                              <div className="absolute -bottom-[17px] left-2/4 -translate-x-2/4 bg-white px-2">
+                                <button
+                                  type="button"
+                                  className="btn btn-warning !text-[13px] w-[105px]"
+                                  style={{ padding: "0.4rem 0.75rem" }}
+                                  onClick={open}
+                                >
+                                  Xem chi tiết
+                                </button>
+                              </div>
+                            </div>
                           </div>
                         )}
                       </>
