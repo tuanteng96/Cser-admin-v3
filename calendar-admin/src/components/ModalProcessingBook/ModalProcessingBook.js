@@ -23,7 +23,7 @@ function ModalProcessingBook({ children }) {
         {
           type: "MemberBook",
           data: [],
-          Title: "Cập nhập dịch vụ",
+          Title: "Đặt lịch chưa hoàn thành",
         },
       ];
       let data = await CalendarCrud.getProcesingBook();
@@ -48,14 +48,14 @@ function ModalProcessingBook({ children }) {
       {
         type: "MemberBook",
         data: [],
-        Title: "Cập nhập dịch vụ",
+        Title: "Đặt lịch chưa hoàn thành",
       },
     ],
     onSuccess: (data) => {
-      if (data[0].data.length === 0 && data[0].data.length === 0) {
-        setHidden(false);
-      }
-      if (data[0].data.length === 0) {
+      if (data[0].data.length === 0 && data[1].data.length === 0) {
+        setHidden(true);
+        setVisible(false);
+      } else if (data[0].data.length === 0) {
         setActiveKey("MemberBook");
       }
     },
@@ -101,7 +101,7 @@ function ModalProcessingBook({ children }) {
     });
   };
 
-  const updateOsAll = (list) => {
+  const updateOsAll = () => {
     Swal.fire({
       icon: "warning",
       title: `Cập nhập tất cả dịch vụ.`,
@@ -134,7 +134,7 @@ function ModalProcessingBook({ children }) {
       }
     });
   };
-
+  
   return (
     <>
       {children({
@@ -286,7 +286,7 @@ function ModalProcessingBook({ children }) {
                                           onClick={() =>
                                             window?.top?.BANGLICH_BUOI &&
                                             window?.top?.BANGLICH_BUOI(
-                                              os,
+                                              book,
                                               refetch
                                             )
                                           }

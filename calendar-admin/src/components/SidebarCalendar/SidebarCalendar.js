@@ -251,7 +251,7 @@ function SidebarCalendar({
                     {({ open, hidden }) => (
                       <>
                         {!hidden && (
-                          <div className="mt-5 mb-6">
+                          <div className="mt-8 mb-6">
                             <div className="relative px-4 pt-4 pb-7 border">
                               <div className="absolute -top-[12px] left-2/4 -translate-x-2/4 bg-white px-2 uppercase text-danger font-bold">
                                 Cần xử lý
