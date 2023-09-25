@@ -113,16 +113,20 @@ function CalendarPage(props) {
   const [isModalRoom, setIsModalRoom] = useState(false);
   const { width } = useWindowSize();
 
-  const { AuthCrStockID, TimeOpen, TimeClose, StocksList, isRooms } = useSelector(
-    ({ Auth, JsonConfig }) => ({
-      AuthCrStockID: Auth.CrStockID,
-      StocksList: Auth?.Stocks.filter((x) => x.ParentID !== 0),
-      TimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
-      TimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
-      isRooms: JsonConfig?.Admin?.isRooms,
-    })
-  );
-  
+  const {
+    AuthCrStockID,
+    TimeOpen,
+    TimeClose,
+    StocksList,
+    isRooms,
+  } = useSelector(({ Auth, JsonConfig }) => ({
+    AuthCrStockID: Auth.CrStockID,
+    StocksList: Auth?.Stocks.filter((x) => x.ParentID !== 0),
+    TimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
+    TimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
+    isRooms: JsonConfig?.Admin?.isRooms,
+  }));
+
   const [ListLock, setListLock] = useState({
     ListLocks: [],
   });
@@ -200,7 +204,6 @@ function CalendarPage(props) {
             }
           }
         }
-        
       }
       return rs || [];
     },
@@ -709,7 +712,9 @@ function CalendarPage(props) {
                 BookDate: item.os.BookDate,
                 title: item.os.Title,
                 RootTitles: item.os.ProdService2 || item.os.ProdService,
-                className: `fc-event-solid-${getStatusClss(item.os.Status)} ${item?.os?.RoomStatus === "done" ? 'bg-stripes' : ''}`,
+                className: `fc-event-solid-${getStatusClss(item.os.Status)} ${
+                  item?.os?.RoomStatus === "done" ? "bg-stripes" : ""
+                }`,
                 resourceIds:
                   initialView === "resourceTimelineDay"
                     ? [item?.os?.RoomID || 0]
@@ -980,7 +985,9 @@ function CalendarPage(props) {
                   ? ListRooms.data
                   : StaffFull
               }
-              resourceOrder="title"
+              resourceOrder={
+                initialView === "resourceTimelineDay" ? "title" : ""
+              }
               events={Events}
               headerToolbar={{
                 left: "prev,next today",
@@ -1004,7 +1011,11 @@ function CalendarPage(props) {
                 if (isTelesales) return;
                 const { _def } = event;
                 if (_def.extendedProps.os) {
-                  if (initialView === "resourceTimelineDay" && _def.extendedProps.os?.Status === "done" && _def.extendedProps.os?.RoomStatus !== "done") {
+                  if (
+                    initialView === "resourceTimelineDay" &&
+                    _def.extendedProps.os?.Status === "done" &&
+                    _def.extendedProps.os?.RoomStatus !== "done"
+                  ) {
                     let { ID, RoomID } = _def.extendedProps.os;
                     Swal.fire({
                       title: "Bàn đã dọn dẹp xong ?",
