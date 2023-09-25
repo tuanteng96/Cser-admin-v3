@@ -286,7 +286,7 @@ function ModalProcessingBook({ children }) {
                                           onClick={() =>
                                             window?.top?.BANGLICH_BUOI &&
                                             window?.top?.BANGLICH_BUOI(
-                                              book,
+                                              { ...book, os: os },
                                               refetch
                                             )
                                           }
