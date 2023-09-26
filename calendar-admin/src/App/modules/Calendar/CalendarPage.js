@@ -939,10 +939,21 @@ function CalendarPage(props) {
                       </>
                     );
                   },
-                  dateClick: ({ date, dayEl }) => {
+                  dateClick: ({ resource, dayEl }) => {
                     if (isTelesales || dayEl.innerHTML.includes("fc-no-event"))
                       return;
-                    setInitialValue({ ...initialValue, BookDate: date });
+                    setInitialValue({
+                      ...initialValue,
+                      UserServiceIDs:
+                        Number(resource._resource?.id) > 0
+                          ? [
+                              {
+                                value: resource._resource.id,
+                                label: resource._resource.title,
+                              },
+                            ]
+                          : [],
+                    });
                     onOpenModal();
                   },
                 },
