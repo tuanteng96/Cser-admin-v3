@@ -258,7 +258,7 @@ function SidebarCalendar({
                               </div>
                               <div className="text-center text-[13px]">
                                 Một số ca thực hiện chưa được hoàn thành, đặt
-                                lịch chưa chuyển trạng.
+                                lịch chưa chuyển trạng thái.
                               </div>
                               <div className="absolute -bottom-[17px] left-2/4 -translate-x-2/4 bg-white px-2">
                                 <button

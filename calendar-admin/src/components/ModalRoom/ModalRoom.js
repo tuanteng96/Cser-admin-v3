@@ -146,13 +146,13 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
             <Form className="h-100 d-flex flex-column">
               <Modal.Header className="open-close" closeButton>
                 <Modal.Title className="text-uppercase">
-                  Cài đặt Room
+                  Cài đặt phòng
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 {!AuthCrStockID ? (
                   <div className="text-danger">
-                    Bạn vui lòng chọn điểm muốn cài đặt Room.
+                    Bạn vui lòng chọn điểm muốn cài đặt phòng.
                   </div>
                 ) : (
                   <FieldArray
@@ -188,7 +188,7 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                                             <div className="form-group form-group-ezs d-flex mb-10px">
                                               <div className="flex-1 position-relative">
                                                 <label className="mb-1">
-                                                  Tên Room
+                                                  Tên phòng
                                                 </label>
                                                 <input
                                                   name={`RoomStocks[${i}].ListRooms[${index}].label`}
@@ -200,7 +200,7 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                                                   onBlur={handleBlur}
                                                   type="text"
                                                   className="form-control"
-                                                  placeholder="Nhập tên Room"
+                                                  placeholder="Nhập tên phòng"
                                                   autoComplete="off"
                                                 />
                                               </div>
@@ -362,7 +362,7 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                   } w-auto my-0 mr-0 h-auto`}
                   disabled={updateMutation.isLoading}
                 >
-                  Cập nhập Room
+                  Cập nhập
                 </button>
               </Modal.Footer>
             </Form>

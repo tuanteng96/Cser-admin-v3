@@ -967,8 +967,8 @@ function CalendarPage(props) {
                   stickyHeaderDates: true,
                   slotMinTime: TimeOpen,
                   slotMaxTime: TimeClose,
-                  buttonText: "Rooms",
-                  resourceAreaHeaderContent: () => "Rooms",
+                  buttonText: "Phòng",
+                  resourceAreaHeaderContent: () => "Phòng",
                   slotLabelContent: ({ date, text }) => {
                     return (
                       <>
