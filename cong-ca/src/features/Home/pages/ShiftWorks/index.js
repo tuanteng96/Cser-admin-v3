@@ -14,8 +14,8 @@ let getInitial = () => {
     let obj = {}
     obj.Title = moment().clone().weekday(index).format('dddd')
     obj.index = index
-    obj.TimeFrom = '00:00'
-    obj.TimeTo = '23:59'
+    obj.TimeFrom = '06:00'
+    obj.TimeTo = '18:00'
     if (index === 6) {
       obj.isOff = true
     } else {
@@ -72,6 +72,15 @@ function ShiftWorks(props) {
         onError: error => console.log(error)
       }
     )
+  }
+
+  const getTotalTime = day => {
+    if (day.isOff) return 'Nghỉ'
+    var a = moment(day.TimeFrom, 'HH:mm')
+    var b = moment(day.TimeTo, 'HH:mm')
+    var duration = moment.duration(b.diff(a))
+    var hours = duration.asHours()
+    return Math.round(hours) + "h"
   }
 
   return (
@@ -194,12 +203,23 @@ function ShiftWorks(props) {
                           type="button"
                           className="btn fw-500 btn-success w-100 mt-15px"
                           onClick={() => {
-                            arrayHelpers.push({
-                              ID: uuid(),
-                              Name: textAdd,
-                              Days: getInitial()
-                            })
-                            setTextAdd('')
+                            if (textAdd) {
+                              arrayHelpers.push({
+                                ID: uuid(),
+                                Name: textAdd,
+                                Days: getInitial()
+                              })
+                              setTextAdd('')
+                            } else {
+                              window.top?.toastr &&
+                                window.top?.toastr.error(
+                                  'Vui lòng nhập loại ca.',
+                                  '',
+                                  {
+                                    timeOut: 2000
+                                  }
+                                )
+                            }
                           }}
                         >
                           Thêm mới
@@ -276,7 +296,7 @@ function ShiftWorks(props) {
                                               {day.Title}
                                             </div>
                                             <div className="leading-4 text-[13px] text-[#878c93]">
-                                              9h
+                                              {getTotalTime(day)}
                                             </div>
                                           </div>
                                           <div className="d-flex align-items-center px-15px w-[400px]">
