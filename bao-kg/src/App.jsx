@@ -6,6 +6,7 @@ import moment from "moment";
 import { useQuery } from "react-query";
 import MembersAPI from "./api/members.api";
 import { Cookies } from "./utils/cookies";
+import { useWindowSize } from "@uidotdev/usehooks";
 
 const startCurrentMonth = moment().startOf("month").format("MM/DD/YYYY");
 const endCurrentMonth = moment().endOf("month").format("MM/DD/YYYY");
@@ -21,6 +22,8 @@ function App() {
       "m.ByStockID": StockID || null,
     },
   });
+
+  const { width } = useWindowSize();
 
   const { data, isLoading, isPreviousData } = useQuery({
     queryKey: ["ListReportKG", filters],
@@ -51,25 +54,30 @@ function App() {
           key: "Member.FullName",
           title: "Khách hàng",
           dataKey: "Member.FullName",
-          width: 250,
+          width: width > 767 ? 250 : 145,
           sortable: false,
           frozen: "left",
           style: {
             fontWeight: 600,
           },
+          headerClassName: "text-sm md:text-base",
+          className: "text-sm md:text-base",
         },
       ];
       for (let i = 0; i < daysInMonth; i++) {
         moment().startOf("month").format("YYYY-MM-DD hh:mm");
         let newObj = {
           key: "Day-" + i + 1,
-          title: moment().startOf("month").add(i, "days").format("DD-MM-YYYY"),
+          title:
+            width > 767
+              ? moment().startOf("month").add(i, "days").format("DD-MM-YYYY")
+              : moment().startOf("month").add(i, "days").format("DD-MM"),
           dataKey: "Day-" + i + 1,
           cellRenderer: ({ rowData }) =>
             rowData.Dates && rowData.Dates[i] && rowData.Dates[i]["Value"]
               ? `${rowData.Dates[i].Value} Kg`
               : "",
-          width: 125,
+          width: width > 767 ? 125 : 80,
           sortable: false,
           style: {
             backgroundColor:
@@ -78,13 +86,15 @@ function App() {
                 ? "#fffadf"
                 : "",
           },
+          headerClassName: "text-sm md:text-base",
+          className: "text-sm md:text-base",
         };
         column.push(newObj);
       }
       return column;
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [filters]
+    [filters, width]
   );
 
   const rowClassName = ({ columns, rowData, rowIndex }) => {
@@ -111,7 +121,7 @@ function App() {
             }
           />
         </div>
-        <div className="ml-3">
+        <div className="ml-3 w-[120px] md:w-auto">
           <InputDatePicker
             showMonthYearPicker
             showFullMonthYearPicker
