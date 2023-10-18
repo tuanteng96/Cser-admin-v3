@@ -3,6 +3,7 @@ import { FieldArray, Form, Formik } from 'formik'
 import moment from 'moment'
 import React, { useState } from 'react'
 import ReactDatePicker from 'react-datepicker'
+import { NumericFormat } from 'react-number-format'
 import { useMutation, useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import uuid from 'react-uuid'
@@ -16,6 +17,7 @@ let getInitial = () => {
     obj.index = index
     obj.TimeFrom = '06:00'
     obj.TimeTo = '18:00'
+    obj.Value = 1
     if (index === 6) {
       obj.isOff = true
     } else {
@@ -80,7 +82,7 @@ function ShiftWorks(props) {
     var b = moment(day.TimeTo, 'HH:mm')
     var duration = moment.duration(b.diff(a))
     var hours = duration.asHours()
-    return Math.round(hours) + "h"
+    return Math.round(hours) + 'h'
   }
 
   return (
@@ -92,7 +94,6 @@ function ShiftWorks(props) {
       {formikProps => {
         // errors, touched, handleChange, handleBlur
         const { values, setFieldValue, handleBlur } = formikProps
-
         return (
           <Form className="h-100 card" autoComplete="off">
             <div className="card-header d-block p-20px min-h-125px min-h-md-auto">
@@ -299,7 +300,7 @@ function ShiftWorks(props) {
                                               {getTotalTime(day)}
                                             </div>
                                           </div>
-                                          <div className="d-flex align-items-center px-15px w-[400px]">
+                                          <div className="d-flex align-items-center px-15px w-[450px]">
                                             {day.isOff && (
                                               <div className="text-muted">
                                                 Không có ca
@@ -400,6 +401,43 @@ function ShiftWorks(props) {
                                                         d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                                                       />
                                                     </svg>
+                                                  </div>
+                                                </div>
+                                                <div className="ml-3 position-relative w-[200px]">
+                                                  <div className="input-group">
+                                                    <div className="input-group-prepend">
+                                                      <span
+                                                        className="input-group-text"
+                                                        style={{
+                                                          height: '100%',
+                                                          borderTopRightRadius: 0,
+                                                          borderBottomRightRadius: 0,
+                                                          fontSize: 13,
+                                                          border:
+                                                            '1px solid #e4e6ef',
+                                                          color: '#3F4254'
+                                                        }}
+                                                      >
+                                                        Số công
+                                                      </span>
+                                                    </div>
+                                                    <NumericFormat
+                                                      allowNegative
+                                                      className="form-control text-center"
+                                                      placeholder="Số công"
+                                                      name={`CONG_CA[${index}].Days[${i}].Value`}
+                                                      value={day.Value}
+                                                      onValueChange={({
+                                                        value,
+                                                        floatValue
+                                                      }) => {
+                                                        setFieldValue(
+                                                          `CONG_CA[${index}].Days[${i}].Value`,
+                                                          floatValue
+                                                        )
+                                                      }}
+                                                      allowLeadingZeros={true}
+                                                    />
                                                   </div>
                                                 </div>
                                               </>

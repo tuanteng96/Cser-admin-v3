@@ -22,7 +22,13 @@ _redux.setupAxios(http, store)
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false
+    }
+  }
+})
 
 root.render(
   <QueryClientProvider client={queryClient}>

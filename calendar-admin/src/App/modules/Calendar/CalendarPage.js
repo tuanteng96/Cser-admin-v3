@@ -980,6 +980,11 @@ function CalendarPage(props) {
                     );
                   },
                 },
+                listWeek: {
+                  type: "listWeek",
+                  scrollTime: moment(new Date()).format("HH:mm"),
+                  now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                },
               }}
               plugins={[
                 dayGridPlugin,
@@ -1155,6 +1160,13 @@ function CalendarPage(props) {
                 const { view } = arg;
                 //Set View Calendar
                 setInitialView(view.type);
+
+                if (view.type === "listWeek") {
+                  let today = document.querySelector(".fc-day-today");
+                  let elScroll =
+                    today?.parentElement?.parentElement?.parentElement;
+                  if (elScroll) elScroll.scroll(0, today.offsetTop);
+                }
               }}
               viewWillUnmount={({ view, el }) => {
                 // Create Dom
