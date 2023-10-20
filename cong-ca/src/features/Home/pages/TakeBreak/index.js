@@ -8,8 +8,12 @@ import Select from 'react-select'
 import SelectStaffs from 'src/components/Selects/SelectStaffs'
 import worksheetApi from 'src/api/worksheet.api'
 import moment from 'moment'
-import { useInfiniteQuery, useQuery } from 'react-query'
+import { useInfiniteQuery, useMutation } from 'react-query'
 import { ArrayHelpers } from 'src/helpers/ArrayHelpers'
+import Swal from 'sweetalert2'
+import 'sweetalert2/src/sweetalert2.scss'
+import PickerTakeBreak from './components/PickerTakeBreak'
+import Text from 'react-texty'
 
 function TakeBreakPage(props) {
   const navigate = useNavigate()
@@ -51,34 +55,35 @@ function TakeBreakPage(props) {
     setStocksList(newStocks)
   }, [Stocks, CrStockID])
 
-  const { isLoading, data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ['ListWorkOff', filters],
-    queryFn: async ({ pageParam = 1 }) => {
-      const newObj = {
-        filter: {
-          From: filters.From ? moment(filters.From).format('YYYY-MM-DD') : '',
-          To: filters.To ? moment(filters.To).format('YYYY-MM-DD') : '',
-          StockID: filters.StockID ? filters.StockID.ID : '',
-          UserIDs: filters.UserID ? [filters.UserID.value] : ''
-        },
-        pi: pageParam,
-        ps: filters.ps
-      }
+  const { data, fetchNextPage, hasNextPage, refetch, isLoading, isFetching } =
+    useInfiniteQuery({
+      queryKey: ['ListWorkOff', filters],
+      queryFn: async ({ pageParam = 1 }) => {
+        const newObj = {
+          filter: {
+            From: filters.From ? moment(filters.From).format('YYYY-MM-DD') : '',
+            To: filters.To ? moment(filters.To).format('YYYY-MM-DD') : '',
+            StockID: filters.StockID ? filters.StockID.ID : '',
+            UserIDs: filters.UserID ? [filters.UserID.value] : ''
+          },
+          pi: pageParam,
+          ps: filters.ps
+        }
 
-      const { data } = await worksheetApi.listWorkOff(newObj)
-      return (
-        {
-          ...data,
-          pcount: data?.pcount || 1
-        } || []
-      )
-    },
-    getNextPageParam: (lastPage, pages) => {
-      return lastPage.pi === lastPage.pcount ? undefined : lastPage.pi + 1
-    },
-    keepPreviousData: true,
-    enabled: Boolean(filters.StockID && filters.From && filters.To)
-  })
+        const { data } = await worksheetApi.listWorkOff(newObj)
+        return (
+          {
+            ...data,
+            pcount: data?.pcount || 1
+          } || []
+        )
+      },
+      getNextPageParam: (lastPage, pages) => {
+        return lastPage.pi === lastPage.pcount ? undefined : lastPage.pi + 1
+      },
+      keepPreviousData: true,
+      enabled: Boolean(filters.StockID && filters.From && filters.To)
+    })
 
   let List = ArrayHelpers.useInfiniteQuery(data?.pages, 'list')
 
@@ -126,7 +131,7 @@ function TakeBreakPage(props) {
           moment(rowData.To).format('HH:mm DD-MM-YYYY')
       },
       {
-        width: 300,
+        width: 350,
         title: 'Lý do',
         key: 'Desc',
         sortable: false,
@@ -139,18 +144,84 @@ function TakeBreakPage(props) {
         sortable: false,
         cellRenderer: ({ rowData }) => (
           <div className="flex w-full justify-content-center">
-            <button className="mx-1 btn btn-xs btn-primary">Sửa</button>
-            <button className="mx-1 btn btn-xs btn-danger">Xoá</button>
+            <PickerTakeBreak item={rowData}>
+              {({ open }) => (
+                <button
+                  type="button"
+                  className="mx-1 btn btn-xs btn-primary"
+                  onClick={open}
+                >
+                  Sửa
+                </button>
+              )}
+            </PickerTakeBreak>
+
+            <button
+              type="button"
+              className="mx-1 btn btn-xs btn-danger"
+              onClick={() => onDelete(rowData)}
+            >
+              Xoá
+            </button>
           </div>
         ),
         headerClassName: () => 'justify-content-center',
         style: {
           textAlign: 'center'
-        }
+        },
+        frozen: 'right'
       }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
+  )
+
+  const deleteMutation = useMutation({
+    mutationFn: body => worksheetApi.deleteWorkOff(body)
+  })
+
+  const onDelete = ({ ID }) => {
+    Swal.fire({
+      title: 'Xóa lịch nghỉ này',
+      text: 'Bạn đang muốn thực hiện xóa lịch nghỉ này ?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Thực hiện',
+      cancelButtonText: 'Hủy',
+      showLoaderOnConfirm: true,
+      preConfirm: login =>
+        new Promise((resolve, reject) => {
+          deleteMutation.mutate(
+            { delete: [ID] },
+            {
+              onSettled: () => {
+                refetch().then(() => resolve())
+              }
+            }
+          )
+        })
+    }).then(result => {
+      if (result.isConfirmed) {
+        window.top.toastr &&
+          window.top.toastr.success('Xóa thành công', {
+            timeOut: 1500
+          })
+      }
+    })
+  }
+
+  const TableCell = ({ className, cellData }) => (
+    <Text tooltipMaxWidth={280} className={className}>
+      {cellData}
+    </Text>
+  )
+
+  const TableHeaderCell = ({ className, column }) => (
+    <Text tooltipMaxWidth={280} className={className}>
+      {column.title}
+    </Text>
   )
 
   return (
@@ -217,6 +288,18 @@ function TakeBreakPage(props) {
               />
               <i className="top-0 right-0 pointer-events-none fa-regular fa-calendar-range position-absolute w-25px h-100 d-flex align-items-center font-size-md text-muted"></i>
             </div>
+            <div className="h-40px w-1px border-right mx-15px"></div>
+            <PickerTakeBreak>
+              {({ open }) => (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={open}
+                >
+                  Tạo lịch nghỉ
+                </button>
+              )}
+            </PickerTakeBreak>
           </div>
         </div>
       </div>
@@ -225,6 +308,7 @@ function TakeBreakPage(props) {
           {({ width, height }) => (
             <Table
               fixed
+              components={{ TableCell, TableHeaderCell }}
               rowKey="ID"
               width={width}
               height={height}
@@ -232,7 +316,41 @@ function TakeBreakPage(props) {
               data={List}
               ignoreFunctionInColumnCompare={false}
               loadingMore={hasNextPage}
+              disabled={isLoading}
               onEndReached={fetchNextPage}
+              onEndReachedThreshold={300}
+              emptyRenderer={() =>
+                (!isLoading || !isFetching) && (
+                  <div
+                    className="h-full d-flex justify-content-center align-items-center"
+                    style={{ fontSize: '15px' }}
+                  >
+                    Không có dữ liệu
+                  </div>
+                )
+              }
+              overlayRenderer={() =>
+                isLoading || isFetching ? (
+                  <div
+                    id="splash-screen"
+                    className="kt-splash-screen"
+                    style={{
+                      background: 'rgb(255 255 255 / 58%)'
+                    }}
+                  >
+                    <svg className="splash-spinner" viewBox="0 0 50 50">
+                      <circle
+                        className="path"
+                        cx={25}
+                        cy={25}
+                        r={20}
+                        fill="none"
+                        strokeWidth={5}
+                      />
+                    </svg>
+                  </div>
+                ) : null
+              }
             />
           )}
         </AutoResizer>

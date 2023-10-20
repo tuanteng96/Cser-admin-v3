@@ -2,7 +2,7 @@
     "name": "react-teamplate",
     "version": "0.1.0",
     "private": true,
-    "_homepage": "/Admin/UserWork/",
+    "homepage": "/Admin/UserWork/",
     "dependencies": {
         "@reduxjs/toolkit": "^1.8.1",
         "@testing-library/jest-dom": "^5.16.4",
@@ -31,9 +31,11 @@
         "react-scroll-sync": "^0.11.0",
         "react-select": "^5.7.0",
         "react-select-async-paginate": "^0.7.2",
+        "react-texty": "^0.6.0",
         "react-uuid": "^2.0.0",
         "redux": "^4.2.0",
         "redux-persist": "^6.0.0",
+        "sweetalert2": "^11.7.32",
         "web-vitals": "^2.1.4",
         "yup": "^0.32.11"
     },

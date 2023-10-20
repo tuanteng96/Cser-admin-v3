@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Navbar from '../../components/Navbar'
 import { NumericFormat } from 'react-number-format'
 import DatePicker, { registerLocale } from 'react-datepicker'

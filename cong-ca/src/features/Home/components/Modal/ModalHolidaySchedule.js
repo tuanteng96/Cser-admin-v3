@@ -79,16 +79,6 @@ function ModalHolidaySchedule({
     }
   }, [show, initialModal, TimeOpen, TimeClose])
 
-  const filterPassedTime = time => {
-    var beginningTime = moment(time, 'HH:mm:ss')
-    var startTime = moment(TimeOpen, 'HH:mm:ss')
-    var endTime = moment(TimeClose, 'HH:mm:ss')
-    return (
-      beginningTime.isSameOrAfter(startTime) &&
-      beginningTime.isSameOrBefore(endTime)
-    )
-  }
-
   return (
     <Modal
       show={show}

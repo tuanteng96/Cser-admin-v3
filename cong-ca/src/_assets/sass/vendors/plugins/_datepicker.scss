@@ -157,7 +157,7 @@
                             color: #3699ff !important;
                             font-weight: 700;
                         }
-                        &.react-datepicker__day--keyboard-selected:not(.react-datepicker__day--range-start) {
+                        &.react-datepicker__day--keyboard-selected:not(.react-datepicker__day--in-range) {
                             position: relative;
                             background: transparent !important;
                             color: #7e8299 !important;
