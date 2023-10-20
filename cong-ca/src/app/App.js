@@ -12,6 +12,7 @@ import Authentication from 'src/features/Authentication'
 import UnauthenticateGuard from 'src/guards/UnauthenticateGuard'
 import ScrollToTop from 'src/layout/_core/ScrollToTop'
 import ShiftWorks from 'src/features/Home/pages/ShiftWorks'
+import TakeBreakPage from 'src/features/Home/pages/TakeBreak'
 
 function App({ store }) {
   return (
@@ -31,6 +32,10 @@ function App({ store }) {
               <Route path="bang-cham-cong" element={<Timekeeping />}>
                 <Route index element={<TimekeepingHome />} />
                 <Route path="ca-lam-viec" element={<ShiftWorks />}></Route>
+                <Route
+                  path="danh-sach-xin-nghi"
+                  element={<TakeBreakPage />}
+                ></Route>
                 <Route path=":id" element={<TimekeepingMember />}></Route>
               </Route>
               <Route

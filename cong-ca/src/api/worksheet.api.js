@@ -30,6 +30,9 @@ const worksheetApi = {
   },
   saveTypeShift: data => {
     return http.post('/api/v3/user24@WorkTimeSetting', JSON.stringify(data))
+  },
+  listWorkOff: data => {
+    return http.post(`/api/v3/userwork23@workoffList`, JSON.stringify(data))
   }
 }
 export default worksheetApi

@@ -12,14 +12,14 @@ function Navbar(props) {
       >
         Bảng chấm công
       </NavLink>
-      <NavLink
+      {/* <NavLink
         className={({ isActive }) =>
           `btn fw-500 ${isActive ? 'btn-primary' : 'btn-light-primary'}`
         }
         to="/duyet-cham-cong"
       >
         Duyệt chấm công
-      </NavLink>
+      </NavLink> */}
     </Fragment>
   )
 }

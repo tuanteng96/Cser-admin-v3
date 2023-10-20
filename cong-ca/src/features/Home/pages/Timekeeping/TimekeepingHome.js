@@ -245,6 +245,12 @@ function TimekeepingHome(props) {
                     <i className="fa-regular fa-gear mr-8px"></i>
                     Ca làm việc
                   </NavLink>
+                  <NavLink
+                    to="danh-sach-xin-nghi"
+                    className="btn btn-light-danger fw-500 ml-10px"
+                  >
+                    Danh sách xin nghỉ
+                  </NavLink>
                   {/* <Navbar /> */}
                 </div>
               </div>

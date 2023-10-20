@@ -2,7 +2,7 @@
     "name": "react-teamplate",
     "version": "0.1.0",
     "private": true,
-    "homepage": "/Admin/UserWork/",
+    "_homepage": "/Admin/UserWork/",
     "dependencies": {
         "@reduxjs/toolkit": "^1.8.1",
         "@testing-library/jest-dom": "^5.16.4",
@@ -19,6 +19,7 @@
         "node": "^17.7.2",
         "query-string": "^7.1.1",
         "react": "^18.1.0",
+        "react-base-table": "^1.13.4",
         "react-bootstrap": "^2.3.1",
         "react-datepicker": "^4.8.0",
         "react-dom": "^18.1.0",

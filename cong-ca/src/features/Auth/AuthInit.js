@@ -79,7 +79,7 @@ function AuthInit(props) {
           }
         }
         window.token =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwMzExNDEwNDQ4MCIsIm5iZiI6MTY5MzAxODUxNSwiZXhwIjoxNjkzNjIzMzE1LCJpYXQiOjE2OTMwMTg1MTV9.GQwL-G_LBbYe4vqLC21TH33CVzOrsiYX-Pa3MMKO3DM'
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwMzExNDEwNDk1NCIsIm5iZiI6MTY5NzY4OTIzNSwiZXhwIjoxNzg0MDg5MjM1LCJpYXQiOjE2OTc2ODkyMzV9.PUjpASlRk94Bm1E6ztjSRKIcmEqVDOUDwXeLm5rbVRs'
         window.GlobalConfig = {
           APP: {
             Working: {

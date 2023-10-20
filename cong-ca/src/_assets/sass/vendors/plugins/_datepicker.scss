@@ -133,7 +133,8 @@
                         }
                         &.react-datepicker__day--selected,
                         &.react-datepicker__day--range-start,
-                        &.react-datepicker__day--in-selecting-range {
+                        &.react-datepicker__day--in-selecting-range,
+                        &.react-datepicker__day--selecting-range-start {
                             position: relative;
                             background: #e1f0ff !important;
                             color: #3699ff !important;
@@ -156,12 +157,29 @@
                             color: #3699ff !important;
                             font-weight: 700;
                         }
-                        &.react-datepicker__day--keyboard-selected {
+                        &.react-datepicker__day--keyboard-selected:not(.react-datepicker__day--range-start) {
                             position: relative;
                             background: transparent !important;
                             color: #7e8299 !important;
                             &:before {
                                 display: none !important;
+                            }
+                        }
+                        &.react-datepicker__day--keyboard-selected.react-datepicker__day--selecting-range-start {
+                            position: relative;
+                            background: #e1f0ff !important;
+                            color: #3699ff !important;
+                            font-weight: 700;
+                            &:before {
+                                content: '';
+                                display: inline-block;
+                                border: solid transparent;
+                                border-width: 0 0 7px 7px;
+                                border-bottom-color: #3699ff;
+                                border-top-color: #3699ff;
+                                position: absolute;
+                                bottom: 4px;
+                                right: 4px;
                             }
                         }
                     }
