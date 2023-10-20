@@ -24,7 +24,7 @@ function TakeBreakPage(props) {
     From: new Date(), // Ngày bắt đầu
     To: new Date(), // Ngày kết thúc
     pi: 1, // Trang hiện tại
-    ps: 15 // Số lượng item
+    ps: 20 // Số lượng item
   })
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function TakeBreakPage(props) {
     setStocksList(newStocks)
   }, [Stocks, CrStockID])
 
-  const { isLoading, data } = useInfiniteQuery({
+  const { isLoading, data, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ['ListWorkOff', filters],
     queryFn: async ({ pageParam = 1 }) => {
       const newObj = {
@@ -62,7 +62,7 @@ function TakeBreakPage(props) {
           UserIDs: filters.UserID ? [filters.UserID.value] : ''
         },
         pi: pageParam,
-        ps: 20
+        ps: filters.ps
       }
 
       const { data } = await worksheetApi.listWorkOff(newObj)
@@ -76,9 +76,11 @@ function TakeBreakPage(props) {
     getNextPageParam: (lastPage, pages) => {
       return lastPage.pi === lastPage.pcount ? undefined : lastPage.pi + 1
     },
+    keepPreviousData: true,
     enabled: Boolean(filters.StockID && filters.From && filters.To)
   })
-  let List = ArrayHelpers.useInfiniteQuery(data?.pages, 'list');
+
+  let List = ArrayHelpers.useInfiniteQuery(data?.pages, 'list')
 
   const columns = useMemo(
     () => [
@@ -87,21 +89,63 @@ function TakeBreakPage(props) {
         title: 'STT',
         dataKey: 'index',
         cellRenderer: ({ rowIndex }) =>
-          filters.Ps * (filters.Pi - 1) + (rowIndex + 1),
+          filters.ps * (filters.pi - 1) + (rowIndex + 1),
         width: 60,
         sortable: false,
-        align: 'center',
-        mobileOptions: {
-          visible: true
-        }
+        align: 'center'
       },
       {
+        width: 300,
         title: 'Họ tên nhân viên',
-        key: 'Member.FullName',
+        key: 'User.FullName',
         sortable: false,
-        frozen: 'left',
+        cellRenderer: ({ rowData }) => rowData?.User?.FullName
+      },
+      {
+        width: 200,
+        title: 'Ngày tạo',
+        key: 'CreateDate',
+        sortable: false,
+        cellRenderer: ({ rowData }) =>
+          moment(rowData.CreateDate).format('HH:mm DD-MM-YYYY')
+      },
+      {
+        width: 200,
+        title: 'Nghỉ từ',
+        key: 'From',
+        sortable: false,
+        cellRenderer: ({ rowData }) =>
+          moment(rowData.From).format('HH:mm DD-MM-YYYY')
+      },
+      {
+        width: 200,
+        title: 'Nghỉ đến',
+        key: 'To',
+        sortable: false,
+        cellRenderer: ({ rowData }) =>
+          moment(rowData.To).format('HH:mm DD-MM-YYYY')
+      },
+      {
+        width: 300,
+        title: 'Lý do',
+        key: 'Desc',
+        sortable: false,
+        cellRenderer: ({ rowData }) => rowData?.Desc
+      },
+      {
+        width: 150,
+        title: '#',
+        key: '#',
+        sortable: false,
+        cellRenderer: ({ rowData }) => (
+          <div className="flex w-full justify-content-center">
+            <button className="mx-1 btn btn-xs btn-primary">Sửa</button>
+            <button className="mx-1 btn btn-xs btn-danger">Xoá</button>
+          </div>
+        ),
+        headerClassName: () => 'justify-content-center',
         style: {
-          fontWeight: 600
+          textAlign: 'center'
         }
       }
     ],
@@ -116,11 +160,11 @@ function TakeBreakPage(props) {
           <h3 className="text-uppercase">
             <div className="d-flex align-items-baseline">
               <div
-                className="d-flex cursor-pointer"
+                className="cursor-pointer d-flex"
                 onClick={() => navigate('/')}
               >
                 <div className="w-20px">
-                  <i className="fa-regular fa-chevron-left ml-0 vertical-align-middle text-muted"></i>
+                  <i className="ml-0 fa-regular fa-chevron-left vertical-align-middle text-muted"></i>
                 </div>
                 Danh sách xin nghỉ
               </div>
@@ -171,12 +215,12 @@ function TakeBreakPage(props) {
                 startDate={filters.From}
                 endDate={filters.To}
               />
-              <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+              <i className="top-0 right-0 pointer-events-none fa-regular fa-calendar-range position-absolute w-25px h-100 d-flex align-items-center font-size-md text-muted"></i>
             </div>
           </div>
         </div>
       </div>
-      <div className="card-body p-20px overflow-auto relative">
+      <div className="relative overflow-auto card-body p-20px">
         <AutoResizer>
           {({ width, height }) => (
             <Table
@@ -187,6 +231,8 @@ function TakeBreakPage(props) {
               columns={columns}
               data={List}
               ignoreFunctionInColumnCompare={false}
+              loadingMore={hasNextPage}
+              onEndReached={fetchNextPage}
             />
           )}
         </AutoResizer>

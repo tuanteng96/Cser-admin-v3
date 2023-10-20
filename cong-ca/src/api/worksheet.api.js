@@ -32,7 +32,7 @@ const worksheetApi = {
     return http.post('/api/v3/user24@WorkTimeSetting', JSON.stringify(data))
   },
   listWorkOff: data => {
-    return http.post(`/api/v3/userwork23@workoffList`, JSON.stringify(data))
+    return http.post(`/api/v3/userwork23@workoffList?stockid=${data.filter.StockID}`, JSON.stringify(data))
   }
 }
 export default worksheetApi
