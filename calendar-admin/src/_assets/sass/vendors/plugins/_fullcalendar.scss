@@ -68,6 +68,11 @@
                 }
             }
         }
+        .fc-no-event {
+            >.fc-content {
+                display: none;
+            }
+        }
         .fc-timeGridDay-view {
             .fc-col-header {
                 .fc-scrollgrid-sync-inner {
@@ -588,13 +593,13 @@
             &.fc-resourceTimelineDay-view {
                 .fc-scrollgrid-section-header {
                     .fc-scroller-harness {
-                        height:100%;
+                        height: 100%;
                         .fc-scroller {
-                            height:100%;
+                            height: 100%;
                             .fc-timeline-header {
-                                height:100%;
+                                height: 100%;
                                 .fc-scrollgrid-sync-table {
-                                    height:100%;
+                                    height: 100%;
                                     .fc-timeline-slot-frame {
                                         align-items: center;
                                         height: 100%;
@@ -604,7 +609,7 @@
                         }
                     }
                 }
-                .fc-scrollgrid-liquid > tbody .fc-scrollgrid-section > td:first-child .fc-datagrid-cell-frame .fc-datagrid-cell-cushion {
+                .fc-scrollgrid-liquid>tbody .fc-scrollgrid-section>td:first-child .fc-datagrid-cell-frame .fc-datagrid-cell-cushion {
                     flex-direction: row;
                     align-items: center;
                     justify-content: left;
@@ -612,16 +617,16 @@
                 .fc-scrollgrid-section-header .fc-scroller {
                     border-bottom: 0;
                 }
-                > table {
+                >table {
                     >thead {
-                        > tr {
-                            > th {
+                        >tr {
+                            >th {
                                 .fc-scroller {
-                                    -ms-overflow-style: none;  /* IE and Edge */
-                                    scrollbar-width: none;  /* Firefox */
-                
-                                    &::-webkit-scrollbar
-                                    {
+                                    -ms-overflow-style: none;
+                                    /* IE and Edge */
+                                    scrollbar-width: none;
+                                    /* Firefox */
+                                    &::-webkit-scrollbar {
                                         width: 0px;
                                         display: none;
                                     }
@@ -630,11 +635,10 @@
                         }
                     }
                     >tbody {
-                        > tr {
-                            > td:first-child {
+                        >tr {
+                            >td:first-child {
                                 .fc-scroller {
-                                    &::-webkit-scrollbar
-                                    {
+                                    &::-webkit-scrollbar {
                                         background-color: #fff;
                                     }
                                     &::-webkit-scrollbar {
@@ -644,7 +648,7 @@
                                         background-color: #fff;
                                     }
                                 }
-                            }   
+                            }
                         }
                     }
                 }
@@ -655,7 +659,7 @@
                         }
                     }
                 }
-                .fc-timeline-body > .fc-scrollgrid-sync-table tr td {
+                .fc-timeline-body>.fc-scrollgrid-sync-table tr td {
                     height: 50px !important;
                 }
             }

@@ -654,6 +654,30 @@ function CalendarPage(props) {
                   className: ["fc-no-event"],
                 }))
               : [];
+          if (data?.userOffs && data?.userOffs.length > 0) {
+            for (let useroff of data?.userOffs) {
+              dataOffline.push({
+                start: moment(filters.From)
+                  .set({
+                    hour: 0,
+                    minute: 0,
+                    second: 0,
+                  })
+                  .toDate(),
+                end: moment(filters.To).set({
+                  hour: 23,
+                  minute: 59,
+                  second: 0,
+                }).toDate(),
+                resourceIds: [useroff.user.ID],
+                display: "background",
+                extendedProps: {
+                  noEvent: true,
+                },
+                className: ["fc-no-event"],
+              });
+            }
+          }
         }
 
         const dataBooks =
@@ -1086,9 +1110,9 @@ function CalendarPage(props) {
                         ? `<i class="fas fa-home text-white font-size-xs"></i>`
                         : ""
                     } ${extendedProps?.Star ? `(${extendedProps.Star})` : ""} ${
-                      extendedProps?.MemberCurrent?.FullName
+                      extendedProps?.MemberCurrent?.FullName || "Chưa xác định"
                     }</span><span class="d-none d-md-inline"> - ${
-                      extendedProps?.MemberCurrent?.MobilePhone
+                      extendedProps?.MemberCurrent?.MobilePhone || "Chưa xác định"
                     }</span></div><span class="${!extendedProps?.isBook &&
                       "d-none"}">${extendedProps?.BookCount?.Done ||
                       0}/${extendedProps?.BookCount?.Total || 0}</span></div>
@@ -1113,9 +1137,9 @@ function CalendarPage(props) {
                         ? `<i class="fas fa-home font-size-xs"></i>`
                         : ""
                     } ${extendedProps?.Star ? `(${extendedProps.Star})` : ""} ${
-                      extendedProps?.MemberCurrent.FullName
+                      extendedProps?.MemberCurrent.FullName || "Chưa xác định"
                     }</span><span class="d-none d-md-inline"> - ${
-                      extendedProps?.MemberCurrent?.MobilePhone
+                      extendedProps?.MemberCurrent?.MobilePhone || "Chưa xác định"
                     }</span><span> - ${
                       extendedProps?.RootTitles
                         ? extendedProps?.RootMinutes ??

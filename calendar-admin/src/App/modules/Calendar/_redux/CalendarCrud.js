@@ -9,7 +9,7 @@ const getMembers = (key, CurrentStockID) => {
     `${GET_MEMBERS_STAFF_URL}?cmd=member&q=${key}&CurrentStockID=${CurrentStockID}`
   );
 };
-const getStaffs = ({ StockID, key, All }) => {
+const getStaffs = ({ StockID, key = "", All }) => {
   return axiosClient.get(
     `${GET_MEMBERS_STAFF_URL}?cmd=user&roles=DV&crstockid=${StockID}&q=${key}${
       All ? "&all=1" : ""
