@@ -2,7 +2,7 @@ import { Provider } from 'react-redux'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Home from 'src/features/Home'
 import AuthInit from 'src/features/Auth/AuthInit'
-import Worksheet from 'src/features/Home/pages/Worksheet'
+// import Worksheet from 'src/features/Home/pages/Worksheet'
 import SalaryApproval from 'src/features/Home/pages/SalaryApproval'
 import Timekeeping from 'src/features/Home/pages/Timekeeping'
 import TimekeepingHome from 'src/features/Home/pages/Timekeeping/TimekeepingHome'
@@ -13,6 +13,7 @@ import UnauthenticateGuard from 'src/guards/UnauthenticateGuard'
 import ScrollToTop from 'src/layout/_core/ScrollToTop'
 import ShiftWorks from 'src/features/Home/pages/ShiftWorks'
 import TakeBreakPage from 'src/features/Home/pages/TakeBreak'
+import PayOffPage from 'src/features/Home/pages/Payoff'
 
 function App({ store }) {
   return (
@@ -32,6 +33,7 @@ function App({ store }) {
               <Route path="bang-cham-cong" element={<Timekeeping />}>
                 <Route index element={<TimekeepingHome />} />
                 <Route path="ca-lam-viec" element={<ShiftWorks />}></Route>
+                <Route path="thuong-phat" element={<PayOffPage />}></Route>
                 <Route
                   path="danh-sach-xin-nghi"
                   element={<TakeBreakPage />}

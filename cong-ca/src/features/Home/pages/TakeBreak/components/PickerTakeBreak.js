@@ -7,14 +7,31 @@ import DatePicker from 'react-datepicker'
 import { useMutation, useQueryClient } from 'react-query'
 import worksheetApi from 'src/api/worksheet.api'
 import moment from 'moment'
+import { useSelector } from 'react-redux'
 
 function PickerTakeBreak({ children, item }) {
+  const { TimeOpen, TimeClose } = useSelector(({ auth }) => ({
+    TimeClose: auth?.GlobalConfig?.APP?.Working?.TimeClose || '23:45:00',
+    TimeOpen: auth?.GlobalConfig?.APP?.Working?.TimeOpen || '00:00:00'
+  }))
   const queryClient = useQueryClient()
   const [visible, setVisible] = useState(false)
   const [initialValues, setInitialValues] = useState({
     ID: 0,
-    From: '',
-    To: '',
+    From: moment()
+      .set({
+        hour: moment(TimeOpen, 'HH:mm:ss').get('hour'),
+        minute: moment(TimeOpen, 'HH:mm:ss').get('minute'),
+        second: moment(TimeOpen, 'HH:mm:ss').get('second')
+      })
+      .toDate(),
+    To: moment()
+      .set({
+        hour: moment(TimeClose, 'HH:mm:ss').get('hour'),
+        minute: moment(TimeClose, 'HH:mm:ss').get('minute'),
+        second: moment(TimeClose, 'HH:mm:ss').get('second')
+      })
+      .toDate(),
     UserID: ''
   })
 

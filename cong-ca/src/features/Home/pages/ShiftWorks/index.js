@@ -46,7 +46,7 @@ function ShiftWorks(props) {
     },
     onSuccess: data => {
       if (data && data.length > 0) {
-        let result = JSON.parse(data[0].Value)
+        let result = data[0].Value ? JSON.parse(data[0].Value) : []
         setInitialValues({
           CONG_CA: result
         })

@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react'
 // import Navbar from '../../components/Navbar'
 import { NumericFormat } from 'react-number-format'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import Select from 'react-select'
 import { useSelector } from 'react-redux'
@@ -21,6 +21,7 @@ import PickerTypeShift from '../../components/Picker/PickerTypeShift'
 moment.locale('vi')
 
 function TimekeepingHome(props) {
+  const navigate = useNavigate()
   const { Stocks, CrStockID } = useSelector(({ auth }) => ({
     Stocks: auth?.Info?.Stocks || [],
     CrStockID: auth?.Info?.CrStockID
@@ -238,13 +239,25 @@ function TimekeepingHome(props) {
                     <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
                   </div>
                   <div className="h-40px w-1px border-right mx-15px"></div>
-                  <NavLink
-                    to="ca-lam-viec"
-                    className="btn btn-light border fw-500"
-                  >
-                    <i className="fa-regular fa-gear mr-8px"></i>
-                    Ca làm việc
-                  </NavLink>
+                  <Dropdown>
+                    <Dropdown.Toggle
+                      className="border !w-11 !h-11 flex items-center justify-center after:hidden !p-0 !text-[#7e8299]"
+                      id="dropdown-basic"
+                    >
+                      <i className="fa-regular fa-gear"></i>
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                      <Dropdown.Item
+                        onClick={() => navigate('/bang-cham-cong/ca-lam-viec')}
+                      >
+                        Ca làm việc
+                      </Dropdown.Item>
+                      <Dropdown.Item onClick={() => navigate('thuong-phat')}>
+                        Thưởng phạt
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
                   <NavLink
                     to="danh-sach-xin-nghi"
                     className="btn btn-light-danger fw-500 ml-10px"
