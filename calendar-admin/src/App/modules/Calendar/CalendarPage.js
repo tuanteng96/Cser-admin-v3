@@ -656,26 +656,33 @@ function CalendarPage(props) {
               : [];
           if (data?.userOffs && data?.userOffs.length > 0) {
             for (let useroff of data?.userOffs) {
-              dataOffline.push({
-                start: moment(filters.From)
-                  .set({
-                    hour: 0,
-                    minute: 0,
-                    second: 0,
-                  })
-                  .toDate(),
-                end: moment(filters.To).set({
-                  hour: 23,
-                  minute: 59,
-                  second: 0,
-                }).toDate(),
-                resourceIds: [useroff.user.ID],
-                display: "background",
-                extendedProps: {
-                  noEvent: true,
-                },
-                className: ["fc-no-event"],
-              });
+              if (useroff.dayList) {
+                let i = useroff.dayList.findIndex((x) => x.off);
+                if (i > -1) {
+                  dataOffline.push({
+                    start: moment(filters.From)
+                      .set({
+                        hour: 0,
+                        minute: 0,
+                        second: 0,
+                      })
+                      .toDate(),
+                    end: moment(filters.To)
+                      .set({
+                        hour: 23,
+                        minute: 59,
+                        second: 0,
+                      })
+                      .toDate(),
+                    resourceIds: [useroff.user.ID],
+                    display: "background",
+                    extendedProps: {
+                      noEvent: true,
+                    },
+                    className: ["fc-no-event"],
+                  });
+                }
+              }
             }
           }
         }
