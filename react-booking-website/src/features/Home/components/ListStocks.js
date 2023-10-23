@@ -45,7 +45,7 @@ function ListStocks({ formikProps }) {
 
   return (
     <div className="bg-white mt-3px pt-15px pl-15px pr-15px pb-5px location">
-      <div className="fw-700 text-uppercase mb-10px">1. Chọn cơ sở</div>
+      <div className="fw-700 text-uppercase mb-10px">Chọn cơ sở</div>
       <div className="container-fluid p-0">
         <div className="row mx--6px">
           {!loading &&

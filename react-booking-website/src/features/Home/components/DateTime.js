@@ -205,7 +205,7 @@ function DateTime({ formikProps, BookSet }) {
 
   return (
     <div className="bg-white mt-1px pt-15px pl-15px pr-15px pb-10px date-time">
-      <div className="fw-700 text-uppercase mb-10px">2. Chọn thời gian</div>
+      <div className="fw-700 text-uppercase mb-10px">Chọn thời gian</div>
       <Tab.Container activeKey={key}>
         <div className="border-bottom pb-15px mb-15px">
           <div className="container-fluid p-0">

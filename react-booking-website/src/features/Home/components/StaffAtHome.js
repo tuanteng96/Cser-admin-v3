@@ -53,10 +53,18 @@ function StaffAtHome({ formikProps }) {
       })
       .catch(error => console.log(error))
   }
+  if (
+    window.GlobalConfig?.Admin?.dat_lich_nhan_vien !== 1 &&
+    !window.GlobalConfig?.APP?.Booking?.AtHome
+  ) {
+    return <></>
+  }
   return (
     <div className="bg-white mt-1px pt-15px pl-15px pr-15px pb-10px date-time">
       <div className="fw-700 text-uppercase mb-10px">
-        3. {window.GlobalConfig?.Admin?.dat_lich_nhan_vien === 1 ? "Nhân viên thực hiện" : "Loại dịch vụ" }
+        {window.GlobalConfig?.Admin?.dat_lich_nhan_vien === 1
+          ? 'Nhân viên thực hiện'
+          : 'Loại dịch vụ'}
       </div>
       {window.GlobalConfig?.Admin?.dat_lich_nhan_vien === 1 && (
         <>

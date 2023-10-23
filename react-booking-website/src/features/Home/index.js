@@ -27,7 +27,11 @@ const initialValue = {
       : window.top?.MemberSelectStockID || '',
   FullName: window.top?.Member?.FullName || '',
   Phone: window.top?.Member?.MobilePhone || '',
-  UserServiceIDs: ''
+  UserServiceIDs: '',
+  AmountPeople: {
+    value: 1,
+    label: '1 khách'
+  }
 }
 
 const BookingSchema = Yup.object().shape({
@@ -49,6 +53,7 @@ export default function Home() {
     const itemBooking = {
       ...values
     }
+
     if (itemBooking.ID) {
       delete itemBooking.ID
     }
@@ -62,7 +67,11 @@ export default function Home() {
           RootIdS: itemBooking.RootIdS ? itemBooking.RootIdS.join(',') : '',
           UserServiceIDs: itemBooking.UserServiceIDs
             ? itemBooking.UserServiceIDs.value
-            : ''
+            : '',
+          Desc:
+            window.GlobalConfig?.APP?.SL_khach && itemBooking.AmountPeople
+              ? `Số lượng khách: ${itemBooking.AmountPeople.value}. \nGhi chú: ${itemBooking.Desc}`
+              : itemBooking.Desc
         }
       ]
     }
@@ -134,7 +143,23 @@ export default function Home() {
             formikProps.setFieldValue('MemberID', obj.MemberID)
             formikProps.setFieldValue('RootIdS', obj.RootIdS)
             formikProps.setFieldValue('BookDate', obj.BookDate)
-            formikProps.setFieldValue('Desc', obj.Desc)
+
+            if (obj.Desc && obj.Desc.includes('Số lượng khách:')) {
+              let descSplit = obj.Desc.split('\n')
+              let SL = Number(descSplit[0].match(/\d+/)[0])
+
+              formikProps.setFieldValue(
+                'Desc',
+                descSplit[1].replaceAll('Ghi chú: ', '')
+              )
+              formikProps.setFieldValue('AmountPeople', {
+                label: SL + ' khách',
+                value: SL || 1
+              })
+            } else {
+              formikProps.setFieldValue('Desc', obj.Desc)
+            }
+
             formikProps.setFieldValue('StockID', obj.StockID)
             formikProps.setFieldValue('MobilePhone', obj.MobilePhone)
             formikProps.setFieldValue('FullName', obj.FullName)
