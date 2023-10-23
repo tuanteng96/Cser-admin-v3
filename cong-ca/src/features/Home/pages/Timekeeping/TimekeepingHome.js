@@ -86,6 +86,7 @@ function TimekeepingHome(props) {
     enabled: Boolean(filters.StockID && filters.From && filters.To),
     onSuccess: data => {
       if (data?.list) {
+        console.log(data?.list)
         setInitialValues(prevState => ({
           ...prevState,
           list: data.list.map(item => {

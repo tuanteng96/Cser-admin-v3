@@ -79,6 +79,7 @@ function AuthInit({ isConfig, children }) {
               TimeClose: "21:00:00",
               TimeOpen: "8:00:00",
             },
+            SL_khach: true
           },
           Admin: {
             kpiFinish: "Khách đến làm dịch vụ",

@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { components } from "react-select";
+import Select, { components } from "react-select";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import AsyncSelect from "react-select/async";
 import { Dropdown, Modal } from "react-bootstrap";
@@ -53,6 +53,10 @@ const initialDefault = {
   StockID: 0,
   UserServiceIDs: "",
   AtHome: false,
+  AmountPeople: {
+    label: "1 khách",
+    value: 1
+  },
 };
 
 function ModalCalendar({
@@ -84,6 +88,22 @@ function ModalCalendar({
   useEffect(() => {
     if (show) {
       if (initialValue.ID) {
+        let newDesc = initialValue.Desc;
+        let AmountPeople = {
+          label: "1 khách",
+          value: 1,
+        };
+        if (newDesc && newDesc.includes("Số lượng khách:")) {
+          
+          let descSplit = newDesc.split("\n");
+          let SL = Number(descSplit[0].match(/\d+/)[0]);
+
+          newDesc = descSplit[1].replaceAll("Ghi chú: ", "");
+          AmountPeople = {
+            label: SL + " khách",
+            value: SL,
+          };
+        }
         setInitialValues((prevState) => ({
           ...prevState,
           ID: initialValue.ID,
@@ -103,7 +123,7 @@ function ModalCalendar({
           Status: initialValue.Status,
           BookDate: initialValue.BookDate,
           StockID: initialValue.StockID,
-          Desc: initialValue.Desc,
+          Desc: newDesc,
           UserServiceIDs: initialValue.UserServices.map((item) => ({
             ...item,
             value: item.ID,
@@ -113,6 +133,7 @@ function ModalCalendar({
           IsMemberCurrent: getIsMember(initialValue),
           CreateBy: initialValue?.CreateBy || "",
           TeleTags: initialValue?.Member?.TeleTags || "",
+          AmountPeople,
         }));
       } else {
         setInitialValues((prevState) => ({
@@ -518,6 +539,30 @@ function ModalCalendar({
                           : "Không tìm thấy nhân viên"
                       }
                     />
+                    {window?.top?.GlobalConfig?.APP?.SL_khach && (
+                      <Select
+                        //isSearchable
+                        isClearable
+                        classNamePrefix="select"
+                        className="select-control mt-2"
+                        options={Array(10)
+                          .fill()
+                          .map((_, x) => ({
+                            label: x + 1 + " khách",
+                            value: x + 1,
+                          }))}
+                        placeholder="Chọn số khách"
+                        value={values.AmountPeople}
+                        onChange={(value) =>
+                          setFieldValue("AmountPeople", value)
+                        }
+                        blurInputOnSelect={true}
+                        noOptionsMessage={() => "Không có dữ liệu."}
+                        //menuIsOpen
+                        //menuPosition="fixed"
+                      />
+                    )}
+
                     <textarea
                       name="Desc"
                       value={values.Desc}

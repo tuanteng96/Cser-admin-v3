@@ -206,7 +206,7 @@ function PayOffPage(props) {
                                         placeholder="Nhập giá trị"
                                         onValueChange={val =>
                                           setFieldValue(
-                                            `${item}[${i}]..Value`,
+                                            `${item}[${i}].Value`,
                                             val.floatValue
                                               ? val.floatValue
                                               : val.value

@@ -347,6 +347,10 @@ function CalendarPage(props) {
           : "",
       BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
       Status: values.Status ? values.Status : "XAC_NHAN",
+      Desc:
+        window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
+          ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
+          : values.Desc,
       IsAnonymous: values.MemberID?.PassersBy || false,
     };
 
@@ -450,6 +454,10 @@ function CalendarPage(props) {
           : "",
       BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
       Status: "KHACH_DEN",
+      Desc:
+        window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
+          ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
+          : values.Desc,
     };
 
     const CurrentStockID = Cookies.get("StockID");
@@ -662,15 +670,27 @@ function CalendarPage(props) {
                   dataOffline.push({
                     start: moment(filters.From)
                       .set({
-                        hour: 0,
-                        minute: 0,
+                        hour: moment(
+                          useroff.dayList[i].off.TimeFrom,
+                          "HH:mm"
+                        ).get("hour"),
+                        minute: moment(
+                          useroff.dayList[i].off.TimeFrom,
+                          "HH:mm"
+                        ).get("minute"),
                         second: 0,
                       })
                       .toDate(),
                     end: moment(filters.To)
                       .set({
-                        hour: 23,
-                        minute: 59,
+                        hour: moment(
+                          useroff.dayList[i].off.TimeTo,
+                          "HH:mm"
+                        ).get("hour"),
+                        minute: moment(
+                          useroff.dayList[i].off.TimeTo,
+                          "HH:mm"
+                        ).get("minute"),
                         second: 0,
                       })
                       .toDate(),
@@ -970,9 +990,12 @@ function CalendarPage(props) {
                       </>
                     );
                   },
-                  dateClick: ({ resource, dayEl }) => {
-                    if (isTelesales || dayEl.innerHTML.includes("fc-no-event"))
-                      return;
+                  dateClick: ({ resource, jsEvent }) => {
+                    console.log(jsEvent.target);
+                    console.log(
+                      jsEvent.target.classList.contains("fc-no-event")
+                    );
+                    if (isTelesales) return;
                     setInitialValue({
                       ...initialValue,
                       UserServiceIDs:
@@ -1116,11 +1139,12 @@ function CalendarPage(props) {
                       extendedProps?.AtHome
                         ? `<i class="fas fa-home text-white font-size-xs"></i>`
                         : ""
-                    } ${extendedProps?.Star ? `(${extendedProps.Star})` : ""} ${
-                      extendedProps?.MemberCurrent?.FullName || "Chưa xác định"
-                    }</span><span class="d-none d-md-inline"> - ${
-                      extendedProps?.MemberCurrent?.MobilePhone || "Chưa xác định"
-                    }</span></div><span class="${!extendedProps?.isBook &&
+                    } ${
+                      extendedProps?.Star ? `(${extendedProps.Star})` : ""
+                    } ${extendedProps?.MemberCurrent?.FullName ||
+                      "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
+                      ?.MemberCurrent?.MobilePhone ||
+                      "Chưa xác định"}</span></div><span class="${!extendedProps?.isBook &&
                       "d-none"}">${extendedProps?.BookCount?.Done ||
                       0}/${extendedProps?.BookCount?.Total || 0}</span></div>
                     <div class="d-flex">
@@ -1143,11 +1167,12 @@ function CalendarPage(props) {
                       extendedProps?.AtHome
                         ? `<i class="fas fa-home font-size-xs"></i>`
                         : ""
-                    } ${extendedProps?.Star ? `(${extendedProps.Star})` : ""} ${
-                      extendedProps?.MemberCurrent.FullName || "Chưa xác định"
-                    }</span><span class="d-none d-md-inline"> - ${
-                      extendedProps?.MemberCurrent?.MobilePhone || "Chưa xác định"
-                    }</span><span> - ${
+                    } ${
+                      extendedProps?.Star ? `(${extendedProps.Star})` : ""
+                    } ${extendedProps?.MemberCurrent.FullName ||
+                      "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
+                      ?.MemberCurrent?.MobilePhone ||
+                      "Chưa xác định"}</span><span> - ${
                       extendedProps?.RootTitles
                         ? extendedProps?.RootMinutes ??
                           extendedProps?.os?.RootMinutes ??
@@ -1186,7 +1211,6 @@ function CalendarPage(props) {
                   el.querySelector(".fc-list-day-side-text").innerHTML = "";
                 }
               }}
-              dayCellDidMount={({ el, view }) => {}}
               eventDidMount={(arg) => {
                 const { view } = arg;
                 //Set View Calendar
@@ -1198,9 +1222,6 @@ function CalendarPage(props) {
                     today?.parentElement?.parentElement?.parentElement;
                   if (elScroll) elScroll.scroll(0, today.offsetTop);
                 }
-              }}
-              viewWillUnmount={({ view, el }) => {
-                // Create Dom
               }}
               datesSet={({ view, start, end, ...arg }) => {
                 //let calendarElm = document.querySelectorAll(".fc-view-harness");
