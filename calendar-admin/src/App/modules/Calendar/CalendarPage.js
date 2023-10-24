@@ -991,11 +991,11 @@ function CalendarPage(props) {
                     );
                   },
                   dateClick: ({ resource, jsEvent }) => {
-                    console.log(jsEvent.target);
-                    console.log(
+                    if (
+                      isTelesales ||
                       jsEvent.target.classList.contains("fc-no-event")
-                    );
-                    if (isTelesales) return;
+                    )
+                      return;
                     setInitialValue({
                       ...initialValue,
                       UserServiceIDs:
@@ -1066,7 +1066,7 @@ function CalendarPage(props) {
                   ? "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay,resourceTimelineDay"
                   : "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay", //resourceTimeGridDay
               }}
-              selectable={true}
+              //selectable={true}
               selectMirror={true}
               moreLinkContent={({ num, view }) => {
                 if (
@@ -1079,7 +1079,9 @@ function CalendarPage(props) {
               }}
               eventClick={({ event, el }) => {
                 if (isTelesales) return;
-                const { _def } = event;
+                const { _def, extendedProps } = event;
+                if(extendedProps?.noEvent) return;
+
                 if (_def.extendedProps.os) {
                   if (
                     initialView === "resourceTimelineDay" &&
