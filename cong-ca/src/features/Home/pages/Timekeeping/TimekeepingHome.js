@@ -1,24 +1,36 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 // import Navbar from '../../components/Navbar'
 import { NumericFormat } from 'react-number-format'
 import { NavLink, useNavigate } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
-import Select from 'react-select'
+import Select, { components } from 'react-select'
 import { useSelector } from 'react-redux'
 import worksheetApi from 'src/api/worksheet.api'
-import locale from 'antd/es/date-picker/locale/de_DE'
 import { FastField, FieldArray, Form, Formik } from 'formik'
 import clsx from 'clsx'
-import { TimePicker } from 'antd'
-
-import moment from 'moment'
-import 'moment/locale/vi'
+import 'react-base-table/styles.css'
 import { useMutation, useQuery } from 'react-query'
 import { Dropdown } from 'react-bootstrap'
 import PickerMachineCode from '../../components/Picker/PickerMachineCode'
 import PickerTypeShift from '../../components/Picker/PickerTypeShift'
+import Table, { AutoResizer } from 'react-base-table'
+import {
+  ArrowLeftOnRectangleIcon,
+  ArrowRightOnRectangleIcon
+} from '@heroicons/react/24/solid'
+import Portal from 'react-overlays/cjs/Portal'
+
+import moment from 'moment'
+import 'moment/locale/vi'
+import { CheckInOutHelpers } from 'src/helpers/CheckInOutHelpers'
 
 moment.locale('vi')
+
+const CalendarContainer = ({ children }) => {
+  const el = document.getElementById('calendar-portal')
+
+  return <Portal container={el}>{children}</Portal>
+}
 
 function TimekeepingHome(props) {
   const navigate = useNavigate()
@@ -89,85 +101,731 @@ function TimekeepingHome(props) {
         console.log(data?.list)
         setInitialValues(prevState => ({
           ...prevState,
-          list: data.list.map(item => {
-            let newObj = {
-              Date: CrDate,
-              Hours: [
-                ['', ''],
-                ['', '']
-              ],
-              Desc: '',
-              WorkQty: '',
-              WorkQty1: '',
-              WorkQty2: ''
-            }
-            if (item.Dates[0].UserWorks && item.Dates[0].UserWorks.length > 0) {
-              const newHours =
-                item.Dates[0].UserWorks[0].HourList.length > 0
-                  ? item.Dates[0].UserWorks[0].HourList.map(hour => [
-                      hour.From ? moment(hour.From, 'HH:mm:ss') : '',
-                      hour.To ? moment(hour.To, 'HH:mm:ss') : ''
-                    ])
-                  : []
-
-              newObj = {
-                ...item.Dates[0].UserWorks[0],
-                Hours: newHours
-                  ? newHours.length >= 2
-                    ? newHours
-                    : [...newHours, ['', '']]
-                  : [
-                      ['', ''],
-                      ['', '']
-                    ]
-              }
-            }
-            return {
-              ...item,
-              ...newObj
-            }
-          })
+          list: data.list.map(item => ({
+            ...item,
+            Dates: item.Dates
+              ? item.Dates.map(date => ({
+                  ...date,
+                  WorkTrack: date?.WorkTrack
+                    ? {
+                        ...date?.WorkTrack,
+                        Info: date?.WorkTrack?.Info
+                          ? {
+                              ...date?.WorkTrack?.Info,
+                              TimekeepingType:
+                                CheckInOutHelpers.getTimekeepingType(
+                                  date?.WorkTrack?.Info
+                                ).Option,
+                              TimekeepingTypeValue:
+                                CheckInOutHelpers.getTimekeepingType(
+                                  date?.WorkTrack?.Info
+                                ).Value,
+                              Type: date?.WorkTrack?.Info?.Type
+                                ? {
+                                    label:
+                                      date?.WorkTrack?.Info?.Type === 'CA_NHAN'
+                                        ? 'Việc cá nhân'
+                                        : 'Việc công ty',
+                                    value: date?.WorkTrack?.Info?.Type
+                                  }
+                                : '',
+                              Desc: date?.WorkTrack?.Info?.Desc || '',
+                              CountWork:
+                                date?.WorkTrack?.Info?.WorkToday?.Value || 0,
+                              Note: date?.WorkTrack?.Info?.Note || '',
+                              CheckOut: {
+                                TimekeepingType:
+                                  CheckInOutHelpers.getTimekeepingType(
+                                    date?.WorkTrack?.Info?.CheckOut
+                                  ).Option,
+                                TimekeepingTypeValue:
+                                  CheckInOutHelpers.getTimekeepingType(
+                                    date?.WorkTrack?.Info?.CheckOut
+                                  ).Value,
+                                Type: date?.WorkTrack?.Info?.CheckOut?.Type
+                                  ? {
+                                      label:
+                                        date?.WorkTrack?.Info?.CheckOut
+                                          ?.Type === 'CA_NHAN'
+                                          ? 'Việc cá nhân'
+                                          : 'Việc công ty',
+                                      value:
+                                        date?.WorkTrack?.Info?.CheckOut?.Type
+                                    }
+                                  : '',
+                                Desc:
+                                  date?.WorkTrack?.Info?.CheckOut?.Desc || ''
+                              }
+                            }
+                          : {
+                              TimekeepingType: '',
+                              TimekeepingTypeValue: '',
+                              Type: '',
+                              Desc: '',
+                              CountWork: '',
+                              Note: '',
+                              CheckOut: {
+                                TimekeepingType: '',
+                                TimekeepingTypeValue: '',
+                                Type: '',
+                                Desc: ''
+                              }
+                            }
+                      }
+                    : {
+                        CheckIn: '',
+                        CheckOut: '',
+                        Info: {
+                          TimekeepingType: '',
+                          TimekeepingTypeValue: '',
+                          Type: '',
+                          Desc: '',
+                          CountWork: '',
+                          Note: '',
+                          CheckOut: {
+                            TimekeepingType: '',
+                            TimekeepingTypeValue: '',
+                            Type: '',
+                            Desc: ''
+                          }
+                        }
+                      }
+                }))
+              : []
+          }))
         }))
       }
     }
   })
+
+  const columns = useMemo(
+    () => [
+      {
+        width: 300,
+        title: 'Họ tên nhân viên',
+        key: 'User.FullName',
+        sortable: false,
+        frozen: 'left',
+        cellRenderer: ({ rowData }) => (
+          <div className="flex items-center w-full h-full">
+            <NavLink
+              to={`/bang-cham-cong/${rowData.UserID}`}
+              className="font-semibold text-name text-decoration-none text-black font-size-15px text-capitalize d-block flex-1 pr-15px"
+            >
+              {rowData.FullName}
+            </NavLink>
+
+            <Dropdown>
+              <Dropdown.Toggle
+                className="border !w-11 !h-11 !rounded-full flex items-center justify-center after:hidden !p-0 !text-[#7e8299] relative"
+                id="dropdown-basic"
+              >
+                <i className="fa-regular fa-gear absolute top-[14px] left-[13px]"></i>
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu
+                popperConfig={{
+                  strategy: 'fixed',
+                  onFirstUpdate: () =>
+                    window.dispatchEvent(new CustomEvent('scroll'))
+                }}
+              >
+                {
+                  <PickerTypeShift item={rowData}>
+                    {({ open }) => (
+                      <Dropdown.Item onClick={open}>Loại công ca</Dropdown.Item>
+                    )}
+                  </PickerTypeShift>
+                }
+                {
+                  <PickerMachineCode item={rowData}>
+                    {({ open }) => (
+                      <Dropdown.Item onClick={open}>Mã máy</Dropdown.Item>
+                    )}
+                  </PickerMachineCode>
+                }
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
+        )
+      },
+      {
+        width: 180,
+        title: 'Vào / Ra',
+        key: 'CheckIn/CheckOut',
+        sortable: false,
+        cellRenderer: ({ rowData, rowIndex }) => (
+          <>
+            <FieldArray
+              name={`list[${rowIndex}].Dates`}
+              render={() => (
+                <>
+                  {rowData.Dates.map((date, index) => (
+                    <div className="w-full" key={index}>
+                      <div className="relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.CheckIn`}
+                        >
+                          {({ field, form, meta }) => (
+                            <DatePicker
+                              selected={
+                                field?.value ? new Date(field?.value) : null
+                              }
+                              onChange={date => {
+                                form.setFieldValue(
+                                  `list[${rowIndex}].Dates[${index}].WorkTrack.CheckIn`,
+                                  date,
+                                  false
+                                )
+                              }}
+                              className="form-control w-full !font-medium text-success"
+                              dateFormat="HH:mm"
+                              showTimeSelectOnly
+                              showTimeSelect
+                              timeIntervals={5}
+                              popperContainer={CalendarContainer}
+                              placeholderText="--:--"
+                            />
+                          )}
+                        </FastField>
+                        <ArrowLeftOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-success pointer-events-none" />
+                      </div>
+                      <div className="relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.CheckOut`}
+                        >
+                          {({ field, form, meta }) => (
+                            <DatePicker
+                              selected={
+                                field?.value ? new Date(field?.value) : null
+                              }
+                              onChange={date =>
+                                form.setFieldValue(
+                                  `list[${rowIndex}].Dates[${index}].WorkTrack.CheckOut`,
+                                  date,
+                                  false
+                                )
+                              }
+                              className="form-control w-full !font-medium text-danger"
+                              dateFormat="HH:mm"
+                              showTimeSelectOnly
+                              showTimeSelect
+                              timeIntervals={5}
+                              popperContainer={CalendarContainer}
+                              placeholderText="--:--"
+                            />
+                          )}
+                        </FastField>
+                        <ArrowRightOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-danger pointer-events-none" />
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
+          </>
+        )
+      },
+      {
+        width: 250,
+        title: 'Loại',
+        key: 'TimeKeepingType',
+        sortable: false,
+        cellRenderer: ({ rowData, rowIndex }) => (
+          <>
+            <FieldArray
+              name={`list[${rowIndex}].Dates`}
+              render={() => (
+                <>
+                  {rowData.Dates.map((date, index) => (
+                    <div className="w-full" key={index}>
+                      <div className="w-full relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingType`}
+                        >
+                          {({ field, form, meta }) => (
+                            <Select
+                              isClearable
+                              menuPortalTarget={document.body}
+                              components={{
+                                Control: ({ children, ...rest }) => (
+                                  <components.Control {...rest}>
+                                    <ArrowLeftOnRectangleIcon className="w-5 !text-success ml-1.5" />
+                                    {children}
+                                  </components.Control>
+                                )
+                              }}
+                              options={[
+                                {
+                                  value: 'DI_SOM',
+                                  label: 'Đi sớm'
+                                },
+                                {
+                                  value: 'DI_MUON',
+                                  label: 'Đi muộn'
+                                }
+                              ]}
+                              className="select-control"
+                              classNamePrefix="select"
+                              placeholder="Loại vào"
+                              menuPosition="fixed"
+                              value={field.value}
+                              onChange={otp =>
+                                form.setFieldValue(
+                                  `list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingType`,
+                                  otp,
+                                  false
+                                )
+                              }
+                            />
+                          )}
+                        </FastField>
+                      </div>
+                      <div className="w-full relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingType`}
+                        >
+                          {({ field, form, meta }) => (
+                            <Select
+                              isClearable
+                              components={{
+                                Control: ({ children, ...rest }) => (
+                                  <components.Control {...rest}>
+                                    <ArrowRightOnRectangleIcon className="w-5 !text-danger ml-1.5" />
+                                    {children}
+                                  </components.Control>
+                                )
+                              }}
+                              options={[
+                                {
+                                  value: 'DI_SOM',
+                                  label: 'Về sớm'
+                                },
+                                {
+                                  value: 'DI_MUON',
+                                  label: 'Về muộn'
+                                }
+                              ]}
+                              menuPosition="fixed"
+                              className="select-control"
+                              classNamePrefix="select"
+                              placeholder="Loại ra"
+                              value={field.value}
+                              onChange={otp =>
+                                form.setFieldValue(
+                                  `list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingType`,
+                                  otp,
+                                  false
+                                )
+                              }
+                              menuPortalTarget={document.body}
+                            />
+                          )}
+                        </FastField>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
+          </>
+        )
+      },
+      {
+        width: 250,
+        title: 'Tiền Thưởng / Phạt',
+        key: 'TimekeepingTypeValue',
+        sortable: false,
+        cellRenderer: ({ rowData, rowIndex }) => (
+          <>
+            <FieldArray
+              name={`list[${rowIndex}].Dates`}
+              render={() => (
+                <>
+                  {rowData.Dates.map((date, index) => (
+                    <div className="w-full" key={index}>
+                      <div className="relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingTypeValue`}
+                        >
+                          {({ field, form, meta }) => (
+                            <NumericFormat
+                              thousandSeparator={true}
+                              allowNegative={true}
+                              className="form-control"
+                              type="text"
+                              placeholder="Nhập số tiền"
+                              onValueChange={val =>
+                                form.setFieldValue(
+                                  `list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingTypeValue`,
+                                  val.floatValue ? val.floatValue : val.value,
+                                  false
+                                )
+                              }
+                              autoComplete="off"
+                              {...field}
+                            />
+                          )}
+                        </FastField>
+                        <ArrowLeftOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-success pointer-events-none" />
+                      </div>
+                      <div className="relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingTypeValue`}
+                        >
+                          {({ field, form, meta }) => (
+                            <NumericFormat
+                              thousandSeparator={true}
+                              allowNegative={true}
+                              className="form-control"
+                              type="text"
+                              placeholder="Nhập số tiền"
+                              onValueChange={val =>
+                                form.setFieldValue(
+                                  `list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingTypeValue`,
+                                  val.floatValue ? val.floatValue : val.value,
+                                  false
+                                )
+                              }
+                              autoComplete="off"
+                              {...field}
+                            />
+                          )}
+                        </FastField>
+                        <ArrowRightOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-danger pointer-events-none" />
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
+          </>
+        )
+      },
+      {
+        width: 250,
+        title: 'Lý do',
+        key: 'Type',
+        sortable: false,
+        cellRenderer: ({ rowData, rowIndex }) => (
+          <>
+            <FieldArray
+              name={`list[${rowIndex}].Dates`}
+              render={() => (
+                <>
+                  {rowData.Dates.map((date, index) => (
+                    <div className="w-full" key={index}>
+                      <div className="w-full relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Type`}
+                        >
+                          {({ field, form, meta }) => (
+                            <Select
+                              isClearable
+                              menuPortalTarget={document.body}
+                              components={{
+                                Control: ({ children, ...rest }) => (
+                                  <components.Control {...rest}>
+                                    <ArrowLeftOnRectangleIcon className="w-5 !text-success ml-1.5" />
+                                    {children}
+                                  </components.Control>
+                                )
+                              }}
+                              options={[
+                                {
+                                  value: 'CA_NHAN',
+                                  label: 'Việc cá nhân'
+                                },
+                                {
+                                  value: 'CONG_TY',
+                                  label: 'Việc công ty'
+                                }
+                              ]}
+                              className="select-control"
+                              classNamePrefix="select"
+                              placeholder="Lý do vào"
+                              menuPosition="fixed"
+                              value={field.value}
+                              onChange={otp =>
+                                form.setFieldValue(
+                                  `list[${rowIndex}].Dates[${index}].WorkTrack.Info.Type`,
+                                  otp,
+                                  false
+                                )
+                              }
+                            />
+                          )}
+                        </FastField>
+                      </div>
+                      <div className="w-full relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.Type`}
+                        >
+                          {({ field, form, meta }) => (
+                            <Select
+                              isClearable
+                              components={{
+                                Control: ({ children, ...rest }) => (
+                                  <components.Control {...rest}>
+                                    <ArrowRightOnRectangleIcon className="w-5 !text-danger ml-1.5" />
+                                    {children}
+                                  </components.Control>
+                                )
+                              }}
+                              options={[
+                                {
+                                  value: 'CA_NHAN',
+                                  label: 'Việc cá nhân'
+                                },
+                                {
+                                  value: 'CONG_TY',
+                                  label: 'Việc công ty'
+                                }
+                              ]}
+                              menuPosition="fixed"
+                              className="select-control"
+                              classNamePrefix="select"
+                              placeholder="Lý do ra"
+                              value={field.value}
+                              onChange={otp =>
+                                form.setFieldValue(
+                                  `list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.Type`,
+                                  otp,
+                                  false
+                                )
+                              }
+                              menuPortalTarget={document.body}
+                            />
+                          )}
+                        </FastField>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
+          </>
+        )
+      },
+      {
+        width: 300,
+        title: 'Mô tả lý do',
+        key: 'Desc',
+        sortable: false,
+        cellRenderer: ({ rowData, rowIndex }) => (
+          <>
+            <FieldArray
+              name={`list[${rowIndex}].Dates`}
+              render={() => (
+                <>
+                  {rowData.Dates.map((date, index) => (
+                    <div className="w-full" key={index}>
+                      <div className="relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Desc`}
+                        >
+                          {({ field, form, meta }) => (
+                            <input
+                              className="form-control"
+                              placeholder="Nhập mô tả"
+                              {...field}
+                            />
+                          )}
+                        </FastField>
+                        <ArrowLeftOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-success pointer-events-none" />
+                      </div>
+                      <div className="relative mb-2 last:!mb-0">
+                        <FastField
+                          name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.Desc`}
+                        >
+                          {({ field, form, meta }) => (
+                            <input
+                              className="form-control"
+                              placeholder="Nhập mô tả"
+                              {...field}
+                            />
+                          )}
+                        </FastField>
+                        <ArrowRightOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-danger pointer-events-none" />
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
+          </>
+        )
+      },
+      {
+        width: 150,
+        title: 'Số công',
+        key: 'CountWork',
+        sortable: false,
+        cellRenderer: ({ rowData, rowIndex }) => (
+          <>
+            <FieldArray
+              name={`list[${rowIndex}].Dates`}
+              render={() => (
+                <>
+                  {rowData.Dates.map((date, index) => (
+                    <div className="w-full relative" key={index}>
+                      <FastField
+                        name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CountWork`}
+                      >
+                        {({ field, form, meta }) => (
+                          <NumericFormat
+                            className="form-control text-center"
+                            type="text"
+                            placeholder="Nhập số công"
+                            onValueChange={val =>
+                              form.setFieldValue(
+                                `list[${rowIndex}].Dates[${index}].WorkTrack.Info.CountWork`,
+                                val.floatValue ? val.floatValue : val.value,
+                                false
+                              )
+                            }
+                            autoComplete="off"
+                            {...field}
+                          />
+                        )}
+                      </FastField>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
+          </>
+        )
+      },
+      {
+        width: 300,
+        title: 'Ghi chú',
+        key: 'Note',
+        sortable: false,
+        cellRenderer: ({ rowData, rowIndex }) => (
+          <>
+            <FieldArray
+              name={`list[${rowIndex}].Dates`}
+              render={() => (
+                <>
+                  {rowData.Dates.map((date, index) => (
+                    <div className="w-full relative" key={index}>
+                      <FastField
+                        name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Note`}
+                      >
+                        {({ field, form, meta }) => (
+                          <textarea
+                            className="form-control resize-none h-[90px]"
+                            placeholder="Nhập ghi chú"
+                            {...field}
+                          ></textarea>
+                        )}
+                      </FastField>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
+          </>
+        )
+      }
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  )
 
   const saveTimeKeepMutation = useMutation({
     mutationFn: body => worksheetApi.checkinWorkSheet(body)
   })
 
   const onSubmit = values => {
+    console.log(values)
     const newValues = {
-      list: values.list
-        ? values.list.map(item => ({
-            UserID: item.UserID,
-            Date: moment(item.Date).format('DD/MM/YYYY'),
-            Hours: item.Hours
-              ? item.Hours.map(hour => ({
-                  From: hour && hour[0] ? hour[0].format('HH:mm:ss') : '',
-                  To: hour && hour[1] ? hour[1].format('HH:mm:ss') : ''
-                })).filter(hour => hour.From && hour.To)
-              : [],
-            Desc: item.Desc,
-            WorkQty: item.WorkQty,
-            WorkQty1: item.WorkQty1,
-            WorkQty2: item.WorkQty2
-          }))
-        : []
+      edit: []
     }
 
-    saveTimeKeepMutation.mutate(newValues, {
-      onSuccess: () => {
-        refetch().then(
-          () =>
-            window.top.toastr &&
-            window.top.toastr.success('Cập nhập thành công !', {
-              timeOut: 1500
-            })
-        )
-      },
-      onError: error => console.log(error)
-    })
+    for (let user of values.list || []) {
+      let { UserID, Dates } = user
+      let { WorkTrack, Date } = Dates[0]
+
+      let obj = {
+        UserID: UserID,
+        CreateDate: moment(Date).format('YYYY-MM-DD'),
+        Info: {
+          CheckOut: {}
+        }
+      }
+
+      obj.CheckIn = WorkTrack.CheckIn
+      obj.CheckOut = WorkTrack.CheckOut
+      obj.Info.Desc = WorkTrack.Info.Desc || ''
+      obj.Info.CheckOut.Desc = WorkTrack.Info.CheckOut.Desc || ''
+      if (WorkTrack.Info.TimekeepingType) {
+        if (
+          WorkTrack.Info[WorkTrack.Info.TimekeepingType.value] &&
+          WorkTrack.Info[WorkTrack.Info.TimekeepingType.value].Value ===
+            Math.abs(WorkTrack.Info.TimekeepingTypeValue)
+        ) {
+          obj.Info[WorkTrack.Info.TimekeepingType.value] = {
+            ...WorkTrack.Info[WorkTrack.Info.TimekeepingType.value]
+          }
+        } else {
+          obj.Info[WorkTrack.Info.TimekeepingType.value] = {
+            Value: Math.abs(WorkTrack.Info.TimekeepingTypeValue)
+          }
+        }
+      }
+      if (WorkTrack.Info.CheckOut.TimekeepingType) {
+        if (
+          WorkTrack.Info.CheckOut[
+            WorkTrack.Info.CheckOut.TimekeepingType.value
+          ] &&
+          WorkTrack.Info.CheckOut[
+            WorkTrack.Info.CheckOut.TimekeepingType.value
+          ] === Math.abs(WorkTrack.Info.CheckOut.TimekeepingTypeValue)
+        ) {
+          obj.Info.CheckOut[WorkTrack.Info.CheckOut.TimekeepingType.value] = {
+            ...WorkTrack.Info[WorkTrack.Info.CheckOut.TimekeepingType.value]
+          }
+        } else {
+          obj.Info.CheckOut[WorkTrack.Info.CheckOut.TimekeepingType.value] = {
+            Value: Math.abs(WorkTrack.Info.CheckOut.TimekeepingTypeValue)
+          }
+        }
+      }
+      if (WorkTrack.Info.Type) {
+        obj.Info.Type = WorkTrack.Info.Type.value
+      }
+      if (WorkTrack.Info.CheckOut.Type) {
+        obj.Info.CheckOut.Type = WorkTrack.Info.CheckOut.Type.value
+      }
+      if (
+        WorkTrack.Info.WorkToday &&
+        WorkTrack.Info.WorkToday.Value === WorkTrack.Info.CountWork
+      ) {
+        obj.Info.WorkToday = WorkTrack.Info.WorkToday
+      } else {
+        obj.Info.WorkToday = {
+          Value: WorkTrack.Info.CountWork
+        }
+      }
+      newValues.edit.push(obj)
+    }
+
+    console.log(newValues)
+
+    // saveTimeKeepMutation.mutate(newValues, {
+    //   onSuccess: () => {
+    //     refetch().then(
+    //       () =>
+    //         window.top.toastr &&
+    //         window.top.toastr.success('Cập nhập thành công !', {
+    //           timeOut: 1500
+    //         })
+    //     )
+    //   },
+    //   onError: error => console.log(error)
+    // })
   }
 
   return (
@@ -268,13 +926,47 @@ function TimekeepingHome(props) {
                   {/* <Navbar /> */}
                 </div>
               </div>
-              <div
-                className={clsx(
-                  'card-body p-0 overlay',
-                  isLoading ? 'overflow-hidden' : 'overflow-auto'
-                )}
-              >
+              <div className="card-body p-0">
                 <FieldArray
+                  name="list"
+                  render={() => (
+                    <AutoResizer>
+                      {({ width, height }) => (
+                        <Table
+                          className="BaseTable--has-hover"
+                          fixed
+                          rowKey="UserID"
+                          width={width}
+                          height={height}
+                          columns={columns}
+                          data={values.list || []}
+                          rowHeight={115}
+                          ignoreFunctionInColumnCompare={false}
+                          disabled={isLoading}
+                          onEndReachedThreshold={300}
+                          // emptyRenderer={() =>
+                          //   !isLoading && (
+                          //     <div
+                          //       className="h-full d-flex justify-content-center align-items-center"
+                          //       style={{ fontSize: '15px' }}
+                          //     >
+                          //       Không có dữ liệu
+                          //     </div>
+                          //   )
+                          // }
+                          overlayRenderer={() =>
+                            isLoading ? (
+                              <div className="overlay-layer bg-dark-o-10 top-0 h-100 zindex-1001 overlay-block">
+                                <div className="spinner spinner-primary"></div>
+                              </div>
+                            ) : null
+                          }
+                        />
+                      )}
+                    </AutoResizer>
+                  )}
+                />
+                {/* <FieldArray
                   name="list"
                   render={arrayHelpers => (
                     <Fragment>
@@ -364,7 +1056,7 @@ function TimekeepingHome(props) {
                                               />
                                             )}
                                           </FastField>
-                                          {/* <TimePicker.RangePicker
+                                          <TimePicker.RangePicker
                                             locale={{
                                               ...locale,
                                               lang: {
@@ -384,7 +1076,7 @@ function TimekeepingHome(props) {
                                               )
                                             }}
                                             value={hour}
-                                          /> */}
+                                          />
                                         </div>
                                       ))}
                                     </Fragment>
@@ -480,15 +1172,7 @@ function TimekeepingHome(props) {
                         ))}
                     </Fragment>
                   )}
-                />
-                <div
-                  className={clsx(
-                    'overlay-layer bg-dark-o-10 top-0 h-100 zindex-1001',
-                    isLoading && 'overlay-block'
-                  )}
-                >
-                  <div className="spinner spinner-primary"></div>
-                </div>
+                /> */}
               </div>
               <div className="card-footer d-flex justify-content-end align-items-center">
                 <button

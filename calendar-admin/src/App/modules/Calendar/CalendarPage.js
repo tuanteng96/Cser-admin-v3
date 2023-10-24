@@ -664,44 +664,124 @@ function CalendarPage(props) {
               : [];
           if (data?.userOffs && data?.userOffs.length > 0) {
             for (let useroff of data?.userOffs) {
-              if (useroff.dayList) {
-                let i = useroff.dayList.findIndex((x) => x.off);
+              console.log(useroff);
+              if (useroff.dayList && useroff.dayList.length > 0) {
+                let i = useroff.dayList.findIndex(
+                  (x) =>
+                    moment(x.Day).format("DD-MM-YYYY") ===
+                    moment(filters.From).format("DD-MM-YYYY")
+                );
                 if (i > -1) {
-                  dataOffline.push({
-                    start: moment(filters.From)
-                      .set({
-                        hour: moment(
-                          useroff.dayList[i].off.TimeFrom,
-                          "HH:mm"
-                        ).get("hour"),
-                        minute: moment(
-                          useroff.dayList[i].off.TimeFrom,
-                          "HH:mm"
-                        ).get("minute"),
-                        second: 0,
-                      })
-                      .toDate(),
-                    end: moment(filters.To)
-                      .set({
-                        hour: moment(
-                          useroff.dayList[i].off.TimeTo,
-                          "HH:mm"
-                        ).get("hour"),
-                        minute: moment(
-                          useroff.dayList[i].off.TimeTo,
-                          "HH:mm"
-                        ).get("minute"),
-                        second: 0,
-                      })
-                      .toDate(),
-                    resourceIds: [useroff.user.ID],
-                    display: "background",
-                    extendedProps: {
-                      noEvent: true,
-                    },
-                    className: ["fc-no-event"],
-                  });
+                  let { off } = useroff.dayList[i];
+                  if (off) {
+                    if (off.isOff) {
+                      dataOffline.push({
+                        start: moment(filters.From)
+                          .set({
+                            hour: moment(TimeOpen, "HH:mm").get("hour"),
+                            minute: moment(TimeOpen, "HH:mm").get("minute"),
+                            second: 0,
+                          })
+                          .toDate(),
+                        end: moment(filters.To)
+                          .set({
+                            hour: moment(TimeClose, "HH:mm").get("hour"),
+                            minute: moment(TimeClose, "HH:mm").get("minute"),
+                            second: 0,
+                          })
+                          .toDate(),
+                        resourceIds: [useroff.user.ID],
+                        display: "background",
+                        extendedProps: {
+                          noEvent: true,
+                        },
+                        className: ["fc-no-event"],
+                      });
+                    } else {
+                      dataOffline.push({
+                        start: moment(filters.From)
+                          .set({
+                            hour: moment(TimeOpen, "HH:mm").get("hour"),
+                            minute: moment(TimeOpen, "HH:mm").get("minute"),
+                            second: 0,
+                          })
+                          .toDate(),
+                        end: moment(filters.To)
+                          .set({
+                            hour: moment(off.TimeFrom, "HH:mm").get("hour"),
+                            minute: moment(off.TimeFrom, "HH:mm").get("minute"),
+                            second: 0,
+                          })
+                          .toDate(),
+                        resourceIds: [useroff.user.ID],
+                        display: "background",
+                        extendedProps: {
+                          noEvent: true,
+                        },
+                        className: ["fc-no-event"],
+                      });
+                      dataOffline.push({
+                        start: moment(filters.From)
+                          .set({
+                            hour: moment(off.TimeTo, "HH:mm").get("hour"),
+                            minute: moment(off.TimeTo, "HH:mm").get("minute"),
+                            second: 0,
+                          })
+                          .toDate(),
+                        end: moment(filters.To)
+                          .set({
+                            hour: moment(TimeClose, "HH:mm").get("hour"),
+                            minute: moment(TimeClose, "HH:mm").get("minute"),
+                            second: 0,
+                          })
+                          .toDate(),
+                        resourceIds: [useroff.user.ID],
+                        display: "background",
+                        extendedProps: {
+                          noEvent: true,
+                        },
+                        className: ["fc-no-event"],
+                      });
+                    }
+                  }
                 }
+                // let i = useroff.dayList.findIndex((x) => x.off);
+                // if (i > -1) {
+                //   dataOffline.push({
+                //     start: moment(filters.From)
+                //       .set({
+                //         hour: moment(
+                //           useroff.dayList[i].off.TimeFrom,
+                //           "HH:mm"
+                //         ).get("hour"),
+                //         minute: moment(
+                //           useroff.dayList[i].off.TimeFrom,
+                //           "HH:mm"
+                //         ).get("minute"),
+                //         second: 0,
+                //       })
+                //       .toDate(),
+                //     end: moment(filters.To)
+                //       .set({
+                //         hour: moment(
+                //           useroff.dayList[i].off.TimeTo,
+                //           "HH:mm"
+                //         ).get("hour"),
+                //         minute: moment(
+                //           useroff.dayList[i].off.TimeTo,
+                //           "HH:mm"
+                //         ).get("minute"),
+                //         second: 0,
+                //       })
+                //       .toDate(),
+                //     resourceIds: [useroff.user.ID],
+                //     display: "background",
+                //     extendedProps: {
+                //       noEvent: true,
+                //     },
+                //     className: ["fc-no-event"],
+                //   });
+                // }
               }
             }
           }
@@ -1080,7 +1160,7 @@ function CalendarPage(props) {
               eventClick={({ event, el }) => {
                 if (isTelesales) return;
                 const { _def, extendedProps } = event;
-                if(extendedProps?.noEvent) return;
+                if (extendedProps?.noEvent) return;
 
                 if (_def.extendedProps.os) {
                   if (

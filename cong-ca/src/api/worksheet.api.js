@@ -5,7 +5,7 @@ const worksheetApi = {
     return http.post('/api/v3/userwork23@workList', JSON.stringify(data))
   },
   checkinWorkSheet: data => {
-    return http.post('/api/v3/userwork23@sysCheckin', JSON.stringify(data))
+    return http.post('/api/v3/worktrack@adminedit', JSON.stringify(data))
   },
   deleteWorkSheet: data => {
     return http.post(
@@ -32,7 +32,10 @@ const worksheetApi = {
     return http.post('/api/v3/user24@WorkTimeSetting', JSON.stringify(data))
   },
   listWorkOff: data => {
-    return http.post(`/api/v3/userwork23@workoffList?stockid=${data.filter.StockID}`, JSON.stringify(data))
+    return http.post(
+      `/api/v3/userwork23@workoffList?stockid=${data.filter.StockID}`,
+      JSON.stringify(data)
+    )
   }
 }
 export default worksheetApi

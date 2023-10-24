@@ -9,7 +9,8 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                danger: "#F64E60"
+                danger: "#F64E60",
+                success: "#1bc5bd"
             }
         },
     },
