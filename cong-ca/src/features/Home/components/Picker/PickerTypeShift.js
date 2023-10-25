@@ -45,8 +45,8 @@ function PickerTypeShift({ children, item }) {
         updateList: [
           {
             UserID: item?.UserID,
-            ShiftName: values?.Shift?.label || "",
-            ShiftID: values?.Shift?.value || ""
+            ShiftName: values?.Shift?.label || '',
+            ShiftID: values?.Shift?.value || ''
           }
         ]
       },

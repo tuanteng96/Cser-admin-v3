@@ -4,6 +4,7 @@ export const CheckInOutHelpers = {
       Value: '',
       Option: ''
     }
+    if (!info) return obj
     if (info['DI_SOM']) {
       obj = {
         Value: info['DI_SOM'].Value,

@@ -19,10 +19,10 @@ import {
   ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/solid'
 import Portal from 'react-overlays/cjs/Portal'
+import { CheckInOutHelpers } from 'src/helpers/CheckInOutHelpers'
 
 import moment from 'moment'
 import 'moment/locale/vi'
-import { CheckInOutHelpers } from 'src/helpers/CheckInOutHelpers'
 
 moment.locale('vi')
 
@@ -46,7 +46,6 @@ function TimekeepingHome(props) {
     StockID: '',
     key: ''
   })
-  const [initialValues, setInitialValues] = useState({ list: [] })
 
   const typingTimeoutRef = useRef(null)
 
@@ -82,7 +81,7 @@ function TimekeepingHome(props) {
     }))
   }, [CrDate])
 
-  const { isLoading, refetch } = useQuery({
+  const { isLoading, isFetching, refetch, ...ListWorkSheet } = useQuery({
     queryKey: ['ListWorkSheet', filters],
     queryFn: async () => {
       const newObj = {
@@ -93,109 +92,106 @@ function TimekeepingHome(props) {
       }
 
       const { data } = await worksheetApi.getAllWorkSheet(newObj)
-      return data || null
-    },
-    enabled: Boolean(filters.StockID && filters.From && filters.To),
-    onSuccess: data => {
-      if (data?.list) {
-        console.log(data?.list)
-        setInitialValues(prevState => ({
-          ...prevState,
-          list: data.list.map(item => ({
-            ...item,
-            Dates: item.Dates
-              ? item.Dates.map(date => ({
-                  ...date,
-                  WorkTrack: date?.WorkTrack
-                    ? {
-                        ...date?.WorkTrack,
-                        Info: date?.WorkTrack?.Info
-                          ? {
-                              ...date?.WorkTrack?.Info,
-                              TimekeepingType:
-                                CheckInOutHelpers.getTimekeepingType(
-                                  date?.WorkTrack?.Info
-                                ).Option,
-                              TimekeepingTypeValue:
-                                CheckInOutHelpers.getTimekeepingType(
-                                  date?.WorkTrack?.Info
-                                ).Value,
-                              Type: date?.WorkTrack?.Info?.Type
-                                ? {
-                                    label:
-                                      date?.WorkTrack?.Info?.Type === 'CA_NHAN'
-                                        ? 'Việc cá nhân'
-                                        : 'Việc công ty',
-                                    value: date?.WorkTrack?.Info?.Type
-                                  }
-                                : '',
-                              Desc: date?.WorkTrack?.Info?.Desc || '',
-                              CountWork:
-                                date?.WorkTrack?.Info?.WorkToday?.Value || 0,
-                              Note: date?.WorkTrack?.Info?.Note || '',
-                              CheckOut: {
+      return data?.list
+        ? {
+            list: data.list.map(item => ({
+              ...item,
+              Dates: item.Dates
+                ? item.Dates.map(date => ({
+                    ...date,
+                    WorkTrack: date?.WorkTrack
+                      ? {
+                          ...date?.WorkTrack,
+                          Info: date?.WorkTrack?.Info
+                            ? {
+                                ...date?.WorkTrack?.Info,
                                 TimekeepingType:
                                   CheckInOutHelpers.getTimekeepingType(
-                                    date?.WorkTrack?.Info?.CheckOut
+                                    date?.WorkTrack?.Info
                                   ).Option,
                                 TimekeepingTypeValue:
                                   CheckInOutHelpers.getTimekeepingType(
-                                    date?.WorkTrack?.Info?.CheckOut
+                                    date?.WorkTrack?.Info
                                   ).Value,
-                                Type: date?.WorkTrack?.Info?.CheckOut?.Type
+                                Type: date?.WorkTrack?.Info?.Type
                                   ? {
                                       label:
-                                        date?.WorkTrack?.Info?.CheckOut
-                                          ?.Type === 'CA_NHAN'
+                                        date?.WorkTrack?.Info?.Type ===
+                                        'CA_NHAN'
                                           ? 'Việc cá nhân'
                                           : 'Việc công ty',
-                                      value:
-                                        date?.WorkTrack?.Info?.CheckOut?.Type
+                                      value: date?.WorkTrack?.Info?.Type
                                     }
                                   : '',
-                                Desc:
-                                  date?.WorkTrack?.Info?.CheckOut?.Desc || ''
+                                Desc: date?.WorkTrack?.Info?.Desc || '',
+                                CountWork:
+                                  date?.WorkTrack?.Info?.WorkToday?.Value || 0,
+                                Note: date?.WorkTrack?.Info?.Note || '',
+                                CheckOut: {
+                                  TimekeepingType:
+                                    CheckInOutHelpers.getTimekeepingType(
+                                      date?.WorkTrack?.Info?.CheckOut
+                                    ).Option,
+                                  TimekeepingTypeValue:
+                                    CheckInOutHelpers.getTimekeepingType(
+                                      date?.WorkTrack?.Info?.CheckOut
+                                    ).Value,
+                                  Type: date?.WorkTrack?.Info?.CheckOut?.Type
+                                    ? {
+                                        label:
+                                          date?.WorkTrack?.Info?.CheckOut
+                                            ?.Type === 'CA_NHAN'
+                                            ? 'Việc cá nhân'
+                                            : 'Việc công ty',
+                                        value:
+                                          date?.WorkTrack?.Info?.CheckOut?.Type
+                                      }
+                                    : '',
+                                  Desc:
+                                    date?.WorkTrack?.Info?.CheckOut?.Desc || ''
+                                }
                               }
-                            }
-                          : {
-                              TimekeepingType: '',
-                              TimekeepingTypeValue: '',
-                              Type: '',
-                              Desc: '',
-                              CountWork: '',
-                              Note: '',
-                              CheckOut: {
+                            : {
                                 TimekeepingType: '',
                                 TimekeepingTypeValue: '',
                                 Type: '',
-                                Desc: ''
+                                Desc: '',
+                                CountWork: '',
+                                Note: '',
+                                CheckOut: {
+                                  TimekeepingType: '',
+                                  TimekeepingTypeValue: '',
+                                  Type: '',
+                                  Desc: ''
+                                }
                               }
-                            }
-                      }
-                    : {
-                        CheckIn: '',
-                        CheckOut: '',
-                        Info: {
-                          TimekeepingType: '',
-                          TimekeepingTypeValue: '',
-                          Type: '',
-                          Desc: '',
-                          CountWork: '',
-                          Note: '',
-                          CheckOut: {
+                        }
+                      : {
+                          CheckIn: '',
+                          CheckOut: '',
+                          Info: {
                             TimekeepingType: '',
                             TimekeepingTypeValue: '',
                             Type: '',
-                            Desc: ''
+                            Desc: '',
+                            CountWork: '',
+                            Note: '',
+                            CheckOut: {
+                              TimekeepingType: '',
+                              TimekeepingTypeValue: '',
+                              Type: '',
+                              Desc: ''
+                            }
                           }
                         }
-                      }
-                }))
-              : []
-          }))
-        }))
-      }
-    }
+                  }))
+                : []
+            }))
+          }
+        : { list: [] }
+    },
+    enabled: Boolean(filters.StockID && filters.From && filters.To),
+    keepPreviousData: true
   })
 
   const columns = useMemo(
@@ -271,15 +267,24 @@ function TimekeepingHome(props) {
                               selected={
                                 field?.value ? new Date(field?.value) : null
                               }
-                              onChange={date => {
+                              onChange={val => {
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.CheckIn`,
-                                  date,
+                                  val
+                                    ? moment(date.Date)
+                                        .set({
+                                          hour: moment(val).get('hour'),
+                                          minute: moment(val).get('minute'),
+                                          second: moment(val).get('second')
+                                        })
+                                        .toDate()
+                                    : '',
                                   false
                                 )
                               }}
                               className="form-control w-full !font-medium text-success"
-                              dateFormat="HH:mm"
+                              dateFormat="HH:mm aa"
+                              timeFormat="HH:mm aa"
                               showTimeSelectOnly
                               showTimeSelect
                               timeIntervals={5}
@@ -299,15 +304,24 @@ function TimekeepingHome(props) {
                               selected={
                                 field?.value ? new Date(field?.value) : null
                               }
-                              onChange={date =>
+                              onChange={val =>
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.CheckOut`,
-                                  date,
+                                  val
+                                    ? moment(date.Date)
+                                        .set({
+                                          hour: moment(val).get('hour'),
+                                          minute: moment(val).get('minute'),
+                                          second: moment(val).get('second')
+                                        })
+                                        .toDate()
+                                    : '',
                                   false
                                 )
                               }
                               className="form-control w-full !font-medium text-danger"
-                              dateFormat="HH:mm"
+                              dateFormat="HH:mm aa"
+                              timeFormat="HH:mm aa"
                               showTimeSelectOnly
                               showTimeSelect
                               timeIntervals={5}
@@ -450,20 +464,21 @@ function TimekeepingHome(props) {
                         >
                           {({ field, form, meta }) => (
                             <NumericFormat
+                              allowLeadingZeros
                               thousandSeparator={true}
                               allowNegative={true}
                               className="form-control"
                               type="text"
                               placeholder="Nhập số tiền"
-                              onValueChange={val =>
+                              onValueChange={({ floatValue }) => {
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingTypeValue`,
-                                  val.floatValue ? val.floatValue : val.value,
+                                  floatValue,
                                   false
                                 )
-                              }
+                              }}
                               autoComplete="off"
-                              {...field}
+                              value={field.value}
                             />
                           )}
                         </FastField>
@@ -475,20 +490,21 @@ function TimekeepingHome(props) {
                         >
                           {({ field, form, meta }) => (
                             <NumericFormat
+                              allowLeadingZeros
                               thousandSeparator={true}
                               allowNegative={true}
                               className="form-control"
                               type="text"
                               placeholder="Nhập số tiền"
-                              onValueChange={val =>
+                              onValueChange={({ floatValue }) =>
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingTypeValue`,
-                                  val.floatValue ? val.floatValue : val.value,
+                                  floatValue,
                                   false
                                 )
                               }
                               autoComplete="off"
-                              {...field}
+                              value={field.value}
                             />
                           )}
                         </FastField>
@@ -739,7 +755,6 @@ function TimekeepingHome(props) {
   })
 
   const onSubmit = values => {
-    console.log(values)
     const newValues = {
       edit: []
     }
@@ -757,9 +772,17 @@ function TimekeepingHome(props) {
       }
 
       obj.CheckIn = WorkTrack.CheckIn
+        ? moment(WorkTrack.CheckIn).format('YYYY-MM-DD HH:mm:ss')
+        : WorkTrack.CheckIn
       obj.CheckOut = WorkTrack.CheckOut
+        ? moment(WorkTrack.CheckOut).format('YYYY-MM-DD HH:mm:ss')
+        : WorkTrack.CheckOut
       obj.Info.Desc = WorkTrack.Info.Desc || ''
       obj.Info.CheckOut.Desc = WorkTrack.Info.CheckOut.Desc || ''
+      obj.Info.Note = WorkTrack.Info.Note || ''
+      if (WorkTrack.ID) {
+        obj.ID = WorkTrack.ID
+      }
       if (WorkTrack.Info.TimekeepingType) {
         if (
           WorkTrack.Info[WorkTrack.Info.TimekeepingType.value] &&
@@ -812,25 +835,23 @@ function TimekeepingHome(props) {
       newValues.edit.push(obj)
     }
 
-    console.log(newValues)
-
-    // saveTimeKeepMutation.mutate(newValues, {
-    //   onSuccess: () => {
-    //     refetch().then(
-    //       () =>
-    //         window.top.toastr &&
-    //         window.top.toastr.success('Cập nhập thành công !', {
-    //           timeOut: 1500
-    //         })
-    //     )
-    //   },
-    //   onError: error => console.log(error)
-    // })
+    saveTimeKeepMutation.mutate(newValues, {
+      onSuccess: () => {
+        refetch().then(
+          () =>
+            window.top.toastr &&
+            window.top.toastr.success('Cập nhập thành công !', {
+              timeOut: 1500
+            })
+        )
+      },
+      onError: error => console.log(error)
+    })
   }
 
   return (
     <Formik
-      initialValues={initialValues}
+      initialValues={ListWorkSheet.data}
       onSubmit={onSubmit}
       enableReinitialize={true}
     >
@@ -939,7 +960,7 @@ function TimekeepingHome(props) {
                           width={width}
                           height={height}
                           columns={columns}
-                          data={values.list || []}
+                          data={values?.list || []}
                           rowHeight={115}
                           ignoreFunctionInColumnCompare={false}
                           disabled={isLoading}
@@ -955,8 +976,8 @@ function TimekeepingHome(props) {
                           //   )
                           // }
                           overlayRenderer={() =>
-                            isLoading ? (
-                              <div className="overlay-layer bg-dark-o-10 top-0 h-100 zindex-1001 overlay-block">
+                            isLoading || isFetching ? (
+                              <div className="overlay-layer bg-dark-o-10 top-0 h-100 zindex-1001 overlay-block flex justify-center">
                                 <div className="spinner spinner-primary"></div>
                               </div>
                             ) : null
@@ -966,213 +987,6 @@ function TimekeepingHome(props) {
                     </AutoResizer>
                   )}
                 />
-                {/* <FieldArray
-                  name="list"
-                  render={arrayHelpers => (
-                    <Fragment>
-                      {values.list &&
-                        values.list.map((item, index) => (
-                          <div className="timekeeping-item" key={index}>
-                            <div className="timekeeping-col col-name">
-                              <div className="flex items-center">
-                                <NavLink
-                                  to={`/bang-cham-cong/${item.UserID}`}
-                                  className="font-semibold text-name text-decoration-none text-black font-size-15px text-capitalize d-block flex-1 pr-15px"
-                                >
-                                  {item.FullName}
-                                </NavLink>
-                                <Dropdown>
-                                  <Dropdown.Toggle
-                                    className="border !w-11 !h-11 !rounded-full flex items-center justify-center after:hidden !p-0 !text-[#7e8299]"
-                                    id="dropdown-basic"
-                                  >
-                                    <i className="fa-regular fa-gear"></i>
-                                  </Dropdown.Toggle>
-
-                                  <Dropdown.Menu>
-                                    {
-                                      <PickerTypeShift item={item}>
-                                        {({ open }) => (
-                                          <Dropdown.Item onClick={open}>
-                                            Loại công ca
-                                          </Dropdown.Item>
-                                        )}
-                                      </PickerTypeShift>
-                                    }
-                                    {
-                                      <PickerMachineCode item={item}>
-                                        {({ open }) => (
-                                          <Dropdown.Item onClick={open}>
-                                            Mã máy
-                                          </Dropdown.Item>
-                                        )}
-                                      </PickerMachineCode>
-                                    }
-                                  </Dropdown.Menu>
-                                </Dropdown>
-                              </div>
-                            </div>
-
-                            <div className="timekeeping-col col-name">
-                              {
-                                <FieldArray
-                                  name="Hours"
-                                  render={hoursHelpers => (
-                                    <Fragment>
-                                      {item.Hours.slice(0, 2).map((hour, i) => (
-                                        <div
-                                          className={clsx(i === 0 && 'mb-6px')}
-                                          key={i}
-                                        >
-                                          <FastField
-                                            name={`list[${index}].Hours[${i}]`}
-                                            placeholder="F"
-                                          >
-                                            {({ field, form, meta }) => (
-                                              <TimePicker.RangePicker
-                                                locale={{
-                                                  ...locale,
-                                                  lang: {
-                                                    ...locale.lang,
-                                                    ok: 'Lưu giờ'
-                                                  }
-                                                }}
-                                                placeholder={[
-                                                  'Bắt đầu',
-                                                  'Kết thúc'
-                                                ]}
-                                                onChange={(
-                                                  value,
-                                                  dateString
-                                                ) => {
-                                                  form.setFieldValue(
-                                                    `list[${index}].Hours[${i}]`,
-                                                    value,
-                                                    false
-                                                  )
-                                                }}
-                                                value={field.value}
-                                                allowEmpty={[true, true]}
-                                              />
-                                            )}
-                                          </FastField>
-                                          <TimePicker.RangePicker
-                                            locale={{
-                                              ...locale,
-                                              lang: {
-                                                ...locale.lang,
-                                                ok: 'Lưu giờ'
-                                              }
-                                            }}
-                                            placeholder={[
-                                              'Bắt đầu',
-                                              'Kết thúc'
-                                            ]}
-                                            onChange={(value, dateString) => {
-                                              setFieldValue(
-                                                `list[${index}].Hours[${i}]`,
-                                                value,
-                                                false
-                                              )
-                                            }}
-                                            value={hour}
-                                          />
-                                        </div>
-                                      ))}
-                                    </Fragment>
-                                  )}
-                                />
-                              }
-                            </div>
-                            <div className="timekeeping-col col-input">
-                              <label className="name-control">Công</label>
-                              <FastField name={`list[${index}].WorkQty`}>
-                                {({ field, form }) => (
-                                  <NumericFormat
-                                    className="form-control form-control-solid"
-                                    type="text"
-                                    placeholder="Nhập số công"
-                                    onValueChange={val =>
-                                      form.setFieldValue(
-                                        `list[${index}].WorkQty`,
-                                        val.floatValue
-                                          ? val.floatValue
-                                          : val.value,
-                                        false
-                                      )
-                                    }
-                                    autoComplete="off"
-                                    {...field}
-                                  />
-                                )}
-                              </FastField>
-                            </div>
-                            <div className="timekeeping-col col-input">
-                              <label className="name-control">Tăng ca</label>
-                              <FastField name={`list[${index}].WorkQty1`}>
-                                {({ field, form }) => (
-                                  <NumericFormat
-                                    className="form-control form-control-solid"
-                                    type="text"
-                                    placeholder="Thời gian tăng ca"
-                                    onValueChange={val =>
-                                      form.setFieldValue(
-                                        `list[${index}].WorkQty1`,
-                                        val.floatValue
-                                          ? val.floatValue
-                                          : val.value,
-                                        false
-                                      )
-                                    }
-                                    autoComplete="off"
-                                    {...field}
-                                  />
-                                )}
-                              </FastField>
-                            </div>
-                            <div className="timekeeping-col col-input">
-                              <label className="name-control">Thiếu giờ</label>
-                              <FastField name={`list[${index}].WorkQty2`}>
-                                {({ field, form }) => (
-                                  <NumericFormat
-                                    className="form-control form-control-solid"
-                                    type="text"
-                                    placeholder="Thời gian thiếu"
-                                    onValueChange={val =>
-                                      form.setFieldValue(
-                                        `list[${index}].WorkQty2`,
-                                        val.floatValue
-                                          ? val.floatValue
-                                          : val.value,
-                                        false
-                                      )
-                                    }
-                                    autoComplete="off"
-                                    {...field}
-                                  />
-                                )}
-                              </FastField>
-                            </div>
-                            <div className="timekeeping-col">
-                              <label className="name-control">
-                                Ghi chú thêm
-                              </label>
-                              <FastField name={`list[${index}].Desc`}>
-                                {({ field }) => (
-                                  <input
-                                    className="form-control form-control-solid"
-                                    type="text"
-                                    placeholder="Ghi chú"
-                                    {...field}
-                                  />
-                                )}
-                              </FastField>
-                            </div>
-                          </div>
-                        ))}
-                    </Fragment>
-                  )}
-                /> */}
               </div>
               <div className="card-footer d-flex justify-content-end align-items-center">
                 <button
