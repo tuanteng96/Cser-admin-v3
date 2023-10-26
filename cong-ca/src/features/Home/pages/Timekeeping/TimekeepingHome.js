@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker'
 import Select, { components } from 'react-select'
 import { useSelector } from 'react-redux'
 import worksheetApi from 'src/api/worksheet.api'
-import { FastField, FieldArray, Form, Formik } from 'formik'
+import { FastField, Field, FieldArray, Form, Formik } from 'formik'
 import clsx from 'clsx'
 import 'react-base-table/styles.css'
 import { useMutation, useQuery } from 'react-query'
@@ -259,7 +259,7 @@ function TimekeepingHome(props) {
                   {rowData.Dates.map((date, index) => (
                     <div className="w-full" key={index}>
                       <div className="relative mb-2 last:!mb-0">
-                        <FastField
+                        <Field
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.CheckIn`}
                         >
                           {({ field, form, meta }) => (
@@ -278,8 +278,7 @@ function TimekeepingHome(props) {
                                           second: moment(val).get('second')
                                         })
                                         .toDate()
-                                    : '',
-                                  false
+                                    : ''
                                 )
                               }}
                               className="form-control w-full !font-medium text-success"
@@ -292,11 +291,11 @@ function TimekeepingHome(props) {
                               placeholderText="--:--"
                             />
                           )}
-                        </FastField>
+                        </Field>
                         <ArrowLeftOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-success pointer-events-none" />
                       </div>
                       <div className="relative mb-2 last:!mb-0">
-                        <FastField
+                        <Field
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.CheckOut`}
                         >
                           {({ field, form, meta }) => (
@@ -315,8 +314,7 @@ function TimekeepingHome(props) {
                                           second: moment(val).get('second')
                                         })
                                         .toDate()
-                                    : '',
-                                  false
+                                    : ''
                                 )
                               }
                               className="form-control w-full !font-medium text-danger"
@@ -329,7 +327,7 @@ function TimekeepingHome(props) {
                               placeholderText="--:--"
                             />
                           )}
-                        </FastField>
+                        </Field>
                         <ArrowRightOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-danger pointer-events-none" />
                       </div>
                     </div>
@@ -354,11 +352,12 @@ function TimekeepingHome(props) {
                   {rowData.Dates.map((date, index) => (
                     <div className="w-full" key={index}>
                       <div className="w-full relative mb-2 last:!mb-0">
-                        <FastField
+                        <Field
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingType`}
                         >
                           {({ field, form, meta }) => (
                             <Select
+                              isDisabled={!date.WorkTrack.CheckIn}
                               isClearable
                               menuPortalTarget={document.body}
                               components={{
@@ -387,20 +386,20 @@ function TimekeepingHome(props) {
                               onChange={otp =>
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingType`,
-                                  otp,
-                                  false
+                                  otp
                                 )
                               }
                             />
                           )}
-                        </FastField>
+                        </Field>
                       </div>
                       <div className="w-full relative mb-2 last:!mb-0">
-                        <FastField
+                        <Field
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingType`}
                         >
                           {({ field, form, meta }) => (
                             <Select
+                              isDisabled={!date.WorkTrack.CheckOut}
                               isClearable
                               components={{
                                 Control: ({ children, ...rest }) => (
@@ -428,14 +427,13 @@ function TimekeepingHome(props) {
                               onChange={otp =>
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingType`,
-                                  otp,
-                                  false
+                                  otp
                                 )
                               }
                               menuPortalTarget={document.body}
                             />
                           )}
-                        </FastField>
+                        </Field>
                       </div>
                     </div>
                   ))}
@@ -459,11 +457,15 @@ function TimekeepingHome(props) {
                   {rowData.Dates.map((date, index) => (
                     <div className="w-full" key={index}>
                       <div className="relative mb-2 last:!mb-0">
-                        <FastField
+                        <Field
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingTypeValue`}
                         >
                           {({ field, form, meta }) => (
                             <NumericFormat
+                              disabled={
+                                !date.WorkTrack.CheckIn ||
+                                !date.WorkTrack.Info.TimekeepingType
+                              }
                               allowLeadingZeros
                               thousandSeparator={true}
                               allowNegative={true}
@@ -473,23 +475,26 @@ function TimekeepingHome(props) {
                               onValueChange={({ floatValue }) => {
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingTypeValue`,
-                                  floatValue,
-                                  false
+                                  floatValue
                                 )
                               }}
                               autoComplete="off"
                               value={field.value}
                             />
                           )}
-                        </FastField>
+                        </Field>
                         <ArrowLeftOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-success pointer-events-none" />
                       </div>
                       <div className="relative mb-2 last:!mb-0">
-                        <FastField
+                        <Field
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingTypeValue`}
                         >
                           {({ field, form, meta }) => (
                             <NumericFormat
+                              disabled={
+                                !date.WorkTrack.CheckOut ||
+                                !date.WorkTrack.Info.CheckOut.TimekeepingType
+                              }
                               allowLeadingZeros
                               thousandSeparator={true}
                               allowNegative={true}
@@ -499,15 +504,14 @@ function TimekeepingHome(props) {
                               onValueChange={({ floatValue }) =>
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingTypeValue`,
-                                  floatValue,
-                                  false
+                                  floatValue
                                 )
                               }
                               autoComplete="off"
                               value={field.value}
                             />
                           )}
-                        </FastField>
+                        </Field>
                         <ArrowRightOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-danger pointer-events-none" />
                       </div>
                     </div>
@@ -532,11 +536,12 @@ function TimekeepingHome(props) {
                   {rowData.Dates.map((date, index) => (
                     <div className="w-full" key={index}>
                       <div className="w-full relative mb-2 last:!mb-0">
-                        <FastField
+                        <Field
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Type`}
                         >
                           {({ field, form, meta }) => (
                             <Select
+                              isDisabled={!date.WorkTrack.CheckIn}
                               isClearable
                               menuPortalTarget={document.body}
                               components={{
@@ -565,13 +570,12 @@ function TimekeepingHome(props) {
                               onChange={otp =>
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.Info.Type`,
-                                  otp,
-                                  false
+                                  otp
                                 )
                               }
                             />
                           )}
-                        </FastField>
+                        </Field>
                       </div>
                       <div className="w-full relative mb-2 last:!mb-0">
                         <FastField
@@ -579,6 +583,7 @@ function TimekeepingHome(props) {
                         >
                           {({ field, form, meta }) => (
                             <Select
+                              isDisabled={!date.WorkTrack.CheckOut}
                               isClearable
                               components={{
                                 Control: ({ children, ...rest }) => (
@@ -637,31 +642,33 @@ function TimekeepingHome(props) {
                   {rowData.Dates.map((date, index) => (
                     <div className="w-full" key={index}>
                       <div className="relative mb-2 last:!mb-0">
-                        <FastField
+                        <Field
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Desc`}
                         >
                           {({ field, form, meta }) => (
                             <input
+                              disabled={!date.WorkTrack.CheckIn}
                               className="form-control"
                               placeholder="Nhập mô tả"
                               {...field}
                             />
                           )}
-                        </FastField>
+                        </Field>
                         <ArrowLeftOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-success pointer-events-none" />
                       </div>
                       <div className="relative mb-2 last:!mb-0">
-                        <FastField
+                        <Field
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.Desc`}
                         >
                           {({ field, form, meta }) => (
                             <input
+                              disabled={!date.WorkTrack.CheckOut}
                               className="form-control"
                               placeholder="Nhập mô tả"
                               {...field}
                             />
                           )}
-                        </FastField>
+                        </Field>
                         <ArrowRightOnRectangleIcon className="w-6 absolute right-2 top-2/4 -translate-y-2/4 !text-danger pointer-events-none" />
                       </div>
                     </div>
@@ -685,11 +692,15 @@ function TimekeepingHome(props) {
                 <>
                   {rowData.Dates.map((date, index) => (
                     <div className="w-full relative" key={index}>
-                      <FastField
+                      <Field
                         name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CountWork`}
                       >
                         {({ field, form, meta }) => (
                           <NumericFormat
+                            disabled={
+                              !date.WorkTrack.CheckIn &&
+                              !date.WorkTrack.CheckOut
+                            }
                             className="form-control text-center"
                             type="text"
                             placeholder="Nhập số công"
@@ -704,7 +715,7 @@ function TimekeepingHome(props) {
                             {...field}
                           />
                         )}
-                      </FastField>
+                      </Field>
                     </div>
                   ))}
                 </>
@@ -726,17 +737,21 @@ function TimekeepingHome(props) {
                 <>
                   {rowData.Dates.map((date, index) => (
                     <div className="w-full relative" key={index}>
-                      <FastField
+                      <Field
                         name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Note`}
                       >
                         {({ field, form, meta }) => (
                           <textarea
+                            disabled={
+                              !date.WorkTrack.CheckIn &&
+                              !date.WorkTrack.CheckOut
+                            }
                             className="form-control resize-none h-[90px]"
                             placeholder="Nhập ghi chú"
                             {...field}
                           ></textarea>
                         )}
-                      </FastField>
+                      </Field>
                     </div>
                   ))}
                 </>
@@ -847,6 +862,13 @@ function TimekeepingHome(props) {
       },
       onError: error => console.log(error)
     })
+  }
+
+  const rowClassName = ({ rowData }) => {
+    return (
+      rowData.Dates.some(x => x?.WorkTrack?.Info?.WorkToday?.isOff) &&
+      '!bg-[#fff5f8]'
+    )
   }
 
   return (
@@ -965,6 +987,7 @@ function TimekeepingHome(props) {
                           ignoreFunctionInColumnCompare={false}
                           disabled={isLoading}
                           onEndReachedThreshold={300}
+                          rowClassName={rowClassName}
                           // emptyRenderer={() =>
                           //   !isLoading && (
                           //     <div

@@ -6,6 +6,11 @@
     }
 }
 
+.react-datepicker__time-list-item--disabled {
+    opacity: .3;
+    cursor: not-allowed;
+}
+
 .react-datepicker-wrapper {
     width: 100%;
 }

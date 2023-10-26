@@ -3,6 +3,12 @@
 //
 // Include Form Components
 @import './forms/base';
+.form-control:disabled,
+.form-control[readonly] {
+    background-color: #f2f2f2;
+    cursor: no-drop;
+}
+
 // Select Address
 .select-address {
     &__separator {

@@ -664,7 +664,6 @@ function CalendarPage(props) {
               : [];
           if (data?.userOffs && data?.userOffs.length > 0) {
             for (let useroff of data?.userOffs) {
-              console.log(useroff);
               if (useroff.dayList && useroff.dayList.length > 0) {
                 let i = useroff.dayList.findIndex(
                   (x) =>

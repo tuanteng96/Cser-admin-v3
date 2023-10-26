@@ -68,11 +68,13 @@ function BookingPage() {
     isBtnBooking: false,
     isBtnDelete: false,
   });
-  const { AuthCrStockID, Book, BookMember } = useSelector(
-    ({ Auth, Booking }) => ({
+  const { AuthCrStockID, Book, BookMember, TimeOpen, TimeClose } = useSelector(
+    ({ Auth, Booking, JsonConfig }) => ({
       AuthCrStockID: Auth.CrStockID,
       Book: Booking.Book,
       BookMember: Booking.Member,
+      TimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
+      TimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
     })
   );
 
@@ -363,6 +365,26 @@ function BookingPage() {
                     </span> */}
                   </label>
                   <DatePicker
+                    minTime={
+                      new Date(
+                        new Date().setHours(
+                          moment(TimeOpen, "HH:mm:ss").format("HH"),
+                          moment(TimeOpen, "HH:mm:ss").format("mm"),
+                          0,
+                          0
+                        )
+                      )
+                    }
+                    maxTime={
+                      new Date(
+                        new Date().setHours(
+                          moment(TimeClose, "HH:mm:ss").format("HH"),
+                          moment(TimeClose, "HH:mm:ss").format("mm"),
+                          0,
+                          0
+                        )
+                      )
+                    }
                     name="BookDate"
                     selected={values.BookDate ? new Date(values.BookDate) : ""}
                     onChange={(date) => setFieldValue("BookDate", date)}

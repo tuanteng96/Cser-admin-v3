@@ -25,7 +25,7 @@ export const CheckInOutHelpers = {
     }
     if (info['VE_SOM']) {
       obj = {
-        Value: info['VE_SOM'].Value,
+        Value: info['VE_MUON'].Value ? -Math.abs(info['VE_MUON'].Value) : 0,
         Option: {
           label: 'Về sớm',
           value: 'VE_SOM'
@@ -34,7 +34,7 @@ export const CheckInOutHelpers = {
     }
     if (info['VE_MUON']) {
       obj = {
-        Value: info['VE_MUON'].Value ? -Math.abs(info['VE_MUON'].Value) : 0,
+        Value: info['VE_MUON'].Value,
         Option: {
           label: 'Về muộn',
           value: 'VE_MUON'

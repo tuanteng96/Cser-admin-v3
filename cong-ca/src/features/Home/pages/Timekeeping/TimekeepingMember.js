@@ -21,6 +21,7 @@ import 'react-texty/styles.css'
 import moment from 'moment'
 import 'moment/locale/vi'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
+import { NumericFormat } from 'react-number-format'
 
 moment.locale('vi')
 
@@ -73,34 +74,54 @@ const RenderFooter = forwardRef(({ data }, ref) => {
   }
 
   return (
-    <div
-      className="h-100 flex overflow-auto no-scrollbar"
-      id="el-footer"
-      ref={refElm}
-    >
-      <div className="w-[300px] min-w-[300px]" />
-      <div className="w-[180px] min-w-[180px]" />
-      <div className="w-[200px] min-w-[200px]" />
+    <div className="h-100 flex flex-col">
       <div
-        className={clsx(
-          'w-[250px] min-w-[250px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid flex items-center px-3 font-semibold text-lg',
-          getTotalPrice() < 0 ? 'text-danger' : 'text-success'
-        )}
+        className="flex overflow-auto no-scrollbar h-[45px]"
+        id="el-footer"
+        ref={refElm}
       >
-        {PriceHelper.formatVND(getTotalPrice())}
+        <div className="w-[300px] min-w-[300px]" />
+        <div className="w-[180px] min-w-[180px]" />
+        <div className="w-[200px] min-w-[200px]" />
+        <div
+          className={clsx(
+            'w-[250px] min-w-[250px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid flex items-center px-3 font-semibold text-lg',
+            getTotalPrice() < 0 ? 'text-danger' : 'text-success'
+          )}
+        >
+          {PriceHelper.formatVND(getTotalPrice())}
+        </div>
+        <div className="w-[220px] min-w-[220px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid" />
+        <div className="w-[320px] min-w-[320px]" />
+        <div className="w-[150px] min-w-[150px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid flex justify-center items-center font-semibold text-lg">
+          {getTotalCountWork()}
+        </div>
+        <div className="w-[300px] min-w-[300px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid" />
+        <div
+          style={{
+            width: getScrollbarWidth() + 'px',
+            minWidth: getScrollbarWidth() + 'px'
+          }}
+        ></div>
       </div>
-      <div className="w-[220px] min-w-[220px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid" />
-      <div className="w-[320px] min-w-[320px]" />
-      <div className="w-[150px] min-w-[150px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid flex justify-center items-center font-semibold text-lg">
-        {getTotalCountWork()}
+      <div className="border-top flex justify-end items-center px-3 grow">
+        <div className="mr-3.5">
+          <NumericFormat
+            allowLeadingZeros
+            thousandSeparator={true}
+            allowNegative={true}
+            className="form-control form-control-solid fw-500"
+            type="text"
+            placeholder="Nhập tổng lương"
+            onValueChange={({ floatValue }) => {
+              console.log(floatValue)
+            }}
+            autoComplete="off"
+            value={0}
+          />
+        </div>
+        <button className="btn btn-primary">Duyệt lương</button>
       </div>
-      <div className="w-[300px] min-w-[300px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid" />
-      <div
-        style={{
-          width: getScrollbarWidth() + 'px',
-          minWidth: getScrollbarWidth() + 'px'
-        }}
-      ></div>
     </div>
   )
 })
@@ -401,6 +422,10 @@ function TimekeepingMember(props) {
     []
   )
 
+  const rowClassName = ({ rowData }) => {
+    return rowData?.WorkTrack?.Info?.WorkToday?.isOff && '!bg-[#fff5f8]'
+  }
+
   return (
     <div className="card h-100 timekeeping">
       <div className="card-header d-block p-20px min-h-125px min-h-md-auto">
@@ -455,6 +480,7 @@ function TimekeepingMember(props) {
               ignoreFunctionInColumnCompare={false}
               disabled={isLoading}
               onEndReachedThreshold={300}
+              rowClassName={rowClassName}
               // emptyRenderer={() =>
               //   !isLoading && (
               //     <div
@@ -479,7 +505,7 @@ function TimekeepingMember(props) {
                   el.current.scrollLeft = scrollLeft
                 }
               }}
-              footerHeight={50}
+              footerHeight={110}
               footerRenderer={
                 <RenderFooter data={data?.Dates || []} ref={childCompRef} />
               }

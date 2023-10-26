@@ -55,7 +55,7 @@ const initialDefault = {
   AtHome: false,
   AmountPeople: {
     label: "1 khách",
-    value: 1
+    value: 1,
   },
 };
 
@@ -70,12 +70,17 @@ function ModalCalendar({
 }) {
   //console.log(initialValue)
   const [initialValues, setInitialValues] = useState(initialDefault);
-  const { AuthCrStockID } = useSelector(({ Auth }) => ({
-    AuthStocks: Auth.Stocks.filter(
-      (item) => item.ParentID !== 0
-    ).map((item) => ({ ...item, value: item.ID, label: item.Title })),
-    AuthCrStockID: Auth.CrStockID,
-  }));
+  const { AuthCrStockID, TimeOpen, TimeClose } = useSelector(
+    ({ Auth, JsonConfig }) => ({
+      AuthStocks: Auth.Stocks.filter(
+        (item) => item.ParentID !== 0
+      ).map((item) => ({ ...item, value: item.ID, label: item.Title })),
+      AuthCrStockID: Auth.CrStockID,
+      TimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
+      TimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
+    })
+  );
+
   const [isModalCreate, setIsModalCreate] = useState(false);
   const [initialCreate, setInitialCreate] = useState({
     FullName: "",
@@ -94,7 +99,6 @@ function ModalCalendar({
           value: 1,
         };
         if (newDesc && newDesc.includes("Số lượng khách:")) {
-          
           let descSplit = newDesc.split("\n");
           let SL = Number(descSplit[0].match(/\d+/)[0]);
 
@@ -406,6 +410,27 @@ function ModalCalendar({
                     </span> */}
                     </label>
                     <DatePicker
+                      minDate={new Date()}
+                      minTime={
+                        new Date(
+                          new Date().setHours(
+                            moment(TimeOpen, "HH:mm:ss").format("HH"),
+                            moment(TimeOpen, "HH:mm:ss").format("mm"),
+                            0,
+                            0
+                          )
+                        )
+                      }
+                      maxTime={
+                        new Date(
+                          new Date().setHours(
+                            moment(TimeClose, "HH:mm:ss").format("HH"),
+                            moment(TimeClose, "HH:mm:ss").format("mm"),
+                            0,
+                            0
+                          )
+                        )
+                      }
                       name="BookDate"
                       selected={
                         values.BookDate ? new Date(values.BookDate) : ""
