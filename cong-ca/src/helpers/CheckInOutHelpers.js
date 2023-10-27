@@ -7,7 +7,7 @@ export const CheckInOutHelpers = {
     if (!info) return obj
     if (info['DI_SOM']) {
       obj = {
-        Value: info['DI_SOM'].Value,
+        Value: info['DI_SOM']?.Value,
         Option: {
           label: 'Đi sớm',
           value: 'DI_SOM'
@@ -16,7 +16,11 @@ export const CheckInOutHelpers = {
     }
     if (info['DI_MUON']) {
       obj = {
-        Value: info['DI_MUON'].Value ? -Math.abs(info['DI_MUON'].Value) : 0,
+        Value: info['DI_MUON']?.Value
+          ? info?.Type === 'CA_NHAN'
+            ? -Math.abs(info['DI_MUON'].Value)
+            : info['DI_MUON'].Value
+          : 0,
         Option: {
           label: 'Đi muộn',
           value: 'DI_MUON'
@@ -25,7 +29,11 @@ export const CheckInOutHelpers = {
     }
     if (info['VE_SOM']) {
       obj = {
-        Value: info['VE_MUON'].Value ? -Math.abs(info['VE_MUON'].Value) : 0,
+        Value: info['VE_SOM']?.Value
+          ? info?.Type === 'CONG_TY'
+            ? Math.abs(info['VE_SOM'].Value)
+            : -Math.abs(info['VE_SOM'].Value)
+          : 0,
         Option: {
           label: 'Về sớm',
           value: 'VE_SOM'
@@ -34,7 +42,7 @@ export const CheckInOutHelpers = {
     }
     if (info['VE_MUON']) {
       obj = {
-        Value: info['VE_MUON'].Value,
+        Value: info['VE_MUON']?.Value,
         Option: {
           label: 'Về muộn',
           value: 'VE_MUON'

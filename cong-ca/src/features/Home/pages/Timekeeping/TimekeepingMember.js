@@ -11,7 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import worksheetApi from 'src/api/worksheet.api'
 import clsx from 'clsx'
-import { useQuery } from 'react-query'
+import { useMutation, useQuery } from 'react-query'
 import { CheckInOutHelpers } from 'src/helpers/CheckInOutHelpers'
 import Table, { AutoResizer } from 'react-base-table'
 import { PriceHelper } from 'src/helpers/PriceHelper'
@@ -22,6 +22,8 @@ import moment from 'moment'
 import 'moment/locale/vi'
 import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { NumericFormat } from 'react-number-format'
+import { useSelector } from 'react-redux'
+import { Field, Form, Formik } from 'formik'
 
 moment.locale('vi')
 
@@ -46,13 +48,55 @@ function getScrollbarWidth() {
   return scrollbarWidth
 }
 
-const RenderFooter = forwardRef(({ data }, ref) => {
+const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
+  let { id } = useParams()
+  const [initialValues, setInitialValues] = useState({
+    LUONG: 0,
+    CONG_CA: 0,
+    ID: 0
+  })
+
   const refElm = useRef()
   useImperativeHandle(ref, () => ({
     getRef() {
       return refElm
     }
   }))
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      let TotalPrice = getTotalPrice()
+      let TotalCountWork = getTotalCountWork()
+      if (data && data[0].WorkTrack?.Info?.ForDate) {
+        setInitialValues(prevState => ({
+          ...prevState,
+          ID: data[0].WorkTrack?.ID || 0,
+          CreateDate: data[0].WorkTrack?.Info?.ForDate,
+          CONG_CA: TotalCountWork,
+          THUONG_PHAT: TotalPrice,
+          LUONG: data[0].WorkTrack?.Info?.LUONG
+        }))
+      } else if (SalaryConfigMons?.Values?.LUONG) {
+        let { Values, DayCount } = SalaryConfigMons
+        let SalaryDay = 0
+        if (Values?.NGAY_CONG) {
+          SalaryDay = Values?.LUONG / Values?.NGAY_CONG
+        } else {
+          SalaryDay = Values?.LUONG / (DayCount - Values?.NGAY_NGHI)
+        }
+
+        setInitialValues(prevState => ({
+          ...prevState,
+          LUONG: Math.floor(TotalCountWork * SalaryDay + TotalPrice),
+          CONG_CA: TotalCountWork,
+          THUONG_PHAT: TotalPrice,
+          ID: data[0].WorkTrack?.ID || 0,
+          CreateDate: moment(data[0].Date).format('YYYY-MM-DD')
+        }))
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [SalaryConfigMons, data])
 
   const getTotalPrice = () => {
     if (!data || data.length === 0) return 0
@@ -68,9 +112,43 @@ const RenderFooter = forwardRef(({ data }, ref) => {
   const getTotalCountWork = () => {
     if (!data || data.length === 0) return 0
     return data.reduce(
-      (n, { WorkTrack }) => n + (WorkTrack.Info.CountWork || 0),
+      (n, { WorkTrack }) => n + Number(WorkTrack?.Info?.CountWork || 0),
       0
     )
+  }
+
+  const updateTimeKeepMutation = useMutation({
+    mutationFn: body => worksheetApi.checkinWorkSheet(body)
+  })
+
+  const onSubmit = values => {
+    let newValues = {
+      edit: [
+        {
+          ID: values.ID,
+          CreateDate: values.CreateDate,
+          UserID: id,
+          Info: {
+            ForDate: values.CreateDate,
+            CONG_CA: values.CONG_CA,
+            LUONG: values.LUONG,
+            THUONG_PHAT: values.THUONG_PHAT
+          }
+        }
+      ]
+    }
+    updateTimeKeepMutation.mutate(newValues, {
+      onSuccess: () => {
+        refetch().then(
+          () =>
+            window.top.toastr &&
+            window.top.toastr.success('Chốt lương thành công !', {
+              timeOut: 1500
+            })
+        )
+      },
+      onError: error => console.log(error)
+    })
   }
 
   return (
@@ -104,24 +182,54 @@ const RenderFooter = forwardRef(({ data }, ref) => {
           }}
         ></div>
       </div>
-      <div className="border-top flex justify-end items-center px-3 grow">
-        <div className="mr-3.5">
-          <NumericFormat
-            allowLeadingZeros
-            thousandSeparator={true}
-            allowNegative={true}
-            className="form-control form-control-solid fw-500"
-            type="text"
-            placeholder="Nhập tổng lương"
-            onValueChange={({ floatValue }) => {
-              console.log(floatValue)
-            }}
-            autoComplete="off"
-            value={0}
-          />
-        </div>
-        <button className="btn btn-primary">Duyệt lương</button>
-      </div>
+      <Formik
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+        enableReinitialize={true}
+      >
+        {formikProps => {
+          // errors, touched, handleChange, handleBlur
+          const { values } = formikProps
+          return (
+            <Form
+              className="border-top flex justify-end items-center px-3 grow"
+              autoComplete="off"
+            >
+              <div className="font-medium text-base mr-3.5">Lương dự kiến</div>
+              <div className="mr-3.5">
+                <Field name="LUONG">
+                  {({ field, form, meta }) => (
+                    <NumericFormat
+                      allowLeadingZeros
+                      thousandSeparator={true}
+                      allowNegative={true}
+                      className="form-control form-control-solid !font-bold !text-lg"
+                      type="text"
+                      placeholder="Nhập lương dự kiến"
+                      onValueChange={({ floatValue }) => {
+                        form.setFieldValue(`LUONG`, floatValue)
+                      }}
+                      autoComplete="off"
+                      value={field.value}
+                    />
+                  )}
+                </Field>
+              </div>
+              <button
+                type="submit"
+                disabled={updateTimeKeepMutation.isLoading}
+                className={clsx(
+                  'btn btn-primary',
+                  updateTimeKeepMutation.isLoading &&
+                    'spinner spinner-white spinner-right'
+                )}
+              >
+                Chốt lương
+              </button>
+            </Form>
+          )
+        }}
+      </Formik>
     </div>
   )
 })
@@ -129,6 +237,10 @@ const RenderFooter = forwardRef(({ data }, ref) => {
 function TimekeepingMember(props) {
   const navigate = useNavigate()
   let { id } = useParams()
+
+  const { CrStockID } = useSelector(({ auth }) => ({
+    CrStockID: auth?.Info?.CrStockID
+  }))
 
   const [filters, setFilters] = useState({
     From: '',
@@ -150,14 +262,14 @@ function TimekeepingMember(props) {
     }))
   }, [CrDate])
 
-  const { isLoading, isFetching, data } = useQuery({
+  const { isLoading, isFetching, data, refetch } = useQuery({
     queryKey: ['ListWorkSheetUserId', filters],
     queryFn: async () => {
       const newObj = {
         ...filters,
         From: filters.From,
         To: filters.To,
-        StockID: filters.StockID ? filters.StockID.ID : ''
+        StockID: CrStockID
       }
 
       const { data } = await worksheetApi.getAllWorkSheet(newObj)
@@ -256,7 +368,7 @@ function TimekeepingMember(props) {
         }))[0]
       )
     },
-    enabled: Boolean(filters.From && filters.To),
+    enabled: Boolean(CrStockID && filters.From && filters.To),
     keepPreviousData: true
   })
 
@@ -507,7 +619,14 @@ function TimekeepingMember(props) {
               }}
               footerHeight={110}
               footerRenderer={
-                <RenderFooter data={data?.Dates || []} ref={childCompRef} />
+                <RenderFooter
+                  data={data?.Dates || []}
+                  SalaryConfigMons={
+                    data?.SalaryConfigMons ? data?.SalaryConfigMons[0] : null
+                  }
+                  refetch={refetch}
+                  ref={childCompRef}
+                />
               }
             />
           )}
