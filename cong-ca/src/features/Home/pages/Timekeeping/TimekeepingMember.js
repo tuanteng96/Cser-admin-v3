@@ -67,11 +67,18 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     if (data && data.length > 0) {
       let TotalPrice = getTotalPrice()
       let TotalCountWork = getTotalCountWork()
-      if (data && data[0].WorkTrack?.Info?.ForDate) {
+      if (
+        data &&
+        data[0].WorkTrack?.Info?.ForDate &&
+        data[0].WorkTrack?.Info?.LUONG &&
+        data[0].WorkTrack?.Info?.LUONG !== ''
+      ) {
         setInitialValues(prevState => ({
           ...prevState,
           ID: data[0].WorkTrack?.ID || 0,
-          CreateDate: data[0].WorkTrack?.Info?.ForDate,
+          CreateDate:
+            data[0].WorkTrack?.Info?.ForDate ||
+            moment(data[0].Date).format('YYYY-MM-DD'),
           CONG_CA: TotalCountWork,
           THUONG_PHAT: TotalPrice,
           LUONG: data[0].WorkTrack?.Info?.LUONG
@@ -88,6 +95,15 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
         setInitialValues(prevState => ({
           ...prevState,
           LUONG: Math.floor(TotalCountWork * SalaryDay + TotalPrice),
+          CONG_CA: TotalCountWork,
+          THUONG_PHAT: TotalPrice,
+          ID: data[0].WorkTrack?.ID || 0,
+          CreateDate: moment(data[0].Date).format('YYYY-MM-DD')
+        }))
+      } else {
+        setInitialValues(prevState => ({
+          ...prevState,
+          LUONG: 0,
           CONG_CA: TotalCountWork,
           THUONG_PHAT: TotalPrice,
           ID: data[0].WorkTrack?.ID || 0,
@@ -189,7 +205,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
       >
         {formikProps => {
           // errors, touched, handleChange, handleBlur
-          const { values } = formikProps
+          //const { values } = formikProps
           return (
             <Form
               className="border-top flex justify-end items-center px-3 grow"
