@@ -10,7 +10,7 @@ import { FastField, FieldArray, Form, Formik } from 'formik'
 import clsx from 'clsx'
 import 'react-base-table/styles.css'
 import { useMutation, useQuery } from 'react-query'
-import { Dropdown } from 'react-bootstrap'
+import { Dropdown, Modal } from 'react-bootstrap'
 import PickerMachineCode from '../../components/Picker/PickerMachineCode'
 import PickerTypeShift from '../../components/Picker/PickerTypeShift'
 import Table, { AutoResizer } from 'react-base-table'
@@ -23,6 +23,7 @@ import { CheckInOutHelpers } from 'src/helpers/CheckInOutHelpers'
 
 import moment from 'moment'
 import 'moment/locale/vi'
+import useWindowSize from 'src/hooks/useWindowSize'
 
 moment.locale('vi')
 
@@ -40,13 +41,14 @@ function TimekeepingHome(props) {
   }))
   const [StocksList, setStocksList] = useState([])
   const [CrDate, setCrDate] = useState(new Date())
+  const [visible, setVisible] = useState(false)
   const [filters, setFilters] = useState({
     From: '',
     To: '',
     StockID: '',
     key: ''
   })
-
+  const { width } = useWindowSize()
   const typingTimeoutRef = useRef(null)
 
   useEffect(() => {
@@ -197,8 +199,8 @@ function TimekeepingHome(props) {
   const columns = useMemo(
     () => [
       {
-        width: 300,
-        title: 'Họ tên nhân viên',
+        width: width > 767 ? 300 : 150,
+        title: 'Nhân viên',
         key: 'User.FullName',
         sortable: false,
         frozen: 'left',
@@ -206,7 +208,7 @@ function TimekeepingHome(props) {
           <div className="flex items-center w-full h-full">
             <NavLink
               to={`/bang-cham-cong/${rowData.UserID}`}
-              className="font-semibold text-name text-decoration-none text-black font-size-15px text-capitalize d-block flex-1 pr-15px"
+              className="flex-1 font-semibold text-black text-name text-decoration-none text-[13px] md:text-[15px] text-capitalize d-block pr-15px"
             >
               {rowData.FullName}
             </NavLink>
@@ -689,7 +691,7 @@ function TimekeepingHome(props) {
               render={() => (
                 <>
                   {rowData.Dates.map((date, index) => (
-                    <div className="w-full relative" key={index}>
+                    <div className="relative w-full" key={index}>
                       <FastField
                         name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CountWork`}
                       >
@@ -699,7 +701,7 @@ function TimekeepingHome(props) {
                             //   !date.WorkTrack.CheckIn &&
                             //   !date.WorkTrack.CheckOut
                             // }
-                            className="form-control text-center"
+                            className="text-center form-control"
                             type="text"
                             placeholder="Nhập số công"
                             onValueChange={val =>
@@ -734,7 +736,7 @@ function TimekeepingHome(props) {
               render={() => (
                 <>
                   {rowData.Dates.map((date, index) => (
-                    <div className="w-full relative" key={index}>
+                    <div className="relative w-full" key={index}>
                       <FastField
                         name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Note`}
                       >
@@ -870,163 +872,271 @@ function TimekeepingHome(props) {
   }
 
   return (
-    <Formik
-      initialValues={ListWorkSheet.data}
-      onSubmit={onSubmit}
-      enableReinitialize={true}
-    >
-      {formikProps => {
-        // errors, touched, handleChange, handleBlur
-        const { values } = formikProps
-        return (
-          <Form className="h-100" autoComplete="off">
-            <div className="card h-100 timekeeping">
-              <div className="card-header">
-                <h3 className="text-uppercase">
-                  <div>
-                    Chấm công
-                    <span className="text-muted text-capitalize fw-500 font-size-sm pl-5px">
-                      Ngày
-                      <span className="font-number pl-3px">
-                        {moment(CrDate).format('DD-MM-YYYY')}
+    <>
+      <Formik
+        initialValues={ListWorkSheet.data}
+        onSubmit={onSubmit}
+        enableReinitialize={true}
+      >
+        {formikProps => {
+          // errors, touched, handleChange, handleBlur
+          const { values } = formikProps
+          return (
+            <Form className="h-100" autoComplete="off">
+              <div className="card h-100 timekeeping">
+                <div className="card-header !px-[15px] md:!px-[1.75rem]">
+                  <h3 className="text-uppercase">
+                    <div>
+                      Chấm công
+                      <span className="text-muted text-capitalize fw-500 font-size-sm pl-5px">
+                        Ngày
+                        <span className="font-number pl-3px">
+                          {moment(CrDate).format('DD-MM-YYYY')}
+                        </span>
                       </span>
-                    </span>
-                  </div>
-                </h3>
-                <div className="d-flex align-items-center justify-content-center">
-                  <div className="position-relative">
-                    <input
-                      className="form-control form-control-solid w-250px"
-                      type="text"
-                      placeholder="Nhập tên nhân viên"
-                      onChange={evt => {
-                        if (typingTimeoutRef.current) {
-                          clearTimeout(typingTimeoutRef.current)
-                        }
-                        typingTimeoutRef.current = setTimeout(() => {
-                          setFilters(prevState => ({
-                            ...prevState,
-                            Key: evt.target.value
-                          }))
-                        }, 300)
-                      }}
-                    />
-                    <i className="fa-regular fa-magnifying-glass position-absolute w-30px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
-                  </div>
-                  <div className="w-225px mx-15px">
-                    <Select
-                      options={StocksList}
-                      className="select-control select-control-solid"
-                      classNamePrefix="select"
-                      placeholder="Chọn cơ sở"
-                      value={filters.StockID}
-                      onChange={otp =>
-                        setFilters(prevState => ({
-                          ...prevState,
-                          StockID: otp
-                        }))
-                      }
-                    />
-                  </div>
-                  <div className="position-relative w-140px">
-                    <DatePicker
-                      selected={CrDate}
-                      onChange={date => setCrDate(date)}
-                      className="form-control form-control-solid"
-                      dateFormat={'dd/MM/yyyy'}
-                      maxDate={new Date()}
-                    />
-                    <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
-                  </div>
-                  <div className="h-40px w-1px border-right mx-15px"></div>
-                  <Dropdown>
-                    <Dropdown.Toggle
-                      className="border !w-11 !h-11 flex items-center justify-center after:hidden !p-0 !text-[#7e8299]"
-                      id="dropdown-basic"
-                    >
-                      <i className="fa-regular fa-gear"></i>
-                    </Dropdown.Toggle>
-
-                    <Dropdown.Menu>
-                      <Dropdown.Item
-                        onClick={() => navigate('/bang-cham-cong/ca-lam-viec')}
-                      >
-                        Ca làm việc
-                      </Dropdown.Item>
-                      <Dropdown.Item onClick={() => navigate('thuong-phat')}>
-                        Thưởng phạt
-                      </Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                  <NavLink
-                    to="danh-sach-xin-nghi"
-                    className="btn btn-light-danger fw-500 ml-10px"
-                  >
-                    Danh sách xin nghỉ
-                  </NavLink>
-                  {/* <Navbar /> */}
-                </div>
-              </div>
-              <div className="card-body p-0">
-                <FieldArray
-                  name="list"
-                  render={() => (
-                    <AutoResizer>
-                      {({ width, height }) => (
-                        <Table
-                          className="BaseTable--has-hover"
-                          fixed
-                          rowKey="UserID"
-                          width={width}
-                          height={height}
-                          columns={columns}
-                          data={values?.list || []}
-                          rowHeight={115}
-                          ignoreFunctionInColumnCompare={false}
-                          disabled={isLoading}
-                          onEndReachedThreshold={300}
-                          rowClassName={rowClassName}
-                          // emptyRenderer={() =>
-                          //   !isLoading && (
-                          //     <div
-                          //       className="h-full d-flex justify-content-center align-items-center"
-                          //       style={{ fontSize: '15px' }}
-                          //     >
-                          //       Không có dữ liệu
-                          //     </div>
-                          //   )
-                          // }
-                          overlayRenderer={() =>
-                            isLoading || isFetching ? (
-                              <div className="overlay-layer bg-dark-o-10 top-0 h-100 zindex-1001 overlay-block flex justify-center">
-                                <div className="spinner spinner-primary"></div>
-                              </div>
-                            ) : null
+                    </div>
+                  </h3>
+                  <div className="d-flex align-items-center justify-content-center">
+                    <div className="hidden lg:flex">
+                      <div className="position-relative">
+                        <input
+                          className="form-control form-control-solid w-250px"
+                          type="text"
+                          placeholder="Nhập tên nhân viên"
+                          onChange={evt => {
+                            if (typingTimeoutRef.current) {
+                              clearTimeout(typingTimeoutRef.current)
+                            }
+                            typingTimeoutRef.current = setTimeout(() => {
+                              setFilters(prevState => ({
+                                ...prevState,
+                                Key: evt.target.value
+                              }))
+                            }, 300)
+                          }}
+                        />
+                        <i className="top-0 right-0 pointer-events-none fa-regular fa-magnifying-glass position-absolute w-30px h-100 d-flex align-items-center font-size-md text-muted"></i>
+                      </div>
+                      <div className="w-225px mx-15px">
+                        <Select
+                          options={StocksList}
+                          className="select-control select-control-solid"
+                          classNamePrefix="select"
+                          placeholder="Chọn cơ sở"
+                          value={filters.StockID}
+                          onChange={otp =>
+                            setFilters(prevState => ({
+                              ...prevState,
+                              StockID: otp
+                            }))
                           }
                         />
-                      )}
-                    </AutoResizer>
-                  )}
-                />
+                      </div>
+                      <div className="position-relative w-140px">
+                        <DatePicker
+                          selected={CrDate}
+                          onChange={date => setCrDate(date)}
+                          className="form-control form-control-solid"
+                          dateFormat={'dd/MM/yyyy'}
+                          maxDate={new Date()}
+                        />
+                        <i className="top-0 right-0 pointer-events-none fa-regular fa-calendar-range position-absolute w-25px h-100 d-flex align-items-center font-size-md text-muted"></i>
+                      </div>
+                    </div>
+                    <div className="h-40px w-1px border-right mx-15px"></div>
+                    <div className="xl:hidden">
+                      <Dropdown>
+                        <Dropdown.Toggle className="!h-[40px] w-[50px] btn-success">
+                          <i className="mr-3 fa fa-plus"></i>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <Dropdown.Item
+                            onClick={() =>
+                              navigate('/bang-cham-cong/ca-lam-viec')
+                            }
+                          >
+                            Ca làm việc
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => navigate('thuong-phat')}
+                          >
+                            Thưởng phạt
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => navigate('danh-sach-xin-nghi')}
+                          >
+                            Danh sách ngày nghỉ
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            className="lg:hidden"
+                            onClick={() => setVisible(true)}
+                          >
+                            Bộ lọc
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                    </div>
+                    <div className="hidden xl:flex">
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          className="border !w-11 !h-11 flex items-center justify-center after:hidden !p-0 !text-[#7e8299]"
+                          id="dropdown-basic"
+                        >
+                          <i className="fa-regular fa-gear"></i>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <Dropdown.Item
+                            onClick={() =>
+                              navigate('/bang-cham-cong/ca-lam-viec')
+                            }
+                          >
+                            Ca làm việc
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => navigate('thuong-phat')}
+                          >
+                            Thưởng phạt
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                      <NavLink
+                        to="danh-sach-xin-nghi"
+                        className="btn btn-light-danger fw-500 ml-10px"
+                      >
+                        Danh sách xin nghỉ
+                      </NavLink>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-0 card-body">
+                  <FieldArray
+                    name="list"
+                    render={() => (
+                      <AutoResizer>
+                        {({ width, height }) => (
+                          <Table
+                            className="BaseTable--has-hover"
+                            fixed
+                            rowKey="UserID"
+                            width={width}
+                            height={height}
+                            columns={columns}
+                            data={values?.list || []}
+                            rowHeight={115}
+                            ignoreFunctionInColumnCompare={false}
+                            disabled={isLoading}
+                            onEndReachedThreshold={300}
+                            rowClassName={rowClassName}
+                            // emptyRenderer={() =>
+                            //   !isLoading && (
+                            //     <div
+                            //       className="h-full d-flex justify-content-center align-items-center"
+                            //       style={{ fontSize: '15px' }}
+                            //     >
+                            //       Không có dữ liệu
+                            //     </div>
+                            //   )
+                            // }
+                            overlayRenderer={() =>
+                              isLoading || isFetching ? (
+                                <div className="top-0 flex justify-center overlay-layer bg-dark-o-10 h-100 zindex-1001 overlay-block">
+                                  <div className="spinner spinner-primary"></div>
+                                </div>
+                              ) : null
+                            }
+                          />
+                        )}
+                      </AutoResizer>
+                    )}
+                  />
+                </div>
+                <div className="card-footer d-flex justify-content-end align-items-center">
+                  <button
+                    type="submit"
+                    disabled={saveTimeKeepMutation.isLoading}
+                    className={clsx(
+                      'btn btn-success fw-500',
+                      saveTimeKeepMutation.isLoading &&
+                        'spinner spinner-white spinner-right'
+                    )}
+                  >
+                    Lưu thay đổi
+                  </button>
+                </div>
               </div>
-              <div className="card-footer d-flex justify-content-end align-items-center">
-                <button
-                  type="submit"
-                  disabled={saveTimeKeepMutation.isLoading}
-                  className={clsx(
-                    'btn btn-success fw-500',
-                    saveTimeKeepMutation.isLoading &&
-                      'spinner spinner-white spinner-right'
-                  )}
-                >
-                  Lưu thay đổi
-                </button>
-              </div>
+            </Form>
+          )
+        }}
+      </Formik>
+      <Modal
+        show={visible}
+        onHide={() => setVisible(false)}
+        dialogClassName="modal-content-right max-w-400px"
+        scrollable={true}
+        enforceFocus={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title className="font-title text-uppercase">
+            Bộ lọch
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="w-full !mb-5">
+            <div className="mb-1">Nhân viên</div>
+            <div className="position-relative">
+              <input
+                className="form-control"
+                type="text"
+                placeholder="Nhập tên nhân viên"
+                onChange={evt => {
+                  if (typingTimeoutRef.current) {
+                    clearTimeout(typingTimeoutRef.current)
+                  }
+                  typingTimeoutRef.current = setTimeout(() => {
+                    setFilters(prevState => ({
+                      ...prevState,
+                      Key: evt.target.value
+                    }))
+                  }, 300)
+                }}
+              />
+              <i className="top-0 right-0 pointer-events-none fa-regular fa-magnifying-glass position-absolute w-30px h-100 d-flex align-items-center font-size-md text-muted"></i>
             </div>
-          </Form>
-        )
-      }}
-    </Formik>
+          </div>
+          <div className="w-full !mb-5">
+            <div className="mb-1">Cơ sở</div>
+            <Select
+              options={StocksList}
+              className="select-control"
+              classNamePrefix="select"
+              placeholder="Chọn cơ sở"
+              value={filters.StockID}
+              onChange={otp =>
+                setFilters(prevState => ({
+                  ...prevState,
+                  StockID: otp
+                }))
+              }
+            />
+          </div>
+          <div>
+            <div className="mb-1">Ngày nghỉ</div>
+            <div className="position-relative">
+              <DatePicker
+                selected={CrDate}
+                onChange={date => setCrDate(date)}
+                className="form-control"
+                dateFormat={'dd/MM/yyyy'}
+                maxDate={new Date()}
+              />
+              <i className="top-0 right-0 pointer-events-none fa-regular fa-calendar-range position-absolute w-25px h-100 d-flex align-items-center font-size-md text-muted"></i>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+    </>
   )
 }
 

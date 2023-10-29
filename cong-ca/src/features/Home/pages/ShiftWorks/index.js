@@ -96,16 +96,16 @@ function ShiftWorks(props) {
         const { values, setFieldValue, handleBlur } = formikProps
         return (
           <Form className="h-100 card" autoComplete="off">
-            <div className="card-header d-block p-20px min-h-125px min-h-md-auto">
+            <div className="card-header d-block p-20px !min-h-[75px] !md-min-h-[125px]">
               <div className="d-flex justify-content-between">
                 <h3 className="text-uppercase">
                   <div className="d-flex align-items-baseline">
                     <div
-                      className="d-flex cursor-pointer"
+                      className="cursor-pointer d-flex"
                       onClick={() => navigate('/')}
                     >
                       <div className="w-20px">
-                        <i className="fa-regular fa-chevron-left ml-0 vertical-align-middle text-muted"></i>
+                        <i className="ml-0 fa-regular fa-chevron-left vertical-align-middle text-muted"></i>
                       </div>
                       Ca làm việc
                     </div>
@@ -139,14 +139,14 @@ function ShiftWorks(props) {
                 </button>
               </div>
             </div>
-            <div className="card-body p-20px overflow-auto relative">
-              <div className="d-flex max-w-[1200px] mx-auto">
-                <div className="w-350px">
+            <div className="relative overflow-auto card-body p-20px">
+              <div className="d-lg-flex max-w-[1200px] mx-auto">
+                <div className="flex flex-column w-lg-350px">
                   {values.CONG_CA && values.CONG_CA.length > 0 && (
                     <FieldArray
                       name="CONG_CA"
                       render={arrayHelpers => (
-                        <div className="mb-20px border rounded overflow-hidden">
+                        <div className="order-last overflow-hidden border rounded mt-[20px] lg:mt-0 lg:mb-[20px]  lg:order-first">
                           {values.CONG_CA.map((item, index) => (
                             <div
                               className={clsx(
@@ -161,7 +161,7 @@ function ShiftWorks(props) {
                             >
                               <div className="flex-1 pr-3">{item.Name}</div>
                               <div
-                                className="w-35px h-35px flex items-center justify-center rounded-full hover:bg-danger hover:text-white transiton"
+                                className="flex items-center justify-center rounded-full w-35px h-35px hover:bg-danger hover:text-white transiton"
                                 onClick={e => {
                                   e.stopPropagation()
                                   setIndexActive(0)
@@ -226,7 +226,7 @@ function ShiftWorks(props) {
                           Thêm mới
                         </button>
                         <div
-                          className="mt-15px d-flex p-20px rounded"
+                          className="rounded mt-15px d-flex p-20px"
                           style={{ backgroundColor: '#e1f0ff' }}
                         >
                           <svg
@@ -239,7 +239,7 @@ function ShiftWorks(props) {
                               fill="#101928"
                             />
                           </svg>
-                          <div className="pl-20px flex-1">
+                          <div className="flex-1 pl-20px">
                             Khi không tìm thấy loại ca làm việc, bạn có thể thêm
                             mới.
                           </div>
@@ -248,7 +248,7 @@ function ShiftWorks(props) {
                     )}
                   />
                 </div>
-                <div className="flex-1 pl-20px">
+                <div className="flex-1 pl-lg-20px mt-20px mt-lg-0">
                   <FieldArray
                     name="CONG_CA"
                     render={arrayHelpers => (
@@ -262,7 +262,7 @@ function ShiftWorks(props) {
                               )}
                               key={index}
                             >
-                              <div className="text-3xl mb-8 font-bold">
+                              <div className="mb-8 text-3xl font-bold">
                                 {item.Name}
                               </div>
                               <FieldArray
@@ -272,10 +272,10 @@ function ShiftWorks(props) {
                                     {values.CONG_CA[index].Days.map(
                                       (day, i) => (
                                         <div
-                                          className="d-flex mb-4 last:!mb-0"
+                                          className="d-flex mb-4 last:!mb-0 flex-wrap"
                                           key={i}
                                         >
-                                          <div className="flex items-center h-[42px]">
+                                          <div className="flex items-center h-[42px] order-1">
                                             <label className="checkbox checkbox-lg">
                                               <input
                                                 type="checkbox"
@@ -292,7 +292,7 @@ function ShiftWorks(props) {
                                               <span></span>
                                             </label>
                                           </div>
-                                          <div className="flex-1 flex flex-col justify-between pl-15px">
+                                          <div className="flex flex-col justify-between flex-1 order-2 pl-15px">
                                             <div className="font-bold capitalize">
                                               {day.Title}
                                             </div>
@@ -300,7 +300,7 @@ function ShiftWorks(props) {
                                               {getTotalTime(day)}
                                             </div>
                                           </div>
-                                          <div className="d-flex align-items-center px-15px w-[450px]">
+                                          <div className="d-flex align-items-center mt-2.5 lg:mt-0 md:pl-[39px] lg:px-[15px] w-full lg:w-[450px] order-last lg:!order-3">
                                             {day.isOff && (
                                               <div className="text-muted">
                                                 Không có ca
@@ -336,7 +336,7 @@ function ShiftWorks(props) {
                                                     showTimeSelectOnly
                                                     dateFormat="HH:mm"
                                                   />
-                                                  <div className="position-absolute right-0 top-0 h-100 w-40px d-flex justify-content-center pointer-events-none">
+                                                  <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
                                                     <svg
                                                       xmlns="http://www.w3.org/2000/svg"
                                                       fill="none"
@@ -354,7 +354,7 @@ function ShiftWorks(props) {
                                                     </svg>
                                                   </div>
                                                 </div>
-                                                <div className="w-40px text-center">
+                                                <div className="text-center w-40px">
                                                   -
                                                 </div>
                                                 <div className="position-relative">
@@ -385,7 +385,7 @@ function ShiftWorks(props) {
                                                     showTimeSelectOnly
                                                     dateFormat="HH:mm"
                                                   />
-                                                  <div className="position-absolute right-0 top-0 h-100 w-40px d-flex justify-content-center pointer-events-none">
+                                                  <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
                                                     <svg
                                                       xmlns="http://www.w3.org/2000/svg"
                                                       fill="none"
@@ -423,7 +423,7 @@ function ShiftWorks(props) {
                                                     </div>
                                                     <NumericFormat
                                                       allowNegative
-                                                      className="form-control text-center"
+                                                      className="text-center form-control"
                                                       placeholder="Số công"
                                                       name={`CONG_CA[${index}].Days[${i}].Value`}
                                                       value={day.Value}
@@ -443,7 +443,7 @@ function ShiftWorks(props) {
                                               </>
                                             )}
                                           </div>
-                                          <div className="w-50px d-flex justify-content-center">
+                                          <div className="order-4 w-50px d-flex justify-content-center">
                                             {!day.isOff && (
                                               <button
                                                 type="button"

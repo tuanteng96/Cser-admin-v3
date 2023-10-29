@@ -87,7 +87,7 @@ function PayOffPage(props) {
 
         return (
           <Form className="h-100 card" autoComplete="off">
-            <div className="card-header d-block p-20px min-h-125px min-h-md-auto">
+            <div className="card-header d-block p-20px !min-h-[75px] !md-min-h-[125px]">
               <div className="d-flex justify-content-between">
                 <h3 className="text-uppercase">
                   <div className="d-flex align-items-baseline">
@@ -98,7 +98,7 @@ function PayOffPage(props) {
                       <div className="w-20px">
                         <i className="ml-0 fa-regular fa-chevron-left vertical-align-middle text-muted"></i>
                       </div>
-                      Thưởng phạt ca làm việc
+                      Thưởng phạt
                     </div>
                   </div>
                 </h3>
@@ -141,14 +141,24 @@ function PayOffPage(props) {
                       {getByName(item)}
                     </div>
                     <div className="!p-5">
-                      <Table bordered className="mb-0">
+                      <Table responsive bordered className="mb-0">
                         <thead>
                           <tr>
-                            <th className="text-center !px-3 py-3">STT</th>
-                            <th className="!px-3 py-3">Từ (Phút)</th>
-                            <th className="!px-3 py-3">Đến (Phút)</th>
-                            <th className="!px-3 py-3">Giá trị</th>
-                            <th className="text-center !px-3 py-3">#</th>
+                            <th className="text-center !px-3 py-3 min-w-[55px]">
+                              STT
+                            </th>
+                            <th className="!px-3 py-3 min-w-[180px]">
+                              Từ (Phút)
+                            </th>
+                            <th className="!px-3 py-3 min-w-[180px]">
+                              Đến (Phút)
+                            </th>
+                            <th className="!px-3 py-3 min-w-[180px]">
+                              Giá trị
+                            </th>
+                            <th className="text-center !px-3 py-3 w-[90px] min-w-[90px]">
+                              #
+                            </th>
                           </tr>
                         </thead>
                         <FieldArray

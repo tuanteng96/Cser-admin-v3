@@ -19,10 +19,6 @@ body {
   @include media-breakpoint-down(lg) {
     font-size: $root-font-size-lg !important;
   }
-  // Mobile mode
-  @include media-breakpoint-down(md) {
-    font-size: $root-font-size-md !important;
-  }
   -ms-text-size-adjust: 100%; // 2
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

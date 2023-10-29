@@ -6,7 +6,9 @@ function Navbar(props) {
     <Fragment>
       <NavLink
         className={({ isActive }) =>
-          `btn mr-8px fw-500 ${isActive ? 'btn-primary' : 'btn-light-primary'}`
+          `btn fw-500 min-w-[142px] ${
+            isActive ? 'btn-primary' : 'btn-light-primary'
+          }`
         }
         to="/bang-cham-cong"
       >

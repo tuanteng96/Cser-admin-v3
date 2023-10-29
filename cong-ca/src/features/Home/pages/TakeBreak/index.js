@@ -14,6 +14,7 @@ import Swal from 'sweetalert2'
 import 'sweetalert2/src/sweetalert2.scss'
 import PickerTakeBreak from './components/PickerTakeBreak'
 import Text from 'react-texty'
+import { Dropdown, Modal } from 'react-bootstrap'
 
 function TakeBreakPage(props) {
   const navigate = useNavigate()
@@ -23,6 +24,7 @@ function TakeBreakPage(props) {
     CrStockID: auth?.Info?.CrStockID
   }))
   const [StocksList, setStocksList] = useState([])
+  const [visible, setVisible] = useState(false)
   const [filters, setFilters] = useState({
     StockID: '', // ID Stock
     From: new Date(), // Ngày bắt đầu
@@ -138,7 +140,7 @@ function TakeBreakPage(props) {
         cellRenderer: ({ rowData }) => rowData?.Desc
       },
       {
-        width: 150,
+        width: 110,
         title: '#',
         key: '#',
         sortable: false,
@@ -226,7 +228,7 @@ function TakeBreakPage(props) {
 
   return (
     <div className="h-100 card">
-      <div className="card-header d-block p-20px min-h-125px min-h-md-auto">
+      <div className="card-header d-block p-20px !min-h-[75px] !md-min-h-[125px]">
         <div className="d-flex justify-content-between">
           <h3 className="text-uppercase">
             <div className="d-flex align-items-baseline">
@@ -241,65 +243,89 @@ function TakeBreakPage(props) {
               </div>
             </div>
           </h3>
-          <div className="d-flex">
-            <div className="w-225px">
-              <SelectStaffs
-                className="select-control select-control-solid"
-                menuPosition="fixed"
-                name="UserID"
-                onChange={otp =>
-                  setFilters(prevState => ({ ...prevState, UserID: otp }))
-                }
-                value={filters.UserID}
-                isClearable={true}
-              />
-            </div>
-            <div className="w-225px mx-15px">
-              <Select
-                options={StocksList}
-                className="select-control select-control-solid"
-                classNamePrefix="select"
-                placeholder="Chọn cơ sở"
-                value={filters.StockID}
-                onChange={otp =>
-                  setFilters(prevState => ({
-                    ...prevState,
-                    StockID: otp
-                  }))
-                }
-              />
-            </div>
-            <div className="position-relative w-250px">
-              <DatePicker
-                onChange={dates => {
-                  const [start, end] = dates
-                  setFilters(prevState => ({
-                    ...prevState,
-                    From: start,
-                    To: end
-                  }))
-                }}
-                placeholderText="Chọn ngày"
-                className="form-control form-control-solid"
-                dateFormat={'dd/MM/yyyy'}
-                selectsRange
-                startDate={filters.From}
-                endDate={filters.To}
-              />
-              <i className="top-0 right-0 pointer-events-none fa-regular fa-calendar-range position-absolute w-25px h-100 d-flex align-items-center font-size-md text-muted"></i>
+          <div className="flex">
+            <div className="hidden lg:flex">
+              <div className="w-225px">
+                <SelectStaffs
+                  className="select-control select-control-solid"
+                  menuPosition="fixed"
+                  name="UserID"
+                  onChange={otp =>
+                    setFilters(prevState => ({ ...prevState, UserID: otp }))
+                  }
+                  value={filters.UserID}
+                  isClearable={true}
+                />
+              </div>
+              <div className="w-225px mx-15px">
+                <Select
+                  options={StocksList}
+                  className="select-control select-control-solid"
+                  classNamePrefix="select"
+                  placeholder="Chọn cơ sở"
+                  value={filters.StockID}
+                  onChange={otp =>
+                    setFilters(prevState => ({
+                      ...prevState,
+                      StockID: otp
+                    }))
+                  }
+                />
+              </div>
+              <div className="position-relative w-250px">
+                <DatePicker
+                  onChange={dates => {
+                    const [start, end] = dates
+                    setFilters(prevState => ({
+                      ...prevState,
+                      From: start,
+                      To: end
+                    }))
+                  }}
+                  placeholderText="Chọn ngày"
+                  className="form-control form-control-solid"
+                  dateFormat={'dd/MM/yyyy'}
+                  selectsRange
+                  startDate={filters.From}
+                  endDate={filters.To}
+                />
+                <i className="top-0 right-0 pointer-events-none fa-regular fa-calendar-range position-absolute w-25px h-100 d-flex align-items-center font-size-md text-muted"></i>
+              </div>
             </div>
             <div className="h-40px w-1px border-right mx-15px"></div>
-            <PickerTakeBreak>
-              {({ open }) => (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={open}
-                >
-                  Tạo lịch nghỉ
-                </button>
-              )}
-            </PickerTakeBreak>
+            <div className="lg:hidden">
+              <Dropdown>
+                <Dropdown.Toggle className="!h-[40px] w-[50px] btn-success">
+                  <i className="mr-3 fa fa-plus"></i>
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  <PickerTakeBreak>
+                    {({ open }) => (
+                      <Dropdown.Item onClick={open}>
+                        Tạo lịch nghỉ
+                      </Dropdown.Item>
+                    )}
+                  </PickerTakeBreak>
+                  <Dropdown.Item onClick={() => setVisible(true)}>
+                    Bộ lọc
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
+            <div className="hidden lg:block">
+              <PickerTakeBreak>
+                {({ open }) => (
+                  <button
+                    type="button"
+                    className="btn btn-primary min-w-[40px]"
+                    onClick={open}
+                  >
+                    Tạo lịch nghỉ
+                  </button>
+                )}
+              </PickerTakeBreak>
+            </div>
           </div>
         </div>
       </div>
@@ -355,6 +381,72 @@ function TakeBreakPage(props) {
           )}
         </AutoResizer>
       </div>
+      <Modal
+        show={visible}
+        onHide={() => setVisible(false)}
+        dialogClassName="modal-content-right max-w-400px"
+        scrollable={true}
+        enforceFocus={false}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title className="font-title text-uppercase">
+            Bộ lọch
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="w-full !mb-5">
+            <div className="mb-1">Nhân viên</div>
+            <SelectStaffs
+              className="select-control"
+              menuPosition="fixed"
+              name="UserID"
+              onChange={otp =>
+                setFilters(prevState => ({ ...prevState, UserID: otp }))
+              }
+              value={filters.UserID}
+              isClearable={true}
+            />
+          </div>
+          <div className="w-full !mb-5">
+            <div className="mb-1">Cơ sở</div>
+            <Select
+              options={StocksList}
+              className="select-control"
+              classNamePrefix="select"
+              placeholder="Chọn cơ sở"
+              value={filters.StockID}
+              onChange={otp =>
+                setFilters(prevState => ({
+                  ...prevState,
+                  StockID: otp
+                }))
+              }
+            />
+          </div>
+          <div>
+            <div className="mb-1">Ngày nghỉ</div>
+            <div className="position-relative">
+              <DatePicker
+                onChange={dates => {
+                  const [start, end] = dates
+                  setFilters(prevState => ({
+                    ...prevState,
+                    From: start,
+                    To: end
+                  }))
+                }}
+                placeholderText="Chọn ngày"
+                className="form-control"
+                dateFormat={'dd/MM/yyyy'}
+                selectsRange
+                startDate={filters.From}
+                endDate={filters.To}
+              />
+              <i className="top-0 right-0 pointer-events-none fa-regular fa-calendar-range position-absolute w-25px h-100 d-flex align-items-center font-size-md text-muted"></i>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
     </div>
   )
 }

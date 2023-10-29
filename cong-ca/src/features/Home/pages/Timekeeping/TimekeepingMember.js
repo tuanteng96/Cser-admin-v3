@@ -24,6 +24,7 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap'
 import { NumericFormat } from 'react-number-format'
 import { useSelector } from 'react-redux'
 import { Field, Form, Formik } from 'formik'
+import useWindowSize from 'src/hooks/useWindowSize'
 
 moment.locale('vi')
 
@@ -168,13 +169,13 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
   }
 
   return (
-    <div className="h-100 flex flex-col">
+    <div className="flex flex-col h-100">
       <div
         className="flex overflow-auto no-scrollbar h-[45px]"
         id="el-footer"
         ref={refElm}
       >
-        <div className="w-[300px] min-w-[300px]" />
+        <div className="md:w-[300px] md:min-w-[300px] w-[120px] min-w-[120px]" />
         <div className="w-[180px] min-w-[180px]" />
         <div className="w-[200px] min-w-[200px]" />
         <div
@@ -208,7 +209,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
           //const { values } = formikProps
           return (
             <Form
-              className="border-top flex justify-end items-center px-3 grow"
+              className="flex items-center justify-end px-3 border-top grow"
               autoComplete="off"
             >
               <div className="font-medium text-base mr-3.5">Lương dự kiến</div>
@@ -235,7 +236,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
                 type="submit"
                 disabled={updateTimeKeepMutation.isLoading}
                 className={clsx(
-                  'btn btn-primary',
+                  'btn btn-primary min-w-[102px]',
                   updateTimeKeepMutation.isLoading &&
                     'spinner spinner-white spinner-right'
                 )}
@@ -269,6 +270,8 @@ function TimekeepingMember(props) {
   const [CrDate, setCrDate] = useState(new Date())
 
   const childCompRef = useRef()
+
+  const { width } = useWindowSize()
 
   useEffect(() => {
     setFilters(prevState => ({
@@ -391,14 +394,14 @@ function TimekeepingMember(props) {
   const columns = useMemo(
     () => [
       {
-        width: 300,
+        width: width > 767 ? 300 : 120,
         title: 'Ngày',
         key: 'Date',
         sortable: false,
         frozen: 'left',
         cellRenderer: ({ rowData }) => (
           <div className="flex items-center w-full h-full font-medium">
-            Ngày {moment(rowData.Date).format('DD-MM-YYYY')}
+            {moment(rowData.Date).format('DD-MM-YYYY')}
           </div>
         )
       },
@@ -412,7 +415,7 @@ function TimekeepingMember(props) {
           !rowData.WorkTrack.CheckIn && !rowData.WorkTrack.CheckOut ? (
             <></>
           ) : (
-            <div className="w-full h-full grid grid-rows-2 grid-flow-col">
+            <div className="grid w-full h-full grid-flow-col grid-rows-2">
               <div className="absolute w-full h-[1px] bg-[#eee] left-0 top-2/4"></div>
               <div className="flex items-center justify-between !text-success">
                 <span className="font-medium">
@@ -444,7 +447,7 @@ function TimekeepingMember(props) {
           !rowData.WorkTrack.Info.CheckOut.TimekeepingType ? (
             <></>
           ) : (
-            <div className="w-full h-full grid grid-rows-2 grid-flow-col">
+            <div className="grid w-full h-full grid-flow-col grid-rows-2">
               <div className="absolute w-full h-[1px] bg-[#eee] left-0 top-2/4"></div>
               <div className="flex items-center justify-between !text-success">
                 {rowData.WorkTrack.Info.TimekeepingType &&
@@ -464,7 +467,7 @@ function TimekeepingMember(props) {
         sortable: false,
         className: () => 'relative',
         cellRenderer: ({ rowData }) => (
-          <div className="w-full h-full grid grid-rows-2 grid-flow-col">
+          <div className="grid w-full h-full grid-flow-col grid-rows-2">
             <div className="absolute w-full h-[1px] bg-[#eee] left-0 top-2/4"></div>
             <div className="flex items-center justify-between !text-success">
               {PriceHelper.formatVND(
@@ -486,7 +489,7 @@ function TimekeepingMember(props) {
         sortable: false,
         className: () => 'relative',
         cellRenderer: ({ rowData }) => (
-          <div className="w-full h-full grid grid-rows-2 grid-flow-col">
+          <div className="grid w-full h-full grid-flow-col grid-rows-2">
             <div className="absolute w-full h-[1px] bg-[#eee] left-0 top-2/4"></div>
             <div className="flex items-center justify-between !text-success">
               {rowData.WorkTrack.Info.Type && rowData.WorkTrack.Info.Type.label}
@@ -505,7 +508,7 @@ function TimekeepingMember(props) {
         sortable: false,
         className: () => 'relative',
         cellRenderer: ({ rowData }) => (
-          <div className="w-full h-full grid grid-rows-2 grid-flow-col">
+          <div className="grid w-full h-full grid-flow-col grid-rows-2">
             <div className="absolute w-full h-[1px] bg-[#eee] left-0 top-2/4"></div>
 
             <div className="flex items-center justify-between !text-success truncate w-full">
@@ -547,7 +550,7 @@ function TimekeepingMember(props) {
         )
       }
     ],
-    []
+    [width]
   )
 
   const rowClassName = ({ rowData }) => {
@@ -557,15 +560,15 @@ function TimekeepingMember(props) {
   return (
     <div className="card h-100 timekeeping">
       <div className="card-header d-block p-20px min-h-125px min-h-md-auto">
-        <div className="d-flex w-full justify-content-between flex-column flex-md-row">
+        <div className="w-full d-flex justify-content-between flex-column flex-md-row">
           <h3 className="text-uppercase">
             <div className="d-flex align-items-baseline">
               <div
-                className="d-flex cursor-pointer"
+                className="cursor-pointer d-flex"
                 onClick={() => navigate('/')}
               >
                 <div className="w-20px">
-                  <i className="fa-regular fa-chevron-left ml-0 vertical-align-middle text-muted"></i>
+                  <i className="ml-0 fa-regular fa-chevron-left vertical-align-middle text-muted"></i>
                 </div>
                 {isLoading ? 'Đang tải ...' : data?.FullName}
               </div>
@@ -586,14 +589,14 @@ function TimekeepingMember(props) {
                 selected={CrDate}
                 onChange={date => setCrDate(date)}
               />
-              <i className="fa-regular fa-calendar-range position-absolute w-25px h-100 top-0 right-0 d-flex align-items-center pointer-events-none font-size-md text-muted"></i>
+              <i className="top-0 right-0 pointer-events-none fa-regular fa-calendar-range position-absolute w-25px h-100 d-flex align-items-center font-size-md text-muted"></i>
             </div>
             <div className="h-40px w-1px border-right mx-15px"></div>
             <Navbar />
           </div>
         </div>
       </div>
-      <div className="card-body p-0">
+      <div className="p-0 card-body">
         <AutoResizer>
           {({ width, height }) => (
             <Table
@@ -621,7 +624,7 @@ function TimekeepingMember(props) {
               // }
               overlayRenderer={() =>
                 isLoading || isFetching ? (
-                  <div className="overlay-layer bg-dark-o-10 top-0 h-100 zindex-1001 overlay-block flex justify-center">
+                  <div className="top-0 flex justify-center overlay-layer bg-dark-o-10 h-100 zindex-1001 overlay-block">
                     <div className="spinner spinner-primary"></div>
                   </div>
                 ) : null
