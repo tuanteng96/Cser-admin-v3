@@ -15,6 +15,7 @@ import 'sweetalert2/src/sweetalert2.scss'
 import PickerTakeBreak from './components/PickerTakeBreak'
 import Text from 'react-texty'
 import { Dropdown, Modal } from 'react-bootstrap'
+import { BarsArrowDownIcon } from '@heroicons/react/24/solid'
 
 function TakeBreakPage(props) {
   const navigate = useNavigate()
@@ -295,8 +296,8 @@ function TakeBreakPage(props) {
             <div className="h-40px w-1px border-right mx-15px"></div>
             <div className="lg:hidden">
               <Dropdown>
-                <Dropdown.Toggle className="!h-[40px] w-[50px] btn-success">
-                  <i className="mr-3 fa fa-plus"></i>
+                <Dropdown.Toggle className="!h-[40px] w-[40px] btn-success after:hidden">
+                  <BarsArrowDownIcon className="w-7 absolute top-[10px] left-[11px]" />
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu>

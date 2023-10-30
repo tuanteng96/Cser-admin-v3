@@ -16,7 +16,8 @@ import PickerTypeShift from '../../components/Picker/PickerTypeShift'
 import Table, { AutoResizer } from 'react-base-table'
 import {
   ArrowLeftOnRectangleIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  BarsArrowDownIcon
 } from '@heroicons/react/24/solid'
 import Portal from 'react-overlays/cjs/Portal'
 import { CheckInOutHelpers } from 'src/helpers/CheckInOutHelpers'
@@ -199,7 +200,7 @@ function TimekeepingHome(props) {
   const columns = useMemo(
     () => [
       {
-        width: width > 767 ? 300 : 150,
+        width: width > 767 ? 300 : 120,
         title: 'Nhân viên',
         key: 'User.FullName',
         sortable: false,
@@ -208,17 +209,17 @@ function TimekeepingHome(props) {
           <div className="flex items-center w-full h-full">
             <NavLink
               to={`/bang-cham-cong/${rowData.UserID}`}
-              className="flex-1 font-semibold text-black text-name text-decoration-none text-[13px] md:text-[15px] text-capitalize d-block pr-15px"
+              className="flex-1 font-semibold text-black text-name text-decoration-none text-[12px] md:text-[15px] text-capitalize d-block pr-15px"
             >
               {rowData.FullName}
             </NavLink>
 
             <Dropdown>
               <Dropdown.Toggle
-                className="border !w-11 !h-11 !rounded-full flex items-center justify-center after:hidden !p-0 !text-[#7e8299] relative"
+                className="border !w-8 !h-8 md:!w-11 md:!h-11 !rounded-full flex items-center justify-center after:hidden !p-0 !text-[#7e8299] relative"
                 id="dropdown-basic"
               >
-                <i className="fa-regular fa-gear absolute top-[14px] left-[13px]"></i>
+                <i className="fa-regular fa-gear text-[13px] md:text-[15px]"></i>
               </Dropdown.Toggle>
 
               <Dropdown.Menu
@@ -248,7 +249,7 @@ function TimekeepingHome(props) {
         )
       },
       {
-        width: 180,
+        width: width > 767 ? 180 : 140,
         title: 'Vào / Ra',
         key: 'CheckIn/CheckOut',
         sortable: false,
@@ -341,7 +342,7 @@ function TimekeepingHome(props) {
         )
       },
       {
-        width: 250,
+        width: width > 767 ? 250 : 220,
         title: 'Loại',
         key: 'TimeKeepingType',
         sortable: false,
@@ -946,8 +947,8 @@ function TimekeepingHome(props) {
                     <div className="h-40px w-1px border-right mx-15px"></div>
                     <div className="xl:hidden">
                       <Dropdown>
-                        <Dropdown.Toggle className="!h-[40px] w-[50px] btn-success">
-                          <i className="mr-3 fa fa-plus"></i>
+                        <Dropdown.Toggle className="!h-[40px] w-[40px] btn-success after:hidden">
+                          <BarsArrowDownIcon className="w-7 absolute top-[10px] left-[11px]" />
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
