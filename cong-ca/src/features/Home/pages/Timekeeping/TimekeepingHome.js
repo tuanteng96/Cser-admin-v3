@@ -763,7 +763,7 @@ function TimekeepingHome(props) {
       }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [width]
   )
 
   const saveTimeKeepMutation = useMutation({
