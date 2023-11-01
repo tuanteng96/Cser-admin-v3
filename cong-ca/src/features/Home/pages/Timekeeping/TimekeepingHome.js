@@ -21,10 +21,22 @@ import {
 } from '@heroicons/react/24/solid'
 import Portal from 'react-overlays/cjs/Portal'
 import { CheckInOutHelpers } from 'src/helpers/CheckInOutHelpers'
+import {
+  arrow,
+  FloatingArrow,
+  FloatingPortal,
+  offset,
+  useClick,
+  useDismiss,
+  useFloating,
+  useInteractions,
+  flip,
+  autoUpdate
+} from '@floating-ui/react'
+import useWindowSize from 'src/hooks/useWindowSize'
 
 import moment from 'moment'
 import 'moment/locale/vi'
-import useWindowSize from 'src/hooks/useWindowSize'
 
 moment.locale('vi')
 
@@ -32,6 +44,68 @@ const CalendarContainer = ({ children }) => {
   const el = document.getElementById('calendar-portal')
 
   return <Portal container={el}>{children}</Portal>
+}
+
+const PopoverCustom = ({ children }) => {
+  const [isOpen, setIsOpen] = useState(false)
+  const arrowRef = useRef(null)
+  const { x, y, refs, context } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
+    placement: 'bottom',
+    middleware: [
+      offset(8),
+      flip(),
+      arrow({
+        element: arrowRef
+      })
+    ],
+    whileElementsMounted: autoUpdate
+  })
+
+  const click = useClick(context)
+  const dismiss = useDismiss(context)
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    click,
+    dismiss
+  ])
+
+  return (
+    <>
+      <button
+        type="button"
+        className="border !w-8 !h-8 md:!w-11 md:!h-11 !rounded-full flex items-center justify-center after:hidden !p-0 !text-[#7e8299] relative"
+        ref={refs.setReference}
+        {...getReferenceProps()}
+      >
+        <i className="fa-regular fa-gear text-[13px] md:text-[15px]"></i>
+      </button>
+      {isOpen && (
+        <FloatingPortal>
+          <div
+            className="fixed"
+            style={{
+              top: y ?? 0,
+              left: x ?? 0,
+              zIndex: 1009
+            }}
+            ref={refs.setFloating}
+            {...getFloatingProps()}
+          >
+            {children({
+              onClose: () => setIsOpen(false)
+            })}
+            <FloatingArrow
+              className="fill-white"
+              ref={arrowRef}
+              context={context}
+            />
+          </div>
+        </FloatingPortal>
+      )}
+    </>
+  )
 }
 
 function TimekeepingHome(props) {
@@ -213,8 +287,44 @@ function TimekeepingHome(props) {
             >
               {rowData.FullName}
             </NavLink>
+            <PopoverCustom>
+              {({ onClose }) => (
+                <div className="bg-white shadow-lg py-2.5 min-w-[150px]">
+                  {
+                    <PickerTypeShift item={rowData}>
+                      {({ open }) => (
+                        <div
+                          className="text-[#3f4254] py-2.5 px-3 hover:bg-[#f3f6f9] cursor-pointer"
+                          onClick={() => {
+                            open()
+                            //onClose()
+                          }}
+                        >
+                          Loại công ca
+                        </div>
+                      )}
+                    </PickerTypeShift>
+                  }
+                  {
+                    <PickerMachineCode item={rowData}>
+                      {({ open }) => (
+                        <div
+                          className="text-[#3f4254] py-2.5 px-3 hover:bg-[#f3f6f9] cursor-pointer"
+                          onClick={() => {
+                            open()
+                            //onClose()
+                          }}
+                        >
+                          Mã máy
+                        </div>
+                      )}
+                    </PickerMachineCode>
+                  }
+                </div>
+              )}
+            </PopoverCustom>
 
-            <Dropdown>
+            {/* <Dropdown>
               <Dropdown.Toggle
                 className="border !w-8 !h-8 md:!w-11 md:!h-11 !rounded-full flex items-center justify-center after:hidden !p-0 !text-[#7e8299] relative"
                 id="dropdown-basic"
@@ -223,6 +333,7 @@ function TimekeepingHome(props) {
               </Dropdown.Toggle>
 
               <Dropdown.Menu
+                renderOnMount={true}
                 popperConfig={{
                   strategy: 'fixed',
                   onFirstUpdate: () =>
@@ -244,7 +355,7 @@ function TimekeepingHome(props) {
                   </PickerMachineCode>
                 }
               </Dropdown.Menu>
-            </Dropdown>
+            </Dropdown> */}
           </div>
         )
       },
