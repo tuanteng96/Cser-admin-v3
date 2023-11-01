@@ -868,7 +868,7 @@ function TimekeepingHome(props) {
   const rowClassName = ({ rowData }) => {
     return (
       rowData.Dates.some(x => x?.WorkTrack?.Info?.WorkToday?.isOff) &&
-      '!bg-[#fff5f8]'
+      '!bg-[#ffe2e5]'
     )
   }
 

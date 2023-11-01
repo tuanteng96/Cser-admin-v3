@@ -14,7 +14,6 @@ import { toast } from "react-toastify";
 import "../../../_assets/sass/pages/_calendar.scss";
 import CalendarCrud from "./_redux/CalendarCrud";
 import { useWindowSize } from "../../../hooks/useWindowSize";
-import _ from "lodash";
 import { AppContext } from "../../App";
 import ModalCalendarLock from "../../../components/ModalCalendarLock/ModalCalendarLock";
 import scrollGridPlugin from "@fullcalendar/scrollgrid";
@@ -87,7 +86,6 @@ const getStatusClss = (Status, item) => {
 
 function CalendarPage(props) {
   const [isModal, setIsModal] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [btnLoading, setBtnLoading] = useState({
     isBtnBooking: false,
     isBtnDelete: false,
@@ -99,11 +97,10 @@ function CalendarPage(props) {
       "XAC_NHAN_TU_DONG",
       "CHUA_XAC_NHAN",
       "DANG_THUC_HIEN",
-      "THUC_HIEN_XONG",
+      // "THUC_HIEN_XONG",
     ],
   });
   const [initialValue, setInitialValue] = useState({});
-  const [Events, setEvents] = useState([]);
   const [StaffFull, setStaffFull] = useState([]);
   const [initialView, setInitialView] = useState(
     window.innerWidth > 767 ? "resourceTimeGridDay" : "timeGridDay"
@@ -134,6 +131,24 @@ function CalendarPage(props) {
   const calendarRef = useRef("");
   const { isTelesales } = useContext(AppContext);
 
+  useEffect(() => {
+    if (initialView === "resourceTimeGridDay") {
+      setFilters((prevState) => ({
+        ...prevState,
+        Status: prevState.Status
+          ? [...new Set([...prevState.Status, "THUC_HIEN_XONG"])]
+          : prevState.Status,
+      }));
+    } else {
+      setFilters((prevState) => ({
+        ...prevState,
+        Status: prevState.Status
+          ? prevState.Status.filter((x) => x !== "THUC_HIEN_XONG")
+          : prevState.Status,
+      }));
+    }
+  }, [initialView]);
+
   //Get Staff Full
   useEffect(() => {
     async function getStaffFull() {
@@ -151,13 +166,6 @@ function CalendarPage(props) {
     getStaffFull();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialView]);
-
-  useEffect(() => {
-    if (filters && filters.From) {
-      getBooking();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
 
   useEffect(() => {
     if (calendarRef?.current?.getApi()) {
@@ -295,10 +303,6 @@ function CalendarPage(props) {
       });
   };
 
-  const onRefresh = (callback) => {
-    getBooking(() => callback && callback());
-  };
-
   //Open Modal Booking
   const onOpenModal = () => {
     setIsModal(true);
@@ -417,8 +421,7 @@ function CalendarPage(props) {
           name: "cld_dat_lich_moi",
           mid: objBooking.MemberID || 0,
         });
-
-      getBooking(() => {
+      ListCalendars.refetch().then(() => {
         toast.success(getTextToast(values.Status), {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 1500,
@@ -521,7 +524,7 @@ function CalendarPage(props) {
           name: "cld_thuc_hien_lich",
           mid: objBooking.MemberID || 0,
         });
-      getBooking(() => {
+      ListCalendars.refetch().then(() => {
         window.top.location.href = `/admin/?mdl=store&act=sell#mp:${objBooking.MemberID}`;
         toast.success(getTextToast(values.Status), {
           position: toast.POSITION.TOP_RIGHT,
@@ -586,7 +589,7 @@ function CalendarPage(props) {
           name: "cld_huy_lich",
           mid: values.MemberID.value || 0,
         });
-      getBooking(() => {
+      ListCalendars.refetch().then(() => {
         toast.success("Hủy lịch thành công !", {
           position: toast.POSITION.TOP_RIGHT,
           autoClose: 1500,
@@ -607,11 +610,7 @@ function CalendarPage(props) {
   };
 
   const getFiltersBooking = (values) => {
-    if (_.isEqual(values, filters)) {
-      getBooking();
-    } else {
-      setFilters(values);
-    }
+    setFilters(values);
   };
 
   const checkStar = (item) => {
@@ -622,244 +621,443 @@ function CalendarPage(props) {
     }
   };
 
-  const getBooking = (fn) => {
-    !loading && setLoading(true);
-    const newFilters = {
-      ...filters,
-      MemberID:
-        filters.MemberID && Array.isArray(filters.MemberID)
-          ? filters.MemberID.map((item) => item.value).toString()
-          : "",
-      From: filters.From ? moment(filters.From).format("YYYY-MM-DD") : "",
-      To: filters.To ? moment(filters.To).format("YYYY-MM-DD") : "",
-      Status:
-        filters.Status && filters.Status.length > 0
-          ? filters.Status.join(",")
-          : "",
-      UserServiceIDs:
-        filters.UserServiceIDs && Array.isArray(filters.UserServiceIDs)
-          ? filters.UserServiceIDs.map((item) => item.value).toString()
-          : "",
-      StatusMember: filters?.StatusMember ? filters?.StatusMember.value : "",
-      StatusBook: filters?.StatusBook ? filters?.StatusBook.value : "",
-      StatusAtHome: filters?.StatusAtHome ? filters?.StatusAtHome.value : "",
-    };
+  const ListCalendars = useQuery({
+    queryKey: ["ListCalendars", filters],
+    queryFn: async () => {
+      const newFilters = {
+        ...filters,
+        MemberID:
+          filters.MemberID && Array.isArray(filters.MemberID)
+            ? filters.MemberID.map((item) => item.value).toString()
+            : "",
+        From: filters.From ? moment(filters.From).format("YYYY-MM-DD") : "",
+        To: filters.To ? moment(filters.To).format("YYYY-MM-DD") : "",
+        Status:
+          filters.Status && filters.Status.length > 0
+            ? filters.Status.join(",")
+            : "",
+        UserServiceIDs:
+          filters.UserServiceIDs && Array.isArray(filters.UserServiceIDs)
+            ? filters.UserServiceIDs.map((item) => item.value).toString()
+            : "",
+        StatusMember: filters?.StatusMember ? filters?.StatusMember.value : "",
+        StatusBook: filters?.StatusBook ? filters?.StatusBook.value : "",
+        StatusAtHome: filters?.StatusAtHome ? filters?.StatusAtHome.value : "",
+      };
 
-    CalendarCrud.getBooking(newFilters)
-      .then((data) => {
-        let dataOffline = [];
-        if (initialView === "resourceTimeGridDay") {
-          dataOffline =
-            data?.dayOffs && data?.dayOffs.length > 0
-              ? data?.dayOffs.map((item) => ({
-                  start: item.From,
-                  end: item.To,
-                  resourceIds: [item.UserID],
-                  display: "background",
-                  extendedProps: {
-                    noEvent: true,
-                  },
-                  className: ["fc-no-event"],
-                }))
-              : [];
-          if (data?.userOffs && data?.userOffs.length > 0) {
-            for (let useroff of data?.userOffs) {
-              if (useroff.dayList && useroff.dayList.length > 0) {
-                let i = useroff.dayList.findIndex(
-                  (x) =>
-                    moment(x.Day).format("DD-MM-YYYY") ===
-                    moment(filters.From).format("DD-MM-YYYY")
-                );
-                if (i > -1) {
-                  let { off } = useroff.dayList[i];
-                  if (off) {
-                    if (off.isOff) {
-                      dataOffline.push({
-                        start: moment(filters.From)
-                          .set({
-                            hour: moment(TimeOpen, "HH:mm").get("hour"),
-                            minute: moment(TimeOpen, "HH:mm").get("minute"),
-                            second: 0,
-                          })
-                          .toDate(),
-                        end: moment(filters.To)
-                          .set({
-                            hour: moment(TimeClose, "HH:mm").get("hour"),
-                            minute: moment(TimeClose, "HH:mm").get("minute"),
-                            second: 0,
-                          })
-                          .toDate(),
-                        resourceIds: [useroff.user.ID],
-                        display: "background",
-                        extendedProps: {
-                          noEvent: true,
-                        },
-                        className: ["fc-no-event"],
-                      });
-                    } else {
-                      dataOffline.push({
-                        start: moment(filters.From)
-                          .set({
-                            hour: moment(TimeOpen, "HH:mm").get("hour"),
-                            minute: moment(TimeOpen, "HH:mm").get("minute"),
-                            second: 0,
-                          })
-                          .toDate(),
-                        end: moment(filters.To)
-                          .set({
-                            hour: moment(off.TimeFrom, "HH:mm").get("hour"),
-                            minute: moment(off.TimeFrom, "HH:mm").get("minute"),
-                            second: 0,
-                          })
-                          .toDate(),
-                        resourceIds: [useroff.user.ID],
-                        display: "background",
-                        extendedProps: {
-                          noEvent: true,
-                        },
-                        className: ["fc-no-event"],
-                      });
-                      dataOffline.push({
-                        start: moment(filters.From)
-                          .set({
-                            hour: moment(off.TimeTo, "HH:mm").get("hour"),
-                            minute: moment(off.TimeTo, "HH:mm").get("minute"),
-                            second: 0,
-                          })
-                          .toDate(),
-                        end: moment(filters.To)
-                          .set({
-                            hour: moment(TimeClose, "HH:mm").get("hour"),
-                            minute: moment(TimeClose, "HH:mm").get("minute"),
-                            second: 0,
-                          })
-                          .toDate(),
-                        resourceIds: [useroff.user.ID],
-                        display: "background",
-                        extendedProps: {
-                          noEvent: true,
-                        },
-                        className: ["fc-no-event"],
-                      });
-                    }
+      let data = await CalendarCrud.getBooking(newFilters);
+      let dataOffline = [];
+      if (initialView === "resourceTimeGridDay") {
+        dataOffline =
+          data?.dayOffs && data?.dayOffs.length > 0
+            ? data?.dayOffs.map((item) => ({
+                start: item.From,
+                end: item.To,
+                resourceIds: [item.UserID],
+                display: "background",
+                extendedProps: {
+                  noEvent: true,
+                },
+                className: ["fc-no-event"],
+              }))
+            : [];
+        if (data?.userOffs && data?.userOffs.length > 0) {
+          for (let useroff of data?.userOffs) {
+            if (useroff.dayList && useroff.dayList.length > 0) {
+              let i = useroff.dayList.findIndex(
+                (x) =>
+                  moment(x.Day).format("DD-MM-YYYY") ===
+                  moment(filters.From).format("DD-MM-YYYY")
+              );
+              if (i > -1) {
+                let { off } = useroff.dayList[i];
+                if (off) {
+                  if (off.isOff) {
+                    dataOffline.push({
+                      start: moment(filters.From)
+                        .set({
+                          hour: moment(TimeOpen, "HH:mm").get("hour"),
+                          minute: moment(TimeOpen, "HH:mm").get("minute"),
+                          second: 0,
+                        })
+                        .toDate(),
+                      end: moment(filters.To)
+                        .set({
+                          hour: moment(TimeClose, "HH:mm").get("hour"),
+                          minute: moment(TimeClose, "HH:mm").get("minute"),
+                          second: 0,
+                        })
+                        .toDate(),
+                      resourceIds: [useroff.user.ID],
+                      display: "background",
+                      extendedProps: {
+                        noEvent: true,
+                      },
+                      className: ["fc-no-event"],
+                    });
+                  } else {
+                    dataOffline.push({
+                      start: moment(filters.From)
+                        .set({
+                          hour: moment(TimeOpen, "HH:mm").get("hour"),
+                          minute: moment(TimeOpen, "HH:mm").get("minute"),
+                          second: 0,
+                        })
+                        .toDate(),
+                      end: moment(filters.To)
+                        .set({
+                          hour: moment(off.TimeFrom, "HH:mm").get("hour"),
+                          minute: moment(off.TimeFrom, "HH:mm").get("minute"),
+                          second: 0,
+                        })
+                        .toDate(),
+                      resourceIds: [useroff.user.ID],
+                      display: "background",
+                      extendedProps: {
+                        noEvent: true,
+                      },
+                      className: ["fc-no-event"],
+                    });
+                    dataOffline.push({
+                      start: moment(filters.From)
+                        .set({
+                          hour: moment(off.TimeTo, "HH:mm").get("hour"),
+                          minute: moment(off.TimeTo, "HH:mm").get("minute"),
+                          second: 0,
+                        })
+                        .toDate(),
+                      end: moment(filters.To)
+                        .set({
+                          hour: moment(TimeClose, "HH:mm").get("hour"),
+                          minute: moment(TimeClose, "HH:mm").get("minute"),
+                          second: 0,
+                        })
+                        .toDate(),
+                      resourceIds: [useroff.user.ID],
+                      display: "background",
+                      extendedProps: {
+                        noEvent: true,
+                      },
+                      className: ["fc-no-event"],
+                    });
                   }
                 }
-                // let i = useroff.dayList.findIndex((x) => x.off);
-                // if (i > -1) {
-                //   dataOffline.push({
-                //     start: moment(filters.From)
-                //       .set({
-                //         hour: moment(
-                //           useroff.dayList[i].off.TimeFrom,
-                //           "HH:mm"
-                //         ).get("hour"),
-                //         minute: moment(
-                //           useroff.dayList[i].off.TimeFrom,
-                //           "HH:mm"
-                //         ).get("minute"),
-                //         second: 0,
-                //       })
-                //       .toDate(),
-                //     end: moment(filters.To)
-                //       .set({
-                //         hour: moment(
-                //           useroff.dayList[i].off.TimeTo,
-                //           "HH:mm"
-                //         ).get("hour"),
-                //         minute: moment(
-                //           useroff.dayList[i].off.TimeTo,
-                //           "HH:mm"
-                //         ).get("minute"),
-                //         second: 0,
-                //       })
-                //       .toDate(),
-                //     resourceIds: [useroff.user.ID],
-                //     display: "background",
-                //     extendedProps: {
-                //       noEvent: true,
-                //     },
-                //     className: ["fc-no-event"],
-                //   });
-                // }
               }
             }
           }
         }
+      }
 
-        const dataBooks =
-          data.books && Array.isArray(data.books)
-            ? data.books
-                .map((item) => ({
-                  ...item,
-                  start: item.BookDate,
-                  end: moment(item.BookDate)
-                    .add(item.RootMinutes ?? 60, "minutes")
-                    .toDate(),
-                  title: item.RootTitles,
-                  className: `fc-event-solid-${getStatusClss(
-                    item.Status,
-                    item
-                  )}`,
-                  resourceIds:
-                    initialView === "resourceTimelineDay"
-                      ? [-10]
-                      : item.UserServices &&
-                        Array.isArray(item.UserServices) &&
-                        item.UserServices.length > 0
-                      ? item.UserServices.map((item) => item.ID)
-                      : [0],
-                  MemberCurrent: {
-                    FullName:
-                      item?.IsAnonymous ||
-                      item.Member?.MobilePhone === "0000000000"
-                        ? item?.FullName
-                        : item?.Member?.FullName,
-                    MobilePhone:
-                      item?.IsAnonymous ||
-                      item.Member?.MobilePhone === "0000000000"
-                        ? item?.Phone
-                        : item?.Member?.MobilePhone,
-                  },
-                  Star: checkStar(item),
-                  isBook: true,
-                }))
-                .filter((item) => item.Status !== "TU_CHOI")
-            : [];
-        let dataBooksAuto =
-          data.osList && Array.isArray(data.osList)
-            ? data.osList.map((item) => ({
+      const dataBooks =
+        data.books && Array.isArray(data.books)
+          ? data.books
+              .map((item) => ({
                 ...item,
-                AtHome: false,
-                Member: item.member,
-                MemberCurrent: {
-                  FullName: item?.member?.FullName,
-                  MobilePhone: item?.member?.MobilePhone,
-                },
-                start: item.os.BookDate,
-                end: moment(item.os.BookDate)
-                  .add(item.os.RootMinutes ?? 60, "minutes")
+                start: item.BookDate,
+                end: moment(item.BookDate)
+                  .add(item.RootMinutes ?? 60, "minutes")
                   .toDate(),
-                BookDate: item.os.BookDate,
-                title: item.os.Title,
-                RootTitles: item.os.ProdService2 || item.os.ProdService,
-                className: `fc-event-solid-${getStatusClss(item.os.Status)} ${
-                  item?.os?.RoomStatus === "done" ? "bg-stripes" : ""
-                }`,
+                title: item.RootTitles,
+                className: `fc-event-solid-${getStatusClss(item.Status, item)}`,
                 resourceIds:
                   initialView === "resourceTimelineDay"
-                    ? [item?.os?.RoomID || 0]
-                    : item.staffs && Array.isArray(item.staffs)
-                    ? item.staffs.map((staf) => staf.ID)
+                    ? [-10]
+                    : item.UserServices &&
+                      Array.isArray(item.UserServices) &&
+                      item.UserServices.length > 0
+                    ? item.UserServices.map((item) => item.ID)
                     : [0],
+                MemberCurrent: {
+                  FullName:
+                    item?.IsAnonymous ||
+                    item.Member?.MobilePhone === "0000000000"
+                      ? item?.FullName
+                      : item?.Member?.FullName,
+                  MobilePhone:
+                    item?.IsAnonymous ||
+                    item.Member?.MobilePhone === "0000000000"
+                      ? item?.Phone
+                      : item?.Member?.MobilePhone,
+                },
+                Star: checkStar(item),
+                isBook: true,
               }))
-            : [];
-        setEvents([...dataBooks, ...dataBooksAuto, ...dataOffline]);
-        setLoading(false);
-        isFilter && onHideFilter();
-        fn && fn();
-      })
-      .catch((error) => console.log(error));
-  };
+              .filter((item) => item.Status !== "TU_CHOI")
+          : [];
+      let dataBooksAuto =
+        data.osList && Array.isArray(data.osList)
+          ? data.osList.map((item) => ({
+              ...item,
+              AtHome: false,
+              Member: item.member,
+              MemberCurrent: {
+                FullName: item?.member?.FullName,
+                MobilePhone: item?.member?.MobilePhone,
+              },
+              start: item.os.BookDate,
+              end: moment(item.os.BookDate)
+                .add(item.os.RootMinutes ?? 60, "minutes")
+                .toDate(),
+              BookDate: item.os.BookDate,
+              title: item.os.Title,
+              RootTitles: item.os.ProdService2 || item.os.ProdService,
+              className: `fc-event-solid-${getStatusClss(item.os.Status)} ${
+                item?.os?.RoomStatus === "done" ? "bg-stripes" : ""
+              }`,
+              resourceIds:
+                initialView === "resourceTimelineDay"
+                  ? [item?.os?.RoomID || 0]
+                  : item.staffs && Array.isArray(item.staffs)
+                  ? item.staffs.map((staf) => staf.ID)
+                  : [0],
+            }))
+          : [];
+      return [...dataBooks, ...dataBooksAuto, ...dataOffline];
+    },
+    enabled: Boolean(filters && filters.From),
+  });
+
+  const onRefresh = (callback) =>
+    ListCalendars.refetch().then(() => callback && callback());
+
+  // const getBooking = (fn) => {
+  //   !loading && setLoading(true);
+  //   const newFilters = {
+  //     ...filters,
+  //     MemberID:
+  //       filters.MemberID && Array.isArray(filters.MemberID)
+  //         ? filters.MemberID.map((item) => item.value).toString()
+  //         : "",
+  //     From: filters.From ? moment(filters.From).format("YYYY-MM-DD") : "",
+  //     To: filters.To ? moment(filters.To).format("YYYY-MM-DD") : "",
+  //     Status:
+  //       filters.Status && filters.Status.length > 0
+  //         ? filters.Status.join(",")
+  //         : "",
+  //     UserServiceIDs:
+  //       filters.UserServiceIDs && Array.isArray(filters.UserServiceIDs)
+  //         ? filters.UserServiceIDs.map((item) => item.value).toString()
+  //         : "",
+  //     StatusMember: filters?.StatusMember ? filters?.StatusMember.value : "",
+  //     StatusBook: filters?.StatusBook ? filters?.StatusBook.value : "",
+  //     StatusAtHome: filters?.StatusAtHome ? filters?.StatusAtHome.value : "",
+  //   };
+
+  //   CalendarCrud.getBooking(newFilters)
+  //     .then((data) => {
+  //       let dataOffline = [];
+  //       if (initialView === "resourceTimeGridDay") {
+  //         dataOffline =
+  //           data?.dayOffs && data?.dayOffs.length > 0
+  //             ? data?.dayOffs.map((item) => ({
+  //                 start: item.From,
+  //                 end: item.To,
+  //                 resourceIds: [item.UserID],
+  //                 display: "background",
+  //                 extendedProps: {
+  //                   noEvent: true,
+  //                 },
+  //                 className: ["fc-no-event"],
+  //               }))
+  //             : [];
+  //         if (data?.userOffs && data?.userOffs.length > 0) {
+  //           for (let useroff of data?.userOffs) {
+  //             if (useroff.dayList && useroff.dayList.length > 0) {
+  //               let i = useroff.dayList.findIndex(
+  //                 (x) =>
+  //                   moment(x.Day).format("DD-MM-YYYY") ===
+  //                   moment(filters.From).format("DD-MM-YYYY")
+  //               );
+  //               if (i > -1) {
+  //                 let { off } = useroff.dayList[i];
+  //                 if (off) {
+  //                   if (off.isOff) {
+  //                     dataOffline.push({
+  //                       start: moment(filters.From)
+  //                         .set({
+  //                           hour: moment(TimeOpen, "HH:mm").get("hour"),
+  //                           minute: moment(TimeOpen, "HH:mm").get("minute"),
+  //                           second: 0,
+  //                         })
+  //                         .toDate(),
+  //                       end: moment(filters.To)
+  //                         .set({
+  //                           hour: moment(TimeClose, "HH:mm").get("hour"),
+  //                           minute: moment(TimeClose, "HH:mm").get("minute"),
+  //                           second: 0,
+  //                         })
+  //                         .toDate(),
+  //                       resourceIds: [useroff.user.ID],
+  //                       display: "background",
+  //                       extendedProps: {
+  //                         noEvent: true,
+  //                       },
+  //                       className: ["fc-no-event"],
+  //                     });
+  //                   } else {
+  //                     dataOffline.push({
+  //                       start: moment(filters.From)
+  //                         .set({
+  //                           hour: moment(TimeOpen, "HH:mm").get("hour"),
+  //                           minute: moment(TimeOpen, "HH:mm").get("minute"),
+  //                           second: 0,
+  //                         })
+  //                         .toDate(),
+  //                       end: moment(filters.To)
+  //                         .set({
+  //                           hour: moment(off.TimeFrom, "HH:mm").get("hour"),
+  //                           minute: moment(off.TimeFrom, "HH:mm").get("minute"),
+  //                           second: 0,
+  //                         })
+  //                         .toDate(),
+  //                       resourceIds: [useroff.user.ID],
+  //                       display: "background",
+  //                       extendedProps: {
+  //                         noEvent: true,
+  //                       },
+  //                       className: ["fc-no-event"],
+  //                     });
+  //                     dataOffline.push({
+  //                       start: moment(filters.From)
+  //                         .set({
+  //                           hour: moment(off.TimeTo, "HH:mm").get("hour"),
+  //                           minute: moment(off.TimeTo, "HH:mm").get("minute"),
+  //                           second: 0,
+  //                         })
+  //                         .toDate(),
+  //                       end: moment(filters.To)
+  //                         .set({
+  //                           hour: moment(TimeClose, "HH:mm").get("hour"),
+  //                           minute: moment(TimeClose, "HH:mm").get("minute"),
+  //                           second: 0,
+  //                         })
+  //                         .toDate(),
+  //                       resourceIds: [useroff.user.ID],
+  //                       display: "background",
+  //                       extendedProps: {
+  //                         noEvent: true,
+  //                       },
+  //                       className: ["fc-no-event"],
+  //                     });
+  //                   }
+  //                 }
+  //               }
+  //               // let i = useroff.dayList.findIndex((x) => x.off);
+  //               // if (i > -1) {
+  //               //   dataOffline.push({
+  //               //     start: moment(filters.From)
+  //               //       .set({
+  //               //         hour: moment(
+  //               //           useroff.dayList[i].off.TimeFrom,
+  //               //           "HH:mm"
+  //               //         ).get("hour"),
+  //               //         minute: moment(
+  //               //           useroff.dayList[i].off.TimeFrom,
+  //               //           "HH:mm"
+  //               //         ).get("minute"),
+  //               //         second: 0,
+  //               //       })
+  //               //       .toDate(),
+  //               //     end: moment(filters.To)
+  //               //       .set({
+  //               //         hour: moment(
+  //               //           useroff.dayList[i].off.TimeTo,
+  //               //           "HH:mm"
+  //               //         ).get("hour"),
+  //               //         minute: moment(
+  //               //           useroff.dayList[i].off.TimeTo,
+  //               //           "HH:mm"
+  //               //         ).get("minute"),
+  //               //         second: 0,
+  //               //       })
+  //               //       .toDate(),
+  //               //     resourceIds: [useroff.user.ID],
+  //               //     display: "background",
+  //               //     extendedProps: {
+  //               //       noEvent: true,
+  //               //     },
+  //               //     className: ["fc-no-event"],
+  //               //   });
+  //               // }
+  //             }
+  //           }
+  //         }
+  //       }
+
+  //       const dataBooks =
+  //         data.books && Array.isArray(data.books)
+  //           ? data.books
+  //               .map((item) => ({
+  //                 ...item,
+  //                 start: item.BookDate,
+  //                 end: moment(item.BookDate)
+  //                   .add(item.RootMinutes ?? 60, "minutes")
+  //                   .toDate(),
+  //                 title: item.RootTitles,
+  //                 className: `fc-event-solid-${getStatusClss(
+  //                   item.Status,
+  //                   item
+  //                 )}`,
+  //                 resourceIds:
+  //                   initialView === "resourceTimelineDay"
+  //                     ? [-10]
+  //                     : item.UserServices &&
+  //                       Array.isArray(item.UserServices) &&
+  //                       item.UserServices.length > 0
+  //                     ? item.UserServices.map((item) => item.ID)
+  //                     : [0],
+  //                 MemberCurrent: {
+  //                   FullName:
+  //                     item?.IsAnonymous ||
+  //                     item.Member?.MobilePhone === "0000000000"
+  //                       ? item?.FullName
+  //                       : item?.Member?.FullName,
+  //                   MobilePhone:
+  //                     item?.IsAnonymous ||
+  //                     item.Member?.MobilePhone === "0000000000"
+  //                       ? item?.Phone
+  //                       : item?.Member?.MobilePhone,
+  //                 },
+  //                 Star: checkStar(item),
+  //                 isBook: true,
+  //               }))
+  //               .filter((item) => item.Status !== "TU_CHOI")
+  //           : [];
+  //       let dataBooksAuto =
+  //         data.osList && Array.isArray(data.osList)
+  //           ? data.osList.map((item) => ({
+  //               ...item,
+  //               AtHome: false,
+  //               Member: item.member,
+  //               MemberCurrent: {
+  //                 FullName: item?.member?.FullName,
+  //                 MobilePhone: item?.member?.MobilePhone,
+  //               },
+  //               start: item.os.BookDate,
+  //               end: moment(item.os.BookDate)
+  //                 .add(item.os.RootMinutes ?? 60, "minutes")
+  //                 .toDate(),
+  //               BookDate: item.os.BookDate,
+  //               title: item.os.Title,
+  //               RootTitles: item.os.ProdService2 || item.os.ProdService,
+  //               className: `fc-event-solid-${getStatusClss(item.os.Status)} ${
+  //                 item?.os?.RoomStatus === "done" ? "bg-stripes" : ""
+  //               }`,
+  //               resourceIds:
+  //                 initialView === "resourceTimelineDay"
+  //                   ? [item?.os?.RoomID || 0]
+  //                   : item.staffs && Array.isArray(item.staffs)
+  //                   ? item.staffs.map((staf) => staf.ID)
+  //                   : [0],
+  //             }))
+  //           : [];
+  //       setEvents([...dataBooks, ...dataBooksAuto, ...dataOffline]);
+  //       setLoading(false);
+  //       isFilter && onHideFilter();
+  //       fn && fn();
+  //     })
+  //     .catch((error) => console.log(error));
+  // };
 
   const getLastFirst = (text) => {
     if (!text) return;
@@ -903,7 +1101,7 @@ function CalendarPage(props) {
             onOpenModal={onOpenModal}
             onSubmit={getFiltersBooking}
             initialView={initialView}
-            loading={loading}
+            loading={ListCalendars.isLoading}
             onOpenFilter={onOpenFilter}
             onHideFilter={onHideFilter}
             isFilter={isFilter}
@@ -913,7 +1111,7 @@ function CalendarPage(props) {
             isRooms={isRooms}
           />
           <div
-            className={`ezs-calendar__content ${loading &&
+            className={`ezs-calendar__content ${ListCalendars.isLoading &&
               "loading"} position-relative`}
           >
             <FullCalendar
@@ -1137,7 +1335,7 @@ function CalendarPage(props) {
               resourceOrder={
                 initialView === "resourceTimelineDay" ? "title" : ""
               }
-              events={Events}
+              events={ListCalendars?.data || []}
               headerToolbar={{
                 left: "prev,next today",
                 center: "title",
@@ -1345,36 +1543,10 @@ function CalendarPage(props) {
                   );
                 }
               }}
+              noEventsContent={() =>
+                ListCalendars.isLoading ? <></> : "Không có dữ liệu"
+              }
             />
-            {/* {initialView === "resourceTimelineDay" && (
-              <CalendarStaff
-                initialView={initialView}
-                filters={filters}
-                StaffOffline={StaffOffline}
-                loading={loading}
-                height={elmHeight}
-                resources={StaffFull}
-                events={Events}
-                dateClick={({ BookDate, UserServiceIDs }) => {
-                  if (isTelesales) return;
-                  setInitialValue({
-                    ...initialValue,
-                    BookDate,
-                    UserServiceIDs,
-                  });
-                  onOpenModal();
-                }}
-                eventClick={(service) => {
-                  if (service.os) {
-                    window?.top?.BANGLICH_BUOI &&
-                      window?.top?.BANGLICH_BUOI(service, onRefresh);
-                    return;
-                  }
-                  setInitialValue(service);
-                  onOpenModal();
-                }}
-              />
-            )} */}
           </div>
         </div>
       </div>

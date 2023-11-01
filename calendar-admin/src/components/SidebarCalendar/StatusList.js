@@ -11,8 +11,8 @@ const StatusArr = [
   {
     value: "XAC_NHAN_TU_DONG",
     label: "Đã xác nhận (Tự động)",
-    color: "rgb(0 122 247)",
-    bg: "rgb(216 227 239)",
+    color: "#17C653",
+    bg: "#E4FFED",
   },
   {
     value: "CHUA_XAC_NHAN",
@@ -63,7 +63,7 @@ const CheckBox = (props) => (
           {...field}
           value={props.value}
           type="checkbox"
-          checked={field.value && field.value.includes(props.value)}
+          checked={Boolean(field.value && field.value.includes(props.value))}
           onChange={() => {
             const set = new Set(field.value);
             if (set.has(props.value)) {
@@ -95,13 +95,6 @@ function StatusList(props) {
   const [isOpen] = useState(true);
   return (
     <div className="form-group form-group-ezs mb-0">
-      {/* <label
-        className="form-group-action mb-0"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        Trạng thái đặt lịch{" "}
-        <i className={`far fa-angle-down ${isOpen && "show"}`}></i>
-      </label> */}
       {isOpen && (
         <div className="py-8px">
           {/* <div className="font-size-minn font-weight-bold text-uppercase text-muted mb-10px">
