@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const OrderInfo = window.top.OrderBonus23Info || {
-  OrderID: 43311,
+  OrderID: 44796,
   Order: {
     //Status: "finish",
     //AdminAction: "TANG_DH_KET_THUC_NO",

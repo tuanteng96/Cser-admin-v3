@@ -292,7 +292,19 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                   {values &&
                     values.AutoBouns &&
                     values.AutoBouns.map((item, index) => (
-                      <tr key={index}>
+                      <tr
+                        key={index}
+                        style={{
+                          background:
+                            values.AutoBouns &&
+                            values.AutoBouns.some(
+                              (x) => x.Product?.so_lan_thuong > 0
+                            ) &&
+                            item.Product?.so_lan_thuong === 0
+                              ? "#FFF5F8"
+                              : "#fff",
+                        }}
+                      >
                         <td>
                           <div>
                             <div className="fw-bolder">
@@ -309,6 +321,25 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                             <div>
                               GT_TT:{" "}
                               {formatVND(item.Product.gia_tri_thanh_toan)}
+                            </div>
+                            <div
+                              className="text-danger"
+                              style={{
+                                marginTop: "5px",
+                                fontWeight: "500",
+                              }}
+                            >
+                              {values.AutoBouns &&
+                                values.AutoBouns.some(
+                                  (x) => x.Product?.so_lan_thuong > 0
+                                ) &&
+                                item.Product?.so_lan_thuong === 0 && (
+                                  <div>
+                                    (*) Chưa có dữ liệu thưởng lần đầu cho sản
+                                    phẩm này. Vui lòng tạo thưởng, doanh số thủ
+                                    công cho sản phẩm này.
+                                  </div>
+                                )}
                             </div>
                           </div>
                         </td>
