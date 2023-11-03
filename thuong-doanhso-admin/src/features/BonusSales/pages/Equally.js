@@ -1,5 +1,5 @@
 import React, { Fragment, useState } from "react";
-import { OverlayTrigger, Popover, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import Select from "react-select";
 import NumberFormat from "react-number-format";
 import { Formik, FieldArray, Form } from "formik";
@@ -13,15 +13,41 @@ function Equally({ OrderInfo, onSubmit, loading }) {
   const { UserID } = useSelector(({ Auth }) => ({
     UserID: Auth?.User?.ID,
   }));
+
   const getValueType = (item, Type) => {
     return Type.value === "KY_THUAT_VIEN"
       ? item.BonusSale2
       : item.gia_tri_thanh_toan;
   };
+  const getValueHH = ({ user, item, Type }) => {
+    if (
+      item?.prodBonus?.BonusSaleLevels &&
+      item?.prodBonus?.BonusSaleLevels.some((x) => x.Salary) &&
+      Type.value !== "KY_THUAT_VIEN"
+    ) {
+      let { BonusSaleLevels } = item?.prodBonus;
+      let index = BonusSaleLevels.findIndex((x) => x.Level === user.level);
+      let Salary = 0;
+      if (index > -1) {
+        Salary = BonusSaleLevels[index].Salary;
+      }
+      if (Salary < 100) {
+        return Math.round(
+          (item.gia_tri_thanh_toan_thuc_te * Salary * (user.Value / 100)) / 100
+        );
+      }
+      return Math.round(
+        (((item.gia_tri_thanh_toan_thuc_te * Salary) /
+          OrderInfo?.order?.ToPay) *
+          user.Value) /
+          100
+      );
+    }
+    return Math.round((user.Value * getValueType(item, Type)) / 100);
+  };
 
   const onToAdd = (values, { resetForm }) => {
     const { ToAdd, Type } = values;
-
     if (ToAdd.length > 0) {
       const newArr =
         OrderInfo && OrderInfo.oiItems && OrderInfo.oiItems.length > 0
@@ -30,10 +56,11 @@ function Equally({ OrderInfo, onSubmit, loading }) {
               Hoa_Hong: ToAdd.map((user) => ({
                 Product: item,
                 Staff: user,
-                Value:
-                  item.gia_tri_thanh_toan > 0
-                    ? Math.round((user.Value * getValueType(item, Type)) / 100)
-                    : null,
+                Value: getValueHH({ user, item, Type }),
+                // Value:
+                //   item.gia_tri_thanh_toan > 0
+                //     ? getValueHH({ user, item, Type })
+                //     : null,
               })),
               Doanh_So: ToAdd.map((user) => ({
                 Product: item,
@@ -88,7 +115,8 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       ? i === option.length - 1
                                         ? Number(
                                             (100 / option.length).toFixed(1)
-                                          ) + (surplus/10)
+                                          ) +
+                                          surplus / 10
                                         : Number(
                                             (100 / option.length).toFixed(1)
                                           )
@@ -120,22 +148,26 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                         menuPosition="fixed"
                       />
                     </div>
-                    <div className="d-flex">
-                      <Select
-                        classNamePrefix="select"
-                        className={`select-control flex-1`}
-                        name={`Type`}
-                        options={TypeStaff}
-                        value={values.Type}
-                        placeholder="Chọn nhóm Nhân viên"
-                        noOptionsMessage={() => "Không có lựa chọn"}
-                        onChange={(option) => {
-                          setFieldValue(`Type`, option, false);
-                        }}
-                        isSearchable
-                        menuPosition="fixed"
-                      />
-                    </div>
+                    {!window.top?.GlobalConfig?.Admin
+                      ?.hoa_hong_tu_van_ktv_an && (
+                      <div className="d-flex">
+                        <Select
+                          classNamePrefix="select"
+                          className={`select-control flex-1`}
+                          name={`Type`}
+                          options={TypeStaff}
+                          value={values.Type}
+                          placeholder="Chọn nhóm Nhân viên"
+                          noOptionsMessage={() => "Không có lựa chọn"}
+                          onChange={(option) => {
+                            setFieldValue(`Type`, option, false);
+                          }}
+                          isSearchable
+                          menuPosition="fixed"
+                        />
+                      </div>
+                    )}
+
                     <div>
                       {values.ToAdd &&
                         values.ToAdd.map((item, index) => (

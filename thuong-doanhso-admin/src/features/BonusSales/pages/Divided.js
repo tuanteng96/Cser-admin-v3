@@ -28,6 +28,27 @@ function Divided({ OrderInfo, onSubmit, loading }) {
     }
   }, [OrderInfo]);
 
+  const getValueHH = ({ item, user }) => {
+    if (
+      item?.prodBonus?.BonusSaleLevels &&
+      item?.prodBonus?.BonusSaleLevels.some((x) => x.Salary)
+    ) {
+      let { BonusSaleLevels } = item?.prodBonus;
+      let index = BonusSaleLevels.findIndex((x) => x.Level === user.level);
+      let Salary = 0;
+      if (index > -1) {
+        Salary = BonusSaleLevels[index].Salary;
+      }
+      if (Salary < 100) {
+        return Math.round((item.gia_tri_thanh_toan_thuc_te * Salary) / 100);
+      }
+      return Math.round(
+        (item.gia_tri_thanh_toan_thuc_te * Salary) / OrderInfo?.order?.ToPay
+      );
+    }
+    return item.gia_tri_thanh_toan;
+  };
+
   const onToAdd = (values, { resetForm }) => {
     const { ToAdd } = values;
     const itemChange =
@@ -42,7 +63,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
             Value:
               item.Type.value === "KY_THUAT_VIEN"
                 ? item.Product.BonusSale2
-                : item.Product.gia_tri_thanh_toan,
+                : getValueHH({ item: item.Product, user: item.Staff }),
           },
         ],
         Doanh_So: [
@@ -119,26 +140,29 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                               menuPosition="fixed"
                             />
                           </div>
-                          <div className="w-md-225px">
-                            <Select
-                              classNamePrefix="select"
-                              className={`select-control`}
-                              name={`ToAdd[${index}].Type`}
-                              options={TypeStaff}
-                              value={item.Type}
-                              placeholder="Chọn loại nhân viên"
-                              noOptionsMessage={() => "Không có lựa chọn"}
-                              onChange={(option) => {
-                                setFieldValue(
-                                  `ToAdd[${index}].Type`,
-                                  option,
-                                  false
-                                );
-                              }}
-                              isSearchable
-                              menuPosition="fixed"
-                            />
-                          </div>
+                          {!window.top?.GlobalConfig?.Admin
+                            ?.hoa_hong_tu_van_ktv_an && (
+                            <div className="w-md-225px">
+                              <Select
+                                classNamePrefix="select"
+                                className={`select-control`}
+                                name={`ToAdd[${index}].Type`}
+                                options={TypeStaff}
+                                value={item.Type}
+                                placeholder="Chọn loại nhân viên"
+                                noOptionsMessage={() => "Không có lựa chọn"}
+                                onChange={(option) => {
+                                  setFieldValue(
+                                    `ToAdd[${index}].Type`,
+                                    option,
+                                    false
+                                  );
+                                }}
+                                isSearchable
+                                menuPosition="fixed"
+                              />
+                            </div>
+                          )}
                         </div>
                       ))}
                     <div className="text-end mb-3">
