@@ -43,16 +43,17 @@ function Divided({ OrderInfo, onSubmit, loading }) {
         return Math.round((item.gia_tri_thanh_toan_thuc_te * Salary) / 100);
       }
       return Math.round(
-        (item.gia_tri_thanh_toan_thuc_te * Salary) / OrderInfo?.order?.ToPay
+        ((item.gia_tri_thanh_toan_thuc_te * Salary) / item?.ToPay) * item.Qty
       );
     }
-    return item.gia_tri_thanh_toan;
+    return item.prodBonus.BonusSale > 100 ? item.gia_tri_thanh_toan * item.Qty : item.gia_tri_thanh_toan;
   };
 
   const onToAdd = (values, { resetForm }) => {
     const { ToAdd } = values;
     const itemChange =
       ToAdd && ToAdd.length > 0 ? ToAdd.filter((item) => item.Staff) : [];
+   
     if (itemChange.length > 0) {
       const newArr = itemChange.map((item) => ({
         Product: item.Product,
@@ -62,7 +63,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
             Staff: item.Staff,
             Value:
               item.Type.value === "KY_THUAT_VIEN"
-                ? item.Product.BonusSale2
+                ? item.Product.BonusSale2 * item.Product.Qty
                 : getValueHH({ item: item.Product, user: item.Staff }),
           },
         ],

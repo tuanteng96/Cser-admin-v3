@@ -16,7 +16,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
 
   const getValueType = (item, Type) => {
     return Type.value === "KY_THUAT_VIEN"
-      ? item.BonusSale2
+      ? item.BonusSale2 * item.Qty
       : item.gia_tri_thanh_toan;
   };
   const getValueHH = ({ user, item, Type }) => {
@@ -37,13 +37,16 @@ function Equally({ OrderInfo, onSubmit, loading }) {
         );
       }
       return Math.round(
-        (((item.gia_tri_thanh_toan_thuc_te * Salary) /
-          OrderInfo?.order?.ToPay) *
+        ((((item.gia_tri_thanh_toan_thuc_te * Salary) / item.ToPay) *
           user.Value) /
-          100
+          100) *
+          item.Qty
       );
     }
-    return Math.round((user.Value * getValueType(item, Type)) / 100);
+
+    return item.prodBonus.BonusSale > 100
+      ? Math.round((user.Value * getValueType(item, Type)) / 100) * item.Qty
+      : Math.round((user.Value * getValueType(item, Type)) / 100);
   };
 
   const onToAdd = (values, { resetForm }) => {

@@ -198,6 +198,9 @@ function ShiftWorks(props) {
                             placeholder="Nhập tên loại ca làm việc"
                             value={textAdd}
                             onChange={e => setTextAdd(e.target.value)}
+                            onKeyPress={e => {
+                              e.which === 13 && e.preventDefault()
+                            }}
                           />
                         </div>
                         <button

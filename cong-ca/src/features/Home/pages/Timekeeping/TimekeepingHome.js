@@ -127,13 +127,11 @@ function TimekeepingHome(props) {
   const typingTimeoutRef = useRef(null)
 
   useEffect(() => {
-    const newStocks = Stocks.filter(stock => stock.ParentID !== 0).map(
-      stock => ({
-        ...stock,
-        value: stock.ID,
-        label: stock.Title
-      })
-    )
+    const newStocks = Stocks.map(stock => ({
+      ...stock,
+      value: stock.ID,
+      label: stock.ID === 778 ? 'Hệ thống' : stock.Title
+    }))
     if (newStocks.length > 0) {
       if (!CrStockID) {
         setFilters(prevState => ({
