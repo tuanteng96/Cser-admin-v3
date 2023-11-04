@@ -110,9 +110,11 @@ const PopoverCustom = ({ children }) => {
 
 function TimekeepingHome(props) {
   const navigate = useNavigate()
-  const { Stocks, CrStockID } = useSelector(({ auth }) => ({
+  const { Stocks, CrStockID, roles, StockRights } = useSelector(({ auth }) => ({
     Stocks: auth?.Info?.Stocks || [],
-    CrStockID: auth?.Info?.CrStockID
+    StockRights: auth?.Info?.StockRights || [],
+    CrStockID: auth?.Info?.CrStockID,
+    roles: auth?.Info?.roles
   }))
   const [StocksList, setStocksList] = useState([])
   const [CrDate, setCrDate] = useState(new Date())
@@ -127,11 +129,21 @@ function TimekeepingHome(props) {
   const typingTimeoutRef = useRef(null)
 
   useEffect(() => {
-    const newStocks = Stocks.map(stock => ({
+    let newStocks = StockRights.map(stock => ({
       ...stock,
-      value: stock.ID,
-      label: stock.ID === 778 ? 'Hệ thống' : stock.Title
+      label: stock.Title,
+      value: stock.ID
     }))
+    if (roles && roles.some(x => x.StockID === 0)) {
+      let index = Stocks.findIndex(x => x.ID === 778)
+      if (index > -1) {
+        newStocks.unshift({
+          ...Stocks[index],
+          value: Stocks[index].ID,
+          label: 'Hệ thống'
+        })
+      }
+    }
     if (newStocks.length > 0) {
       if (!CrStockID) {
         setFilters(prevState => ({
@@ -146,7 +158,7 @@ function TimekeepingHome(props) {
       }
     }
     setStocksList(newStocks)
-  }, [Stocks, CrStockID])
+  }, [Stocks, CrStockID, roles, StockRights])
 
   useEffect(() => {
     setFilters(prevState => ({

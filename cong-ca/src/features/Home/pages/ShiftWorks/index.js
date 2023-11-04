@@ -8,6 +8,7 @@ import { useMutation, useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import uuid from 'react-uuid'
 import moreApi from 'src/api/more.api'
+import PickerAddShift from './PickerAddShift'
 
 let getInitial = () => {
   let data = []
@@ -18,11 +19,7 @@ let getInitial = () => {
     obj.TimeFrom = '06:00'
     obj.TimeTo = '18:00'
     obj.Value = 1
-    if (index === 6) {
-      obj.isOff = true
-    } else {
-      obj.isOff = false
-    }
+    obj.isOff = true
     data.push(obj)
   }
   return data
@@ -32,7 +29,6 @@ function ShiftWorks(props) {
   const navigate = useNavigate()
 
   const [indexActive, setIndexActive] = useState(0)
-  const [textAdd, setTextAdd] = useState('')
 
   const [initialValues, setInitialValues] = useState({
     CONG_CA: []
@@ -140,357 +136,347 @@ function ShiftWorks(props) {
               </div>
             </div>
             <div className="relative overflow-auto card-body p-20px">
-              <div className="d-lg-flex max-w-[1200px] mx-auto">
-                <div className="flex flex-column w-lg-350px">
-                  {values.CONG_CA && values.CONG_CA.length > 0 && (
+              {!isLoading && (
+                <div className="d-lg-flex max-w-[1200px] mx-auto">
+                  <div className="flex flex-column w-lg-350px">
                     <FieldArray
                       name="CONG_CA"
                       render={arrayHelpers => (
-                        <div className="order-last overflow-hidden border rounded mt-[20px] lg:mt-0 lg:mb-[20px]  lg:order-first">
-                          {values.CONG_CA.map((item, index) => (
-                            <div
-                              className={clsx(
-                                'px-20px py-8px fw-500 cursor-pointer flex items-center',
-                                indexActive === index &&
-                                  'bg-primary text-white',
-                                values.CONG_CA.length - 1 !== index &&
-                                  'border-bottom'
-                              )}
-                              onClick={() => setIndexActive(index)}
-                              key={index}
-                            >
-                              <div className="flex-1 pr-3">{item.Name}</div>
-                              <div
-                                className="flex items-center justify-center rounded-full w-35px h-35px hover:bg-danger hover:text-white transiton"
-                                onClick={e => {
-                                  e.stopPropagation()
-                                  setIndexActive(0)
-                                  arrayHelpers.remove(index)
-                                }}
+                        <div className="flex justify-between items-center mb-[20px]">
+                          <div className="text-2xl font-bold">Danh sách</div>
+                          <PickerAddShift
+                            onSubmit={({ Title }, { resetForm, onHide }) => {
+                              arrayHelpers.push({
+                                ID: uuid(),
+                                Name: Title,
+                                Days: getInitial()
+                              })
+                              setIndexActive(values?.CONG_CA?.length || 0)
+                              resetForm()
+                              onHide()
+                            }}
+                          >
+                            {({ open }) => (
+                              <button
+                                type="button"
+                                className="btn fw-500 btn-success"
+                                onClick={open}
                               >
-                                <svg
-                                  className="w-6"
-                                  fill="currentColor"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M8.159 2.659A2.25 2.25 0 0 1 9.75 2h4.5a2.25 2.25 0 0 1 2.25 2.25V5h3.75a.75.75 0 0 1 0 1.5h-.75V20a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20V6.5h-.75a.75.75 0 0 1 0-1.5H7.5v-.75c0-.597.237-1.169.659-1.591ZM6 6.5V20h12V6.5H6ZM15 5H9v-.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75V5ZM9.75 9.5a.75.75 0 0 1 .75.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 .75-.75Zm3.75.75a.75.75 0 0 1 1.5 0v6a.75.75 0 0 1-1.5 0v-6Z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                              </div>
-                            </div>
-                          ))}
+                                Thêm mới
+                              </button>
+                            )}
+                          </PickerAddShift>
                         </div>
                       )}
                     />
-                  )}
-                  <FieldArray
-                    name="CONG_CA"
-                    render={arrayHelpers => (
-                      <div className="border rounded p-20px">
-                        <div>
-                          <input
-                            type="text"
-                            className="form-control form-control-solid h-[45px]"
-                            placeholder="Nhập tên loại ca làm việc"
-                            value={textAdd}
-                            onChange={e => setTextAdd(e.target.value)}
-                            onKeyPress={e => {
-                              e.which === 13 && e.preventDefault()
-                            }}
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          className="btn fw-500 btn-success w-100 mt-15px"
-                          onClick={() => {
-                            if (textAdd) {
-                              arrayHelpers.push({
-                                ID: uuid(),
-                                Name: textAdd,
-                                Days: getInitial()
-                              })
-                              setTextAdd('')
-                            } else {
-                              window.top?.toastr &&
-                                window.top?.toastr.error(
-                                  'Vui lòng nhập loại ca.',
-                                  '',
-                                  {
-                                    timeOut: 2000
-                                  }
-                                )
-                            }
-                          }}
-                        >
-                          Thêm mới
-                        </button>
-                        <div
-                          className="rounded mt-15px d-flex p-20px"
-                          style={{ backgroundColor: '#e1f0ff' }}
-                        >
-                          <svg
-                            className="w-25px"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              d="M5.91 10.403A6.75 6.75 0 0119 12.752a6.724 6.724 0 01-2.942 5.544l-.058.037v4.917a.75.75 0 01-.648.743L15.25 24h-6a.75.75 0 01-.75-.75v-4.917l-.06-.04a6.75 6.75 0 01-2.613-7.646zm7.268-2.849a5.25 5.25 0 00-3.553 9.714.75.75 0 01.375.65v4.581h4.5v-4.581a.75.75 0 01.282-.587l.095-.064a5.224 5.224 0 002.623-4.52 5.25 5.25 0 00-4.322-5.193zM22.75 12a.75.75 0 01.102 1.493l-.102.007h-1.5a.75.75 0 01-.102-1.493L21.25 12h1.5zm-19.5 0a.75.75 0 01.102 1.493l-.102.007h-1.5a.75.75 0 01-.102-1.493L1.75 12h1.5zm.96-8.338l.085.072 2.12 2.121a.75.75 0 01-.976 1.133l-.084-.072-2.12-2.121a.75.75 0 01.976-1.133zm17.056.072a.75.75 0 01.072.977l-.072.084-2.121 2.12a.75.75 0 01-1.133-.976l.072-.084 2.121-2.12a.75.75 0 011.06 0zM12.25 0a.75.75 0 01.743.648L13 .75v3a.75.75 0 01-1.493.102L11.5 3.75v-3a.75.75 0 01.75-.75z"
-                              fill="#101928"
-                            />
-                          </svg>
-                          <div className="flex-1 pl-20px">
-                            Khi không tìm thấy loại ca làm việc, bạn có thể thêm
-                            mới.
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  />
-                </div>
-                <div className="flex-1 pl-lg-20px mt-20px mt-lg-0">
-                  <FieldArray
-                    name="CONG_CA"
-                    render={arrayHelpers => (
-                      <div className="border rounded p-20px">
-                        {values.CONG_CA &&
-                          values.CONG_CA.length > 0 &&
-                          values.CONG_CA.map((item, index) => (
-                            <div
-                              className={clsx(
-                                indexActive !== index && 'hidden'
-                              )}
-                              key={index}
-                            >
-                              <div className="mb-8 text-3xl font-bold">
-                                {item.Name}
-                              </div>
-                              <FieldArray
-                                name={`CONG_CA[${index}].Days`}
-                                render={daysHelpers => (
-                                  <div>
-                                    {values.CONG_CA[index].Days.map(
-                                      (day, i) => (
-                                        <div
-                                          className="d-flex mb-4 last:!mb-0 flex-wrap"
-                                          key={i}
-                                        >
-                                          <div className="flex items-center h-[42px] order-1">
-                                            <label className="checkbox checkbox-lg">
-                                              <input
-                                                type="checkbox"
-                                                checked={!day.isOff}
-                                                name={`CONG_CA[${index}].Days[${i}.isOff]`}
-                                                onChange={() =>
-                                                  setFieldValue(
-                                                    `CONG_CA[${index}].Days[${i}.isOff]`,
-                                                    !day.isOff
-                                                  )
-                                                }
-                                                onBlur={handleBlur}
-                                              />
-                                              <span></span>
-                                            </label>
-                                          </div>
-                                          <div className="flex flex-col justify-between flex-1 order-2 pl-15px">
-                                            <div className="font-bold capitalize">
-                                              {day.Title}
-                                            </div>
-                                            <div className="leading-4 text-[13px] text-[#878c93]">
-                                              {getTotalTime(day)}
-                                            </div>
-                                          </div>
-                                          <div className="d-flex align-items-center mt-2.5 lg:mt-0 md:pl-[39px] lg:px-[15px] w-full lg:w-[450px] order-last lg:!order-3">
-                                            {day.isOff && (
-                                              <div className="text-muted">
-                                                Không có ca
-                                              </div>
-                                            )}
-                                            {!day.isOff && (
-                                              <>
-                                                <div className="position-relative">
-                                                  <ReactDatePicker
-                                                    className="form-control"
-                                                    selected={
-                                                      day.TimeFrom
-                                                        ? moment(
-                                                            day.TimeFrom,
-                                                            'HH:mm'
-                                                          ).toDate()
-                                                        : null
-                                                    }
-                                                    onChange={val =>
-                                                      setFieldValue(
-                                                        `CONG_CA[${index}].Days[${i}].TimeFrom`,
-                                                        val
-                                                          ? moment(val).format(
-                                                              'HH:mm'
-                                                            )
-                                                          : ''
-                                                      )
-                                                    }
-                                                    timeCaption="Thời gian"
-                                                    showTimeSelect
-                                                    timeFormat="HH:mm"
-                                                    timeIntervals={5}
-                                                    showTimeSelectOnly
-                                                    dateFormat="HH:mm"
-                                                  />
-                                                  <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
-                                                    <svg
-                                                      xmlns="http://www.w3.org/2000/svg"
-                                                      fill="none"
-                                                      viewBox="0 0 24 24"
-                                                      strokeWidth="1.5"
-                                                      stroke="currentColor"
-                                                      aria-hidden="true"
-                                                      className="w-18px"
-                                                    >
-                                                      <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                                                      />
-                                                    </svg>
-                                                  </div>
-                                                </div>
-                                                <div className="text-center w-40px">
-                                                  -
-                                                </div>
-                                                <div className="position-relative">
-                                                  <ReactDatePicker
-                                                    className="form-control"
-                                                    selected={
-                                                      day.TimeTo
-                                                        ? moment(
-                                                            day.TimeTo,
-                                                            'HH:mm'
-                                                          ).toDate()
-                                                        : null
-                                                    }
-                                                    onChange={val =>
-                                                      setFieldValue(
-                                                        `CONG_CA[${index}].Days[${i}].TimeTo`,
-                                                        val
-                                                          ? moment(val).format(
-                                                              'HH:mm'
-                                                            )
-                                                          : ''
-                                                      )
-                                                    }
-                                                    timeCaption="Thời gian"
-                                                    showTimeSelect
-                                                    timeFormat="HH:mm"
-                                                    timeIntervals={5}
-                                                    showTimeSelectOnly
-                                                    dateFormat="HH:mm"
-                                                  />
-                                                  <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
-                                                    <svg
-                                                      xmlns="http://www.w3.org/2000/svg"
-                                                      fill="none"
-                                                      viewBox="0 0 24 24"
-                                                      strokeWidth="1.5"
-                                                      stroke="currentColor"
-                                                      aria-hidden="true"
-                                                      className="w-18px"
-                                                    >
-                                                      <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                                                      />
-                                                    </svg>
-                                                  </div>
-                                                </div>
-                                                <div className="ml-3 position-relative w-[200px]">
-                                                  <div className="input-group">
-                                                    <div className="input-group-prepend">
-                                                      <span
-                                                        className="input-group-text"
-                                                        style={{
-                                                          height: '100%',
-                                                          borderTopRightRadius: 0,
-                                                          borderBottomRightRadius: 0,
-                                                          fontSize: 13,
-                                                          border:
-                                                            '1px solid #e4e6ef',
-                                                          color: '#3F4254'
-                                                        }}
-                                                      >
-                                                        Số công
-                                                      </span>
-                                                    </div>
-                                                    <NumericFormat
-                                                      allowNegative
-                                                      className="text-center form-control"
-                                                      placeholder="Số công"
-                                                      name={`CONG_CA[${index}].Days[${i}].Value`}
-                                                      value={day.Value}
-                                                      onValueChange={({
-                                                        value,
-                                                        floatValue
-                                                      }) => {
-                                                        setFieldValue(
-                                                          `CONG_CA[${index}].Days[${i}].Value`,
-                                                          floatValue
-                                                        )
-                                                      }}
-                                                      allowLeadingZeros={true}
-                                                    />
-                                                  </div>
-                                                </div>
-                                              </>
-                                            )}
-                                          </div>
-                                          <div className="order-4 w-50px d-flex justify-content-center">
-                                            {!day.isOff && (
-                                              <button
-                                                type="button"
-                                                className="rounded-full border-0 bg-transparent w-[42px] hover:!bg-[#f1f1f1] transition"
-                                                onClick={() =>
-                                                  setFieldValue(
-                                                    `CONG_CA[${index}].Days[${i}.isOff]`,
-                                                    !day.isOff
-                                                  )
-                                                }
-                                              >
-                                                <svg
-                                                  className="w-24px"
-                                                  fill="currentColor"
-                                                  xmlns="http://www.w3.org/2000/svg"
-                                                  viewBox="0 0 24 24"
-                                                >
-                                                  <path
-                                                    fillRule="evenodd"
-                                                    d="M8.159 2.659A2.25 2.25 0 0 1 9.75 2h4.5a2.25 2.25 0 0 1 2.25 2.25V5h3.75a.75.75 0 0 1 0 1.5h-.75V20a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20V6.5h-.75a.75.75 0 0 1 0-1.5H7.5v-.75c0-.597.237-1.169.659-1.591ZM6 6.5V20h12V6.5H6ZM15 5H9v-.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75V5ZM9.75 9.5a.75.75 0 0 1 .75.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 .75-.75Zm3.75.75a.75.75 0 0 1 1.5 0v6a.75.75 0 0 1-1.5 0v-6Z"
-                                                    clipRule="evenodd"
-                                                  />
-                                                </svg>
-                                              </button>
-                                            )}
-                                          </div>
-                                        </div>
-                                      )
-                                    )}
-                                  </div>
+                    {values.CONG_CA && values.CONG_CA.length > 0 ? (
+                      <FieldArray
+                        name="CONG_CA"
+                        render={arrayHelpers => (
+                          <div className="order-last overflow-hidden border rounded mt-[20px] lg:mt-0 lg:mb-[20px]  lg:order-first">
+                            {values.CONG_CA.map((item, index) => (
+                              <div
+                                className={clsx(
+                                  'px-20px py-8px fw-500 cursor-pointer flex items-center',
+                                  indexActive === index &&
+                                    'bg-primary text-white',
+                                  values.CONG_CA.length - 1 !== index &&
+                                    'border-bottom'
                                 )}
-                              />
-                            </div>
-                          ))}
-                        {(!values.CONG_CA || values.CONG_CA.length === 0) && (
-                          <div>
-                            Bạn chưa có nhóm ca làm việc. Vui lòng thêm mới!
+                                onClick={() => setIndexActive(index)}
+                                key={index}
+                              >
+                                <div className="flex-1 pr-3">{item.Name}</div>
+                                <div
+                                  className="flex items-center justify-center rounded-full w-35px h-35px hover:bg-danger hover:text-white transiton"
+                                  onClick={e => {
+                                    e.stopPropagation()
+                                    setIndexActive(0)
+                                    arrayHelpers.remove(index)
+                                  }}
+                                >
+                                  <svg
+                                    className="w-6"
+                                    fill="currentColor"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M8.159 2.659A2.25 2.25 0 0 1 9.75 2h4.5a2.25 2.25 0 0 1 2.25 2.25V5h3.75a.75.75 0 0 1 0 1.5h-.75V20a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20V6.5h-.75a.75.75 0 0 1 0-1.5H7.5v-.75c0-.597.237-1.169.659-1.591ZM6 6.5V20h12V6.5H6ZM15 5H9v-.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75V5ZM9.75 9.5a.75.75 0 0 1 .75.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 .75-.75Zm3.75.75a.75.75 0 0 1 1.5 0v6a.75.75 0 0 1-1.5 0v-6Z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         )}
+                      />
+                    ) : (
+                      <div
+                        className="rounded d-flex p-20px"
+                        style={{ backgroundColor: '#e1f0ff' }}
+                      >
+                        <svg
+                          className="w-25px"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M5.91 10.403A6.75 6.75 0 0119 12.752a6.724 6.724 0 01-2.942 5.544l-.058.037v4.917a.75.75 0 01-.648.743L15.25 24h-6a.75.75 0 01-.75-.75v-4.917l-.06-.04a6.75 6.75 0 01-2.613-7.646zm7.268-2.849a5.25 5.25 0 00-3.553 9.714.75.75 0 01.375.65v4.581h4.5v-4.581a.75.75 0 01.282-.587l.095-.064a5.224 5.224 0 002.623-4.52 5.25 5.25 0 00-4.322-5.193zM22.75 12a.75.75 0 01.102 1.493l-.102.007h-1.5a.75.75 0 01-.102-1.493L21.25 12h1.5zm-19.5 0a.75.75 0 01.102 1.493l-.102.007h-1.5a.75.75 0 01-.102-1.493L1.75 12h1.5zm.96-8.338l.085.072 2.12 2.121a.75.75 0 01-.976 1.133l-.084-.072-2.12-2.121a.75.75 0 01.976-1.133zm17.056.072a.75.75 0 01.072.977l-.072.084-2.121 2.12a.75.75 0 01-1.133-.976l.072-.084 2.121-2.12a.75.75 0 011.06 0zM12.25 0a.75.75 0 01.743.648L13 .75v3a.75.75 0 01-1.493.102L11.5 3.75v-3a.75.75 0 01.75-.75z"
+                            fill="#101928"
+                          />
+                        </svg>
+                        <div className="flex-1 pl-20px">
+                          Khi không tìm thấy loại ca làm việc, bạn có thể thêm
+                          mới.
+                        </div>
                       </div>
                     )}
-                  />
+                  </div>
+                  <div className="flex-1 pl-lg-20px mt-20px mt-lg-0">
+                    <FieldArray
+                      name="CONG_CA"
+                      render={arrayHelpers => (
+                        <div className="border rounded p-20px">
+                          {values.CONG_CA &&
+                            values.CONG_CA.length > 0 &&
+                            values.CONG_CA.map((item, index) => (
+                              <div
+                                className={clsx(
+                                  indexActive !== index && 'hidden'
+                                )}
+                                key={index}
+                              >
+                                <div className="mb-8 text-3xl font-bold">
+                                  {item.Name}
+                                </div>
+                                <FieldArray
+                                  name={`CONG_CA[${index}].Days`}
+                                  render={daysHelpers => (
+                                    <div>
+                                      {values.CONG_CA[index].Days.map(
+                                        (day, i) => (
+                                          <div
+                                            className="d-flex mb-4 last:!mb-0 flex-wrap"
+                                            key={i}
+                                          >
+                                            <div className="flex items-center h-[42px] order-1">
+                                              <label className="checkbox checkbox-lg">
+                                                <input
+                                                  type="checkbox"
+                                                  checked={!day.isOff}
+                                                  name={`CONG_CA[${index}].Days[${i}.isOff]`}
+                                                  onChange={() =>
+                                                    setFieldValue(
+                                                      `CONG_CA[${index}].Days[${i}.isOff]`,
+                                                      !day.isOff
+                                                    )
+                                                  }
+                                                  onBlur={handleBlur}
+                                                />
+                                                <span></span>
+                                              </label>
+                                            </div>
+                                            <div className="flex flex-col justify-between flex-1 order-2 pl-15px">
+                                              <div className="font-bold capitalize">
+                                                {day.Title}
+                                              </div>
+                                              <div className="leading-4 text-[13px] text-[#878c93]">
+                                                {getTotalTime(day)}
+                                              </div>
+                                            </div>
+                                            <div className="d-flex align-items-center mt-2.5 lg:mt-0 md:pl-[39px] lg:px-[15px] w-full lg:w-[450px] order-last lg:!order-3">
+                                              {day.isOff && (
+                                                <div className="text-muted">
+                                                  Không có ca
+                                                </div>
+                                              )}
+                                              {!day.isOff && (
+                                                <>
+                                                  <div className="position-relative">
+                                                    <ReactDatePicker
+                                                      className="form-control"
+                                                      selected={
+                                                        day.TimeFrom
+                                                          ? moment(
+                                                              day.TimeFrom,
+                                                              'HH:mm'
+                                                            ).toDate()
+                                                          : null
+                                                      }
+                                                      onChange={val =>
+                                                        setFieldValue(
+                                                          `CONG_CA[${index}].Days[${i}].TimeFrom`,
+                                                          val
+                                                            ? moment(
+                                                                val
+                                                              ).format('HH:mm')
+                                                            : ''
+                                                        )
+                                                      }
+                                                      timeCaption="Thời gian"
+                                                      showTimeSelect
+                                                      timeFormat="HH:mm"
+                                                      timeIntervals={5}
+                                                      showTimeSelectOnly
+                                                      dateFormat="HH:mm"
+                                                    />
+                                                    <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
+                                                      <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth="1.5"
+                                                        stroke="currentColor"
+                                                        aria-hidden="true"
+                                                        className="w-18px"
+                                                      >
+                                                        <path
+                                                          strokeLinecap="round"
+                                                          strokeLinejoin="round"
+                                                          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                                        />
+                                                      </svg>
+                                                    </div>
+                                                  </div>
+                                                  <div className="text-center w-40px">
+                                                    -
+                                                  </div>
+                                                  <div className="position-relative">
+                                                    <ReactDatePicker
+                                                      className="form-control"
+                                                      selected={
+                                                        day.TimeTo
+                                                          ? moment(
+                                                              day.TimeTo,
+                                                              'HH:mm'
+                                                            ).toDate()
+                                                          : null
+                                                      }
+                                                      onChange={val =>
+                                                        setFieldValue(
+                                                          `CONG_CA[${index}].Days[${i}].TimeTo`,
+                                                          val
+                                                            ? moment(
+                                                                val
+                                                              ).format('HH:mm')
+                                                            : ''
+                                                        )
+                                                      }
+                                                      timeCaption="Thời gian"
+                                                      showTimeSelect
+                                                      timeFormat="HH:mm"
+                                                      timeIntervals={5}
+                                                      showTimeSelectOnly
+                                                      dateFormat="HH:mm"
+                                                    />
+                                                    <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
+                                                      <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        strokeWidth="1.5"
+                                                        stroke="currentColor"
+                                                        aria-hidden="true"
+                                                        className="w-18px"
+                                                      >
+                                                        <path
+                                                          strokeLinecap="round"
+                                                          strokeLinejoin="round"
+                                                          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                                        />
+                                                      </svg>
+                                                    </div>
+                                                  </div>
+                                                  <div className="ml-3 position-relative w-[200px]">
+                                                    <div className="input-group">
+                                                      <div className="input-group-prepend">
+                                                        <span
+                                                          className="input-group-text"
+                                                          style={{
+                                                            height: '100%',
+                                                            borderTopRightRadius: 0,
+                                                            borderBottomRightRadius: 0,
+                                                            fontSize: 13,
+                                                            border:
+                                                              '1px solid #e4e6ef',
+                                                            color: '#3F4254'
+                                                          }}
+                                                        >
+                                                          Số công
+                                                        </span>
+                                                      </div>
+                                                      <NumericFormat
+                                                        allowNegative
+                                                        className="text-center form-control"
+                                                        placeholder="Số công"
+                                                        name={`CONG_CA[${index}].Days[${i}].Value`}
+                                                        value={day.Value}
+                                                        onValueChange={({
+                                                          value,
+                                                          floatValue
+                                                        }) => {
+                                                          setFieldValue(
+                                                            `CONG_CA[${index}].Days[${i}].Value`,
+                                                            floatValue
+                                                          )
+                                                        }}
+                                                        allowLeadingZeros={true}
+                                                      />
+                                                    </div>
+                                                  </div>
+                                                </>
+                                              )}
+                                            </div>
+                                            <div className="order-4 w-50px d-flex justify-content-center">
+                                              {!day.isOff && (
+                                                <button
+                                                  type="button"
+                                                  className="rounded-full border-0 bg-transparent w-[42px] hover:!bg-[#f1f1f1] transition"
+                                                  onClick={() =>
+                                                    setFieldValue(
+                                                      `CONG_CA[${index}].Days[${i}.isOff]`,
+                                                      !day.isOff
+                                                    )
+                                                  }
+                                                >
+                                                  <svg
+                                                    className="w-24px"
+                                                    fill="currentColor"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 24 24"
+                                                  >
+                                                    <path
+                                                      fillRule="evenodd"
+                                                      d="M8.159 2.659A2.25 2.25 0 0 1 9.75 2h4.5a2.25 2.25 0 0 1 2.25 2.25V5h3.75a.75.75 0 0 1 0 1.5h-.75V20a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20V6.5h-.75a.75.75 0 0 1 0-1.5H7.5v-.75c0-.597.237-1.169.659-1.591ZM6 6.5V20h12V6.5H6ZM15 5H9v-.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75V5ZM9.75 9.5a.75.75 0 0 1 .75.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 .75-.75Zm3.75.75a.75.75 0 0 1 1.5 0v6a.75.75 0 0 1-1.5 0v-6Z"
+                                                      clipRule="evenodd"
+                                                    />
+                                                  </svg>
+                                                </button>
+                                              )}
+                                            </div>
+                                          </div>
+                                        )
+                                      )}
+                                    </div>
+                                  )}
+                                />
+                              </div>
+                            ))}
+                          {(!values.CONG_CA || values.CONG_CA.length === 0) && (
+                            <div>
+                              Bạn chưa có nhóm ca làm việc. Vui lòng thêm mới!
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    />
+                  </div>
                 </div>
-              </div>
+              )}
+
               <div
                 className={clsx(
                   'overlay-layer bg-dark-o-10 absolute top-0 left-0 w-full h-full flex items-center justify-center',

@@ -14,11 +14,6 @@ function Equally({ OrderInfo, onSubmit, loading }) {
     UserID: Auth?.User?.ID,
   }));
 
-  const getValueType = (item, Type) => {
-    return Type.value === "KY_THUAT_VIEN"
-      ? item.BonusSale2 * item.Qty
-      : item.gia_tri_thanh_toan;
-  };
   const getValueHH = ({ user, item, Type }) => {
     if (
       item?.prodBonus?.BonusSaleLevels &&
@@ -44,9 +39,38 @@ function Equally({ OrderInfo, onSubmit, loading }) {
       );
     }
 
-    return item.prodBonus.BonusSale > 100
-      ? Math.round((user.Value * getValueType(item, Type)) / 100) * item.Qty
-      : Math.round((user.Value * getValueType(item, Type)) / 100);
+    if (Type.value !== "KY_THUAT_VIEN") {
+      return item.prodBonus.BonusSale > 100
+        ? Math.round(
+            (item.gia_tri_thanh_toan_thuc_te *
+              item.prodBonus.BonusSale *
+              item.Qty) /
+              (item.ToPay * user.Value) /
+              100
+          )
+        : Math.round(
+            ((item.prodBonus.BonusSale / 100) *
+              item.gia_tri_thanh_toan_thuc_te *
+              user.Value) /
+              100
+          );
+    }
+
+    return item.prodBonus.BonusSale2 > 100
+      ? Math.round(
+          (((item.prodBonus.BonusSale2 *
+            item.gia_tri_thanh_toan_thuc_te *
+            item.Qty) /
+            item.ToPay) *
+            user.Value) /
+            100
+        )
+      : Math.round(
+          (user.Value *
+            item.gia_tri_thanh_toan_thuc_te *
+            (item.prodBonus.BonusSale2 / 100)) /
+            100
+        );
   };
 
   const onToAdd = (values, { resetForm }) => {

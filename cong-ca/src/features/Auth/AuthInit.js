@@ -66,6 +66,18 @@ function AuthInit(props) {
               ParentID: 778
             }
           ],
+          StockRights: [
+            {
+              ID: 8975,
+              Title: 'Cser Hà Nội',
+              ParentID: 778
+            },
+            {
+              ID: 11291,
+              Title: 'Cser Hồ Chí Minh',
+              ParentID: 778
+            }
+          ],
           CrStockID: 8975, //8975
           rightsSum: {
             cong_ca: {

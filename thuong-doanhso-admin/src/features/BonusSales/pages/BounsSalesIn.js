@@ -90,18 +90,6 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                 {formatVND(item.Product.don_gia)} ={" "}
                                 {formatVND(item.Product.ToPay)}
                               </div>
-                              <div>
-                                Tổng Doanh số dự kiến :{" "}
-                                {formatVND(item.Product.gia_tri_doanh_so)}
-                              </div>
-                              <div>
-                                Tổng hoa hồng (Sale) dự kiến :{" "}
-                                {formatVND(item.Product.gia_tri_thanh_toan)}
-                              </div>
-                              <div>
-                                Tổng hoa hồng (KTV) dự kiến :{" "}
-                                {formatVND(item.Product.BonusSale2)}
-                              </div>
                             </div>
                           </Popover>
                         }
@@ -332,25 +320,13 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                       <tr key={index}>
                         <td>
                           <div>
-                            <div className="fw-bolder">
+                            <div className="fw-bolder mb-10px">
                               {item.Product.ProdTitle}
                             </div>
                             <div>
                               SL : {item.Product.Qty} *{" "}
                               {formatVND(item.Product.don_gia)} ={" "}
                               {formatVND(item.Product.ToPay)}
-                            </div>
-                            <div>
-                              Tổng Doanh số dự kiến :{" "}
-                              {formatVND(item.Product.gia_tri_doanh_so)}
-                            </div>
-                            <div>
-                              Tổng hoa hồng (Sale) dự kiến :{" "}
-                              {formatVND(item.Product.gia_tri_thanh_toan)}
-                            </div>
-                            <div>
-                              Tổng hoa hồng (KTV) dự kiến :{" "}
-                              {formatVND(item.Product.BonusSale2)}
                             </div>
                           </div>
                         </td>
