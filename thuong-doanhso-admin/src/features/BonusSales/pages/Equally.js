@@ -40,12 +40,14 @@ function Equally({ OrderInfo, onSubmit, loading }) {
     }
 
     if (Type.value !== "KY_THUAT_VIEN") {
+      console.log(item);
       return item.prodBonus.BonusSale > 100
         ? Math.round(
-            (item.gia_tri_thanh_toan_thuc_te *
+            (((item.gia_tri_thanh_toan_thuc_te *
               item.prodBonus.BonusSale *
               item.Qty) /
-              (item.ToPay * user.Value) /
+              item.ToPay) *
+              user.Value) /
               100
           )
         : Math.round(
