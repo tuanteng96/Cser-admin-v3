@@ -6,6 +6,7 @@ import worksheetApi from 'src/api/worksheet.api'
 import { useMutation, useQueryClient } from 'react-query'
 import AsyncSelect from 'react-select/async'
 import moreApi from 'src/api/more.api'
+import { NumericFormat } from 'react-number-format'
 
 function PickerTypeShift({ children, item }) {
   const queryClient = useQueryClient()
@@ -13,7 +14,8 @@ function PickerTypeShift({ children, item }) {
   const [visible, setVisible] = useState(false)
   const [initialValues, setInitialValues] = useState({
     UserID: '',
-    Shift: ''
+    Shift: '',
+    SalaryHours: ''
   })
 
   useEffect(() => {
@@ -25,7 +27,8 @@ function PickerTypeShift({ children, item }) {
           Shift: {
             label: WorkTimeSetting.ShiftName,
             value: WorkTimeSetting.ShiftID
-          }
+          },
+          SalaryHours: WorkTimeSetting?.SalaryHours || ''
         })
       }
     }
@@ -46,7 +49,8 @@ function PickerTypeShift({ children, item }) {
           {
             UserID: item?.UserID,
             ShiftName: values?.Shift?.label || '',
-            ShiftID: values?.Shift?.value || ''
+            ShiftID: values?.Shift?.value || '',
+            SalaryHours: values.SalaryHours
           }
         ]
       },
@@ -110,20 +114,44 @@ function PickerTypeShift({ children, item }) {
                     <Modal.Title>{item?.FullName}</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
-                    <div className="mb-1">Loại công ca</div>
+                    <div className="mb-3.5">
+                      <div className="mb-1">Loại công ca</div>
+                      <div>
+                        <AsyncSelect
+                          isClearable
+                          cacheOptions
+                          defaultOptions
+                          loadOptions={promiseOptions}
+                          className="select-control"
+                          classNamePrefix="select"
+                          placeholder="Chọn loại"
+                          noOptionsMessage={() => 'Không có dữ liệu'}
+                          onChange={val => setFieldValue('Shift', val)}
+                          value={values.Shift}
+                        />
+                      </div>
+                    </div>
                     <div>
-                      <AsyncSelect
-                        isClearable
-                        cacheOptions
-                        defaultOptions
-                        loadOptions={promiseOptions}
-                        className="select-control"
-                        classNamePrefix="select"
-                        placeholder="Chọn loại"
-                        noOptionsMessage={() => 'Không có dữ liệu'}
-                        onChange={val => setFieldValue('Shift', val)}
-                        value={values.Shift}
-                      />
+                      <div className="mb-1">Lương theo giờ</div>
+                      <div>
+                        <NumericFormat
+                          className="form-control"
+                          type="text"
+                          placeholder="Nhập số tiền"
+                          value={values.SalaryHours}
+                          onValueChange={val =>
+                            setFieldValue(
+                              'SalaryHours',
+                              val.floatValue ? val.floatValue : val.value,
+                              false
+                            )
+                          }
+                          autoComplete="off"
+                          allowLeadingZeros
+                          thousandSeparator={true}
+                          allowNegative={false}
+                        />
+                      </div>
                     </div>
                   </Modal.Body>
                   <Modal.Footer>
