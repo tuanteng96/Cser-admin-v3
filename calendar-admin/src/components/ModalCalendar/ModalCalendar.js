@@ -16,6 +16,7 @@ import SelectStaffsService from "../Select/SelectStaffsService/SelectStaffsServi
 import SelectStocks from "../Select/SelectStocks/SelectStocks";
 import { toast } from "react-toastify";
 import { NumericFormat } from "react-number-format";
+import clsx from "clsx";
 moment.locale("vi");
 
 ModalCalendar.propTypes = {
@@ -41,6 +42,36 @@ const CustomOptionStaff = ({ children, ...props }) => {
         )}
 
         {children}
+      </div>
+    </components.Option>
+  );
+};
+
+const CustomOptionMember = ({ children, ...props }) => {
+  const { Thumbnail, label, suffix } = props.data;
+  return (
+    <components.Option {...props}>
+      <div className="d-flex align-items-center">
+        {Thumbnail && (
+          <div className="w-20px h-20px mr-3 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+            <img className="w-100" src={Thumbnail} alt={label} />
+          </div>
+        )}
+        <div
+          className={clsx(
+            label === "Đặt lịch cho khách vãng lai" && "text-success"
+          )}
+        >
+          {children}
+          {label !== "Khách vãng lai" &&
+            label !== "Đặt lịch cho khách vãng lai" && (
+              <>
+                <span className="pl-[5px]">
+                  - <span className="text-[13px]">{suffix}</span>
+                </span>
+              </>
+            )}
+        </div>
       </div>
     </components.Option>
   );
@@ -363,7 +394,7 @@ function ModalCalendar({
                       onBlur={handleBlur}
                       placeholder="Chọn khách hàng"
                       components={{
-                        Option: CustomOptionStaff,
+                        Option: CustomOptionMember,
                       }}
                       onCreateOption={(inputValue) => {
                         const initValue = { ...initialCreate };
@@ -397,7 +428,7 @@ function ModalCalendar({
                         selectOptions
                       ) => inputValue && selectOptions.length === 0}
                     />
-                    
+
                     {values.MemberID && (
                       <div className="grid grid-cols-2 gap-2 mt-2 font-size-xs">
                         <div className="mr-4">

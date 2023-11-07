@@ -373,6 +373,7 @@ function CalendarPage(props) {
           member: {
             MobilePhone: values.MemberID?.suffix,
             FullName: values.MemberID?.text,
+            EmptyPhone: true,
             IsAff: 1,
           },
         };
@@ -474,6 +475,7 @@ function CalendarPage(props) {
             member: {
               MobilePhone: values?.IsMemberCurrent?.MemberCreate?.Phone,
               FullName: values?.IsMemberCurrent?.MemberCreate?.FullName,
+              EmptyPhone: true,
             },
           };
           const newMember = await CalendarCrud.createMember(objCreate);
