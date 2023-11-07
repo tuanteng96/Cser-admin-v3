@@ -15,6 +15,7 @@ import ModalCreateMember from "../ModalCreateMember/ModalCreateMember";
 import SelectStaffsService from "../Select/SelectStaffsService/SelectStaffsService";
 import SelectStocks from "../Select/SelectStocks/SelectStocks";
 import { toast } from "react-toastify";
+import { NumericFormat } from "react-number-format";
 moment.locale("vi");
 
 ModalCalendar.propTypes = {
@@ -57,6 +58,8 @@ const initialDefault = {
     label: "1 khách",
     value: 1,
   },
+  FullName: "",
+  Phone: "",
 };
 
 function ModalCalendar({
@@ -117,6 +120,8 @@ function ModalCalendar({
             value: initialValue.Member.ID,
             suffix: initialValue.Phone || initialValue.Member.MobilePhone,
           },
+          FullName: initialValue?.FullName || "",
+          Phone: initialValue?.Phone || "",
           RootIdS: initialValue.Roots
             ? initialValue.Roots.map((item) => ({
                 ...item,
@@ -172,11 +177,18 @@ function ModalCalendar({
 
   const loadOptionsCustomer = (inputValue, callback) => {
     setTimeout(async () => {
-      const { data } = await CalendarCrud.getMembers(inputValue);
+      const { data } = await CalendarCrud.getMembers(
+        inputValue,
+        "",
+        inputValue === "" ? 0 : ""
+      );
       const dataResult = data.map((item) => ({
         ...item,
         value: item.id,
-        label: item.text,
+        label:
+          inputValue === "" && item.text === "Khách vãng lai"
+            ? "Đặt lịch cho khách vãng lai"
+            : item.text,
         Thumbnail: toUrlServer("/images/user.png"),
       }));
       callback(dataResult);
@@ -385,19 +397,54 @@ function ModalCalendar({
                         selectOptions
                       ) => inputValue && selectOptions.length === 0}
                     />
+                    
                     {values.MemberID && (
-                      <div className="d-flex mt-2 font-size-xs">
+                      <div className="grid grid-cols-2 gap-2 mt-2 font-size-xs">
                         <div className="mr-4">
                           Khách hàng :
-                          <span className="font-weight-bold pl-1">
-                            {values.MemberID?.text}
-                          </span>
+                          {values.MemberID?.label === "Khách vãng lai" ||
+                          values.MemberID?.label ===
+                            "Đặt lịch cho khách vãng lai" ? (
+                            <div className="mt-1">
+                              <input
+                                name="FullName"
+                                value={values.FullName}
+                                className="form-control"
+                                placeholder="Nhập tên"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                autoComplete="off"
+                              ></input>
+                            </div>
+                          ) : (
+                            <div className="font-bold">
+                              {values.MemberID?.text}
+                            </div>
+                          )}
                         </div>
                         <div>
                           Số điện thoại :
-                          <span className="font-weight-bold pl-1">
-                            {values.MemberID?.suffix}
-                          </span>
+                          {values.MemberID?.label === "Khách vãng lai" ||
+                          values.MemberID?.label ===
+                            "Đặt lịch cho khách vãng lai" ? (
+                            <div className="mt-1">
+                              <NumericFormat
+                                allowLeadingZeros
+                                name="Phone"
+                                value={values.Phone}
+                                className="form-control"
+                                placeholder="Nhập số điện thoại"
+                                onValueChange={(val) =>
+                                  setFieldValue("Phone", val.value)
+                                }
+                                autoComplete="off"
+                              />
+                            </div>
+                          ) : (
+                            <div className="font-bold">
+                              {values.MemberID?.suffix}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -512,24 +559,25 @@ function ModalCalendar({
                           : "Không tìm thấy dịch vụ"
                       }
                     />
-
-                    <div className="d-flex align-items-center justify-content-between mt-3">
-                      <label className="mr-3">Sử dụng dịch vụ tại nhà</label>
-                      <span className="switch switch-sm switch-icon">
-                        <label>
-                          <input
-                            type="checkbox"
-                            name="AtHome"
-                            onChange={(evt) =>
-                              setFieldValue("AtHome", evt.target.checked)
-                            }
-                            onBlur={handleBlur}
-                            checked={values.AtHome}
-                          />
-                          <span />
-                        </label>
-                      </span>
-                    </div>
+                    {window?.top?.GlobalConfig?.APP?.Booking?.AtHome && (
+                      <div className="d-flex align-items-center justify-content-between mt-3">
+                        <label className="mr-3">Sử dụng dịch vụ tại nhà</label>
+                        <span className="switch switch-sm switch-icon">
+                          <label>
+                            <input
+                              type="checkbox"
+                              name="AtHome"
+                              onChange={(evt) =>
+                                setFieldValue("AtHome", evt.target.checked)
+                              }
+                              onBlur={handleBlur}
+                              checked={values.AtHome}
+                            />
+                            <span />
+                          </label>
+                        </span>
+                      </div>
+                    )}
                   </div>
                   <div className="form-group form-group-ezs px-6 pt-3 mb-3 border-top">
                     <label className="mb-1 d-none d-md-block">
@@ -824,6 +872,8 @@ function ModalCalendar({
                       isCreate: true,
                       PassersBy: valuesCreate.PassersBy,
                     });
+                    setFieldValue("FullName", valuesCreate.FullName);
+                    setFieldValue("Phone", valuesCreate.Phone);
                     setIsModalCreate(false);
                   }}
                 />

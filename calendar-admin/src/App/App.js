@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { ToastContainer } from "react-toastify";
 import AuthInit from "./modules/Auth/_redux/AuthInit";
 import TopBarProgress from "react-topbar-progress-indicator";
+import { createPortal } from "react-dom";
 
 const BookingPage = lazy(() => import("./modules/Booking/BookingPage"));
 const CalendarPage = lazy(() => import("./modules/Calendar/CalendarPage"));
@@ -73,8 +74,8 @@ function App({ store, basename }) {
             </SuspensedView>
           )}
         </AuthInit>
-        <ToastContainer />
       </AppContext.Provider>
+      {createPortal(<ToastContainer />, document.body)}
     </Provider>
   );
 }

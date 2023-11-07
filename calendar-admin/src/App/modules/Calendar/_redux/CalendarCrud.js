@@ -1,12 +1,15 @@
+import { isDevCode } from "../../../../helpers/DevHelpers";
 import axiosClient from "../../../../redux/axioClient";
 
 const GET_MEMBERS_STAFF_URL = "/api/gl/select2";
 const GET_ROOT_SERVICES_URL = "/api/v3/mbook";
 const POST_BOOKING_URL = "/api/v3/mbookadmin?cmd=AdminBooking";
 
-const getMembers = (key, CurrentStockID) => {
+const getMembers = (key, CurrentStockID, member = "") => {
   return axiosClient.get(
-    `${GET_MEMBERS_STAFF_URL}?cmd=member&q=${key}&CurrentStockID=${CurrentStockID}`
+    `${GET_MEMBERS_STAFF_URL}?cmd=member&q=${key}&CurrentStockID=${
+      isDevCode() ? "8975" : CurrentStockID
+    }&member=${member}`
   );
 };
 const getStaffs = ({ StockID, key = "", All }) => {
