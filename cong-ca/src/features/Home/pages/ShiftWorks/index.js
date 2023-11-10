@@ -321,7 +321,23 @@ function ShiftWorks(props) {
                                               className="d-flex mb-4 last:!mb-0 flex-wrap"
                                               key={i}
                                             >
-                                              <div className="flex flex-col justify-between flex-1 order-2">
+                                              <div className="flex flex-1 order-2">
+                                                <div
+                                                  className="w-[42px] flex items-center justify-center mr-2 text-success cursor-pointer"
+                                                  onClick={() =>
+                                                    OptionHelpers.insert(
+                                                      i + 1,
+                                                      {
+                                                        Title: '',
+                                                        TimeFrom: '06:00',
+                                                        TimeTo: '18:00',
+                                                        Value: 1
+                                                      }
+                                                    )
+                                                  }
+                                                >
+                                                  <i className="far fa-plus text-[17px]"></i>
+                                                </div>
                                                 <input
                                                   className="form-control"
                                                   type="text"
