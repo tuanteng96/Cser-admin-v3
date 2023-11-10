@@ -115,3 +115,58 @@
         }
     }
 }
+
+.checkbox.checkbox-solid {
+    display: flex;
+    input {
+        position: absolute;
+        z-index: -1;
+        opacity: 0;
+        &:checked {
+            ~span.icon {
+                background-color: #3699FF;
+                border: 1px solid #3699FF;
+                &:after {
+                    border-color: #ffffff;
+                }
+            }
+        }
+    }
+    span.icon {
+        cursor: pointer;
+        background-color: none;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -ms-flex-negative: 0;
+        flex-shrink: 0;
+        border-radius: 0.42rem;
+        height: 20px;
+        width: 20px;
+        -webkit-transition: all 0.3s ease;
+        transition: all 0.3s ease;
+        background-color: #EBEDF3;
+        border: 1px solid #ebedf3;
+        //background-color: #3699FF;
+        &::after {
+            content: "";
+            border-color: transparent;
+            border-style: solid;
+            border-width: 0 2px 2px 0/*rtl:ignore*/
+            !important;
+            -webkit-transform: rotate(45deg)/*rtl:ignore*/
+            ;
+            transform: rotate(45deg)/*rtl:ignore*/
+            ;
+            margin-top: -2px;
+            width: 6px;
+            height: 12px;
+        }
+    }
+}

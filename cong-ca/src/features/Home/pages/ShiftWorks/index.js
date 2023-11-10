@@ -45,6 +45,34 @@ function ShiftWorks(props) {
         let result = data[0].Value ? JSON.parse(data[0].Value) : []
         setInitialValues({
           CONG_CA: result
+            ? result.map(x => {
+                if (x.flexible) {
+                  return {
+                    ...x,
+                    Options:
+                      x.Options && x.Options.length > 0
+                        ? [
+                            ...x.Options,
+                            {
+                              Title: '',
+                              TimeFrom: '06:00',
+                              TimeTo: '18:00',
+                              Value: 1
+                            }
+                          ]
+                        : [
+                            {
+                              Title: '',
+                              TimeFrom: '06:00',
+                              TimeTo: '18:00',
+                              Value: 1
+                            }
+                          ]
+                  }
+                }
+                return x
+              })
+            : []
         })
       }
     }
@@ -58,7 +86,17 @@ function ShiftWorks(props) {
     saveConfigMutation.mutate(
       {
         name: 'calamviecconfig',
-        data: values.CONG_CA
+        data: values.CONG_CA.map(x => {
+          if (x.flexible) {
+            return {
+              ...x,
+              Options: x.Options.filter(o => o.Title)
+            }
+          }
+          return x
+        }).filter(x =>
+          x.flexible ? x.Options && x.Options.length > 0 : !x.flexible
+        )
       },
       {
         onSuccess: data => {
@@ -145,12 +183,32 @@ function ShiftWorks(props) {
                         <div className="flex justify-between items-center mb-[20px]">
                           <div className="text-2xl font-bold">Danh sách</div>
                           <PickerAddShift
-                            onSubmit={({ Title }, { resetForm, onHide }) => {
-                              arrayHelpers.push({
-                                ID: uuid(),
-                                Name: Title,
-                                Days: getInitial()
-                              })
+                            onSubmit={(
+                              { Title, flexible },
+                              { resetForm, onHide }
+                            ) => {
+                              if (flexible) {
+                                arrayHelpers.push({
+                                  ID: uuid(),
+                                  Name: Title,
+                                  flexible: flexible,
+                                  Options: [
+                                    {
+                                      Title: '',
+                                      TimeFrom: '06:00',
+                                      TimeTo: '18:00',
+                                      Value: 1
+                                    }
+                                  ]
+                                })
+                              } else {
+                                arrayHelpers.push({
+                                  ID: uuid(),
+                                  Name: Title,
+                                  Days: getInitial()
+                                })
+                              }
+
                               setIndexActive(values?.CONG_CA?.length || 0)
                               resetForm()
                               onHide()
@@ -252,63 +310,63 @@ function ShiftWorks(props) {
                                 <div className="mb-8 text-3xl font-bold">
                                   {item.Name}
                                 </div>
-                                <FieldArray
-                                  name={`CONG_CA[${index}].Days`}
-                                  render={daysHelpers => (
-                                    <div>
-                                      {values.CONG_CA[index].Days.map(
-                                        (day, i) => (
-                                          <div
-                                            className="d-flex mb-4 last:!mb-0 flex-wrap"
-                                            key={i}
-                                          >
-                                            <div className="flex items-center h-[42px] order-1">
-                                              <label className="checkbox checkbox-lg">
+                                {values.CONG_CA[index].flexible ? (
+                                  <FieldArray
+                                    name={`CONG_CA[${index}].Options`}
+                                    render={OptionHelpers => (
+                                      <div>
+                                        {values.CONG_CA[index].Options.map(
+                                          (option, i) => (
+                                            <div
+                                              className="d-flex mb-4 last:!mb-0 flex-wrap"
+                                              key={i}
+                                            >
+                                              <div className="flex flex-col justify-between flex-1 order-2">
                                                 <input
-                                                  type="checkbox"
-                                                  checked={!day.isOff}
-                                                  name={`CONG_CA[${index}].Days[${i}.isOff]`}
-                                                  onChange={() =>
+                                                  className="form-control"
+                                                  type="text"
+                                                  placeholder="Nhập tên"
+                                                  name="Title"
+                                                  value={option.Title}
+                                                  onChange={event => {
+                                                    if (
+                                                      event.target.value &&
+                                                      i ===
+                                                        values.CONG_CA[index]
+                                                          .Options.length -
+                                                          1
+                                                    ) {
+                                                      OptionHelpers.push({
+                                                        Title: '',
+                                                        TimeFrom: '06:00',
+                                                        TimeTo: '18:00',
+                                                        Value: 1
+                                                      })
+                                                    }
                                                     setFieldValue(
-                                                      `CONG_CA[${index}].Days[${i}.isOff]`,
-                                                      !day.isOff
+                                                      `CONG_CA[${index}].Options[${i}].Title`,
+                                                      event.target.value
                                                     )
-                                                  }
+                                                  }}
                                                   onBlur={handleBlur}
                                                 />
-                                                <span></span>
-                                              </label>
-                                            </div>
-                                            <div className="flex flex-col justify-between flex-1 order-2 pl-15px">
-                                              <div className="font-bold capitalize">
-                                                {day.Title}
                                               </div>
-                                              <div className="leading-4 text-[13px] text-[#878c93]">
-                                                {getTotalTime(day)}
-                                              </div>
-                                            </div>
-                                            <div className="d-flex align-items-center mt-2.5 lg:mt-0 md:pl-[39px] lg:px-[15px] w-full lg:w-[450px] order-last lg:!order-3">
-                                              {day.isOff && (
-                                                <div className="text-muted">
-                                                  Không có ca
-                                                </div>
-                                              )}
-                                              {!day.isOff && (
+                                              <div className="d-flex align-items-center mt-2.5 lg:mt-0 md:pl-[39px] lg:px-[15px] w-full lg:w-[450px] order-last lg:!order-3">
                                                 <>
                                                   <div className="position-relative">
                                                     <ReactDatePicker
                                                       className="form-control"
                                                       selected={
-                                                        day.TimeFrom
+                                                        option.TimeFrom
                                                           ? moment(
-                                                              day.TimeFrom,
+                                                              option.TimeFrom,
                                                               'HH:mm'
                                                             ).toDate()
                                                           : null
                                                       }
                                                       onChange={val =>
                                                         setFieldValue(
-                                                          `CONG_CA[${index}].Days[${i}].TimeFrom`,
+                                                          `CONG_CA[${index}].Options[${i}].TimeFrom`,
                                                           val
                                                             ? moment(
                                                                 val
@@ -348,16 +406,16 @@ function ShiftWorks(props) {
                                                     <ReactDatePicker
                                                       className="form-control"
                                                       selected={
-                                                        day.TimeTo
+                                                        option.TimeTo
                                                           ? moment(
-                                                              day.TimeTo,
+                                                              option.TimeTo,
                                                               'HH:mm'
                                                             ).toDate()
                                                           : null
                                                       }
                                                       onChange={val =>
                                                         setFieldValue(
-                                                          `CONG_CA[${index}].Days[${i}].TimeTo`,
+                                                          `CONG_CA[${index}].Options[${i}].TimeTo`,
                                                           val
                                                             ? moment(
                                                                 val
@@ -412,14 +470,14 @@ function ShiftWorks(props) {
                                                         allowNegative
                                                         className="text-center form-control"
                                                         placeholder="Số công"
-                                                        name={`CONG_CA[${index}].Days[${i}].Value`}
-                                                        value={day.Value}
+                                                        name={`CONG_CA[${index}].Options[${i}].Value`}
+                                                        value={option.Value}
                                                         onValueChange={({
                                                           value,
                                                           floatValue
                                                         }) => {
                                                           setFieldValue(
-                                                            `CONG_CA[${index}].Days[${i}].Value`,
+                                                            `CONG_CA[${index}].Options[${i}].Value`,
                                                             floatValue
                                                           )
                                                         }}
@@ -428,18 +486,24 @@ function ShiftWorks(props) {
                                                     </div>
                                                   </div>
                                                 </>
-                                              )}
-                                            </div>
-                                            <div className="order-4 w-50px d-flex justify-content-center">
-                                              {!day.isOff && (
+                                              </div>
+                                              <div className="order-4 w-50px d-flex justify-content-center">
                                                 <button
+                                                  disabled={
+                                                    values.CONG_CA[index]
+                                                      .Options.length <= 1
+                                                  }
                                                   type="button"
-                                                  className="rounded-full border-0 bg-transparent w-[42px] hover:!bg-[#f1f1f1] transition"
+                                                  className={clsx(
+                                                    'rounded-full border-0 bg-transparent w-[42px] hover:!bg-[#f1f1f1] transition',
+                                                    values.CONG_CA[index]
+                                                      .Options.length <= 1 &&
+                                                      'opacity-30'
+                                                  )}
                                                   onClick={() =>
-                                                    setFieldValue(
-                                                      `CONG_CA[${index}].Days[${i}.isOff]`,
-                                                      !day.isOff
-                                                    )
+                                                    values.CONG_CA[index]
+                                                      .Options.length > 1 &&
+                                                    OptionHelpers.remove(i)
                                                   }
                                                 >
                                                   <svg
@@ -455,14 +519,232 @@ function ShiftWorks(props) {
                                                     />
                                                   </svg>
                                                 </button>
-                                              )}
+                                              </div>
                                             </div>
-                                          </div>
-                                        )
-                                      )}
-                                    </div>
-                                  )}
-                                />
+                                          )
+                                        )}
+                                      </div>
+                                    )}
+                                  />
+                                ) : (
+                                  <FieldArray
+                                    name={`CONG_CA[${index}].Days`}
+                                    render={daysHelpers => (
+                                      <div>
+                                        {values.CONG_CA[index].Days.map(
+                                          (day, i) => (
+                                            <div
+                                              className="d-flex mb-4 last:!mb-0 flex-wrap"
+                                              key={i}
+                                            >
+                                              <div className="flex items-center h-[42px] order-1">
+                                                <label className="checkbox checkbox-lg">
+                                                  <input
+                                                    type="checkbox"
+                                                    checked={!day.isOff}
+                                                    name={`CONG_CA[${index}].Days[${i}.isOff]`}
+                                                    onChange={() =>
+                                                      setFieldValue(
+                                                        `CONG_CA[${index}].Days[${i}.isOff]`,
+                                                        !day.isOff
+                                                      )
+                                                    }
+                                                    onBlur={handleBlur}
+                                                  />
+                                                  <span></span>
+                                                </label>
+                                              </div>
+                                              <div className="flex flex-col justify-between flex-1 order-2 pl-15px">
+                                                <div className="font-bold capitalize">
+                                                  {day.Title}
+                                                </div>
+                                                <div className="leading-4 text-[13px] text-[#878c93]">
+                                                  {getTotalTime(day)}
+                                                </div>
+                                              </div>
+                                              <div className="d-flex align-items-center mt-2.5 lg:mt-0 md:pl-[39px] lg:px-[15px] w-full lg:w-[450px] order-last lg:!order-3">
+                                                {day.isOff && (
+                                                  <div className="text-muted">
+                                                    Không có ca
+                                                  </div>
+                                                )}
+                                                {!day.isOff && (
+                                                  <>
+                                                    <div className="position-relative">
+                                                      <ReactDatePicker
+                                                        className="form-control"
+                                                        selected={
+                                                          day.TimeFrom
+                                                            ? moment(
+                                                                day.TimeFrom,
+                                                                'HH:mm'
+                                                              ).toDate()
+                                                            : null
+                                                        }
+                                                        onChange={val =>
+                                                          setFieldValue(
+                                                            `CONG_CA[${index}].Days[${i}].TimeFrom`,
+                                                            val
+                                                              ? moment(
+                                                                  val
+                                                                ).format(
+                                                                  'HH:mm'
+                                                                )
+                                                              : ''
+                                                          )
+                                                        }
+                                                        timeCaption="Thời gian"
+                                                        showTimeSelect
+                                                        timeFormat="HH:mm"
+                                                        timeIntervals={5}
+                                                        showTimeSelectOnly
+                                                        dateFormat="HH:mm"
+                                                      />
+                                                      <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
+                                                        <svg
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                          fill="none"
+                                                          viewBox="0 0 24 24"
+                                                          strokeWidth="1.5"
+                                                          stroke="currentColor"
+                                                          aria-hidden="true"
+                                                          className="w-18px"
+                                                        >
+                                                          <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                                          />
+                                                        </svg>
+                                                      </div>
+                                                    </div>
+                                                    <div className="text-center w-40px">
+                                                      -
+                                                    </div>
+                                                    <div className="position-relative">
+                                                      <ReactDatePicker
+                                                        className="form-control"
+                                                        selected={
+                                                          day.TimeTo
+                                                            ? moment(
+                                                                day.TimeTo,
+                                                                'HH:mm'
+                                                              ).toDate()
+                                                            : null
+                                                        }
+                                                        onChange={val =>
+                                                          setFieldValue(
+                                                            `CONG_CA[${index}].Days[${i}].TimeTo`,
+                                                            val
+                                                              ? moment(
+                                                                  val
+                                                                ).format(
+                                                                  'HH:mm'
+                                                                )
+                                                              : ''
+                                                          )
+                                                        }
+                                                        timeCaption="Thời gian"
+                                                        showTimeSelect
+                                                        timeFormat="HH:mm"
+                                                        timeIntervals={5}
+                                                        showTimeSelectOnly
+                                                        dateFormat="HH:mm"
+                                                      />
+                                                      <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
+                                                        <svg
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                          fill="none"
+                                                          viewBox="0 0 24 24"
+                                                          strokeWidth="1.5"
+                                                          stroke="currentColor"
+                                                          aria-hidden="true"
+                                                          className="w-18px"
+                                                        >
+                                                          <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                                          />
+                                                        </svg>
+                                                      </div>
+                                                    </div>
+                                                    <div className="ml-3 position-relative w-[200px]">
+                                                      <div className="input-group">
+                                                        <div className="input-group-prepend">
+                                                          <span
+                                                            className="input-group-text"
+                                                            style={{
+                                                              height: '100%',
+                                                              borderTopRightRadius: 0,
+                                                              borderBottomRightRadius: 0,
+                                                              fontSize: 13,
+                                                              border:
+                                                                '1px solid #e4e6ef',
+                                                              color: '#3F4254'
+                                                            }}
+                                                          >
+                                                            Số công
+                                                          </span>
+                                                        </div>
+                                                        <NumericFormat
+                                                          allowNegative
+                                                          className="text-center form-control"
+                                                          placeholder="Số công"
+                                                          name={`CONG_CA[${index}].Days[${i}].Value`}
+                                                          value={day.Value}
+                                                          onValueChange={({
+                                                            value,
+                                                            floatValue
+                                                          }) => {
+                                                            setFieldValue(
+                                                              `CONG_CA[${index}].Days[${i}].Value`,
+                                                              floatValue
+                                                            )
+                                                          }}
+                                                          allowLeadingZeros={
+                                                            true
+                                                          }
+                                                        />
+                                                      </div>
+                                                    </div>
+                                                  </>
+                                                )}
+                                              </div>
+                                              <div className="order-4 w-50px d-flex justify-content-center">
+                                                {!day.isOff && (
+                                                  <button
+                                                    type="button"
+                                                    className="rounded-full border-0 bg-transparent w-[42px] hover:!bg-[#f1f1f1] transition"
+                                                    onClick={() =>
+                                                      setFieldValue(
+                                                        `CONG_CA[${index}].Days[${i}.isOff]`,
+                                                        !day.isOff
+                                                      )
+                                                    }
+                                                  >
+                                                    <svg
+                                                      className="w-24px"
+                                                      fill="currentColor"
+                                                      xmlns="http://www.w3.org/2000/svg"
+                                                      viewBox="0 0 24 24"
+                                                    >
+                                                      <path
+                                                        fillRule="evenodd"
+                                                        d="M8.159 2.659A2.25 2.25 0 0 1 9.75 2h4.5a2.25 2.25 0 0 1 2.25 2.25V5h3.75a.75.75 0 0 1 0 1.5h-.75V20a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20V6.5h-.75a.75.75 0 0 1 0-1.5H7.5v-.75c0-.597.237-1.169.659-1.591ZM6 6.5V20h12V6.5H6ZM15 5H9v-.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75V5ZM9.75 9.5a.75.75 0 0 1 .75.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 .75-.75Zm3.75.75a.75.75 0 0 1 1.5 0v6a.75.75 0 0 1-1.5 0v-6Z"
+                                                        clipRule="evenodd"
+                                                      />
+                                                    </svg>
+                                                  </button>
+                                                )}
+                                              </div>
+                                            </div>
+                                          )
+                                        )}
+                                      </div>
+                                    )}
+                                  />
+                                )}
                               </div>
                             ))}
                           {(!values.CONG_CA || values.CONG_CA.length === 0) && (

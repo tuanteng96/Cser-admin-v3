@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { Form, Formik } from 'formik'
+import { values } from 'lodash'
 import React from 'react'
 import { useState } from 'react'
 import { Button, Modal } from 'react-bootstrap'
@@ -10,7 +11,7 @@ const AddSchema = Yup.object().shape({
 
 function PickerAddShift({ children, onSubmit }) {
   const [visible, setVisible] = useState(false)
-  const [initialValues] = useState({ Title: '' })
+  const [initialValues] = useState({ Title: '', flexible: false })
   const onHide = () => {
     setVisible(false)
   }
@@ -43,7 +44,7 @@ function PickerAddShift({ children, onSubmit }) {
                   <Modal.Title>Thêm mới ca làm việc</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <div className="form-group mb-0">
+                  <div className="mb-4 form-group">
                     <div className="mb-1">Tên loại ca</div>
                     <input
                       name="Title"
@@ -56,6 +57,21 @@ function PickerAddShift({ children, onSubmit }) {
                       onChange={handleChange}
                       onBlur={handleBlur}
                     />
+                  </div>
+                  <div>
+                    <label className="checkbox checkbox-solid">
+                      <input
+                        type="checkbox"
+                        checked={values.flexible}
+                        name="flexible"
+                        onChange={handleChange}
+                        onBlur={handleBlur}
+                      />
+                      <span className="icon"></span>
+                      <span className="pl-2 font-medium cursor-pointer">
+                        Ca linh hoạt
+                      </span>
+                    </label>
                   </div>
                 </Modal.Body>
                 <Modal.Footer>

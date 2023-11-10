@@ -558,7 +558,7 @@ function TimekeepingMember(props) {
   }
 
   return (
-    <div className="card h-100 timekeeping">
+    <div className="!overflow-x-hidden card h-100 timekeeping">
       <div className="card-header d-block p-20px min-h-125px min-h-md-auto">
         <div className="w-full d-flex justify-content-between flex-column flex-md-row">
           <h3 className="text-uppercase">

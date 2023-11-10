@@ -1004,7 +1004,7 @@ function TimekeepingHome(props) {
           const { values } = formikProps
           return (
             <Form className="h-100" autoComplete="off">
-              <div className="card h-100 timekeeping">
+              <div className="card h-100 timekeeping !overflow-x-hidden">
                 <div className="card-header !px-[15px] md:!px-[1.75rem]">
                   <h3 className="text-uppercase">
                     <div>
