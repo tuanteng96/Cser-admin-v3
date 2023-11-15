@@ -86,7 +86,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
             Value:
               item.Type.value === "KY_THUAT_VIEN"
                 ? getValueKTV({ item: item.Product, user: item.Staff })
-                : getValueHH({ item: item.Product }),
+                : getValueHH({ item: item.Product, user: item.Staff }),
           },
         ],
         Doanh_So: [
@@ -105,7 +105,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
     <Fragment>
       <div className="row">
         <div className="col-md-12 col-xl-8">
-          <div className="border rounded mb-3 px-4 py-2">
+          <div className="px-4 py-2 mb-3 border rounded">
             <Formik
               enableReinitialize
               initialValues={initialValuesAdd}
@@ -120,7 +120,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                       values.ToAdd &&
                       values.ToAdd.map((item, index) => (
                         <div
-                          className="d-flex align-md-items-center flex-column flex-md-row my-3"
+                          className="my-3 d-flex align-md-items-center flex-column flex-md-row"
                           key={index}
                         >
                           <div className="w-md-250px fw-bold pe-4">
@@ -188,7 +188,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                           )}
                         </div>
                       ))}
-                    <div className="text-end mb-3">
+                    <div className="mb-3 text-end">
                       <button type="submit" className="btn btn-primary">
                         Tạo mới
                       </button>
@@ -214,7 +214,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                 <Form>
                   <div className="d-md-none">
                     {values.divided.map((item, index) => (
-                      <div className="border rounded mb-3" key={index}>
+                      <div className="mb-3 border rounded" key={index}>
                         <div className="p-3 border-bottom line-height-sm font-weight-boldest w-100 line-height-lg bg-light">
                           {item.Product.ProdTitle}
                         </div>
@@ -228,10 +228,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                               render={(arrayHelpers) =>
                                 item.Hoa_Hong.map((sub, idx) => (
                                   <div
-                                    className="d-flex align-items-center my-2"
+                                    className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
@@ -273,10 +273,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                               render={(arrayHelpers) =>
                                 item.Doanh_So.map((sub, idx) => (
                                   <div
-                                    className="d-flex align-items-center my-2"
+                                    className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
@@ -315,11 +315,11 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                     <Table bordered responsive>
                       <thead>
                         <tr>
-                          <th className="min-w-250px w-20">Sản phẩm</th>
-                          <th className="text-center min-w-250px w-40">
+                          <th className="w-20 min-w-250px">Sản phẩm</th>
+                          <th className="w-40 text-center min-w-250px">
                             Hoa hồng
                           </th>
-                          <th className="text-center min-w-250px w-40">
+                          <th className="w-40 text-center min-w-250px">
                             Doanh số
                           </th>
                         </tr>
@@ -336,10 +336,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                 render={(arrayHelpers) =>
                                   item.Hoa_Hong.map((sub, idx) => (
                                     <div
-                                      className="d-flex align-items-center my-2"
+                                      className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
@@ -376,10 +376,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                 render={(arrayHelpers) =>
                                   item.Doanh_So.map((sub, idx) => (
                                     <div
-                                      className="d-flex align-items-center my-2"
+                                      className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
