@@ -25,6 +25,8 @@ let getInitial = () => {
   return data
 }
 
+window.initNum = 1
+
 function ShiftWorks(props) {
   const navigate = useNavigate()
 
@@ -34,16 +36,18 @@ function ShiftWorks(props) {
     CONG_CA: []
   })
 
-  const { isLoading } = useQuery({
+  const { isLoading, refetch } = useQuery({
     queryKey: ['calamviecconfig'],
     queryFn: async () => {
       const { data } = await moreApi.getNameConfig('calamviecconfig')
       return data?.data || []
     },
-    onSuccess: data => {
+    onSettled: data => {
       if (data && data.length > 0) {
         let result = data[0].Value ? JSON.parse(data[0].Value) : []
+
         setInitialValues({
+          initNum: window.initNum,
           CONG_CA: result
             ? result.map(x => {
                 if (x.flexible) {
@@ -51,15 +55,7 @@ function ShiftWorks(props) {
                     ...x,
                     Options:
                       x.Options && x.Options.length > 0
-                        ? [
-                            ...x.Options,
-                            {
-                              Title: '',
-                              TimeFrom: '06:00',
-                              TimeTo: '18:00',
-                              Value: 1
-                            }
-                          ]
+                        ? [...x.Options]
                         : [
                             {
                               Title: '',
@@ -74,6 +70,7 @@ function ShiftWorks(props) {
               })
             : []
         })
+        window.initNum += 1
       }
     }
   })
@@ -100,10 +97,12 @@ function ShiftWorks(props) {
       },
       {
         onSuccess: data => {
-          window.top.toastr &&
-            window.top.toastr.success('Cập nhập thành công !', {
-              timeOut: 1500
-            })
+          refetch().then(() => {
+            window.top.toastr &&
+              window.top.toastr.success('Cập nhập thành công !', {
+                timeOut: 1500
+              })
+          })
         },
         onError: error => console.log(error)
       }
@@ -123,7 +122,7 @@ function ShiftWorks(props) {
     <Formik
       initialValues={initialValues}
       onSubmit={onSubmit}
-      enableReinitialize={true}
+      enableReinitialize
     >
       {formikProps => {
         // errors, touched, handleChange, handleBlur
