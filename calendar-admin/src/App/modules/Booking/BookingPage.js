@@ -299,9 +299,9 @@ function BookingPage() {
     MemberID: Yup.object()
       .nullable()
       .required("Vui lòng chọn khách hàng"),
-    RootIdS: Yup.array()
-      .required("Vui lòng chọn dịch vụ.")
-      .nullable(),
+    // RootIdS: Yup.array()
+    //   .required("Vui lòng chọn dịch vụ.")
+    //   .nullable(),
     // UserServiceIDs: Yup.array()
     //   .required("Vui lòng chọn nhân viên.")
     //   .nullable(),
