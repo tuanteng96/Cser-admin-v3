@@ -147,7 +147,10 @@ function BookingPage() {
         {
           ...values,
           MemberID: values.MemberID.value,
-          RootIdS: values.RootIdS.map((item) => item.value).toString(),
+          RootIdS:
+            values.RootIdS && values.RootIdS.length > 0
+              ? values.RootIdS.map((item) => item.value).toString()
+              : "",
           UserServiceIDs:
             values.UserServiceIDs && values.UserServiceIDs.length > 0
               ? values.UserServiceIDs.map((item) => item.value).toString()
