@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { CheckIn, filterBy } from "./_redux/CheckinSlice";
-import PerfectScrollbar from "react-perfect-scrollbar";
 import CheckInFilter from "./CheckInFilter";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -11,11 +10,6 @@ import { isDevCode } from "../../../helpers/DevHelpers";
 import moment from "moment";
 import "moment/locale/vi";
 moment.locale("vi");
-
-const perfectScrollbarOptions = {
-  wheelSpeed: 2,
-  wheelPropagation: false,
-};
 
 const groupbyTIME = (arr) => {
   return arr
@@ -70,9 +64,7 @@ function CheckInPage(props) {
     >
       <div className="shadow">
         <div className="d-flex justify-content-between align-items-center border-bottom px-15px checkin-head">
-          <div className="checkin-title">
-            Hóa đơn đang xử lý
-          </div>
+          <div className="checkin-title">Hóa đơn đang xử lý</div>
           <div
             className="cursor-pointer w-30px text-center"
             onClick={() =>
@@ -81,7 +73,20 @@ function CheckInPage(props) {
               window.top.ShowCheckInDiv(false)
             }
           >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.5"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </div>
         </div>
         <div className="py-12px px-15px">
@@ -91,11 +96,7 @@ function CheckInPage(props) {
           />
         </div>
       </div>
-      <PerfectScrollbar
-        options={perfectScrollbarOptions}
-        className="scroll flex-grow-1 pt-5px"
-        style={{ position: "relative" }}
-      >
+      <div className="flex-grow-1 pt-5px overflow-auto">
         {loading && (
           <>
             {Array(3)
@@ -248,7 +249,7 @@ function CheckInPage(props) {
             )}
           </>
         )}
-      </PerfectScrollbar>
+      </div>
     </div>
   );
 }
