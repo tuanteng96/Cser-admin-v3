@@ -7,6 +7,7 @@ import BounsSalesIn from "./pages/BounsSalesIn";
 import Equally from "./pages/Equally";
 import AutoBouns from "./pages/AutoBouns";
 import { Dropdown } from "react-bootstrap";
+import EquallyMuti from "./pages/EquallyMuti";
 
 const isVisible = (Type) => {
   return Type.some((item) => item.Visible);
@@ -481,11 +482,21 @@ const BonusSales = () => {
       {isVisible(Type) && (
         <Fragment>
           {getNameActive().Name === "Equally" && (
-            <Equally
-              OrderInfo={OrderInfo}
-              loading={loading}
-              onSubmit={onSubmitEqually}
-            />
+            <>
+              {window.top?.GlobalConfig?.Admin?.hoa_hong_dac_biet ? (
+                <EquallyMuti
+                  OrderInfo={OrderInfo}
+                  loading={loading}
+                  onSubmit={onSubmitEqually}
+                />
+              ) : (
+                <Equally
+                  OrderInfo={OrderInfo}
+                  loading={loading}
+                  onSubmit={onSubmitEqually}
+                />
+              )}
+            </>
           )}
           {getNameActive().Name === "Divided" && (
             <Divided
