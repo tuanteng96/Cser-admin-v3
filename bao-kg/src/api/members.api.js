@@ -5,6 +5,10 @@ const MembersAPI = {
     http.get(`/api/gl/select2?cmd=member&CurrentStockID=${StockID || 0}`),
   listReportKG: (body) =>
     http.post(`/api/v3/membernote24@get`, JSON.stringify(body)),
+  saveNoteKg: (data) =>
+    http.post(`/api/v3/membernote@edit`, JSON.stringify(data)),
+  saveNoteKgDate: (data) =>
+    http.post(`/api/v3/membernote@editDate`, JSON.stringify(data)),
 };
 
 export default MembersAPI;

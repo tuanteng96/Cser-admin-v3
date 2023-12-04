@@ -5,7 +5,6 @@ import { Cookies } from "../../utils/cookies";
 
 const SelectMembers = ({ ...props }) => {
   let StockID = Cookies.get("MemberSelectStockID");
-
   const { data, isLoading } = useQuery({
     queryKey: ["ListStaffs"],
     queryFn: async () => {

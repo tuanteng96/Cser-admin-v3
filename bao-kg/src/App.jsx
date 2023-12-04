@@ -1,15 +1,118 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { InputDatePicker } from "./partials/forms";
 import { SelectMembers } from "./partials/select/SelectMembers";
 import ReactBaseTable from "./partials/table/ReactBaseTable";
 import moment from "moment";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import MembersAPI from "./api/members.api";
 import { Cookies } from "./utils/cookies";
 import { useWindowSize } from "@uidotdev/usehooks";
+import PickerAdd from "./components/PickerAdd";
+//import { useFloating, useClick, useInteractions } from "@floating-ui/react-dom";
+import {
+  useFloating,
+  useClick,
+  useInteractions,
+  useDismiss,
+} from "@floating-ui/react";
+import { NumericFormat } from "react-number-format";
 
 const startCurrentMonth = moment().startOf("month").format("MM/DD/YYYY");
 const endCurrentMonth = moment().endOf("month").format("MM/DD/YYYY");
+
+const EditableCell = ({ container, values, rowData, date }) => {
+  const [editing, setEditing] = useState(false);
+  const [value, setValue] = useState(values);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setValue(values);
+  }, [values]);
+
+  const typingTimeoutRef = useRef(null);
+
+  const { refs, floatingStyles, context } = useFloating({
+    open: editing,
+    onOpenChange: setEditing,
+  });
+
+  const click = useClick(context);
+
+  const dismiss = useDismiss(context);
+
+  const { getReferenceProps, getFloatingProps } = useInteractions([
+    click,
+    dismiss,
+  ]);
+
+  const saveNoteMutation = useMutation({
+    mutationFn: (body) => MembersAPI.saveNoteKgDate(body),
+  });
+
+  const onSubmit = (val, { date, rowData }) => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    typingTimeoutRef.current = setTimeout(() => {
+      saveNoteMutation.mutate(
+        {
+          edit: [
+            {
+              value: val,
+              MemberID: rowData.Member.ID,
+              CreateDate: date.format("YYYY-MM-DD"),
+            },
+          ],
+        },
+        {
+          onSuccess: ({ data }) => {
+            queryClient.invalidateQueries({ queryKey: ["ListReportKG"] });
+          },
+          onError: (error) => console.log(error),
+        }
+      );
+    }, 300);
+  };
+
+  return (
+    <div
+      className="w-full flex items-center h-full overflow-hidden -mx-[5px] px-[5px]"
+      ref={refs.setReference}
+      {...getReferenceProps()}
+      onClick={() => setEditing(true)}
+    >
+      {!editing && (
+        <div className="border border-dashed border-transparent hover:border-[#999] w-full h-full flex items-center rounded cursor-pointer">
+          {value ? value + " Kg" : ""}
+        </div>
+      )}
+      {editing && (
+        <div
+          className="w-full"
+          ref={refs.setFloating}
+          //style={floatingStyles}
+          {...getFloatingProps()}
+        >
+          <NumericFormat
+            className="w-full px-3.5 py-3 placeholder:font-normal font-medium text-gray-800 transition bg-white autofill:bg-white border rounded outline-none dark:bg-site-aside disabled:bg-gray-200 disabled:border-gray-200 dark:disabled:bg-graydark-200 dark:text-graydark-700 border-gray-300 dark:border-graydark-400 focus:border-primary dark:focus:border-primary"
+            value={value}
+            thousandSeparator={false}
+            placeholder="Nhập KG"
+            onValueChange={(val) => {
+              setValue(val.floatValue ? val.floatValue : val.value);
+              onSubmit(val.floatValue ? val.floatValue : val.value, {
+                rowData,
+                date,
+              });
+            }}
+            allowLeadingZeros={true}
+            autoFocus
+          />
+        </div>
+      )}
+    </div>
+  );
+};
 
 function App() {
   let StockID = Cookies.get("MemberSelectStockID");
@@ -73,10 +176,23 @@ function App() {
               ? moment().startOf("month").add(i, "days").format("DD-MM-YYYY")
               : moment().startOf("month").add(i, "days").format("DD-MM"),
           dataKey: "Day-" + i + 1,
-          cellRenderer: ({ rowData }) =>
-            rowData.Dates && rowData.Dates[i] && rowData.Dates[i]["Value"]
-              ? `${rowData.Dates[i].Value} Kg`
-              : "",
+          cellRenderer: (props) => (
+            <EditableCell
+              {...props}
+              values={
+                props.rowData.Dates &&
+                props.rowData.Dates[i] &&
+                props.rowData.Dates[i]["Value"]
+                  ? props.rowData.Dates[i].Value
+                  : ""
+              }
+              date={moment().startOf("month").add(i, "days")}
+            />
+          ),
+          // cellRenderer: ({ rowData }) =>
+          //   rowData.Dates && rowData.Dates[i] && rowData.Dates[i]["Value"]
+          //     ? `${rowData.Dates[i].Value} Kg`
+          //     : "",
           width: width > 767 ? 125 : 80,
           sortable: false,
           style: {
@@ -103,52 +219,67 @@ function App() {
 
   return (
     <div className="h-full p-4 flex flex-col">
-      <div className="flex items-center mb-4">
-        <div className="flex-1">
-          <SelectMembers
-            isClearable
-            className="select-control"
-            value={filters.filter.MemberID}
-            onChange={(val) =>
-              setFilters((prevState) => ({
-                ...prevState,
-                pi: 1,
-                filter: {
-                  ...prevState.filter,
-                  MemberID: val || "",
-                },
-              }))
-            }
-          />
+      <div className="flex justify-between mb-4">
+        <div className="flex">
+          <div className="w-[300px]">
+            <SelectMembers
+              isClearable
+              className="select-control"
+              value={filters.filter.MemberID}
+              onChange={(val) =>
+                setFilters((prevState) => ({
+                  ...prevState,
+                  pi: 1,
+                  filter: {
+                    ...prevState.filter,
+                    MemberID: val || "",
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="ml-3 w-[120px] md:w-auto">
+            <InputDatePicker
+              showMonthYearPicker
+              showFullMonthYearPicker
+              placeholderText="Chọn tháng"
+              dateFormat="MM/yyyy"
+              onChange={(val) => {
+                if (!val) return;
+                const startOfMonth = moment(val)
+                  .startOf("month")
+                  .format("MM/DD/YYYY");
+                const endOfMonth = moment(val)
+                  .endOf("month")
+                  .format("MM/DD/YYYY");
+                setFilters((prevState) => ({
+                  ...prevState,
+                  filter: {
+                    ...prevState.filter,
+                    CreateDate: [startOfMonth, endOfMonth],
+                  },
+                }));
+              }}
+              selected={
+                filters.filter.CreateDate.length > 0
+                  ? moment(filters.filter.CreateDate[0], "MM/DD/YYYY").toDate()
+                  : null
+              }
+            />
+          </div>
         </div>
-        <div className="ml-3 w-[120px] md:w-auto">
-          <InputDatePicker
-            showMonthYearPicker
-            showFullMonthYearPicker
-            placeholderText="Chọn tháng"
-            dateFormat="MM/yyyy"
-            onChange={(val) => {
-              if (!val) return;
-              const startOfMonth = moment(val)
-                .startOf("month")
-                .format("MM/DD/YYYY");
-              const endOfMonth = moment(val)
-                .endOf("month")
-                .format("MM/DD/YYYY");
-              setFilters((prevState) => ({
-                ...prevState,
-                filter: {
-                  ...prevState.filter,
-                  CreateDate: [startOfMonth, endOfMonth],
-                },
-              }));
-            }}
-            selected={
-              filters.filter.CreateDate.length > 0
-                ? moment(filters.filter.CreateDate[0], "MM/DD/YYYY").toDate()
-                : null
-            }
-          />
+        <div>
+          <PickerAdd>
+            {({ open }) => (
+              <button
+                className="bg-success text-white h-[40.5px] px-4 rounded"
+                type="button"
+                onClick={open}
+              >
+                Thêm mới
+              </button>
+            )}
+          </PickerAdd>
         </div>
       </div>
       <ReactBaseTable
@@ -157,7 +288,8 @@ function App() {
         rowKey="ID"
         columns={columns}
         data={data?.list || []}
-        estimatedRowHeight={96}
+        //estimatedRowHeight={96}
+        rowHeight={78}
         isPreviousData={isPreviousData}
         loading={isLoading || isPreviousData}
         pageCount={data?.pCount}
@@ -171,6 +303,11 @@ function App() {
           }));
         }}
         rowClassName={rowClassName}
+        // rowEventHandlers={{
+        //   onClick: ({ rowData, ...a }) => {
+        //     console.log(a);
+        //   },
+        // }}
       />
     </div>
   );
