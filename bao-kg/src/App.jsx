@@ -49,7 +49,7 @@ const EditableCell = ({ container, values, rowData, date }) => {
     mutationFn: (body) => MembersAPI.saveNoteKgDate(body),
   });
 
-  const onSubmit = (val, { date, rowData }) => {
+  const onSubmit = (val, { date }) => {
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
     }
@@ -59,7 +59,7 @@ const EditableCell = ({ container, values, rowData, date }) => {
           edit: [
             {
               value: val,
-              MemberID: rowData.Member.ID,
+              MemberID: rowData.MemberID,
               CreateDate: date.format("YYYY-MM-DD"),
             },
           ],
@@ -115,14 +115,14 @@ const EditableCell = ({ container, values, rowData, date }) => {
 };
 
 function App() {
-  let StockID = Cookies.get("MemberSelectStockID");
+  let StockID = Cookies.get("StockID");
   const [filters, setFilters] = useState({
     pi: 1,
     ps: 25,
     filter: {
       MemberID: "",
       CreateDate: [startCurrentMonth, endCurrentMonth],
-      "m.ByStockID": StockID || null,
+      "m.ByStockID": StockID || 0,
     },
   });
 
@@ -148,10 +148,16 @@ function App() {
 
   const columns = useMemo(
     () => {
-      let daysInMonth = moment(
+      let dayInMonthTotal = moment(
         filters.filter.CreateDate[0],
         "MM/DD/YYYY"
       ).daysInMonth();
+      let daysInMonth =
+        moment().format("M") ===
+        moment(filters.filter.CreateDate[0]).format("M")
+          ? Number(moment().format("D"))
+          : dayInMonthTotal;
+
       let column = [
         {
           key: "Member.FullName",
@@ -167,14 +173,25 @@ function App() {
           className: "text-sm md:text-base",
         },
       ];
-      for (let i = 0; i < daysInMonth; i++) {
+
+      let Arr = Array(daysInMonth)
+        .fill()
+        .map((_, index) => index)
+        .reverse();
+      for (let i of Arr) {
         moment().startOf("month").format("YYYY-MM-DD hh:mm");
         let newObj = {
           key: "Day-" + i + 1,
           title:
             width > 767
-              ? moment().startOf("month").add(i, "days").format("DD-MM-YYYY")
-              : moment().startOf("month").add(i, "days").format("DD-MM"),
+              ? moment(filters.filter.CreateDate[0])
+                  .startOf("month")
+                  .add(i, "days")
+                  .format("DD-MM-YYYY")
+              : moment(filters.filter.CreateDate[0])
+                  .startOf("month")
+                  .add(i, "days")
+                  .format("DD-MM"),
           dataKey: "Day-" + i + 1,
           cellRenderer: (props) => (
             <EditableCell
@@ -186,7 +203,9 @@ function App() {
                   ? props.rowData.Dates[i].Value
                   : ""
               }
-              date={moment().startOf("month").add(i, "days")}
+              date={moment(filters.filter.CreateDate[0])
+                .startOf("month")
+                .add(i, "days")}
             />
           ),
           // cellRenderer: ({ rowData }) =>
