@@ -54,7 +54,7 @@ function PickerAdd({ children }) {
             queryClient
               .invalidateQueries({ queryKey: ["ListReportKG"] })
               .then(() => {
-                window?.top?.toastr?.error("Thêm mới thành công.", {
+                window?.top?.toastr?.success("Thêm mới thành công.", "", {
                   timeOut: 1500,
                 });
                 onHide();

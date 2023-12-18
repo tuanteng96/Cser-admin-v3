@@ -1,27 +1,27 @@
-import Select from "react-select";
 import { useQuery } from "react-query";
 import MembersAPI from "../../api/members.api";
 import { Cookies } from "../../utils/cookies";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 const SelectMembers = ({ ...props }) => {
   let StockID = Cookies.get("MemberSelectStockID");
-  const { data, isLoading } = useQuery({
-    queryKey: ["ListStaffs"],
-    queryFn: async () => {
-      const { data } = await MembersAPI.list(StockID);
-      const { Items } = {
-        Items:
-          data?.data?.map((x) => ({ ...x, label: x.text, value: x.id })) || [],
-      };
-      return Items || [];
-    },
-  });
+
+  async function loadOptions(search, loadedOptions) {
+    const { data } = await MembersAPI.list(StockID, search);
+    const { Items } = {
+      Items:
+        data?.data?.map((x) => ({ ...x, label: x.text, value: x.id })) || [],
+    };
+
+    return {
+      options: Items || [],
+      hasMore: false,
+    };
+  }
 
   return (
     <>
-      <Select
-        isLoading={isLoading}
-        isDisabled={isLoading}
+      <AsyncPaginate
         menuPosition="fixed"
         styles={{
           menuPortal: (base) => ({
@@ -31,7 +31,10 @@ const SelectMembers = ({ ...props }) => {
         }}
         menuPortalTarget={document.body}
         classNamePrefix="select"
-        options={data || []}
+        loadOptions={loadOptions}
+        additional={{
+          page: 1,
+        }}
         placeholder="Chọn khách hàng"
         noOptionsMessage={() => "Không có khách hàng"}
         {...props}
