@@ -1173,7 +1173,13 @@ function TimekeepingHome(props) {
                     )}
                   />
                 </div>
-                <div className="card-footer d-flex justify-content-end align-items-center">
+                <div className="card-footer d-flex justify-content-between align-items-center">
+                  <NavLink
+                    to="danh-sach-theo-thang"
+                    className="flex items-center justify-center btn btn-secondary"
+                  >
+                    Xem theo tháng
+                  </NavLink>
                   <button
                     type="submit"
                     disabled={saveTimeKeepMutation.isLoading}

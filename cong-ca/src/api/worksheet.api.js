@@ -36,6 +36,9 @@ const worksheetApi = {
       `/api/v3/userwork23@workoffList?stockid=${data.filter.StockID}`,
       JSON.stringify(data)
     )
+  },
+  listUserSalary: data => {
+    return http.post(`/api/v3/UserSalary24@get`, JSON.stringify(data))
   }
 }
 export default worksheetApi

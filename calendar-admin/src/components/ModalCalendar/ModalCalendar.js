@@ -448,7 +448,12 @@ function ModalCalendar({
                               ></input>
                             </div>
                           ) : (
-                            <div className="font-bold">
+                            <div
+                              className="font-bold text-primary cursor-pointer"
+                              onClick={() =>
+                                (window.top.location.href = `/admin/?mdl=store&act=sell#mp:${values.MemberID?.value}`)
+                              }
+                            >
                               {values.MemberID?.text}
                             </div>
                           )}
@@ -472,7 +477,12 @@ function ModalCalendar({
                               />
                             </div>
                           ) : (
-                            <div className="font-bold">
+                            <div
+                              className="font-bold text-primary cursor-pointer"
+                              onClick={() =>
+                                (window.top.location.href = `/admin/?mdl=store&act=sell#mp:${values.MemberID?.value}`)
+                              }
+                            >
                               {values.MemberID?.suffix}
                             </div>
                           )}

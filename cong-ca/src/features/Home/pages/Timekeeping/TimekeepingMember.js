@@ -307,11 +307,11 @@ function TimekeepingMember(props) {
                         ? {
                             ...date?.WorkTrack?.Info,
                             TimekeepingType:
-                              CheckInOutHelpers.getTimekeepingType(
+                              CheckInOutHelpers.getTimekeepingOption(
                                 date?.WorkTrack?.Info
                               ).Option,
                             TimekeepingTypeValue:
-                              CheckInOutHelpers.getTimekeepingType(
+                              CheckInOutHelpers.getTimekeepingOption(
                                 date?.WorkTrack?.Info
                               ).Value,
                             Type: date?.WorkTrack?.Info?.Type
@@ -329,11 +329,11 @@ function TimekeepingMember(props) {
                             Note: date?.WorkTrack?.Info?.Note || '',
                             CheckOut: {
                               TimekeepingType:
-                                CheckInOutHelpers.getTimekeepingType(
+                                CheckInOutHelpers.getTimekeepingOption(
                                   date?.WorkTrack?.Info?.CheckOut
                                 ).Option,
                               TimekeepingTypeValue:
-                                CheckInOutHelpers.getTimekeepingType(
+                                CheckInOutHelpers.getTimekeepingOption(
                                   date?.WorkTrack?.Info?.CheckOut
                                 ).Value,
                               Type: date?.WorkTrack?.Info?.CheckOut?.Type

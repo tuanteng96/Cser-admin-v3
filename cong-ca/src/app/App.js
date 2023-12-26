@@ -14,6 +14,7 @@ import ScrollToTop from 'src/layout/_core/ScrollToTop'
 import ShiftWorks from 'src/features/Home/pages/ShiftWorks'
 import TakeBreakPage from 'src/features/Home/pages/TakeBreak'
 import PayOffPage from 'src/features/Home/pages/Payoff'
+import MonthlyPayroll from 'src/features/Home/pages/MonthlyPayroll'
 
 function App({ store }) {
   return (
@@ -37,6 +38,10 @@ function App({ store }) {
                 <Route
                   path="danh-sach-xin-nghi"
                   element={<TakeBreakPage />}
+                ></Route>
+                <Route
+                  path="danh-sach-theo-thang"
+                  element={<MonthlyPayroll />}
                 ></Route>
                 <Route path=":id" element={<TimekeepingMember />}></Route>
               </Route>
