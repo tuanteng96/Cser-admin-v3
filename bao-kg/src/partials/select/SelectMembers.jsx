@@ -1,4 +1,3 @@
-import { useQuery } from "react-query";
 import MembersAPI from "../../api/members.api";
 import { Cookies } from "../../utils/cookies";
 import { AsyncPaginate } from "react-select-async-paginate";
@@ -10,7 +9,7 @@ const SelectMembers = ({ ...props }) => {
     const { data } = await MembersAPI.list(StockID, search);
     const { Items } = {
       Items:
-        data?.data?.map((x) => ({ ...x, label: x.text, value: x.id })) || [],
+        data?.data?.map((x) => ({ ...x, label: x.text + ' - ' + x.suffix, value: x.id })) || [],
     };
 
     return {

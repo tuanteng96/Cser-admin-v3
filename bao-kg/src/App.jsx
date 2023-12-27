@@ -171,6 +171,12 @@ function App() {
           },
           headerClassName: "text-sm md:text-base",
           className: "text-sm md:text-base",
+          cellRenderer: ({ rowData }) => (
+            <div>
+              <div>{rowData.Member.FullName}</div>
+              <div>{rowData.Member.MobilePhone}</div>
+            </div>
+          ),
         },
       ];
 
