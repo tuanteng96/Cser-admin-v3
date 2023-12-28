@@ -10,7 +10,9 @@ module.exports = {
         extend: {
             colors: {
                 danger: "#F64E60",
-                success: "#1bc5bd"
+                success: "#1bc5bd",
+                primary: "#1b84ff",
+                "primary-light": "#E1F0FF"
             },
             boxShadow: {
                 lg: '0px 0px 50px 0px rgba(82, 63, 105, 0.15)',

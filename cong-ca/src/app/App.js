@@ -15,6 +15,7 @@ import ShiftWorks from 'src/features/Home/pages/ShiftWorks'
 import TakeBreakPage from 'src/features/Home/pages/TakeBreak'
 import PayOffPage from 'src/features/Home/pages/Payoff'
 import MonthlyPayroll from 'src/features/Home/pages/MonthlyPayroll'
+import CalendarWork from 'src/features/Home/pages/CalendarWork'
 
 function App({ store }) {
   return (
@@ -35,6 +36,7 @@ function App({ store }) {
                 <Route index element={<TimekeepingHome />} />
                 <Route path="ca-lam-viec" element={<ShiftWorks />}></Route>
                 <Route path="thuong-phat" element={<PayOffPage />}></Route>
+                <Route path="lich-lam-viec" element={<CalendarWork />}></Route>
                 <Route
                   path="danh-sach-xin-nghi"
                   element={<TakeBreakPage />}

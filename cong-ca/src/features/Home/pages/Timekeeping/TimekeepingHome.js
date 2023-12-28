@@ -1122,12 +1122,34 @@ function TimekeepingHome(props) {
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>
-                      <NavLink
-                        to="danh-sach-xin-nghi"
-                        className="btn btn-light-danger fw-500 ml-10px"
-                      >
-                        Danh sách xin nghỉ
-                      </NavLink>
+                      <Dropdown>
+                        <Dropdown.Toggle
+                          className="border !w-11 !h-11 flex items-center justify-center after:hidden !p-0 !text-[#7e8299] ml-3"
+                          id="dropdown-basic"
+                        >
+                          {/* <i className="fa-regular fa-gear"></i> */}
+                          <i className="far fa-ellipsis-h"></i>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <Dropdown.Item
+                            onClick={() => navigate('danh-sach-theo-thang')}
+                          >
+                            Chấm công theo tháng
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => navigate('lich-lam-viec')}
+                          >
+                            Lịch làm việc
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            className="text-danger"
+                            onClick={() => navigate('danh-sach-xin-nghi')}
+                          >
+                            Danh sách xin nghỉ
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
                     </div>
                   </div>
                 </div>
@@ -1174,12 +1196,6 @@ function TimekeepingHome(props) {
                   />
                 </div>
                 <div className="card-footer d-flex justify-content-between align-items-center">
-                  <NavLink
-                    to="danh-sach-theo-thang"
-                    className="flex items-center justify-center btn btn-secondary"
-                  >
-                    Xem theo tháng
-                  </NavLink>
                   <button
                     type="submit"
                     disabled={saveTimeKeepMutation.isLoading}

@@ -39,6 +39,8 @@ const worksheetApi = {
   },
   listUserSalary: data => {
     return http.post(`/api/v3/UserSalary24@get`, JSON.stringify(data))
-  }
+  },
+  getCalendarWork: data =>
+    http.post('/api/v3/WorkTrack@UserDaily', JSON.stringify(data))
 }
 export default worksheetApi
