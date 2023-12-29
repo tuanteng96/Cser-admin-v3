@@ -1084,11 +1084,33 @@ function TimekeepingHome(props) {
                           >
                             Thưởng phạt
                           </Dropdown.Item>
+                          <Dropdown.Divider
+                            style={{
+                              borderTop: '1px solid #ebebec',
+                              opacity: 1
+                            }}
+                          />
                           <Dropdown.Item
                             onClick={() => navigate('danh-sach-xin-nghi')}
                           >
                             Danh sách ngày nghỉ
                           </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => navigate('danh-sach-theo-thang')}
+                          >
+                            Chấm công theo tháng
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => navigate('lich-lam-viec')}
+                          >
+                            Lịch làm việc
+                          </Dropdown.Item>
+                          <Dropdown.Divider
+                            style={{
+                              borderTop: '1px solid #ebebec',
+                              opacity: 1
+                            }}
+                          />
                           <Dropdown.Item
                             className="lg:hidden"
                             onClick={() => setVisible(true)}
@@ -1195,7 +1217,7 @@ function TimekeepingHome(props) {
                     )}
                   />
                 </div>
-                <div className="card-footer d-flex justify-content-between align-items-center">
+                <div className="card-footer d-flex justify-content-end align-items-center">
                   <button
                     type="submit"
                     disabled={saveTimeKeepMutation.isLoading}

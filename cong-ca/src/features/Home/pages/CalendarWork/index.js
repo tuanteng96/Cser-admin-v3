@@ -63,21 +63,61 @@ function CalendarWork(props) {
       return {
         ...data,
         days: data.days
-          ? data.days.map(x => ({
-              ...x,
-              Users: x.Users
-                ? x.Users.filter(u => u.WorkTimeSetting || u.Offs).filter(u =>
-                    getTimeWork({
-                      WorkTimeSetting: u.WorkTimeSetting,
-                      CA_LAM_VIEC: data.calamviecconfig,
-                      INDEX_NGAY:
-                        Number(moment(x.Date).day()) === 0
-                          ? 6
-                          : Number(moment(x.Date).day()) - 1
-                    })
-                  )
-                : []
-            }))
+          ? data.days
+              .map(x => ({
+                ...x,
+                Users: x.Users
+                  ? x.Users.filter(u => u.WorkTimeSetting || u.Offs)
+                      .filter(u =>
+                        getTimeWork({
+                          WorkTimeSetting: u.WorkTimeSetting,
+                          CA_LAM_VIEC: data.calamviecconfig,
+                          INDEX_NGAY:
+                            Number(moment(x.Date).day()) === 0
+                              ? 6
+                              : Number(moment(x.Date).day()) - 1
+                        })
+                      )
+                      .map(u => {
+                        let is = 1
+                        if (
+                          moment().format('DD-MM-YYYY') ===
+                          moment(x.Date).format('DD-MM-YYYY')
+                        ) {
+                          is = 1
+                        } else if (moment().isBefore(moment(x.Date), 'D')) {
+                          is = 2
+                        } else {
+                          is = 0
+                        }
+                        return {
+                          ...u,
+                          is
+                        }
+                      })
+                  : []
+              }))
+              .map(x => {
+                if (
+                  moment().format('DD-MM-YYYY') ===
+                  moment(x.Date).format('DD-MM-YYYY')
+                ) {
+                  return {
+                    ...x
+                  }
+                } else if (moment().isBefore(moment(x.Date), 'D')) {
+                  return {
+                    ...x
+                  }
+                } else {
+                  return {
+                    ...x,
+                    Users: x.Users
+                      ? x.Users.filter(u => u.WorkTrack && u.WorkTrack.CheckIn)
+                      : []
+                  }
+                }
+              })
           : []
       }
     },
@@ -170,11 +210,69 @@ function CalendarWork(props) {
                     {item.Users &&
                       item.Users.map((user, i) => (
                         <div
-                          className="mb-1.5 last:mb-0 bg-[#777777] rounded-sm text-white p-2 cursor-pointer text-[13px]"
+                          className="mb-2 last:mb-0 bg-[#777777] rounded-sm text-white p-2 cursor-pointer text-[13px]"
                           key={i}
                         >
                           <div>{user.User?.FullName}</div>
-                          <div>
+                          {user.is === 0 && user?.WorkTrack?.CheckIn && (
+                            <div className="mt-1.5 last:mt-0">
+                              <span className="pr-1.5">Chấm công</span>
+                              {user?.WorkTrack?.CheckIn
+                                ? moment(user?.WorkTrack?.CheckIn).format(
+                                    'HH:mm'
+                                  )
+                                : '--:--'}
+                              <span className="px-2">-</span>
+                              {user?.WorkTrack?.CheckOut
+                                ? moment(user?.WorkTrack?.CheckOut).format(
+                                    'HH:mm'
+                                  )
+                                : '--:--'}
+                            </div>
+                          )}
+                          {user.is === 1 && (
+                            <>
+                              <div>
+                                {getTimeWork({
+                                  WorkTimeSetting: user.WorkTimeSetting,
+                                  CA_LAM_VIEC: data.calamviecconfig,
+                                  INDEX_NGAY:
+                                    Number(moment(item.Date).day()) === 0
+                                      ? 6
+                                      : Number(moment(item.Date).day()) - 1
+                                })}
+                              </div>
+                              {user?.WorkTrack?.CheckIn && (
+                                <div className="mb-1.5 last:mb-0 bg-success rounded-sm text-white p-2 cursor-pointer">
+                                  <span className="pr-1.5">Chấm công</span>
+                                  {user?.WorkTrack?.CheckIn
+                                    ? moment(user?.WorkTrack?.CheckIn).format(
+                                        'HH:mm'
+                                      )
+                                    : '--:--'}
+                                  <span className="px-2">-</span>
+                                  {user?.WorkTrack?.CheckOut
+                                    ? moment(user?.WorkTrack?.CheckOut).format(
+                                        'HH:mm'
+                                      )
+                                    : '--:--'}
+                                </div>
+                              )}
+                            </>
+                          )}
+                          {user.is === 2 && (
+                            <div>
+                              {getTimeWork({
+                                WorkTimeSetting: user.WorkTimeSetting,
+                                CA_LAM_VIEC: data.calamviecconfig,
+                                INDEX_NGAY:
+                                  Number(moment(item.Date).day()) === 0
+                                    ? 6
+                                    : Number(moment(item.Date).day()) - 1
+                              })}
+                            </div>
+                          )}
+                          {/* <div>
                             {getTimeWork({
                               WorkTimeSetting: user.WorkTimeSetting,
                               CA_LAM_VIEC: data.calamviecconfig,
@@ -183,10 +281,37 @@ function CalendarWork(props) {
                                   ? 6
                                   : Number(moment(item.Date).day()) - 1
                             })}
-                          </div>
-                          <div className="mt-1">
-                            {user.Offs &&
-                              user.Offs.map((off, i) => (
+                          </div> */}
+                          {/* {user?.WorkTrack?.CheckIn ? (
+                            <>
+                              <span className="pr-1.5">Chấm công :</span>
+                              {user?.WorkTrack?.CheckIn
+                                ? moment(user?.WorkTrack?.CheckIn).format(
+                                    'HH:mm'
+                                  )
+                                : '--:--'}
+                              <span className="px-2">-</span>
+                              {user?.WorkTrack?.CheckOut
+                                ? moment(user?.WorkTrack?.CheckOut).format(
+                                    'HH:mm'
+                                  )
+                                : '--:--'}
+                            </>
+                          ) : (
+                            <div>
+                              {getTimeWork({
+                                WorkTimeSetting: user.WorkTimeSetting,
+                                CA_LAM_VIEC: data.calamviecconfig,
+                                INDEX_NGAY:
+                                  Number(moment(item.Date).day()) === 0
+                                    ? 6
+                                    : Number(moment(item.Date).day()) - 1
+                              })}
+                            </div>
+                          )} */}
+                          {user.Offs && user.Offs.length > 0 && (
+                            <div className="mt-1">
+                              {user.Offs.map((off, i) => (
                                 <div
                                   div
                                   className="mb-1.5 last:mb-0 bg-danger rounded-sm text-white p-2 cursor-pointer"
@@ -201,7 +326,8 @@ function CalendarWork(props) {
                                   {off.Desc && <div>Lý do : {off.Desc}</div>}
                                 </div>
                               ))}
-                          </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     {item.Users &&
