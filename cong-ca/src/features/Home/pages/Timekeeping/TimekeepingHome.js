@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 // import Navbar from '../../components/Navbar'
 import { NumericFormat } from 'react-number-format'
 import { NavLink, useNavigate } from 'react-router-dom'
@@ -279,7 +279,6 @@ function TimekeepingHome(props) {
     enabled: Boolean(filters.StockID && filters.From && filters.To),
     keepPreviousData: true
   })
-
   const columns = useMemo(
     () => [
       {
@@ -290,12 +289,25 @@ function TimekeepingHome(props) {
         frozen: 'left',
         cellRenderer: ({ rowData }) => (
           <div className="flex items-center w-full h-full">
-            <NavLink
-              to={`/bang-cham-cong/${rowData.UserID}`}
-              className="flex-1 font-semibold text-black text-name text-decoration-none text-[12px] md:text-[15px] text-capitalize d-block pr-15px"
-            >
-              {rowData.FullName}
-            </NavLink>
+            <div className="flex-1">
+              <NavLink
+                to={`/bang-cham-cong/${rowData.UserID}`}
+                className="font-semibold text-black text-name text-decoration-none text-[12px] md:text-[15px] text-capitalize d-block pr-15px"
+              >
+                <div>{rowData.FullName}</div>
+                {rowData.Dates.map((date, i) => (
+                  <Fragment key={i}>
+                    {date.WorkTrack?.StockID &&
+                      date.WorkTrack?.StockID !== filters?.StockID.value && (
+                        <div className="text-danger text-[12px]">
+                          <span className="pr-2">Khác điểm :</span>
+                          {date.WorkTrack?.StockTitle || 'Không xác định'}
+                        </div>
+                      )}
+                  </Fragment>
+                ))}
+              </NavLink>
+            </div>
             <PopoverCustom>
               {({ onClose }) => (
                 <div className="bg-white shadow-lg py-2.5 min-w-[150px]">
@@ -883,7 +895,7 @@ function TimekeepingHome(props) {
       }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [width]
+    [width, filters, StocksList]
   )
 
   const saveTimeKeepMutation = useMutation({

@@ -400,8 +400,16 @@ function TimekeepingMember(props) {
         sortable: false,
         frozen: 'left',
         cellRenderer: ({ rowData }) => (
-          <div className="flex items-center w-full h-full font-medium">
+          <div className="flex w-full h-full font-medium flex-col justify-center">
             {moment(rowData.Date).format('DD-MM-YYYY')}
+            <div>
+              {rowData?.WorkTrack?.StockID &&
+                rowData?.WorkTrack?.StockID !== CrStockID && (
+                  <div className="text-danger text-[12px]">
+                    Khác điểm: {rowData?.WorkTrack?.StockTitle}
+                  </div>
+                )}
+            </div>
           </div>
         )
       },
@@ -550,7 +558,7 @@ function TimekeepingMember(props) {
         )
       }
     ],
-    [width]
+    [width, CrStockID]
   )
 
   const rowClassName = ({ rowData }) => {

@@ -73,7 +73,7 @@ function AuthInit(props) {
               ParentID: 778
             },
             {
-              ID: 11291,
+              ID: 11312,
               Title: 'Cser Hồ Chí Minh',
               ParentID: 778
             }
@@ -84,7 +84,7 @@ function AuthInit(props) {
               hasRight: true,
               stocks: [
                 { ID: 8975, Title: 'Cser Hà Nội' },
-                { ID: 11248, Title: 'Cser Hồ Chí Minh' }
+                { ID: 11312, Title: 'Cser Hồ Chí Minh' }
               ],
               IsAllStock: false
             }
