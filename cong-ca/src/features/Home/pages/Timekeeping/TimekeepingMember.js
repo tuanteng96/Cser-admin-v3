@@ -404,7 +404,7 @@ function TimekeepingMember(props) {
             {moment(rowData.Date).format('DD-MM-YYYY')}
             <div>
               {rowData?.WorkTrack?.StockID &&
-                rowData?.WorkTrack?.StockID !== CrStockID && (
+                rowData?.WorkTrack?.StockID !== rowData.StockID && (
                   <div className="text-danger text-[12px]">
                     Khác điểm: {rowData?.WorkTrack?.StockTitle}
                   </div>

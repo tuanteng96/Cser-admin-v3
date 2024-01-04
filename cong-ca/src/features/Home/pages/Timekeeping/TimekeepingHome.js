@@ -298,7 +298,7 @@ function TimekeepingHome(props) {
                 {rowData.Dates.map((date, i) => (
                   <Fragment key={i}>
                     {date.WorkTrack?.StockID &&
-                      date.WorkTrack?.StockID !== filters?.StockID.value && (
+                      date.WorkTrack?.StockID !== rowData.StockID && (
                         <div className="text-danger text-[12px]">
                           <span className="pr-2">Khác điểm :</span>
                           {date.WorkTrack?.StockTitle || 'Không xác định'}
@@ -895,7 +895,7 @@ function TimekeepingHome(props) {
       }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [width, filters, StocksList]
+    [width]
   )
 
   const saveTimeKeepMutation = useMutation({
