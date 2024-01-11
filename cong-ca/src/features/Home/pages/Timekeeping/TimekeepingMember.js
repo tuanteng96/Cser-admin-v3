@@ -95,6 +95,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
 
         setInitialValues(prevState => ({
           ...prevState,
+          ...data[0].WorkTrack?.Info,
           LUONG: Math.floor(TotalCountWork * SalaryDay + TotalPrice),
           CONG_CA: TotalCountWork,
           THUONG_PHAT: TotalPrice,
@@ -139,13 +140,53 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
   })
 
   const onSubmit = values => {
+    let { WorkTrack } = data[0]
+
+    let newInfo = WorkTrack?.Info ? { ...WorkTrack?.Info } : {}
+    if (newInfo.TimekeepingType) {
+      newInfo[newInfo.TimekeepingType.value] = {
+        Value: newInfo?.TimekeepingTypeValue
+          ? Math.abs(newInfo?.TimekeepingTypeValue)
+          : ''
+      }
+      delete newInfo.TimekeepingType
+    }
+    if (newInfo.TimekeepingTypeValue) delete newInfo.TimekeepingTypeValue
+    if (newInfo.CheckOut.TimekeepingType) {
+      newInfo.CheckOut[newInfo.CheckOut.TimekeepingType.value] = {
+        Value: newInfo.CheckOut?.TimekeepingTypeValue
+          ? Math.abs(newInfo.CheckOut?.TimekeepingTypeValue)
+          : ''
+      }
+      delete newInfo.CheckOut.TimekeepingType
+    }
+    if (newInfo.CheckOut.TimekeepingTypeValue)
+      delete newInfo.CheckOut.TimekeepingTypeValue
+    if (newInfo?.Type) {
+      newInfo.Type = newInfo?.Type?.value
+        ? newInfo?.Type?.value
+        : newInfo?.Type || ''
+    }
+    if (newInfo?.CheckOut?.Type) {
+      newInfo.CheckOut.Type = newInfo?.CheckOut?.Type?.value
+        ? newInfo?.CheckOut?.Type?.value
+        : newInfo?.CheckOut?.Type || ''
+    }
+
     let newValues = {
       edit: [
         {
           ID: values.ID,
           CreateDate: values.CreateDate,
           UserID: id,
+          CheckIn: WorkTrack.CheckIn
+            ? moment(WorkTrack.CheckIn).format('YYYY-MM-DD HH:mm:ss')
+            : '',
+          CheckOut: WorkTrack.CheckOut
+            ? moment(WorkTrack.CheckOut).format('YYYY-MM-DD HH:mm:ss')
+            : '',
           Info: {
+            ...newInfo,
             ForDate: values.CreateDate,
             CONG_CA: values.CONG_CA,
             LUONG: values.LUONG,
@@ -154,6 +195,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
         }
       ]
     }
+
     updateTimeKeepMutation.mutate(newValues, {
       onSuccess: () => {
         refetch().then(
@@ -400,15 +442,17 @@ function TimekeepingMember(props) {
         sortable: false,
         frozen: 'left',
         cellRenderer: ({ rowData }) => (
-          <div className="flex w-full h-full font-medium flex-col justify-center">
+          <div className="flex flex-col justify-center w-full h-full font-medium">
             {moment(rowData.Date).format('DD-MM-YYYY')}
             <div>
               {rowData?.WorkTrack?.StockID &&
-                rowData?.WorkTrack?.StockID !== rowData.StockID && (
-                  <div className="text-danger text-[12px]">
-                    Khác điểm: {rowData?.WorkTrack?.StockTitle}
-                  </div>
-                )}
+              rowData?.WorkTrack?.StockID !== rowData.StockID ? (
+                <div className="text-danger text-[12px]">
+                  Khác điểm: {rowData?.WorkTrack?.StockTitle}
+                </div>
+              ) : (
+                ''
+              )}
             </div>
           </div>
         )

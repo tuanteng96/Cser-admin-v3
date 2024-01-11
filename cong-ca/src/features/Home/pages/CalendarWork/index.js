@@ -5,6 +5,7 @@ import worksheetApi from 'src/api/worksheet.api'
 import moment from 'moment'
 import { useSelector } from 'react-redux'
 import { useQuery } from 'react-query'
+import clsx from 'clsx'
 
 function CalendarWork(props) {
   const navigate = useNavigate()
@@ -67,8 +68,8 @@ function CalendarWork(props) {
               .map(x => ({
                 ...x,
                 Users: x.Users
-                  ? x.Users.filter(u => u.WorkTimeSetting || u.Offs)
-                      .filter(u =>
+                  ? x.Users.filter(
+                      u =>
                         getTimeWork({
                           WorkTimeSetting: u.WorkTimeSetting,
                           CA_LAM_VIEC: data.calamviecconfig,
@@ -76,25 +77,25 @@ function CalendarWork(props) {
                             Number(moment(x.Date).day()) === 0
                               ? 6
                               : Number(moment(x.Date).day()) - 1
-                        })
-                      )
-                      .map(u => {
-                        let is = 1
-                        if (
-                          moment().format('DD-MM-YYYY') ===
-                          moment(x.Date).format('DD-MM-YYYY')
-                        ) {
-                          is = 1
-                        } else if (moment().isBefore(moment(x.Date), 'D')) {
-                          is = 2
-                        } else {
-                          is = 0
-                        }
-                        return {
-                          ...u,
-                          is
-                        }
-                      })
+                        }) ||
+                        (u.WorkTrack && u.WorkTrack?.CheckIn)
+                    ).map(u => {
+                      let is = 1
+                      if (
+                        moment().format('DD-MM-YYYY') ===
+                        moment(x.Date).format('DD-MM-YYYY')
+                      ) {
+                        is = 1
+                      } else if (moment().isBefore(moment(x.Date), 'D')) {
+                        is = 2
+                      } else {
+                        is = 0
+                      }
+                      return {
+                        ...u,
+                        is
+                      }
+                    })
                   : []
               }))
               .map(x => {
@@ -191,7 +192,7 @@ function CalendarWork(props) {
         </div>
       </div>
       <div
-        className="p-0 card-body overflow-x-auto overflow-y-hidden relative"
+        className="relative p-0 overflow-x-auto overflow-y-hidden card-body"
         ref={scrollRef}
       >
         {!isLoading && (
@@ -203,14 +204,30 @@ function CalendarWork(props) {
                   className={`w-[275px] min-w-[275px] h-full border-r border-t-0 border-l-0 border-b-0 border-[#ebebec] border-solid last:border-r-0`}
                   key={index}
                 >
-                  <div className="bg-[#f8f8f8] h-[48px] flex items-center justify-center font-semibold border-b border-t-0 border-l-0 border-r-0 border-[#ebebec] border-solid">
-                    {moment(item.Date).format('ddd, DD-MM-YYYY')}
+                  <div className="bg-[#f8f8f8] h-[70px] flex items-center justify-center font-semibold border-b border-t-0 border-l-0 border-r-0 border-[#ebebec] border-solid">
+                    <div className="flex flex-col items-center justify-center">
+                      <div
+                        className={clsx(
+                          'w-[35px] h-[35px] flex items-center justify-center rounded-full bg-primary text-white')}
+                      >
+                        {moment(item.Date).format('ddd')}
+                      </div>
+                      <div className="text-[13px]">
+                        {moment(item.Date).format('DD-MM-YYYY')}
+                      </div>
+                    </div>
                   </div>
-                  <div className="h-[calc(100%-48px)] overflow-auto p-3">
+                  <div
+                    className={clsx(
+                      'h-[calc(100%-70px)] overflow-auto p-3',
+                      moment().format('DD-MM-YYYY') ===
+                        moment(item.Date).format('DD-MM-YYYY') && 'bg-[#fefae4]'
+                    )}
+                  >
                     {item.Users &&
                       item.Users.map((user, i) => (
                         <div
-                          className="mb-2 last:mb-0 bg-[#777777] rounded-sm text-white p-2 cursor-pointer text-[13px]"
+                          className="mb-2 last:mb-0 bg-[#9a9a9a] rounded-sm text-white p-2 cursor-pointer text-[13px]"
                           key={i}
                         >
                           <div>{user.User?.FullName}</div>
@@ -272,43 +289,6 @@ function CalendarWork(props) {
                               })}
                             </div>
                           )}
-                          {/* <div>
-                            {getTimeWork({
-                              WorkTimeSetting: user.WorkTimeSetting,
-                              CA_LAM_VIEC: data.calamviecconfig,
-                              INDEX_NGAY:
-                                Number(moment(item.Date).day()) === 0
-                                  ? 6
-                                  : Number(moment(item.Date).day()) - 1
-                            })}
-                          </div> */}
-                          {/* {user?.WorkTrack?.CheckIn ? (
-                            <>
-                              <span className="pr-1.5">Chấm công :</span>
-                              {user?.WorkTrack?.CheckIn
-                                ? moment(user?.WorkTrack?.CheckIn).format(
-                                    'HH:mm'
-                                  )
-                                : '--:--'}
-                              <span className="px-2">-</span>
-                              {user?.WorkTrack?.CheckOut
-                                ? moment(user?.WorkTrack?.CheckOut).format(
-                                    'HH:mm'
-                                  )
-                                : '--:--'}
-                            </>
-                          ) : (
-                            <div>
-                              {getTimeWork({
-                                WorkTimeSetting: user.WorkTimeSetting,
-                                CA_LAM_VIEC: data.calamviecconfig,
-                                INDEX_NGAY:
-                                  Number(moment(item.Date).day()) === 0
-                                    ? 6
-                                    : Number(moment(item.Date).day()) - 1
-                              })}
-                            </div>
-                          )} */}
                           {user.Offs && user.Offs.length > 0 && (
                             <div className="mt-1">
                               {user.Offs.map((off, i) => (
@@ -359,11 +339,11 @@ function CalendarWork(props) {
           </div>
         )}
         {isLoading && (
-          <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
+          <div className="absolute top-0 left-0 flex items-center justify-center w-full h-full">
             <div role="status">
               <svg
                 aria-hidden="true"
-                className="w-9 h-9 text-gray-200 animate-spin dark:text-gray-300 fill-primary"
+                className="text-gray-200 w-9 h-9 animate-spin dark:text-gray-300 fill-primary"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"

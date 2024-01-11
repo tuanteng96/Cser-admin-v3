@@ -298,12 +298,14 @@ function TimekeepingHome(props) {
                 {rowData.Dates.map((date, i) => (
                   <Fragment key={i}>
                     {date.WorkTrack?.StockID &&
-                      date.WorkTrack?.StockID !== rowData.StockID && (
-                        <div className="text-danger text-[12px]">
-                          <span className="pr-2">Khác điểm :</span>
-                          {date.WorkTrack?.StockTitle || 'Không xác định'}
-                        </div>
-                      )}
+                    date.WorkTrack?.StockID !== rowData.StockID ? (
+                      <div className="text-danger text-[12px]">
+                        <span className="pr-2">Khác điểm :</span>
+                        {date.WorkTrack?.StockTitle || 'Không xác định'}
+                      </div>
+                    ) : (
+                      ''
+                    )}
                   </Fragment>
                 ))}
               </NavLink>
