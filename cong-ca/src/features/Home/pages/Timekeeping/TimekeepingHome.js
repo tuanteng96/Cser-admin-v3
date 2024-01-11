@@ -297,6 +297,13 @@ function TimekeepingHome(props) {
                 <div>{rowData.FullName}</div>
                 {rowData.Dates.map((date, i) => (
                   <Fragment key={i}>
+                    {date.WorkTrack?.Info?.WorkToday?.Title && (
+                      <div className="text-[12px] text-muted">
+                        {date.WorkTrack?.Info?.WorkToday?.Title} (
+                        {date.WorkTrack?.Info?.WorkToday?.TimeFrom} -{' '}
+                        {date.WorkTrack?.Info?.WorkToday?.TimeTo})
+                      </div>
+                    )}
                     {date.WorkTrack?.StockID &&
                     date.WorkTrack?.StockID !== rowData.StockID ? (
                       <div className="text-danger text-[12px]">

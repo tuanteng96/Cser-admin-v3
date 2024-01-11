@@ -445,8 +445,15 @@ function TimekeepingMember(props) {
           <div className="flex flex-col justify-center w-full h-full font-medium">
             {moment(rowData.Date).format('DD-MM-YYYY')}
             <div>
+              {rowData.WorkTrack?.Info?.WorkToday?.Title && (
+                <div className="text-[12px] text-muted">
+                  {rowData.WorkTrack?.Info?.WorkToday?.Title} (
+                  {rowData.WorkTrack?.Info?.WorkToday?.TimeFrom} -{' '}
+                  {rowData.WorkTrack?.Info?.WorkToday?.TimeTo})
+                </div>
+              )}
               {rowData?.WorkTrack?.StockID &&
-              rowData?.WorkTrack?.StockID !== rowData.StockID ? (
+              rowData?.WorkTrack?.StockID !== data.StockID ? (
                 <div className="text-danger text-[12px]">
                   Khác điểm: {rowData?.WorkTrack?.StockTitle}
                 </div>
@@ -602,7 +609,7 @@ function TimekeepingMember(props) {
         )
       }
     ],
-    [width, CrStockID]
+    [width, data]
   )
 
   const rowClassName = ({ rowData }) => {
