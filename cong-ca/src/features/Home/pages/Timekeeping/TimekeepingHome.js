@@ -269,7 +269,12 @@ function TimekeepingHome(props) {
                               Desc: ''
                             }
                           }
-                        }
+                        },
+                    isFinish:
+                      (item?.End &&
+                        item?.End?.Info &&
+                        Boolean(item?.End?.Info?.LUONG)) ||
+                      false
                   }))
                 : []
             }))
@@ -291,7 +296,7 @@ function TimekeepingHome(props) {
           <div className="flex items-center w-full h-full">
             <div className="flex-1">
               <NavLink
-                to={`/bang-cham-cong/${rowData.UserID}`}
+                to={`/bang-cham-cong/${rowData.UserID}?CrDate=${CrDate}`}
                 className="font-semibold text-black text-name text-decoration-none text-[12px] md:text-[15px] text-capitalize d-block pr-15px"
               >
                 <div>{rowData.FullName}</div>
@@ -405,9 +410,16 @@ function TimekeepingHome(props) {
                       <div className="relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.CheckIn`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <DatePicker
+                              disabled={date?.isFinish}
                               selected={
                                 field?.value ? new Date(field?.value) : null
                               }
@@ -441,9 +453,16 @@ function TimekeepingHome(props) {
                       <div className="relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.CheckOut`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <DatePicker
+                              disabled={date?.isFinish}
                               selected={
                                 field?.value ? new Date(field?.value) : null
                               }
@@ -498,9 +517,16 @@ function TimekeepingHome(props) {
                       <div className="w-full relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingType`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <Select
+                              isDisabled={date?.isFinish}
                               isClearable
                               menuPortalTarget={document.body}
                               components={{
@@ -539,9 +565,16 @@ function TimekeepingHome(props) {
                       <div className="w-full relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingType`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <Select
+                              isDisabled={date?.isFinish}
                               isClearable
                               components={{
                                 Control: ({ children, ...rest }) => (
@@ -601,13 +634,16 @@ function TimekeepingHome(props) {
                       <div className="relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingTypeValue`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <NumericFormat
-                              // disabled={
-                              //   !date.WorkTrack.CheckIn ||
-                              //   !date.WorkTrack.Info.TimekeepingType
-                              // }
+                              disabled={date?.isFinish}
                               allowLeadingZeros
                               thousandSeparator={true}
                               allowNegative={true}
@@ -630,13 +666,16 @@ function TimekeepingHome(props) {
                       <div className="relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.TimekeepingTypeValue`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <NumericFormat
-                              // disabled={
-                              //   !date.WorkTrack.CheckOut ||
-                              //   !date.WorkTrack.Info.CheckOut.TimekeepingType
-                              // }
+                              disabled={date?.isFinish}
                               allowLeadingZeros
                               thousandSeparator={true}
                               allowNegative={true}
@@ -680,10 +719,16 @@ function TimekeepingHome(props) {
                       <div className="w-full relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Type`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <Select
-                              //isDisabled={!date.WorkTrack.CheckIn}
+                              isDisabled={date?.isFinish}
                               isClearable
                               menuPortalTarget={document.body}
                               components={{
@@ -722,10 +767,16 @@ function TimekeepingHome(props) {
                       <div className="w-full relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.Type`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <Select
-                              //isDisabled={!date.WorkTrack.CheckOut}
+                              isDisabled={date?.isFinish}
                               isClearable
                               components={{
                                 Control: ({ children, ...rest }) => (
@@ -786,10 +837,16 @@ function TimekeepingHome(props) {
                       <div className="relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Desc`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <input
-                              // disabled={!date.WorkTrack.CheckIn}
+                              disabled={date?.isFinish}
                               className="form-control"
                               placeholder="Nhập mô tả"
                               {...field}
@@ -801,10 +858,16 @@ function TimekeepingHome(props) {
                       <div className="relative mb-2 last:!mb-0">
                         <FastField
                           name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CheckOut.Desc`}
+                          meta={{
+                            update: date?.isFinish
+                          }}
+                          shouldUpdate={() => (nextProps, currentProps) =>
+                            nextProps.meta?.update !==
+                            currentProps.meta?.update}
                         >
                           {({ field, form, meta }) => (
                             <input
-                              // disabled={!date.WorkTrack.CheckOut}
+                              disabled={date?.isFinish}
                               className="form-control"
                               placeholder="Nhập mô tả"
                               {...field}
@@ -836,13 +899,15 @@ function TimekeepingHome(props) {
                     <div className="relative w-full" key={index}>
                       <FastField
                         name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.CountWork`}
+                        meta={{
+                          update: date?.isFinish
+                        }}
+                        shouldUpdate={() => (nextProps, currentProps) =>
+                          nextProps.meta?.update !== currentProps.meta?.update}
                       >
                         {({ field, form, meta }) => (
                           <NumericFormat
-                            // disabled={
-                            //   !date.WorkTrack.CheckIn &&
-                            //   !date.WorkTrack.CheckOut
-                            // }
+                            disabled={date?.isFinish}
                             className="text-center form-control"
                             type="text"
                             placeholder="Nhập số công"
@@ -881,13 +946,15 @@ function TimekeepingHome(props) {
                     <div className="relative w-full" key={index}>
                       <FastField
                         name={`list[${rowIndex}].Dates[${index}].WorkTrack.Info.Note`}
+                        meta={{
+                          update: date?.isFinish
+                        }}
+                        shouldUpdate={() => (nextProps, currentProps) =>
+                          nextProps.meta?.update !== currentProps.meta?.update}
                       >
                         {({ field, form, meta }) => (
                           <textarea
-                            // disabled={
-                            //   !date.WorkTrack.CheckIn &&
-                            //   !date.WorkTrack.CheckOut
-                            // }
+                            disabled={date?.isFinish}
                             className="form-control resize-none h-[90px]"
                             placeholder="Nhập ghi chú"
                             {...field}
@@ -904,7 +971,7 @@ function TimekeepingHome(props) {
       }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [width]
+    [width, CrDate]
   )
 
   const saveTimeKeepMutation = useMutation({
@@ -1105,6 +1172,13 @@ function TimekeepingHome(props) {
                           >
                             Thưởng phạt
                           </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() =>
+                              navigate('/bang-cham-cong/phuong-thuc-cham-cong')
+                            }
+                          >
+                            Định vị - Wifi
+                          </Dropdown.Item>
                           <Dropdown.Divider
                             style={{
                               borderTop: '1px solid #ebebec',
@@ -1162,6 +1236,13 @@ function TimekeepingHome(props) {
                             onClick={() => navigate('thuong-phat')}
                           >
                             Thưởng phạt
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() =>
+                              navigate('/bang-cham-cong/phuong-thuc-cham-cong')
+                            }
+                          >
+                            Định vị - Wifi
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>

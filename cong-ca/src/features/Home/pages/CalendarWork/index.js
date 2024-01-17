@@ -208,7 +208,8 @@ function CalendarWork(props) {
                     <div className="flex flex-col items-center justify-center">
                       <div
                         className={clsx(
-                          'w-[35px] h-[35px] flex items-center justify-center rounded-full bg-primary text-white')}
+                          'w-[35px] h-[35px] flex items-center justify-center rounded-full bg-primary text-white'
+                        )}
                       >
                         {moment(item.Date).format('ddd')}
                       </div>

@@ -7,7 +7,7 @@ import React, {
   useImperativeHandle
 } from 'react'
 import Navbar from '../../components/Navbar'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import DatePicker from 'react-datepicker'
 import worksheetApi from 'src/api/worksheet.api'
 import clsx from 'clsx'
@@ -314,6 +314,16 @@ function TimekeepingMember(props) {
   const childCompRef = useRef()
 
   const { width } = useWindowSize()
+
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  let CrDateQuery = searchParams.get('CrDate')
+
+  useEffect(() => {
+    if (CrDateQuery) {
+      setCrDate(new Date(CrDateQuery))
+    }
+  }, [CrDateQuery])
 
   useEffect(() => {
     setFilters(prevState => ({
