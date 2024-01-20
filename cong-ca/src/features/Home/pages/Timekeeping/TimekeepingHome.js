@@ -1075,8 +1075,10 @@ function TimekeepingHome(props) {
 
   const rowClassName = ({ rowData }) => {
     return (
-      rowData.Dates.some(x => x?.WorkTrack?.Info?.WorkToday?.isOff) &&
-      '!bg-[#ffe2e5]'
+      (rowData.Dates.some(x => x?.WorkTrack?.Info?.WorkToday?.isOff) &&
+        '!bg-[#ffe2e5]') ||
+      (rowData.Dates.some(x => x?.WorkTrack?.Info?.WarningWifi) &&
+        '!bg-[#FFF4DE]')
     )
   }
 

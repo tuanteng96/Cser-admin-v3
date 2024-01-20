@@ -623,7 +623,10 @@ function TimekeepingMember(props) {
   )
 
   const rowClassName = ({ rowData }) => {
-    return rowData?.WorkTrack?.Info?.WorkToday?.isOff && '!bg-[#fff5f8]'
+    return (
+      (rowData?.WorkTrack?.Info?.WorkToday?.isOff && '!bg-[#fff5f8]') ||
+      (rowData?.WorkTrack?.Info?.WarningWifi && '!bg-[#FFF4DE]')
+    )
   }
 
   return (
