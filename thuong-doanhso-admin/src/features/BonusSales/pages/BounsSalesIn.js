@@ -8,6 +8,7 @@ import moment from "moment";
 import AutoSubmit from "../components/AutoSubmit";
 import { useSelector } from "react-redux";
 import SelectType from "../components/SelectType";
+import { useRoles } from "../../../helpers/useRoles";
 
 moment.locale(); // vi
 
@@ -48,6 +49,8 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
       }));
     }
   }, [OrderInfo]);
+
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
   return (
     <Formik
@@ -147,10 +150,8 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                     }}
                                     onBlur={handleBlur}
                                     disabled={
-                                      window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao
-                                        ? UserID !== 1
-                                        : !sub.chinh_sua
+                                      !adminTools_byStock?.hasRight ||
+                                      !sub.chinh_sua
                                     }
                                   />
                                   {window.top?.GlobalConfig?.Admin
