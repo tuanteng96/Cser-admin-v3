@@ -9,10 +9,198 @@ import AutoSubmit from "../components/AutoSubmit";
 import { useSelector } from "react-redux";
 import SelectType from "../components/SelectType";
 import { useRoles } from "../../../helpers/useRoles";
+import DatePicker from "react-datepicker";
+import vi from "date-fns/locale/vi";
+import "../../../_assets/plugins/react-datepicker/react-datepicker.css";
+import BonusSaleCrud from "../_redux/BonusSaleCrud";
+import * as Yup from "yup";
+import clsx from "clsx";
 
 moment.locale(); // vi
 
-function BounsSalesIn({ OrderInfo, onSubmit }) {
+const UpdateSchema = Yup.object().shape({
+  date: Yup.string().required("Vui lòng chọn ngày"),
+});
+
+const PickerDate = ({ children, sub, onRefresh }) => {
+  const [loading, setLoading] = useState(false);
+  const onSubmit = (values) => {
+    setLoading(true);
+    BonusSaleCrud.changeCashOrder({
+      ...values,
+      date: moment(values.date).format("YYYY-MM-DD"),
+    })
+      .then((res) => {
+        onRefresh(() => {
+          setLoading(false);
+          window?.top?.toastr &&
+            window?.top?.toastr.success("Cập nhập thành công.", "", {
+              timeOut: 1000,
+            });
+          document.body.click();
+        });
+      })
+      .catch((error) => console.log(error));
+  };
+  return (
+    <OverlayTrigger
+      rootClose
+      trigger="click"
+      placement="top"
+      overlay={
+        <Popover id="popover-positioned-top" title="Popover top">
+          <Popover.Body className="p-0">
+            <Formik
+              enableReinitialize
+              initialValues={{
+                id: sub.ID,
+                date: new Date(sub.CreateDate),
+              }}
+              onSubmit={onSubmit}
+              validationSchema={UpdateSchema}
+            >
+              {(formikProps) => {
+                const {
+                  values,
+                  handleBlur,
+                  setFieldValue,
+                  errors,
+                  touched,
+                } = formikProps;
+                return (
+                  <Form>
+                    <div className="p-3" style={{ width: "250px" }}>
+                      <div className="mb-3">
+                        <DatePicker
+                          name="date"
+                          locale={vi}
+                          className={clsx(
+                            "w-100 transition bg-white border rounded outline-none disabled:bg-gray-200 disabled:border-gray-200 border-gray-300",
+                            errors.date && touched.date && "error"
+                          )}
+                          //popperContainer={CalendarContainer}
+                          timeIntervals={5}
+                          placeholderText="Chọn ngày"
+                          onChange={(val) => {
+                            setFieldValue(`date`, val, false);
+                          }}
+                          selected={values.date ? values.date : null}
+                          onBlur={handleBlur}
+                          dateFormat="dd-MM-yyyy"
+                        />
+                      </div>
+                      <button
+                        className="btn btn-primary"
+                        style={{
+                          padding: "0.62rem 0.75rem",
+                          fontSize: "13px",
+                        }}
+                        type="submit"
+                        disabled={loading}
+                      >
+                        {loading ? "Đang cập nhập" : "Cập nhập"}
+                      </button>
+                    </div>
+                  </Form>
+                );
+              }}
+            </Formik>
+          </Popover.Body>
+        </Popover>
+      }
+    >
+      <span className="cursor-pointer">{children}</span>
+    </OverlayTrigger>
+  );
+};
+
+const PickerDateDS = ({ children, sub, onRefresh }) => {
+  const [loading, setLoading] = useState(false);
+  const onSubmit = (values) => {
+    setLoading(true);
+    BonusSaleCrud.changeCashOrderDs({
+      ...values,
+      date: moment(values.date).format("YYYY-MM-DD"),
+    })
+      .then((res) => {
+        onRefresh(() => {
+          setLoading(false);
+          window?.top?.toastr &&
+            window?.top?.toastr.success("Cập nhập thành công.", "", {
+              timeOut: 1000,
+            });
+          document.body.click();
+        });
+      })
+      .catch((error) => console.log(error));
+  };
+  return (
+    <OverlayTrigger
+      rootClose
+      trigger="click"
+      placement="top"
+      overlay={
+        <Popover id="popover-positioned-top" title="Popover top">
+          <Popover.Body className="p-0">
+            <Formik
+              enableReinitialize
+              initialValues={{
+                id: sub.ID,
+                date: new Date(sub.CreateDate),
+              }}
+              validationSchema={UpdateSchema}
+              onSubmit={onSubmit}
+            >
+              {(formikProps) => {
+                const { values, errors, touched, setFieldValue, handleBlur } = formikProps;
+                return (
+                  <Form>
+                    <div className="p-3" style={{ width: "250px" }}>
+                      <div className="mb-3">
+                        <DatePicker
+                          name="date"
+                          locale={vi}
+                          className={clsx(
+                            "w-100 transition bg-white border rounded outline-none disabled:bg-gray-200 disabled:border-gray-200 border-gray-300",
+                            errors.date && touched.date && "error"
+                          )}
+                          //popperContainer={CalendarContainer}
+                          timeIntervals={5}
+                          placeholderText="Chọn ngày"
+                          onChange={(val) => {
+                            setFieldValue(`date`, val, false);
+                          }}
+                          onBlur={handleBlur}
+                          selected={values.date ? values.date : null}
+                          dateFormat="dd-MM-yyyy"
+                        />
+                      </div>
+                      <button
+                        className="btn btn-primary"
+                        style={{
+                          padding: "0.62rem 0.75rem",
+                          fontSize: "13px",
+                        }}
+                        type="submit"
+                        disabled={loading}
+                      >
+                        {loading ? "Đang cập nhập" : "Cập nhập"}
+                      </button>
+                    </div>
+                  </Form>
+                );
+              }}
+            </Formik>
+          </Popover.Body>
+        </Popover>
+      }
+    >
+      <span className="cursor-pointer">{children}</span>
+    </OverlayTrigger>
+  );
+};
+
+function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
   const { UserID } = useSelector(({ Auth }) => ({
     UserID: Auth?.User?.ID,
   }));
@@ -125,8 +313,24 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                       className="text-muted line-height-sm"
                                       style={{ fontSize: "12px" }}
                                     >
-                                      {moment(sub.CreateDate).format(
-                                        "DD.MM.YYYY"
+                                      {adminTools_byStock?.hasRight ||
+                                      sub.chinh_sua ? (
+                                        <PickerDate
+                                          onRefresh={onRefresh}
+                                          sub={sub}
+                                        >
+                                          <span className="cursor-pointer">
+                                            {moment(sub.CreateDate).format(
+                                              "DD.MM.YYYY"
+                                            )}
+                                          </span>
+                                        </PickerDate>
+                                      ) : (
+                                        <span className="cursor-pointer">
+                                          {moment(sub.CreateDate).format(
+                                            "DD.MM.YYYY"
+                                          )}
+                                        </span>
                                       )}{" "}
                                       - <span>#{sub.ID}</span>
                                     </div>
@@ -150,8 +354,13 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                     }}
                                     onBlur={handleBlur}
                                     disabled={
-                                      !adminTools_byStock?.hasRight ||
-                                      !sub.chinh_sua
+                                      window.top?.GlobalConfig?.Admin
+                                        ?.thuong_ds_nang_cao
+                                        ? UserID !== 1
+                                        : !(
+                                            adminTools_byStock?.hasRight ||
+                                            sub.chinh_sua
+                                          )
                                     }
                                   />
                                   {window.top?.GlobalConfig?.Admin
@@ -166,7 +375,8 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                           Xóa
                                         </div>
                                       )
-                                    : sub.chinh_sua && (
+                                    : (adminTools_byStock?.hasRight ||
+                                        sub.chinh_sua) && (
                                         <div
                                           className="text-danger w-30px text-end cursor-pointer pl-5px font-size-sm"
                                           onClick={() =>
@@ -210,8 +420,24 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                       className="text-muted line-height-sm"
                                       style={{ fontSize: "12px" }}
                                     >
-                                      {moment(sub.CreateDate).format(
-                                        "DD.MM.YYYY"
+                                      {adminTools_byStock?.hasRight ||
+                                      sub.chinh_sua ? (
+                                        <PickerDateDS
+                                          onRefresh={onRefresh}
+                                          sub={sub}
+                                        >
+                                          <span className="cursor-pointer">
+                                            {moment(sub.CreateDate).format(
+                                              "DD.MM.YYYY"
+                                            )}
+                                          </span>
+                                        </PickerDateDS>
+                                      ) : (
+                                        <span className="cursor-pointer">
+                                          {moment(sub.CreateDate).format(
+                                            "DD.MM.YYYY"
+                                          )}
+                                        </span>
                                       )}{" "}
                                       - <span>#{sub.ID}</span>
                                     </div>
@@ -238,7 +464,10 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                       window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao
                                         ? UserID !== 1
-                                        : !sub.chinh_sua
+                                        : !(
+                                            adminTools_byStock?.hasRight ||
+                                            sub.chinh_sua
+                                          )
                                     }
                                   />
                                   <SelectType
@@ -256,7 +485,10 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                       window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao
                                         ? UserID !== 1
-                                        : !sub.chinh_sua
+                                        : !(
+                                            adminTools_byStock?.hasRight ||
+                                            sub.chinh_sua
+                                          )
                                     }
                                   />
                                   {window.top?.GlobalConfig?.Admin
@@ -271,7 +503,8 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                           Xóa
                                         </div>
                                       )
-                                    : sub.chinh_sua && (
+                                    : (adminTools_byStock?.hasRight ||
+                                        sub.chinh_sua) && (
                                         <div
                                           className="text-danger w-30px text-end cursor-pointer pl-5px font-size-sm"
                                           onClick={() =>
@@ -346,8 +579,24 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                       {sub.User.FullName}
                                     </label>
                                     <div className="text-muted line-height-sm">
-                                      {moment(sub.CreateDate).format(
-                                        "DD.MM.YYYY"
+                                      {adminTools_byStock?.hasRight ||
+                                      sub.chinh_sua ? (
+                                        <PickerDate
+                                          onRefresh={onRefresh}
+                                          sub={sub}
+                                        >
+                                          <span className="cursor-pointer">
+                                            {moment(sub.CreateDate).format(
+                                              "DD.MM.YYYY"
+                                            )}
+                                          </span>
+                                        </PickerDate>
+                                      ) : (
+                                        <span className="cursor-pointer">
+                                          {moment(sub.CreateDate).format(
+                                            "DD.MM.YYYY"
+                                          )}
+                                        </span>
                                       )}{" "}
                                       - <span>#{sub.ID}</span>
                                     </div>
@@ -374,7 +623,10 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                       window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao
                                         ? UserID !== 1
-                                        : !sub.chinh_sua
+                                        : !(
+                                            adminTools_byStock?.hasRight ||
+                                            sub.chinh_sua
+                                          )
                                     }
                                   />
                                   {window.top?.GlobalConfig?.Admin
@@ -389,7 +641,8 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                           Xóa
                                         </div>
                                       )
-                                    : sub.chinh_sua && (
+                                    : (adminTools_byStock?.hasRight ||
+                                        sub.chinh_sua) && (
                                         <div
                                           className="text-danger w-30px text-end cursor-pointer"
                                           onClick={() =>
@@ -419,8 +672,24 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                       {sub.User.FullName}
                                     </label>
                                     <div className="text-muted line-height-sm">
-                                      {moment(sub.CreateDate).format(
-                                        "DD.MM.YYYY"
+                                      {adminTools_byStock?.hasRight ||
+                                      sub.chinh_sua ? (
+                                        <PickerDateDS
+                                          onRefresh={onRefresh}
+                                          sub={sub}
+                                        >
+                                          <span className="cursor-pointer">
+                                            {moment(sub.CreateDate).format(
+                                              "DD.MM.YYYY"
+                                            )}
+                                          </span>
+                                        </PickerDateDS>
+                                      ) : (
+                                        <span className="cursor-pointer">
+                                          {moment(sub.CreateDate).format(
+                                            "DD.MM.YYYY"
+                                          )}
+                                        </span>
                                       )}{" "}
                                       - <span>#{sub.ID}</span>
                                     </div>
@@ -447,7 +716,10 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                       window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao
                                         ? UserID !== 1
-                                        : !sub.chinh_sua
+                                        : !(
+                                            adminTools_byStock?.hasRight ||
+                                            sub.chinh_sua
+                                          )
                                     }
                                   />
                                   <SelectType
@@ -465,7 +737,10 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                       window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao
                                         ? UserID !== 1
-                                        : !sub.chinh_sua
+                                        : !(
+                                            adminTools_byStock?.hasRight ||
+                                            sub.chinh_sua
+                                          )
                                     }
                                   />
                                   {window.top?.GlobalConfig?.Admin
@@ -480,7 +755,8 @@ function BounsSalesIn({ OrderInfo, onSubmit }) {
                                           Xóa
                                         </div>
                                       )
-                                    : sub.chinh_sua && (
+                                    : (adminTools_byStock?.hasRight ||
+                                        sub.chinh_sua) && (
                                         <div
                                           className="text-danger w-30px text-end cursor-pointer"
                                           onClick={() =>

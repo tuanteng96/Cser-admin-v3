@@ -1,46 +1,83 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const OrderInfo = window.top.OrderBonus23Info || {
-  OrderID: 45637,
-  Order: {
-    //Status: "finish",
-    //AdminAction: "TANG_DH_KET_THUC_NO",
-  },
-};
-const CrStockID = window.top?.Info?.CrStockID || 8975;
-const Info = window.top?.Info || {
-  Stocks: [
-    {
-      ID: 778,
-      Title: "Quản lý cơ sở",
-      ParentID: 0,
+if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+  window.top.Info = {
+    Stocks: [
+      {
+        ID: 778,
+        Title: "Quản lý cơ sở",
+        ParentID: 0,
+      },
+      {
+        ID: 8975,
+        Title: "Cser Hà Nội",
+        ParentID: 778,
+      },
+      {
+        ID: 10053,
+        Title: "Cser Hồ Chí Minh",
+        ParentID: 778,
+      },
+    ],
+    rightsSum: {
+      pos: {
+        hasRight: true,
+        stocks: [{ ID: 8975, Title: "Cser Hà Nội" }],
+        IsAllStock: false,
+      },
     },
-    {
-      ID: 8975,
-      Title: "Cser Hà Nội",
-      ParentID: 778,
+    rightTree: {
+      groups: [
+        {
+          group: "Chức năng khác",
+          rights: [
+            {
+              IsAllStock: true,
+              hasRight: true,
+              name: "adminTools",
+              text: "Công cụ hệ thống",
+              subs: [
+                {
+                  name: "adminTools_byStock",
+                  IsAllStock: true,
+                  hasRight: true,
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
-    {
-      ID: 10053,
-      Title: "Cser Hồ Chí Minh",
-      ParentID: 778,
+    User: {
+      ID: 1,
     },
-  ],
-  rightsSum: {
-    pos: {
-      hasRight: true,
-      stocks: [{ ID: 8975, Title: "Cser Hà Nội" }],
-      IsAllStock: false,
+    CrStockID: 8975,
+  };
+
+  window.top.token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxMDY4OCIsIlRva2VuSWQiOiIyNSIsIm5iZiI6MTcwNjUwMDIxMiwiZXhwIjoxNzkyOTAwMjEyLCJpYXQiOjE3MDY1MDAyMTJ9.fSbQQDUMBM93Hhm1rj6zT5SI_8RYMhjfh0y24wNFC84";
+
+  window.top.OrderBonus23Info = {
+    OrderID: 45647,
+    Order: {
+      //Status: "finish",
+      //AdminAction: "TANG_DH_KET_THUC_NO",
     },
-  },
-  User: {
-    ID: 1,
-  },
-};
+  };
+
+  window.top.GlobalConfig = {
+    Admin: {
+      thuong_ds_nang_cao: false,
+    },
+  };
+}
+
+const OrderInfo = window.top.OrderBonus23Info;
+
+const Info = window.top?.Info;
 
 const initialState = {
   ...OrderInfo,
-  CrStockID,
   ...Info,
 };
 

@@ -476,7 +476,11 @@ const BonusSales = () => {
         </div>
       )}
       {!isVisible(Type) && (
-        <BounsSalesIn OrderInfo={OrderInfo} onSubmit={onSubmitUpdate} />
+        <BounsSalesIn
+          OrderInfo={OrderInfo}
+          onSubmit={onSubmitUpdate}
+          onRefresh={getInfoOrder}
+        />
       )}
 
       {isVisible(Type) && (

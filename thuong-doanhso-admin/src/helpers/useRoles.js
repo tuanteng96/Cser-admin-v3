@@ -27,7 +27,7 @@ const getHasRole = (Roles, CrStocks) => {
     : [];
 
   if (hasRight && !Roles.IsAllStock) {
-    hasRight = StockRoles.some((x) => x.ID === CrStocks.ID);
+    hasRight = StockRoles.some((x) => x.ID === CrStocks?.ID);
   }
   return {
     hasRight,
@@ -42,32 +42,12 @@ const getHasRole = (Roles, CrStocks) => {
 export const useRoles = (nameRoles) => {
   const isMultiple = Array.isArray(nameRoles);
   const { auth, CrStocks } = {
-    auth: window?.top?.Info || {
-      rightTree: {
-        groups: [
-          {
-            group: "Chức năng khác",
-            rights: [
-              {
-                IsAllStock: true,
-                hasRight: true,
-                name: "adminTools",
-                text: "Công cụ hệ thống",
-                subs: [
-                  {
-                    name: "adminTools_byStock",
-                    IsAllStock: true,
-                    hasRight: true,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
+    auth: window?.top?.Info,
+    CrStocks: {
+      ID: window.top?.Info?.CrStockID,
     },
-    CrStocks: 0,
   };
+
   let result = {};
 
   const { hasRoles } = hasRolesAuth(auth?.rightTree);

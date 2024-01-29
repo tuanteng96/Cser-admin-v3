@@ -1,1 +1,14 @@
 @import "./_assets/sass/style.react.scss";
+.react-datepicker-wrapper {
+    input {
+        outline: none;
+        padding: 12px 12px;
+        font-size: 14px;
+        &:focus {
+            border: 1px solid #3699FF !important;
+        }
+        &.error {
+            border: 1px solid #F64E60 !important;
+        }
+    }
+}
