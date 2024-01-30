@@ -40,7 +40,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
                 {
                   name: "adminTools_byStock",
                   IsAllStock: true,
-                  hasRight: true,
+                  hasRight: false,
                 },
               ],
             },
@@ -58,7 +58,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxMDY4OCIsIlRva2VuSWQiOiIyNSIsIm5iZiI6MTcwNjUwMDIxMiwiZXhwIjoxNzkyOTAwMjEyLCJpYXQiOjE3MDY1MDAyMTJ9.fSbQQDUMBM93Hhm1rj6zT5SI_8RYMhjfh0y24wNFC84";
 
   window.top.OrderBonus23Info = {
-    OrderID: 45647,
+    OrderID: 45642,
     Order: {
       //Status: "finish",
       //AdminAction: "TANG_DH_KET_THUC_NO",

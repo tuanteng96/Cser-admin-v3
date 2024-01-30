@@ -152,7 +152,13 @@ const PickerDateDS = ({ children, sub, onRefresh }) => {
               onSubmit={onSubmit}
             >
               {(formikProps) => {
-                const { values, errors, touched, setFieldValue, handleBlur } = formikProps;
+                const {
+                  values,
+                  errors,
+                  touched,
+                  setFieldValue,
+                  handleBlur,
+                } = formikProps;
                 return (
                   <Form>
                     <div className="p-3" style={{ width: "250px" }}>
@@ -239,7 +245,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
   }, [OrderInfo]);
 
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
-
+  
   return (
     <Formik
       enableReinitialize
@@ -261,7 +267,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
               {values &&
                 values.BounsSalesIn &&
                 values.BounsSalesIn.map((item, index) => (
-                  <div className="border rounded mb-3" key={index}>
+                  <div className="mb-3 border rounded" key={index}>
                     <div className="p-3 border-bottom line-height-sm font-weight-boldest w-100 line-height-lg bg-light">
                       {item.Product.ProdTitle}
                       <OverlayTrigger
@@ -302,7 +308,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                               item.Hoa_Hong &&
                               item.Hoa_Hong.map((sub, idx) => (
                                 <div
-                                  className="d-flex align-items-center my-3"
+                                  className="my-3 d-flex align-items-center"
                                   key={idx}
                                 >
                                   <div className="mb-1 w-150px pe-2">
@@ -313,7 +319,35 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                       className="text-muted line-height-sm"
                                       style={{ fontSize: "12px" }}
                                     >
-                                      {adminTools_byStock?.hasRight ||
+                                      {(window.top?.GlobalConfig?.Admin
+                                        ?.thuong_ds_nang_cao &&
+                                        UserID === 1) ||
+                                      (!window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao &&
+                                        (adminTools_byStock?.hasRight ||
+                                          moment(sub.CreateDate).format(
+                                            "DD-MM-YYYY"
+                                          ) ===
+                                            moment().format("DD-MM-YYYY"))) ? (
+                                        <>
+                                          <PickerDate
+                                            onRefresh={onRefresh}
+                                            sub={sub}
+                                          >
+                                            <span className="cursor-pointer">
+                                              {moment(sub.CreateDate).format(
+                                                "DD.MM.YYYY"
+                                              )}
+                                            </span>
+                                          </PickerDate>
+                                        </>
+                                      ) : (
+                                        <span className="cursor-pointer">
+                                          {moment(sub.CreateDate).format(
+                                            "DD.MM.YYYY"
+                                          )}
+                                        </span>
+                                      )}{" "}
+                                      {/* {adminTools_byStock?.hasRight ||
                                       sub.chinh_sua ? (
                                         <PickerDate
                                           onRefresh={onRefresh}
@@ -331,7 +365,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                             "DD.MM.YYYY"
                                           )}
                                         </span>
-                                      )}{" "}
+                                      )}{" "} */}
                                       - <span>#{sub.ID}</span>
                                     </div>
                                   </div>
@@ -359,7 +393,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         ? UserID !== 1
                                         : !(
                                             adminTools_byStock?.hasRight ||
-                                            sub.chinh_sua
+                                            moment(sub.CreateDate).format(
+                                              "DD-MM-YYYY"
+                                            ) === moment().format("DD-MM-YYYY")
                                           )
                                     }
                                   />
@@ -367,7 +403,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     ?.thuong_ds_nang_cao
                                     ? UserID === 1 && (
                                         <div
-                                          className="text-danger w-30px text-end cursor-pointer pl-5px font-size-sm"
+                                          className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
                                           onClick={() =>
                                             arrayHelpers.remove(idx)
                                           }
@@ -376,9 +412,11 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         </div>
                                       )
                                     : (adminTools_byStock?.hasRight ||
-                                        sub.chinh_sua) && (
+                                        moment(sub.CreateDate).format(
+                                          "DD-MM-YYYY"
+                                        ) === moment().format("DD-MM-YYYY")) && (
                                         <div
-                                          className="text-danger w-30px text-end cursor-pointer pl-5px font-size-sm"
+                                          className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
                                           onClick={() =>
                                             arrayHelpers.remove(idx)
                                           }
@@ -409,7 +447,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                               item.Doanh_So &&
                               item.Doanh_So.map((sub, idx) => (
                                 <div
-                                  className="d-flex align-items-center my-3"
+                                  className="my-3 d-flex align-items-center"
                                   key={idx}
                                 >
                                   <div className="mb-1 w-150px pe-2">
@@ -420,7 +458,35 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                       className="text-muted line-height-sm"
                                       style={{ fontSize: "12px" }}
                                     >
-                                      {adminTools_byStock?.hasRight ||
+                                      {(window.top?.GlobalConfig?.Admin
+                                        ?.thuong_ds_nang_cao &&
+                                        UserID === 1) ||
+                                      (!window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao &&
+                                        (adminTools_byStock?.hasRight ||
+                                          moment(sub.CreateDate).format(
+                                            "DD-MM-YYYY"
+                                          ) ===
+                                            moment().format("DD-MM-YYYY"))) ? (
+                                        <>
+                                          <PickerDate
+                                            onRefresh={onRefresh}
+                                            sub={sub}
+                                          >
+                                            <span className="cursor-pointer">
+                                              {moment(sub.CreateDate).format(
+                                                "DD.MM.YYYY"
+                                              )}
+                                            </span>
+                                          </PickerDate>
+                                        </>
+                                      ) : (
+                                        <span className="cursor-pointer">
+                                          {moment(sub.CreateDate).format(
+                                            "DD.MM.YYYY"
+                                          )}
+                                        </span>
+                                      )}{" "}
+                                      {/* {adminTools_byStock?.hasRight ||
                                       sub.chinh_sua ? (
                                         <PickerDateDS
                                           onRefresh={onRefresh}
@@ -438,7 +504,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                             "DD.MM.YYYY"
                                           )}
                                         </span>
-                                      )}{" "}
+                                      )}{" "} */}
                                       - <span>#{sub.ID}</span>
                                     </div>
                                   </div>
@@ -466,7 +532,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         ? UserID !== 1
                                         : !(
                                             adminTools_byStock?.hasRight ||
-                                            sub.chinh_sua
+                                            moment(sub.CreateDate).format(
+                                              "DD-MM-YYYY"
+                                            ) === moment().format("DD-MM-YYYY")
                                           )
                                     }
                                   />
@@ -487,7 +555,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         ? UserID !== 1
                                         : !(
                                             adminTools_byStock?.hasRight ||
-                                            sub.chinh_sua
+                                            moment(sub.CreateDate).format(
+                                              "DD-MM-YYYY"
+                                            ) === moment().format("DD-MM-YYYY")
                                           )
                                     }
                                   />
@@ -495,7 +565,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     ?.thuong_ds_nang_cao
                                     ? UserID === 1 && (
                                         <div
-                                          className="text-danger w-30px text-end cursor-pointer pl-5px font-size-sm"
+                                          className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
                                           onClick={() =>
                                             arrayHelpers.remove(idx)
                                           }
@@ -504,9 +574,11 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         </div>
                                       )
                                     : (adminTools_byStock?.hasRight ||
-                                        sub.chinh_sua) && (
+                                        moment(sub.CreateDate).format(
+                                          "DD-MM-YYYY"
+                                        ) === moment().format("DD-MM-YYYY")) && (
                                         <div
-                                          className="text-danger w-30px text-end cursor-pointer pl-5px font-size-sm"
+                                          className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
                                           onClick={() =>
                                             arrayHelpers.remove(idx)
                                           }
@@ -533,7 +605,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                 <thead>
                   <tr>
                     <th className="min-w-200px w-30">Sản phẩm</th>
-                    <th className="min-w-300px text-center w-35">Hoa hồng</th>
+                    <th className="text-center min-w-300px w-35">Hoa hồng</th>
                     <th
                       className="text-center w-35"
                       style={{
@@ -571,7 +643,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                               item.Hoa_Hong &&
                               item.Hoa_Hong.map((sub, idx) => (
                                 <div
-                                  className="d-flex align-items-center my-3"
+                                  className="my-3 d-flex align-items-center"
                                   key={idx}
                                 >
                                   <div className="mb-1 w-180px pe-2">
@@ -579,8 +651,39 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                       {sub.User.FullName}
                                     </label>
                                     <div className="text-muted line-height-sm">
-                                      {adminTools_byStock?.hasRight ||
-                                      sub.chinh_sua ? (
+                                      {(window.top?.GlobalConfig?.Admin
+                                        ?.thuong_ds_nang_cao &&
+                                        UserID === 1) ||
+                                      (!window.top?.GlobalConfig?.Admin
+                                        ?.thuong_ds_nang_cao &&
+                                        (adminTools_byStock?.hasRight ||
+                                          moment(sub.CreateDate).format(
+                                            "DD-MM-YYYY"
+                                          ) ===
+                                            moment().format("DD-MM-YYYY"))) ? (
+                                        <>
+                                          <PickerDate
+                                            onRefresh={onRefresh}
+                                            sub={sub}
+                                          >
+                                            <span className="cursor-pointer">
+                                              {moment(sub.CreateDate).format(
+                                                "DD.MM.YYYY"
+                                              )}
+                                            </span>
+                                          </PickerDate>
+                                        </>
+                                      ) : (
+                                        <span className="cursor-pointer">
+                                          {moment(sub.CreateDate).format(
+                                            "DD.MM.YYYY"
+                                          )}
+                                        </span>
+                                      )}{" "}
+                                      {/* {adminTools_byStock?.hasRight ||
+                                      moment(sub.CreateDate).format(
+                                        "DD-MM-YYYY"
+                                      ) === moment().format("DD-MM-YY") ? (
                                         <PickerDate
                                           onRefresh={onRefresh}
                                           sub={sub}
@@ -597,7 +700,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                             "DD.MM.YYYY"
                                           )}
                                         </span>
-                                      )}{" "}
+                                      )}{" "} */}
                                       - <span>#{sub.ID}</span>
                                     </div>
                                   </div>
@@ -625,7 +728,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         ? UserID !== 1
                                         : !(
                                             adminTools_byStock?.hasRight ||
-                                            sub.chinh_sua
+                                            moment(sub.CreateDate).format(
+                                              "DD-MM-YYYY"
+                                            ) === moment().format("DD-MM-YYYY")
                                           )
                                     }
                                   />
@@ -633,7 +738,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     ?.thuong_ds_nang_cao
                                     ? UserID === 1 && (
                                         <div
-                                          className="text-danger w-30px text-end cursor-pointer"
+                                          className="cursor-pointer text-danger w-30px text-end"
                                           onClick={() =>
                                             arrayHelpers.remove(idx)
                                           }
@@ -642,9 +747,11 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         </div>
                                       )
                                     : (adminTools_byStock?.hasRight ||
-                                        sub.chinh_sua) && (
+                                        moment(sub.CreateDate).format(
+                                          "DD-MM-YYYY"
+                                        ) === moment().format("DD-MM-YYYY")) && (
                                         <div
-                                          className="text-danger w-30px text-end cursor-pointer"
+                                          className="cursor-pointer text-danger w-30px text-end"
                                           onClick={() =>
                                             arrayHelpers.remove(idx)
                                           }
@@ -664,7 +771,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                               item.Doanh_So &&
                               item.Doanh_So.map((sub, idx) => (
                                 <div
-                                  className="d-flex align-items-center my-3"
+                                  className="my-3 d-flex align-items-center"
                                   key={idx}
                                 >
                                   <div className="mb-1 w-180px pe-2">
@@ -672,7 +779,35 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                       {sub.User.FullName}
                                     </label>
                                     <div className="text-muted line-height-sm">
-                                      {adminTools_byStock?.hasRight ||
+                                      {(window.top?.GlobalConfig?.Admin
+                                        ?.thuong_ds_nang_cao &&
+                                        UserID === 1) ||
+                                      (!window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao &&
+                                        (adminTools_byStock?.hasRight ||
+                                          moment(sub.CreateDate).format(
+                                            "DD-MM-YYYY"
+                                          ) ===
+                                            moment().format("DD-MM-YYYY"))) ? (
+                                        <>
+                                          <PickerDateDS
+                                            onRefresh={onRefresh}
+                                            sub={sub}
+                                          >
+                                            <span className="cursor-pointer">
+                                              {moment(sub.CreateDate).format(
+                                                "DD.MM.YYYY"
+                                              )}
+                                            </span>
+                                          </PickerDateDS>
+                                        </>
+                                      ) : (
+                                        <span className="cursor-pointer">
+                                          {moment(sub.CreateDate).format(
+                                            "DD.MM.YYYY"
+                                          )}
+                                        </span>
+                                      )}{" "}
+                                      {/* {adminTools_byStock?.hasRight ||
                                       sub.chinh_sua ? (
                                         <PickerDateDS
                                           onRefresh={onRefresh}
@@ -690,7 +825,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                             "DD.MM.YYYY"
                                           )}
                                         </span>
-                                      )}{" "}
+                                      )}{" "} */}
                                       - <span>#{sub.ID}</span>
                                     </div>
                                   </div>
@@ -718,7 +853,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         ? UserID !== 1
                                         : !(
                                             adminTools_byStock?.hasRight ||
-                                            sub.chinh_sua
+                                            moment(sub.CreateDate).format(
+                                              "DD-MM-YYYY"
+                                            ) === moment().format("DD-MM-YYYY")
                                           )
                                     }
                                   />
@@ -739,7 +876,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         ? UserID !== 1
                                         : !(
                                             adminTools_byStock?.hasRight ||
-                                            sub.chinh_sua
+                                            moment(sub.CreateDate).format(
+                                              "DD-MM-YYYY"
+                                            ) === moment().format("DD-MM-YYYY")
                                           )
                                     }
                                   />
@@ -747,7 +886,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     ?.thuong_ds_nang_cao
                                     ? UserID === 1 && (
                                         <div
-                                          className="text-danger w-30px text-end cursor-pointer"
+                                          className="cursor-pointer text-danger w-30px text-end"
                                           onClick={() =>
                                             arrayHelpers.remove(idx)
                                           }
@@ -756,9 +895,11 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         </div>
                                       )
                                     : (adminTools_byStock?.hasRight ||
-                                        sub.chinh_sua) && (
+                                        moment(sub.CreateDate).format(
+                                          "DD-MM-YYYY"
+                                        ) === moment().format("DD-MM-YYYY")) && (
                                         <div
-                                          className="text-danger w-30px text-end cursor-pointer"
+                                          className="cursor-pointer text-danger w-30px text-end"
                                           onClick={() =>
                                             arrayHelpers.remove(idx)
                                           }

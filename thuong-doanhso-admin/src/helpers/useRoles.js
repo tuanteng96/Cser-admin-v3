@@ -26,9 +26,9 @@ const getHasRole = (Roles, CrStocks) => {
     ? Roles?.stocksList.map((x) => ({ ...x, label: x.Title, value: x.ID }))
     : [];
 
-  if (hasRight && !Roles.IsAllStock) {
-    hasRight = StockRoles.some((x) => x.ID === CrStocks?.ID);
-  }
+  // if (hasRight && !Roles.IsAllStock) {
+  //   hasRight = StockRoles.some((x) => x.ID === CrStocks?.ID);
+  // }
   return {
     hasRight,
     StockRoles,
