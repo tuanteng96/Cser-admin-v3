@@ -324,7 +324,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         UserID === 1) ||
                                       (!window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao &&
-                                        adminTools_byStock?.hasRigh) ? (
+                                        adminTools_byStock?.hasRight) ? (
                                         <>
                                           <PickerDate
                                             onRefresh={onRefresh}
@@ -652,7 +652,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         UserID === 1) ||
                                       (!window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao &&
-                                        adminTools_byStock?.hasRigh) ? (
+                                        adminTools_byStock?.hasRight) ? (
                                         <>
                                           <PickerDate
                                             onRefresh={onRefresh}
@@ -777,7 +777,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         UserID === 1) ||
                                       (!window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao &&
-                                        adminTools_byStock?.hasRigh) ? (
+                                        adminTools_byStock?.hasRight) ? (
                                         <>
                                           <PickerDateDS
                                             onRefresh={onRefresh}
