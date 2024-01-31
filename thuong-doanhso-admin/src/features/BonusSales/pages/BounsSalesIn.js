@@ -245,7 +245,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
   }, [OrderInfo]);
 
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
-  
+
   return (
     <Formik
       enableReinitialize
@@ -322,12 +322,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                       {(window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao &&
                                         UserID === 1) ||
-                                      (!window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao &&
-                                        (adminTools_byStock?.hasRight ||
-                                          moment(sub.CreateDate).format(
-                                            "DD-MM-YYYY"
-                                          ) ===
-                                            moment().format("DD-MM-YYYY"))) ? (
+                                      (!window.top?.GlobalConfig?.Admin
+                                        ?.thuong_ds_nang_cao &&
+                                        adminTools_byStock?.hasRigh) ? (
                                         <>
                                           <PickerDate
                                             onRefresh={onRefresh}
@@ -414,7 +411,8 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     : (adminTools_byStock?.hasRight ||
                                         moment(sub.CreateDate).format(
                                           "DD-MM-YYYY"
-                                        ) === moment().format("DD-MM-YYYY")) && (
+                                        ) ===
+                                          moment().format("DD-MM-YYYY")) && (
                                         <div
                                           className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
                                           onClick={() =>
@@ -461,12 +459,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                       {(window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao &&
                                         UserID === 1) ||
-                                      (!window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao &&
-                                        (adminTools_byStock?.hasRight ||
-                                          moment(sub.CreateDate).format(
-                                            "DD-MM-YYYY"
-                                          ) ===
-                                            moment().format("DD-MM-YYYY"))) ? (
+                                      (!window.top?.GlobalConfig?.Admin
+                                        ?.thuong_ds_nang_cao &&
+                                        adminTools_byStock?.hasRigh) ? (
                                         <>
                                           <PickerDate
                                             onRefresh={onRefresh}
@@ -576,7 +571,8 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     : (adminTools_byStock?.hasRight ||
                                         moment(sub.CreateDate).format(
                                           "DD-MM-YYYY"
-                                        ) === moment().format("DD-MM-YYYY")) && (
+                                        ) ===
+                                          moment().format("DD-MM-YYYY")) && (
                                         <div
                                           className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
                                           onClick={() =>
@@ -656,11 +652,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                         UserID === 1) ||
                                       (!window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao &&
-                                        (adminTools_byStock?.hasRight ||
-                                          moment(sub.CreateDate).format(
-                                            "DD-MM-YYYY"
-                                          ) ===
-                                            moment().format("DD-MM-YYYY"))) ? (
+                                        adminTools_byStock?.hasRigh) ? (
                                         <>
                                           <PickerDate
                                             onRefresh={onRefresh}
@@ -749,7 +741,8 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     : (adminTools_byStock?.hasRight ||
                                         moment(sub.CreateDate).format(
                                           "DD-MM-YYYY"
-                                        ) === moment().format("DD-MM-YYYY")) && (
+                                        ) ===
+                                          moment().format("DD-MM-YYYY")) && (
                                         <div
                                           className="cursor-pointer text-danger w-30px text-end"
                                           onClick={() =>
@@ -782,12 +775,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                       {(window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao &&
                                         UserID === 1) ||
-                                      (!window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao &&
-                                        (adminTools_byStock?.hasRight ||
-                                          moment(sub.CreateDate).format(
-                                            "DD-MM-YYYY"
-                                          ) ===
-                                            moment().format("DD-MM-YYYY"))) ? (
+                                      (!window.top?.GlobalConfig?.Admin
+                                        ?.thuong_ds_nang_cao &&
+                                        adminTools_byStock?.hasRigh) ? (
                                         <>
                                           <PickerDateDS
                                             onRefresh={onRefresh}
@@ -897,7 +887,8 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     : (adminTools_byStock?.hasRight ||
                                         moment(sub.CreateDate).format(
                                           "DD-MM-YYYY"
-                                        ) === moment().format("DD-MM-YYYY")) && (
+                                        ) ===
+                                          moment().format("DD-MM-YYYY")) && (
                                         <div
                                           className="cursor-pointer text-danger w-30px text-end"
                                           onClick={() =>
