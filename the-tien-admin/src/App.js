@@ -1,40 +1,88 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import axiosClient from "./axios/axiosClient";
 import { getMember } from "./helpers/GlobalHelpers";
 import ItemCard from "./ItemCard";
+import { useQuery } from "react-query";
 
-function App() {
-  const [loading, setLoading] = useState(false);
-  const [ListMoneyCard, setListMoneyCard] = useState([]);
-  const { Member } = getMember();
-
-  const getMoneyCard = (callback) => {
-    axiosClient
-      .get(`/api/v3/moneycard?cmd=get&memberid=${Member.ID}`)
-      .then(({ data }) => {
-        setListMoneyCard(data.data);
-        setLoading(false);
-        callback && callback();
-      })
-      .catch((err) => console.log(err));
+if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
+  window.top.Info = {
+    Stocks: [
+      {
+        ID: 778,
+        Title: "Quản lý cơ sở",
+        ParentID: 0,
+      },
+      {
+        ID: 8975,
+        Title: "Cser Hà Nội",
+        ParentID: 778,
+      },
+      {
+        ID: 10053,
+        Title: "Cser Hồ Chí Minh",
+        ParentID: 778,
+      },
+    ],
+    rightTree: {
+      groups: [
+        {
+          group: "Chức năng khác",
+          rights: [
+            {
+              IsAllStock: true,
+              hasRight: true,
+              name: "adminTools",
+              text: "Công cụ hệ thống",
+              subs: [
+                {
+                  name: "adminTools_byStock",
+                  IsAllStock: true,
+                  hasRight: true,
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    User: {
+      ID: 1,
+    },
+    CrStockID: 8975,
   };
 
-  useEffect(() => {
-    setLoading(true);
-    getMoneyCard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  window.top.token =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxMDY4OCIsIlRva2VuSWQiOiIyNSIsIm5iZiI6MTcwNjUwMDIxMiwiZXhwIjoxNzkyOTAwMjEyLCJpYXQiOjE3MDY1MDAyMTJ9.fSbQQDUMBM93Hhm1rj6zT5SI_8RYMhjfh0y24wNFC84";
+
+  window.top.GlobalConfig = {
+    Admin: {
+      thuong_ds_nang_cao: false,
+    },
+  };
+}
+
+function App() {
+  const { Member } = getMember();
+  const MoneyCards = useQuery({
+    queryKey: ["MoneyCards", Member?.ID],
+    queryFn: async () => {
+      let { data } = await axiosClient.get(
+        `/api/v3/moneycard?cmd=get&memberid=${Member.ID}`
+      );
+      return data?.data || [];
+    },
+  });
 
   return (
     <div className="iframe-cardmoney h-100">
-      {loading && (
+      {MoneyCards.isLoading && (
         <div className="p-15px m-h-100 d-flex align-items-center justify-content-center">
           Đang tải ...
         </div>
       )}
-      {!loading && (
+      {!MoneyCards.isLoading && (
         <>
-          {ListMoneyCard && ListMoneyCard.length > 0 ? (
+          {MoneyCards?.data && MoneyCards.data.length > 0 ? (
             <>
               <div className="p-3 hidden md:block">
                 <div className="relative overflow-x-auto">
@@ -69,12 +117,12 @@ function App() {
                       </tr>
                     </thead>
                     <tbody>
-                      {ListMoneyCard.map((item, index) => (
+                      {MoneyCards?.data.map((item, index) => (
                         <ItemCard
                           item={item}
                           key={index}
                           index={index}
-                          getMoneyCard={getMoneyCard}
+                          onRefetch={MoneyCards.refetch}
                         />
                       ))}
                     </tbody>
@@ -82,12 +130,12 @@ function App() {
                 </div>
               </div>
               <div className="md:hidden p-3">
-                {ListMoneyCard.map((item, index) => (
+                {MoneyCards?.data.map((item, index) => (
                   <ItemCard
                     item={item}
                     key={index}
                     index={index}
-                    getMoneyCard={getMoneyCard}
+                    onRefetch={MoneyCards.refetch}
                   />
                 ))}
               </div>
