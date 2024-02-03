@@ -243,6 +243,7 @@ const PickerModal = ({ children, item }) => {
           MoneyEndDate: values?.MoneyEndDate
             ? moment(values?.MoneyEndDate).format("YYYY-MM-DD")
             : null,
+          MoneyTotal: values?.Value || "",
         },
       },
       {
@@ -327,7 +328,7 @@ const PickerModal = ({ children, item }) => {
                 )}
               />
             </div>
-            <div className="mb-3 last:!mb-0">
+            {/* <div className="mb-3 last:!mb-0">
               <div className="text-[13px] mb-[3px] text-muted">
                 Giá trị chi tiêu
               </div>
@@ -350,7 +351,7 @@ const PickerModal = ({ children, item }) => {
                   />
                 )}
               />
-            </div>
+            </div> */}
             <div className="mb-3 last:!mb-0">
               <div className="text-[13px] mb-[3px] text-muted">
                 Giá trị chi tiêu sản phẩm
