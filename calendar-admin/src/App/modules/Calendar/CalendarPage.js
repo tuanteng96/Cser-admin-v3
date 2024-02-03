@@ -1270,7 +1270,7 @@ function CalendarPage(props) {
                       </>
                     );
                   },
-                  dateClick: ({ resource, jsEvent }) => {
+                  dateClick: ({ resource, jsEvent, date }) => {
                     if (
                       isTelesales ||
                       jsEvent.target.classList.contains("fc-no-event")
@@ -1278,6 +1278,7 @@ function CalendarPage(props) {
                       return;
                     setInitialValue({
                       ...initialValue,
+                      BookDate: date,
                       UserServiceIDs:
                         Number(resource._resource?.id) > 0
                           ? [
@@ -1287,6 +1288,7 @@ function CalendarPage(props) {
                               },
                             ]
                           : [],
+                      
                     });
                     onOpenModal();
                   },
