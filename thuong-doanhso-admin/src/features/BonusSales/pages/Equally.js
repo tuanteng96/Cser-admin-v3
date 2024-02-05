@@ -198,6 +198,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
 
                     <div>
                       {values.ToAdd &&
+                        values.ToAdd.length > 1 &&
                         values.ToAdd.map((item, index) => (
                           <div
                             className="mt-3 d-flex align-items-center"
@@ -260,7 +261,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                       >
                         Số tiền hoa hồng tư vấn nhân viên được hưởng đã được
                         tính toán tự động theo setup hoa hồng của từng sản phẩm
-                        / dịch vụ Trường hợp bạn áp dụng 2 nhân viên được hưởng
+                        / dịch vụ. Trường hợp bạn áp dụng 2 nhân viên được hưởng
                         ( bạn có thể chia tỉ lệ mỗi người được hưởng 50 50; 40
                         60 theo tỉ lệ mà các bạn thỏa thuận do cùng tư vấn khách
                         hàng )
