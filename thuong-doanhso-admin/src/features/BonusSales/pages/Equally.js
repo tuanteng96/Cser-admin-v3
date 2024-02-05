@@ -40,7 +40,6 @@ function Equally({ OrderInfo, onSubmit, loading }) {
     }
 
     if (Type.value !== "KY_THUAT_VIEN") {
-      console.log(item);
       return item.prodBonus.BonusSale > 100
         ? Math.round(
             (((item.gia_tri_thanh_toan_thuc_te *
@@ -113,7 +112,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
     <Fragment>
       <div className="row">
         <div className="col-md-6">
-          <div className="border rounded mb-3 px-4 py-4">
+          <div className="px-4 py-4 mb-3 border rounded">
             <Formik
               enableReinitialize
               initialValues={{ ToAdd: [], Type: TypeStaff[0] }}
@@ -123,7 +122,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                 const { values, setFieldValue, handleBlur } = formikProps;
                 return (
                   <Form>
-                    <div className="d-flex mb-3">
+                    <div className="mb-3 d-flex">
                       <Select
                         isMulti
                         classNamePrefix="select"
@@ -201,7 +200,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                       {values.ToAdd &&
                         values.ToAdd.map((item, index) => (
                           <div
-                            className="d-flex align-items-center mt-3"
+                            className="mt-3 d-flex align-items-center"
                             key={index}
                           >
                             <div className="w-200px font-weight-bold">
@@ -237,7 +236,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                   }}
                                   onBlur={handleBlur}
                                 />
-                                <div className="position-absolute top-0 right-0 h-100 w-45px d-flex align-items-center justify-content-center">
+                                <div className="top-0 right-0 position-absolute h-100 w-45px d-flex align-items-center justify-content-center">
                                   %
                                 </div>
                               </div>
@@ -246,10 +245,25 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                         ))}
                     </div>
                     {values.ToAdd && values.ToAdd.length > 0 && (
-                      <div className="text-end mt-3">
+                      <div className="mt-3 text-end">
                         <button type="submit" className="btn btn-primary">
                           Tạo mới
                         </button>
+                      </div>
+                    )}
+                    {values.ToAdd && values.ToAdd.length >= 2 && (
+                      <div
+                        className="mt-3"
+                        style={{
+                          color: "#999",
+                        }}
+                      >
+                        Số tiền hoa hồng tư vấn nhân viên được hưởng đã được
+                        tính toán tự động theo setup hoa hồng của từng sản phẩm
+                        / dịch vụ Trường hợp bạn áp dụng 2 nhân viên được hưởng
+                        ( bạn có thể chia tỉ lệ mỗi người được hưởng 50 50; 40
+                        60 theo tỉ lệ mà các bạn thỏa thuận do cùng tư vấn khách
+                        hàng )
                       </div>
                     )}
                   </Form>
@@ -273,7 +287,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                 <Form className="overflow-auto">
                   <div className="d-md-none">
                     {values.equally.map((item, index) => (
-                      <div className="border rounded mb-3" key={index}>
+                      <div className="mb-3 border rounded" key={index}>
                         <div className="p-3 border-bottom line-height-sm font-weight-boldest w-100 line-height-lg bg-light">
                           {item.Product.ProdTitle}
                         </div>
@@ -287,10 +301,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                               render={(arrayHelpers) =>
                                 item.Hoa_Hong.map((sub, idx) => (
                                   <div
-                                    className="d-flex align-items-center my-2"
+                                    className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
@@ -332,10 +346,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                               render={(arrayHelpers) =>
                                 item.Doanh_So.map((sub, idx) => (
                                   <div
-                                    className="d-flex align-items-center my-2"
+                                    className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
@@ -386,12 +400,12 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                     <Table bordered responsive>
                       <thead>
                         <tr>
-                          <th className="min-w-250px w-20">Sản phẩm</th>
-                          <th className="text-center min-w-250px w-40">
+                          <th className="w-20 min-w-250px">Sản phẩm</th>
+                          <th className="w-40 text-center min-w-250px">
                             Hoa hồng
                           </th>
                           <th
-                            className="text-center w-40"
+                            className="w-40 text-center"
                             style={{
                               minWidth: window.top?.GlobalConfig?.Admin
                                 ?.thuong_ds_theo_loai
@@ -415,10 +429,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                 render={(arrayHelpers) =>
                                   item.Hoa_Hong.map((sub, idx) => (
                                     <div
-                                      className="d-flex align-items-center my-2"
+                                      className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
@@ -455,10 +469,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                 render={(arrayHelpers) =>
                                   item.Doanh_So.map((sub, idx) => (
                                     <div
-                                      className="d-flex align-items-center my-2"
+                                      className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
