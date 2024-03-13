@@ -56,6 +56,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     CONG_CA: 0,
     ID: 0
   })
+  const [Locked, setLocked] = useState(false)
 
   const refElm = useRef()
   useImperativeHandle(ref, () => ({
@@ -116,6 +117,19 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [SalaryConfigMons, data])
 
+  useEffect(() => {
+    if (
+      data &&
+      data.length > 0 &&
+      data[0].WorkTrack?.Info?.ForDate &&
+      data[0].WorkTrack?.Info?.LUONG
+    ) {
+      setLocked(true)
+    } else {
+      setLocked(false)
+    }
+  }, [data])
+
   const getTotalPrice = () => {
     if (!data || data.length === 0) return 0
     return data.reduce(
@@ -136,6 +150,10 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
   }
 
   const updateTimeKeepMutation = useMutation({
+    mutationFn: body => worksheetApi.checkinWorkSheet(body)
+  })
+
+  const unLockTimeKeepMutation = useMutation({
     mutationFn: body => worksheetApi.checkinWorkSheet(body)
   })
 
@@ -210,6 +228,76 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     })
   }
 
+  const unLockSubmit = values => {
+    let { WorkTrack } = data[0]
+
+    let newInfo = WorkTrack?.Info ? { ...WorkTrack?.Info } : {}
+    if (newInfo.TimekeepingType) {
+      newInfo[newInfo.TimekeepingType.value] = {
+        Value: newInfo?.TimekeepingTypeValue
+          ? Math.abs(newInfo?.TimekeepingTypeValue)
+          : ''
+      }
+      delete newInfo.TimekeepingType
+    }
+    if (newInfo.TimekeepingTypeValue) delete newInfo.TimekeepingTypeValue
+    if (newInfo.CheckOut.TimekeepingType) {
+      newInfo.CheckOut[newInfo.CheckOut.TimekeepingType.value] = {
+        Value: newInfo.CheckOut?.TimekeepingTypeValue
+          ? Math.abs(newInfo.CheckOut?.TimekeepingTypeValue)
+          : ''
+      }
+      delete newInfo.CheckOut.TimekeepingType
+    }
+    if (newInfo.CheckOut.TimekeepingTypeValue)
+      delete newInfo.CheckOut.TimekeepingTypeValue
+    if (newInfo?.Type) {
+      newInfo.Type = newInfo?.Type?.value
+        ? newInfo?.Type?.value
+        : newInfo?.Type || ''
+    }
+    if (newInfo?.CheckOut?.Type) {
+      newInfo.CheckOut.Type = newInfo?.CheckOut?.Type?.value
+        ? newInfo?.CheckOut?.Type?.value
+        : newInfo?.CheckOut?.Type || ''
+    }
+    delete newInfo.LUONG
+    let newValues = {
+      edit: [
+        {
+          ID: values.ID,
+          CreateDate: values.CreateDate,
+          UserID: id,
+          CheckIn: WorkTrack.CheckIn
+            ? moment(WorkTrack.CheckIn).format('YYYY-MM-DD HH:mm:ss')
+            : '',
+          CheckOut: WorkTrack.CheckOut
+            ? moment(WorkTrack.CheckOut).format('YYYY-MM-DD HH:mm:ss')
+            : '',
+          Info: {
+            ...newInfo,
+            ForDate: values.CreateDate,
+            CONG_CA: values.CONG_CA,
+            THUONG_PHAT: values.THUONG_PHAT
+          }
+        }
+      ]
+    }
+
+    unLockTimeKeepMutation.mutate(newValues, {
+      onSuccess: () => {
+        refetch().then(
+          () =>
+            window.top.toastr &&
+            window.top.toastr.success('Hủy chốt lương thành công !', {
+              timeOut: 1500
+            })
+        )
+      },
+      onError: error => console.log(error)
+    })
+  }
+
   return (
     <div className="flex flex-col h-100">
       <div
@@ -248,13 +336,15 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
       >
         {formikProps => {
           // errors, touched, handleChange, handleBlur
-          //const { values } = formikProps
+          const { values } = formikProps
           return (
             <Form
               className="flex items-center justify-end px-3 border-top grow"
               autoComplete="off"
             >
-              <div className="font-medium text-base mr-3.5">Lương dự kiến</div>
+              <div className="font-medium text-base mr-3.5">
+                {Locked ? 'Đã chốt lương' : 'Lương dự kiến'}
+              </div>
               <div className="mr-3.5">
                 <Field name="LUONG">
                   {({ field, form, meta }) => (
@@ -283,8 +373,24 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
                     'spinner spinner-white spinner-right'
                 )}
               >
-                Chốt lương
+                {Locked ? 'Cập nhập' : 'Chốt lương'}
               </button>
+              {Locked && (
+                <button
+                  type="button"
+                  disabled={unLockTimeKeepMutation.isLoading}
+                  className={clsx(
+                    'btn btn-danger min-w-[102px] ml-2',
+                    unLockTimeKeepMutation.isLoading &&
+                      'spinner spinner-white spinner-right'
+                  )}
+                  onClick={() => {
+                    unLockSubmit(values)
+                  }}
+                >
+                  Hủy chốt lương
+                </button>
+              )}
             </Form>
           )
         }}
@@ -321,7 +427,7 @@ function TimekeepingMember(props) {
 
   useEffect(() => {
     if (CrDateQuery) {
-      setCrDate(new Date(CrDateQuery))
+      setCrDate(moment(CrDateQuery, 'DD/MM/YYYY').toDate())
     }
   }, [CrDateQuery])
 

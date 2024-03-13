@@ -21,7 +21,7 @@ const getStaffs = ({ StockID, key = "", All }) => {
 };
 const getRootServices = ({ MemberID, StockID, Key }) => {
   return axiosClient.get(
-    `${GET_ROOT_SERVICES_URL}?cmd=getroot&memberid=${MemberID}&ps=15&pi=1&key=${Key}=&stockid=${StockID}`
+    `${GET_ROOT_SERVICES_URL}?cmd=getroot&memberid=${MemberID}&ps=15&pi=1&key=${Key}&stockid=${StockID}`
   );
 };
 const postBooking = (data, { CurrentStockID, u_id_z4aDf2 }) => {

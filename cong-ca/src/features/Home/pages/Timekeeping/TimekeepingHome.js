@@ -296,7 +296,7 @@ function TimekeepingHome(props) {
           <div className="flex items-center w-full h-full">
             <div className="flex-1">
               <NavLink
-                to={`/bang-cham-cong/${rowData.UserID}?CrDate=${CrDate}`}
+                to={`/bang-cham-cong/${rowData.UserID}?CrDate=${moment(CrDate).format('DD/MM/YYYY')}`}
                 className="font-semibold text-black text-name text-decoration-none text-[12px] md:text-[15px] text-capitalize d-block pr-15px"
               >
                 <div>{rowData.FullName}</div>
