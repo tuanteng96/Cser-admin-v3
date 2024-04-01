@@ -143,9 +143,13 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
 
   const getTotalCountWork = () => {
     if (!data || data.length === 0) return 0
-    return data.reduce(
-      (n, { WorkTrack }) => n + Number(WorkTrack?.Info?.CountWork || 0),
-      0
+    return (
+      Math.round(
+        data.reduce(
+          (n, { WorkTrack }) => n + Number(WorkTrack?.Info?.CountWork || 0),
+          0
+        ) * 100
+      ) / 100
     )
   }
 
