@@ -94,40 +94,50 @@ function SidebarCalendar({
       <div className="header-sidebar p-15px">
         <div className="d-flex justify-content-between align-items-center">
           {!isTelesales && (
-            <Dropdown className="w-auto w-xl-100">
-              <Dropdown.Toggle className="btn btn-primary btn-sm h-42px btn-shadow px-15px w-100 hide-icon-after">
-                {width > 1200 ? "Tạo mới" : <i className="fal fa-plus"></i>}
-              </Dropdown.Toggle>
+            <div className="d-flex w-xl-100">
+              <Dropdown className="w-auto w-xl-100 flex-1">
+                <Dropdown.Toggle className="btn btn-primary btn-sm h-42px btn-shadow px-15px w-100 hide-icon-after">
+                  {width > 1200 ? "Tạo mới" : <i className="fal fa-plus"></i>}
+                </Dropdown.Toggle>
 
-              <Dropdown.Menu className="w-100" variant="dark">
-                <Dropdown.Item
-                  href="#"
-                  onClick={() => {
-                    window.top?.MemberEdit &&
-                      window.top.MemberEdit({
-                        Member: {
-                          ID: 0,
-                        },
-                      });
-                  }}
-                >
-                  Khách hàng mới
-                </Dropdown.Item>
-                <Dropdown.Item href="#" onClick={onOpenModal}>
-                  Đặt lịch mới
-                </Dropdown.Item>
-                {!isTelesales && (
-                  <Dropdown.Item href="#" onClick={onOpenModalLock}>
-                    Cài đặt khóa lịch
+                <Dropdown.Menu className="w-100" variant="dark">
+                  <Dropdown.Item
+                    href="#"
+                    onClick={() => {
+                      window.top?.MemberEdit &&
+                        window.top.MemberEdit({
+                          Member: {
+                            ID: 0,
+                          },
+                        });
+                    }}
+                  >
+                    Khách hàng mới
                   </Dropdown.Item>
-                )}
-                {!isTelesales && isRooms && (
-                  <Dropdown.Item href="#" onClick={onOpenModalRoom}>
-                    Cài đặt phòng
+                  <Dropdown.Item href="#" onClick={onOpenModal}>
+                    Đặt lịch mới
                   </Dropdown.Item>
-                )}
-              </Dropdown.Menu>
-            </Dropdown>
+                </Dropdown.Menu>
+              </Dropdown>
+              <Dropdown className="w-auto ml-10px">
+                <Dropdown.Toggle className="btn btn-secondary btn-sm h-42px px-10px w-100 hide-icon-after no-after">
+                  <i className="fa-regular fa-gear pr-0"></i>
+                </Dropdown.Toggle>
+
+                <Dropdown.Menu className="w-100" variant="dark">
+                  {!isTelesales && (
+                    <Dropdown.Item href="#" onClick={onOpenModalLock}>
+                      Cài đặt khóa lịch
+                    </Dropdown.Item>
+                  )}
+                  {!isTelesales && isRooms && (
+                    <Dropdown.Item href="#" onClick={onOpenModalRoom}>
+                      Cài đặt phòng
+                    </Dropdown.Item>
+                  )}
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
           )}
           <div className="d-xl-none align-items-center font-size-lg font-weight-bolder">
             {headerTitle}
@@ -152,7 +162,11 @@ function SidebarCalendar({
         {(formikProps) => {
           const { values, setFieldValue, handleBlur } = formikProps;
           return (
-            <Form className={`${isFilter ? "show" : ""} sidebar-body`}>
+            <Form
+              className={`${
+                isFilter ? "show" : ""
+              } sidebar-body d-flex flex-column`}
+            >
               <PerfectScrollbar
                 options={perfectScrollbarOptions}
                 className="scroll"
@@ -247,10 +261,10 @@ function SidebarCalendar({
                   </div>
                   <AdvancedList formikProps={formikProps} />
                   <StatusList />
-                  <ModalProcessingBook>
+                  {/* <ModalProcessingBook>
                     {({ open, hidden }) => (
                       <>
-                        {!hidden && (
+                        {hidden && (
                           <div className="mt-8 mb-6">
                             <div className="relative px-4 pt-4 pb-7 border">
                               <div className="absolute -top-[12px] left-2/4 -translate-x-2/4 bg-white px-2 uppercase text-danger font-bold">
@@ -275,9 +289,50 @@ function SidebarCalendar({
                         )}
                       </>
                     )}
-                  </ModalProcessingBook>
+                  </ModalProcessingBook> */}
                 </div>
               </PerfectScrollbar>
+              <ModalProcessingBook>
+                {({ open, hidden }) => (
+                  <>
+                    {hidden && (
+                      <div className="mt-8 mb-6">
+                        <div className="px-15px">
+                          <div
+                            className="text-warning text-center blink_me"
+                            style={{
+                              textDecoration: "underline",
+                              cursor: "pointer",
+                            }}
+                            onClick={open}
+                          >
+                            Cần xử lý
+                          </div>
+                        </div>
+                        {/* <div className="relative px-4 pt-4 pb-7 border">
+                          <div className="absolute -top-[12px] left-2/4 -translate-x-2/4 bg-white px-2 uppercase text-danger font-bold">
+                            Cần xử lý
+                          </div>
+                          <div className="text-center text-[13px]">
+                            Một số ca thực hiện chưa được hoàn thành, đặt lịch
+                            chưa chuyển trạng thái.
+                          </div>
+                          <div className="absolute -bottom-[17px] left-2/4 -translate-x-2/4 bg-white px-2">
+                            <button
+                              type="button"
+                              className="btn btn-warning !text-[13px] w-[105px]"
+                              style={{ padding: "0.4rem 0.75rem" }}
+                              onClick={open}
+                            >
+                              Xem chi tiết
+                            </button>
+                          </div>
+                        </div> */}
+                      </div>
+                    )}
+                  </>
+                )}
+              </ModalProcessingBook>
               {width > 991 ? (
                 <ValueChangeListener />
               ) : (

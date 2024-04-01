@@ -123,3 +123,23 @@ div:where(.swal2-container) h2:where(.swal2-title) {
         }
     }
 }
+
+.no-after {
+    &:after {
+        display: none !important;
+    }
+}
+
+.blink_me {
+    animation: blinker .8s linear infinite;
+}
+
+.blink_me:hover {
+    animation: none;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}

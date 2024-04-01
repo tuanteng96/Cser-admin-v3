@@ -90,6 +90,8 @@ function AdvancedList({ formikProps }) {
           components={{
             Option: CustomOptionStaff,
             Control,
+            DropdownIndicator: () => null,
+            IndicatorSeparator: () => null,
           }}
           placeholder="Tìm kiếm"
           noOptionsMessage={({ inputValue }) =>
