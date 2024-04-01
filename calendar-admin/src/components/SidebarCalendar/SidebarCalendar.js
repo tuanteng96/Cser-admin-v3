@@ -295,13 +295,12 @@ function SidebarCalendar({
               <ModalProcessingBook>
                 {({ open, hidden }) => (
                   <>
-                    {hidden && (
+                    {!hidden && (
                       <div className="mt-8 mb-6">
                         <div className="px-15px">
                           <div
-                            className="text-warning text-center blink_me"
+                            className="text-muted text-center blink_me"
                             style={{
-                              textDecoration: "underline",
                               cursor: "pointer",
                             }}
                             onClick={open}
