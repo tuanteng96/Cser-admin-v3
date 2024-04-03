@@ -2,7 +2,7 @@
     "name": "calendar-admin",
     "version": "0.1.0",
     "private": true,
-    "homepage": "/Admin/BookAdmin/",
+    "_homepage": "/Admin/BookAdmin/",
     "dependencies": {
         "@fullcalendar/core": "^5.10.0",
         "@fullcalendar/daygrid": "^5.10.0",
