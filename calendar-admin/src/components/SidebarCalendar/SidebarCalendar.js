@@ -95,7 +95,18 @@ function SidebarCalendar({
         <div className="d-flex justify-content-between align-items-center">
           {!isTelesales && (
             <div className="d-flex w-xl-100">
-              <Dropdown className="w-auto w-xl-100 flex-1">
+              <button
+                className="btn btn-primary btn-sm h-[40px] px-15px w-100"
+                type="button"
+                onClick={onOpenModal}
+              >
+                {width > 1200 ? (
+                  "Tạo đặt lịch mới"
+                ) : (
+                  <i className="fal fa-plus"></i>
+                )}
+              </button>
+              {/* <Dropdown className="w-auto w-xl-100 flex-1">
                 <Dropdown.Toggle className="btn btn-primary btn-sm h-42px btn-shadow px-15px w-100 hide-icon-after">
                   {width > 1200 ? "Tạo mới" : <i className="fal fa-plus"></i>}
                 </Dropdown.Toggle>
@@ -118,8 +129,8 @@ function SidebarCalendar({
                     Đặt lịch mới
                   </Dropdown.Item>
                 </Dropdown.Menu>
-              </Dropdown>
-              <Dropdown className="w-auto ml-10px">
+              </Dropdown> */}
+              {/* <Dropdown className="w-auto ml-10px">
                 <Dropdown.Toggle className="btn btn-secondary btn-sm h-42px px-10px w-100 hide-icon-after no-after">
                   <i className="fa-regular fa-gear pr-0"></i>
                 </Dropdown.Toggle>
@@ -136,7 +147,7 @@ function SidebarCalendar({
                     </Dropdown.Item>
                   )}
                 </Dropdown.Menu>
-              </Dropdown>
+              </Dropdown> */}
             </div>
           )}
           <div className="d-xl-none align-items-center font-size-lg font-weight-bolder">
@@ -173,10 +184,9 @@ function SidebarCalendar({
                 style={{ position: "relative", touchAction: "none" }}
               >
                 <div className="px-15px">
-                  <div className="mb-0 form-group form-group-ezs mt-12px">
-                    {/* <label className="mb-1">Khách hàng</label> */}
-                    <div>
-                      {isTelesales && (
+                  {isTelesales && (
+                    <div className="mb-0 form-group form-group-ezs mt-12px">
+                      <div>
                         <SelectStocksTelesale
                           noOptionsMessage={() => "không có sơ sở"}
                           classIcon="far fa-map-marker-alt"
@@ -201,8 +211,8 @@ function SidebarCalendar({
                           onBlur={handleBlur}
                           menuPortalTarget={document.body}
                         />
-                      )}
-                      {/* {isTelesales ? (
+
+                        {/* {isTelesales ? (
                         <SelectStaffsTelesale
                           classIcon="far fa-user-cog"
                           menuPlacement="bottom"
@@ -257,8 +267,10 @@ function SidebarCalendar({
                           menuPortalTarget={document.body}
                         />
                       )} */}
+                      </div>
                     </div>
-                  </div>
+                  )}
+
                   <AdvancedList formikProps={formikProps} />
                   <StatusList />
                   {/* <ModalProcessingBook>

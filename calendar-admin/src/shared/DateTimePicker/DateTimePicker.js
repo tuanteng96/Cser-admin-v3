@@ -19,7 +19,7 @@ function DateTimePicker(props) {
     <DatePicker
       locale={vi}
       className={clsx(
-        "w-full px-3 py-3 transition bg-white border rounded outline-none disabled:bg-gray-200 disabled:border-gray-200 border-gray-300 dark:border-graydark-400 focus:border-primary dark:focus:border-primary"
+        "w-full px-3 h-[40px] transition border-[1px] rounded-sm outline-none border-[#f3f6f9] bg-[#f3f6f9] font-medium focus:bg-[#EBEDF3]"
       )}
       popperContainer={CalendarContainer}
       timeIntervals={5}

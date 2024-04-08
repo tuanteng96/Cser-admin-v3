@@ -73,9 +73,10 @@ const Control = ({ children, ...props }) => {
 function AdvancedList({ formikProps }) {
   const { values, setFieldValue } = formikProps;
   const [isOpen, setIsOpen] = useState(false);
+  
   return (
     <>
-      <div className="d-flex mb-8px">
+      <div className="d-flex border-[1px] rounded-sm !border-[#D1D3E0]">
         <SelectMember
           classIcon="fa-regular fa-magnifying-glass"
           menuPlacement="bottom"
@@ -116,7 +117,7 @@ function AdvancedList({ formikProps }) {
       </div>
       <div className="form-group form-group-ezs mb-0">
         {isOpen && (
-          <div className="pb-8px">
+          <div className="pb-8px mt-[8px]">
             <SelectStaffsService
               classIcon="far fa-user-cog"
               menuPlacement="bottom"
@@ -201,12 +202,6 @@ function AdvancedList({ formikProps }) {
             />
           </div>
         )}
-        {/* <label
-        className="form-group-action mb-0 font-size-minn text-muted justify-content-end"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? "Đóng xem thêm" : "Nâng cao"}
-      </label> */}
       </div>
     </>
   );

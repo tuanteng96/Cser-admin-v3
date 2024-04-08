@@ -112,21 +112,25 @@ function StatusList(props) {
                 key={index}
               />
             ))}
-          <div className="font-size-minn font-weight-bold text-uppercase text-muted mb-10px mt-15px">
-            Lịch thực hiện
-          </div>
-          {StatusArr &&
-            StatusArr.slice(5, StatusArr.length).map((item, index) => (
-              <CheckBox
-                isMargin={index === 0}
-                name="Status"
-                label={item.label}
-                value={item.value}
-                color={item.color}
-                bg={item.bg}
-                key={index}
-              />
-            ))}
+          {!window?.top?.GlobalConfig?.Admin?.isAdminBooks && (
+            <>
+              <div className="font-size-minn font-weight-bold text-uppercase text-muted mb-10px mt-15px">
+                Lịch thực hiện
+              </div>
+              {StatusArr &&
+                StatusArr.slice(5, StatusArr.length).map((item, index) => (
+                  <CheckBox
+                    isMargin={index === 0}
+                    name="Status"
+                    label={item.label}
+                    value={item.value}
+                    color={item.color}
+                    bg={item.bg}
+                    key={index}
+                  />
+                ))}
+            </>
+          )}
         </div>
       )}
     </div>

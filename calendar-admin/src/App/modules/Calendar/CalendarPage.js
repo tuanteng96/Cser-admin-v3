@@ -27,6 +27,7 @@ import "moment/locale/vi";
 import ModalRoom from "../../../components/ModalRoom/ModalRoom";
 import clsx from "clsx";
 import DateTimePicker from "../../../shared/DateTimePicker/DateTimePicker";
+import { Dropdown } from "react-bootstrap";
 
 moment.locale("vi");
 
@@ -114,7 +115,9 @@ function CalendarPage(props) {
       "XAC_NHAN",
       "XAC_NHAN_TU_DONG",
       "CHUA_XAC_NHAN",
-      "DANG_THUC_HIEN",
+      ...(!window?.top?.GlobalConfig?.Admin?.isAdminBooks
+        ? ["DANG_THUC_HIEN"]
+        : []),
       // "THUC_HIEN_XONG",
     ],
     StockID: AuthCrStockID,
@@ -149,7 +152,14 @@ function CalendarPage(props) {
       setFilters((prevState) => ({
         ...prevState,
         Status: prevState.Status
-          ? [...new Set([...prevState.Status, "THUC_HIEN_XONG"])]
+          ? [
+              ...new Set([
+                ...prevState.Status,
+                ...(!window?.top?.GlobalConfig?.Admin?.isAdminBooks
+                  ? ["THUC_HIEN_XONG"]
+                  : []),
+              ]),
+            ]
           : prevState.Status,
       }));
     } else {
@@ -161,6 +171,20 @@ function CalendarPage(props) {
       }));
     }
   }, [topCalendar?.type]);
+
+  useEffect(() => {
+    if (calendarRef?.current?.getApi()) {
+      let calendarApi = calendarRef.current.getApi();
+      calendarApi.changeView(topCalendar?.type?.value);
+    }
+  }, [topCalendar?.type, calendarRef]);
+
+  useEffect(() => {
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.gotoDate(topCalendar?.day);
+    }
+  }, [topCalendar?.day, calendarRef]);
 
   useEffect(() => {
     let params = {
@@ -860,15 +884,6 @@ function CalendarPage(props) {
   const onRefresh = (callback) =>
     ListCalendars.refetch().then(() => callback && callback());
 
-  const getLastFirst = (text) => {
-    if (!text) return;
-    const arrText = text.split(" ");
-    if (arrText.length > 1) {
-      return arrText[0].charAt(0) + arrText[arrText.length - 1].charAt(0);
-    }
-    return arrText[0].charAt(0);
-  };
-
   const onOpenModalLock = () => {
     setIsModalLock(true);
   };
@@ -913,78 +928,203 @@ function CalendarPage(props) {
             isRooms={isRooms}
           />
           <div className="ezs-calendar__content flex flex-col">
-            <div className="flex">
-              <div
-                onClick={() => {
-                  setTopCalendar((prevState) => ({
-                    ...prevState,
-                    day: moment().toDate(),
-                  }));
-                }}
-              >
-                Hôm nay
+            <div className="flex justify-between mb-4">
+              <div className="flex">
+                <button
+                  type="button"
+                  className={clsx(
+                    "transition h-[40px] px-3 mr-[8px] flex items-center rounded-sm font-medium bg-[#ede7fe] text-[#8561f9] hover:text-white hover:bg-[#8561f9]",
+                    moment(topCalendar.day).format("DD-MM-YYYY") ===
+                      moment().format("DD-MM-YYYY") && "opacity-60"
+                  )}
+                  onClick={() => {
+                    setTopCalendar((prevState) => ({
+                      ...prevState,
+                      day: moment().toDate(),
+                    }));
+                  }}
+                  disabled={
+                    moment(topCalendar.day).format("DD-MM-YYYY") ===
+                    moment().format("DD-MM-YYYY")
+                  }
+                >
+                  Hôm nay
+                </button>
+                <div className="w-[250px] relative">
+                  <DateTimePicker
+                    selected={topCalendar.day}
+                    dateFormat="EEE ,dd/MM/yyyy"
+                    onChange={(val) => {
+                      setTopCalendar((prevState) => ({
+                        ...prevState,
+                        day: val,
+                      }));
+                    }}
+                    showMonthYearPicker={
+                      topCalendar?.type?.value === "dayGridMonth"
+                    }
+                  />
+                  <div className="absolute top-0 right-0 h-full">
+                    <button
+                      type="button"
+                      className="bg-transparent w-[25px] h-full group"
+                      onClick={() => {
+                        if (topCalendar?.type?.value === "dayGridMonth") {
+                          setTopCalendar((prevState) => ({
+                            ...prevState,
+                            day: moment(prevState.day)
+                              .subtract(1, "months")
+                              .toDate(),
+                          }));
+                        } else if (
+                          topCalendar?.type?.value === "timeGridWeek"
+                        ) {
+                          setTopCalendar((prevState) => ({
+                            ...prevState,
+                            day: moment(prevState.day)
+                              .subtract(1, "weeks")
+                              .toDate(),
+                          }));
+                        } else {
+                          setTopCalendar((prevState) => ({
+                            ...prevState,
+                            day: moment(prevState.day)
+                              .subtract(1, "days")
+                              .toDate(),
+                          }));
+                        }
+                      }}
+                    >
+                      <i className="fa-regular fa-chevron-left text-[15px] group-hover:!text-primary"></i>
+                    </button>
+                    <button
+                      type="button"
+                      className="bg-transparent w-[25px] h-full group"
+                      onClick={() => {
+                        if (topCalendar?.type?.value === "dayGridMonth") {
+                          setTopCalendar((prevState) => ({
+                            ...prevState,
+                            day: moment(prevState.day)
+                              .add(1, "months")
+                              .toDate(),
+                          }));
+                        } else if (
+                          topCalendar?.type?.value === "timeGridWeek"
+                        ) {
+                          setTopCalendar((prevState) => ({
+                            ...prevState,
+                            day: moment(prevState.day)
+                              .add(1, "weeks")
+                              .toDate(),
+                          }));
+                        } else {
+                          setTopCalendar((prevState) => ({
+                            ...prevState,
+                            day: moment(prevState.day)
+                              .add(1, "days")
+                              .toDate(),
+                          }));
+                        }
+                      }}
+                    >
+                      <i className="fa-regular fa-chevron-right text-[15px] group-hover:!text-primary"></i>
+                    </button>
+                  </div>
+                </div>
               </div>
-              <Select
-                options={[
-                  {
-                    value: "dayGridMonth",
-                    label: "Theo Tháng",
-                  },
-                  {
-                    value: "timeGridWeek",
-                    label: "Theo Tuần",
-                  },
-                  {
-                    value: "timeGridDay",
-                    label: "Theo Ngày",
-                  },
-                  {
-                    value: "listWeek",
-                    label: "Danh sách",
-                  },
-                  {
-                    value: "resourceTimeGridDay",
-                    label: "Nhân viên",
-                  },
-                ]}
-                value={topCalendar.type}
-                onChange={(val) => {
-                  setTopCalendar((prevState) => ({
-                    ...prevState,
-                    type: val,
-                  }));
-                  // if (calendarRef?.current?.getApi()) {
-                  //   let calendarApi = calendarRef.current.getApi();
-                  //   calendarApi.changeView(val.value);
-                  // }
-                }}
-                menuPosition="fixed"
-                styles={{
-                  menuPortal: (base) => ({
-                    ...base,
-                    zIndex: 9999,
-                  }),
-                }}
-                menuPortalTarget={document.body}
-                isClearable={false}
-              />
-              <DateTimePicker
-                selected={topCalendar.day}
-                dateFormat="EEE ,dd/MM/yyyy"
-                onChange={(val) => {
-                  setTopCalendar((prevState) => ({
-                    ...prevState,
-                    day: val,
-                  }));
-                }}
-              />
+
+              <div className="flex">
+                <Select
+                  options={[
+                    {
+                      value: "dayGridMonth",
+                      label: "Theo Tháng",
+                    },
+                    {
+                      value: "timeGridWeek",
+                      label: "Theo Tuần",
+                    },
+                    {
+                      value: "timeGridDay",
+                      label: "Theo Ngày",
+                    },
+                    {
+                      value: "listWeek",
+                      label: "Danh sách",
+                    },
+                    {
+                      value: "resourceTimeGridDay",
+                      label: "Nhân viên",
+                    },
+                  ]}
+                  value={topCalendar.type}
+                  onChange={(val) => {
+                    setTopCalendar((prevState) => ({
+                      ...prevState,
+                      type: val,
+                    }));
+                    // if (calendarRef?.current?.getApi()) {
+                    //   let calendarApi = calendarRef.current.getApi();
+                    //   calendarApi.changeView(val.value);
+                    // }
+                  }}
+                  menuPosition="fixed"
+                  styles={{
+                    menuPortal: (base) => ({
+                      ...base,
+                      zIndex: 9999,
+                    }),
+                  }}
+                  menuPortalTarget={document.body}
+                  isClearable={false}
+                  className="select-control w-[200px] select-control-solid font-medium"
+                  classNamePrefix="select"
+                />
+                <Dropdown className="w-auto ml-[8px]">
+                  <Dropdown.Toggle className="!bg-[#ede7fe] hover:!bg-[#8561f9] !border-0 h-[40px] px-10px w-100 hide-icon-after no-after group">
+                    <i className="fa-light fa-gear pr-0 text-[15px] !text-[#8561f9] group-hover:!text-white"></i>
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu className="w-100" variant="dark">
+                    {!isTelesales && (
+                      <Dropdown.Item href="#" onClick={onOpenModalLock}>
+                        Cài đặt khóa lịch
+                      </Dropdown.Item>
+                    )}
+                    {!isTelesales && isRooms && (
+                      <Dropdown.Item href="#" onClick={onOpenModalRoom}>
+                        Cài đặt phòng
+                      </Dropdown.Item>
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </div>
             </div>
-            <div
-              className={clsx(
-                "grow position-relative",
-                ListCalendars.isLoading && "loading"
+            <div className={clsx("grow position-relative")}>
+              {ListCalendars.isLoading && (
+                <div className="absolute w-full h-full top-0 left-0 z-50 flex items-center justify-center">
+                  <div role="status">
+                    <svg
+                      aria-hidden="true"
+                      className="w-8 h-8 text-gray-500 animate-spin fill-blue-600"
+                      viewBox="0 0 100 101"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                        fill="currentColor"
+                      />
+                      <path
+                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                        fill="currentFill"
+                      />
+                    </svg>
+                    <span className="sr-only">Loading...</span>
+                  </div>
+                </div>
               )}
-            >
+
               <FullCalendar
                 firstDay={1}
                 handleWindowResize={true}
@@ -1104,7 +1244,7 @@ function CalendarPage(props) {
                     resourceLabelContent: ({ resource }) => {
                       return (
                         <div className="d-flex align-items-center flex-column">
-                          <div
+                          {/* <div
                             className="p-1 border border-primary"
                             style={{
                               width: "50px",
@@ -1123,8 +1263,8 @@ function CalendarPage(props) {
                             >
                               {getLastFirst(resource._resource.title)}
                             </div>
-                          </div>
-                          <div className="title-staff">
+                          </div> */}
+                          <div className="title-staff capitalize">
                             {resource._resource.title}
                           </div>
                         </div>

@@ -36,6 +36,7 @@
         }
         .react-datepicker__month-container {
             float: none;
+            width: 100%;
             .react-datepicker__header {
                 background: transparent;
                 border: 0;
@@ -128,6 +129,11 @@
                         // }
                     }
                 }
+            }
+            .react-datepicker__month-text {
+                width: 5rem;
+                padding: 7px 0;
+                font-weight: 500;
             }
         }
         .react-datepicker__input-time-container {
