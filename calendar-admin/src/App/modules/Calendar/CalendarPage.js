@@ -929,11 +929,11 @@ function CalendarPage(props) {
           />
           <div className="flex flex-col ezs-calendar__content">
             <div className="flex justify-between mb-4">
-              <div className="flex">
+              <div className="flex flex-1 mr-2 md:mr-0">
                 <button
                   type="button"
                   className={clsx(
-                    "transition h-[40px] px-3 mr-[8px] flex items-center rounded-sm font-medium bg-[#ede7fe] text-[#8561f9] hover:text-white hover:bg-[#8561f9]",
+                    "transition h-[40px] px-3 mr-[8px] hidden md:flex items-center rounded-sm font-medium bg-[#ede7fe] text-[#8561f9] hover:text-white hover:bg-[#8561f9]",
                     moment(topCalendar.day).format("DD-MM-YYYY") ===
                       moment().format("DD-MM-YYYY") && "opacity-60"
                   )}
@@ -950,7 +950,7 @@ function CalendarPage(props) {
                 >
                   Hôm nay
                 </button>
-                <div className="w-[250px] relative">
+                <div className="md:w-[250px] relative">
                   <DateTimePicker
                     selected={topCalendar.day}
                     dateFormat="EEE ,dd/MM/yyyy"
@@ -964,7 +964,7 @@ function CalendarPage(props) {
                       topCalendar?.type?.value === "dayGridMonth"
                     }
                   />
-                  <div className="absolute top-0 right-0 h-full">
+                  <div className="absolute top-0 right-0 hidden h-full md:block">
                     <button
                       type="button"
                       className="bg-transparent w-[25px] h-full group"
@@ -1087,7 +1087,7 @@ function CalendarPage(props) {
                   }}
                   menuPortalTarget={document.body}
                   isClearable={false}
-                  className="select-control w-[200px] select-control-solid font-medium"
+                  className="select-control w-[165px] md:w-[200px] select-control-solid font-medium"
                   classNamePrefix="select"
                 />
                 <Dropdown className="w-auto ml-[8px]">

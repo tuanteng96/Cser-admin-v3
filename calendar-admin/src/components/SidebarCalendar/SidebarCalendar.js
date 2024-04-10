@@ -103,10 +103,10 @@ function SidebarCalendar({
                 {width > 1200 ? (
                   "Tạo đặt lịch mới"
                 ) : (
-                  <i className="fal fa-plus"></i>
+                  <i className="fal fa-plus !pr-0"></i>
                 )}
               </button>
-              {/* <Dropdown className="w-auto w-xl-100 flex-1">
+              {/* <Dropdown className="flex-1 w-auto w-xl-100">
                 <Dropdown.Toggle className="btn btn-primary btn-sm h-42px btn-shadow px-15px w-100 hide-icon-after">
                   {width > 1200 ? "Tạo mới" : <i className="fal fa-plus"></i>}
                 </Dropdown.Toggle>
@@ -132,7 +132,7 @@ function SidebarCalendar({
               </Dropdown> */}
               {/* <Dropdown className="w-auto ml-10px">
                 <Dropdown.Toggle className="btn btn-secondary btn-sm h-42px px-10px w-100 hide-icon-after no-after">
-                  <i className="fa-regular fa-gear pr-0"></i>
+                  <i className="pr-0 fa-regular fa-gear"></i>
                 </Dropdown.Toggle>
 
                 <Dropdown.Menu className="w-100" variant="dark">
@@ -278,7 +278,7 @@ function SidebarCalendar({
                       <>
                         {hidden && (
                           <div className="mt-8 mb-6">
-                            <div className="relative px-4 pt-4 pb-7 border">
+                            <div className="relative px-4 pt-4 border pb-7">
                               <div className="absolute -top-[12px] left-2/4 -translate-x-2/4 bg-white px-2 uppercase text-danger font-bold">
                                 Cần xử lý
                               </div>
@@ -311,7 +311,7 @@ function SidebarCalendar({
                       <div className="mt-8 mb-6">
                         <div className="px-15px">
                           <div
-                            className="text-muted text-center blink_me"
+                            className="text-center text-muted blink_me"
                             style={{
                               cursor: "pointer",
                             }}
@@ -320,7 +320,7 @@ function SidebarCalendar({
                             Cần xử lý
                           </div>
                         </div>
-                        {/* <div className="relative px-4 pt-4 pb-7 border">
+                        {/* <div className="relative px-4 pt-4 border pb-7">
                           <div className="absolute -top-[12px] left-2/4 -translate-x-2/4 bg-white px-2 uppercase text-danger font-bold">
                             Cần xử lý
                           </div>
