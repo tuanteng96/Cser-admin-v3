@@ -927,7 +927,7 @@ function CalendarPage(props) {
             onOpenModalRoom={onOpenModalRoom}
             isRooms={isRooms}
           />
-          <div className="ezs-calendar__content flex flex-col">
+          <div className="flex flex-col ezs-calendar__content">
             <div className="flex justify-between mb-4">
               <div className="flex">
                 <button
@@ -1039,24 +1039,34 @@ function CalendarPage(props) {
                     {
                       value: "dayGridMonth",
                       label: "Theo Tháng",
+                      hidden: false,
                     },
                     {
                       value: "timeGridWeek",
                       label: "Theo Tuần",
+                      hidden: false,
                     },
                     {
                       value: "timeGridDay",
                       label: "Theo Ngày",
+                      hidden: false,
                     },
                     {
                       value: "listWeek",
                       label: "Danh sách",
+                      hidden: false,
                     },
                     {
                       value: "resourceTimeGridDay",
                       label: "Nhân viên",
+                      hidden: false,
                     },
-                  ]}
+                    {
+                      value: "resourceTimelineDay",
+                      label: "Buồng / Phòng",
+                      hidden: !isRooms,
+                    },
+                  ].filter((x) => !x.hidden)}
                   value={topCalendar.type}
                   onChange={(val) => {
                     setTopCalendar((prevState) => ({
@@ -1102,7 +1112,7 @@ function CalendarPage(props) {
             </div>
             <div className={clsx("grow position-relative")}>
               {ListCalendars.isLoading && (
-                <div className="absolute w-full h-full top-0 left-0 z-50 flex items-center justify-center">
+                <div className="absolute top-0 left-0 z-50 flex items-center justify-center w-full h-full">
                   <div role="status">
                     <svg
                       aria-hidden="true"
@@ -1264,7 +1274,7 @@ function CalendarPage(props) {
                               {getLastFirst(resource._resource.title)}
                             </div>
                           </div> */}
-                          <div className="title-staff capitalize">
+                          <div className="capitalize title-staff">
                             {resource._resource.title}
                           </div>
                         </div>
