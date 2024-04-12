@@ -283,7 +283,8 @@ function CalendarPage(props) {
     CalendarCrud.getConfigName(`giocam`)
       .then(({ data }) => {
         if (data && data.length > 0) {
-          const result = JSON.parse(data[0].Value);
+          const result = data[0].Value ? JSON.parse(data[0].Value) : "";
+          
           const newResult =
             result && result.length > 0
               ? result.map((lock) => ({

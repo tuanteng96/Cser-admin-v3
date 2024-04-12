@@ -41,7 +41,7 @@ function ModalCalendarLock({
       >
         {(formikProps) => {
           const { values, setFieldValue } = formikProps;
-
+          
           return (
             <Form className="h-100 d-flex flex-column">
               <Modal.Header className="open-close" closeButton>
