@@ -39,7 +39,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 0,
             },
             {
-              ID: 11333,
+              ID: 11340,
               Title: "Cser Hà Nội",
               ParentID: 778,
             },
@@ -49,29 +49,29 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
           ],
-          CrStockID: 11333, //8975
+          CrStockID: 11340, //8975
           rightsSum: {
             pos: {
               hasRight: true,
-              stocks: [{ ID: 11333, Title: "Cser Hà Nội" }],
+              stocks: [{ ID: 11340, Title: "Cser Hà Nội" }],
               IsAllStock: false,
             },
             tele: {
               hasRight: true,
               stocks: [
-                { ID: 11333, Title: "Cser Hà Nội" },
+                { ID: 11340, Title: "Cser Hà Nội" },
                 { ID: 10053, Title: "Cser Hồ Chí Minh" },
               ],
               IsAllStock: false,
             },
             teleAdv: {
               hasRight: true,
-              stocks: [{ ID: 10053, Title: "Cser Hồ Chí Minh" }],
+              stocks: [{ ID: 11340, Title: "Cser Hồ Chí Minh" }],
               IsAllStock: false,
             },
           },
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjU3Mzg1NzkwNTczODYxNDkiLCJuYmYiOjE3MTE3NzIzOTEsImV4cCI6MTc5ODE3MjM5MSwiaWF0IjoxNzExNzcyMzkxfQ.g_z4Pv5Yi2u0zBOaSOeuw2TECcrZrwvR4myvIVlrd7Y",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjU3Mzg1NzkwNTczODYyMzciLCJuYmYiOjE3MTM2NzA1NjQsImV4cCI6MTgwMDA3MDU2NCwiaWF0IjoxNzEzNjcwNTY0fQ.pMN_0iG5m8OOPcqqIRgHyEQTkZYfKi9IdwzOxCUd2ZI",
         };
         window.GlobalConfig = {
           APP: {
@@ -79,7 +79,7 @@ function AuthInit({ isConfig, children }) {
               TimeClose: "21:00:00",
               TimeOpen: "8:00:00",
             },
-            SL_khach: true
+            SL_khach: true,
           },
           Admin: {
             kpiFinish: "Khách đến làm dịch vụ",
@@ -87,7 +87,7 @@ function AuthInit({ isConfig, children }) {
             kpiCancelFinish: "Khách không đến",
             kpiSuccess: "Đặt lịch thành công",
             isRooms: true,
-            isAdminBooks: false
+            isAdminBooks: false,
           },
         };
       }

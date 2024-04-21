@@ -28,6 +28,7 @@ import ModalRoom from "../../../components/ModalRoom/ModalRoom";
 import clsx from "clsx";
 import DateTimePicker from "../../../shared/DateTimePicker/DateTimePicker";
 import { Dropdown } from "react-bootstrap";
+import PickerSettingCalendar from "../../../components/PickerSettingCalendar/PickerSettingCalendar";
 
 moment.locale("vi");
 
@@ -279,12 +280,34 @@ function CalendarPage(props) {
     },
   });
 
+  const SettingCalendar = useQuery({
+    queryKey: ["SettingCalendar", AuthCrStockID],
+    queryFn: async () => {
+      let { data } = await CalendarCrud.getConfigName(`ArticleRel`);
+      let rs = {
+        Tags: "",
+        OriginalServices: [],
+      };
+      if (data && data.length > 0) {
+        const result = JSON.parse(data[0].Value);
+        if (result) {
+          rs = result;
+        }
+      }
+      return rs;
+    },
+    initialData: {
+      Tags: "",
+      OriginalServices: [],
+    },
+  });
+
   const getListLock = (callback) => {
     CalendarCrud.getConfigName(`giocam`)
       .then(({ data }) => {
         if (data && data.length > 0) {
           const result = data[0].Value ? JSON.parse(data[0].Value) : "";
-          
+
           const newResult =
             result && result.length > 0
               ? result.map((lock) => ({
@@ -402,6 +425,19 @@ function CalendarPage(props) {
       isBtnBooking: true,
     }));
 
+    let Desc = "";
+    if (window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Số lượng khách: ${values.AmountPeople.value}`;
+    }
+    if (values.TagSetting && values.TagSetting.length > 0) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
+    }
+    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc}`;
+
     const objBooking = {
       ...values,
       MemberID: values.MemberID.value,
@@ -414,10 +450,11 @@ function CalendarPage(props) {
           : "",
       BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
       Status: values.Status ? values.Status : "XAC_NHAN",
-      Desc:
-        window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
-          ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
-          : values.Desc,
+      Desc,
+      // Desc:
+      //   window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
+      //     ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
+      //     : values.Desc,
       IsAnonymous: values.MemberID?.PassersBy || false,
     };
 
@@ -510,6 +547,18 @@ function CalendarPage(props) {
       ...prevState,
       isBtnBooking: true,
     }));
+    let Desc = "";
+    if (window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Số lượng khách: ${values.AmountPeople.value}`;
+    }
+    if (values.TagSetting && values.TagSetting.length > 0) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
+    }
+    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc}`;
 
     const objBooking = {
       ...values,
@@ -521,12 +570,12 @@ function CalendarPage(props) {
           : "",
       BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
       Status: "KHACH_DEN",
-      Desc:
-        window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
-          ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
-          : values.Desc,
+      Desc,
+      // Desc:
+      //   window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
+      //     ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
+      //     : values.Desc,
     };
-
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
 
@@ -902,6 +951,19 @@ function CalendarPage(props) {
     setIsModalRoom(false);
   };
 
+  const renderColor = (book) => {
+    let rs = [];
+    if (book.Roots && book.Roots.length > 0) {
+      let { OriginalServices } = SettingCalendar.data;
+      for (let i of OriginalServices) {
+        if (book.Roots.findIndex((x) => x.ID === i.value) > -1) {
+          rs.push(i)
+        }
+      }
+    }
+    return rs.map(x => `<div class="h-5px" style="background: ${x.color}"></div>`).toString();
+  };
+
   // const someMethod = () => {
   //   let calendarApi = calendarRef.current.getApi()
   //   console.log(calendarApi)
@@ -1097,6 +1159,16 @@ function CalendarPage(props) {
                   </Dropdown.Toggle>
 
                   <Dropdown.Menu className="w-100" variant="dark">
+                    {
+                      <PickerSettingCalendar SettingCalendar={SettingCalendar}>
+                        {({ open }) => (
+                          <Dropdown.Item href="#" onClick={open}>
+                            Cài đặt bảng lịch
+                          </Dropdown.Item>
+                        )}
+                      </PickerSettingCalendar>
+                    }
+
                     {!isTelesales && (
                       <Dropdown.Item href="#" onClick={onOpenModalLock}>
                         Cài đặt khóa lịch
@@ -1445,6 +1517,13 @@ function CalendarPage(props) {
                   ) {
                     if (view.type !== "listWeek") {
                       italicEl.innerHTML = `<div class="fc-title">
+                      ${
+                        !extendedProps?.os && extendedProps?.ID
+                          ? `<div class="position-absolute w-100 top-0 left-0">
+                        ${renderColor(extendedProps)}
+                      </div>`
+                          : ""
+                      }
                     <div class="d-flex justify-content-between"><div><span class="fullname">${
                       extendedProps?.AtHome
                         ? `<i class="fas fa-home text-white font-size-xs"></i>`
@@ -1590,6 +1669,14 @@ function CalendarPage(props) {
         onDelete={onDeleteBooking}
         btnLoading={btnLoading}
         initialValue={initialValue}
+        TagsList={
+          SettingCalendar?.data?.Tags
+            ? SettingCalendar?.data?.Tags.split(",").map((x) => ({
+                label: x,
+                value: x,
+              }))
+            : []
+        }
       />
       <ModalCalendarLock
         show={isModalLock}

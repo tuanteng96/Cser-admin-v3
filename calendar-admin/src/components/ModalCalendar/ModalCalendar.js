@@ -36,7 +36,7 @@ const CustomOptionStaff = ({ children, ...props }) => {
     <components.Option {...props}>
       <div className="d-flex align-items-center">
         {Thumbnail && (
-          <div className="w-20px h-20px mr-3 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+          <div className="mr-3 overflow-hidden w-20px h-20px rounded-circle d-flex align-items-center justify-content-center">
             <img className="w-100" src={Thumbnail} alt={label} />
           </div>
         )}
@@ -53,7 +53,7 @@ const CustomOptionMember = ({ children, ...props }) => {
     <components.Option {...props}>
       <div className="d-flex align-items-center">
         {Thumbnail && (
-          <div className="w-20px h-20px mr-3 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+          <div className="mr-3 overflow-hidden w-20px h-20px rounded-circle d-flex align-items-center justify-content-center">
             <img className="w-100" src={Thumbnail} alt={label} />
           </div>
         )}
@@ -89,6 +89,7 @@ const initialDefault = {
     label: "1 khách",
     value: 1,
   },
+  TagSetting: "",
   FullName: "",
   Phone: "",
 };
@@ -101,6 +102,7 @@ function ModalCalendar({
   btnLoading,
   initialValue,
   onDelete,
+  TagsList,
 }) {
   //console.log(initialValue)
   const [initialValues, setInitialValues] = useState(initialDefault);
@@ -132,15 +134,25 @@ function ModalCalendar({
           label: "1 khách",
           value: 1,
         };
-        if (newDesc && newDesc.includes("Số lượng khách:")) {
-          let descSplit = newDesc.split("\n");
-          let SL = Number(descSplit[0].match(/\d+/)[0]);
-
-          newDesc = descSplit[1].replaceAll("Ghi chú: ", "");
-          AmountPeople = {
-            label: SL + " khách",
-            value: SL,
-          };
+        let TagSetting = [];
+        let descSplit = newDesc.split("\n");
+        for (let i of descSplit) {
+          if (i.includes("Số lượng khách:")) {
+            let SL = Number(i.match(/\d+/)[0]);
+            AmountPeople = {
+              label: SL + " khách",
+              value: SL,
+            };
+          }
+          if (i.includes("Tags:")) {
+            let newTagSetting = descSplit[1].replaceAll("Tags: ", "");
+            TagSetting = newTagSetting
+              .split(",")
+              .map((x) => ({ label: x, value: x }));
+          }
+          if (i.includes("Ghi chú:")) {
+            newDesc = i.replaceAll("Ghi chú: ", "");
+          }
         }
         setInitialValues((prevState) => ({
           ...prevState,
@@ -174,6 +186,7 @@ function ModalCalendar({
           CreateBy: initialValue?.CreateBy || "",
           TeleTags: initialValue?.Member?.TeleTags || "",
           AmountPeople,
+          TagSetting,
         }));
       } else {
         setInitialValues((prevState) => ({
@@ -372,7 +385,7 @@ function ModalCalendar({
                   </Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="p-0">
-                  <div className="form-group form-group-ezs px-6 pt-3 mb-3">
+                  <div className="px-6 pt-3 mb-3 form-group form-group-ezs">
                     {/* <label className="mb-1 d-none d-md-block">Khách hàng</label> */}
                     <AsyncCreatableSelect
                       className={`select-control ${
@@ -449,7 +462,7 @@ function ModalCalendar({
                             </div>
                           ) : (
                             <div
-                              className="font-bold text-primary cursor-pointer"
+                              className="font-bold cursor-pointer text-primary"
                               onClick={() =>
                                 (window.top.location.href = `/admin/?mdl=store&act=sell#mp:${values.MemberID?.value}`)
                               }
@@ -478,7 +491,7 @@ function ModalCalendar({
                             </div>
                           ) : (
                             <div
-                              className="font-bold text-primary cursor-pointer"
+                              className="font-bold cursor-pointer text-primary"
                               onClick={() =>
                                 (window.top.location.href = `/admin/?mdl=store&act=sell#mp:${values.MemberID?.value}`)
                               }
@@ -490,10 +503,10 @@ function ModalCalendar({
                       </div>
                     )}
                   </div>
-                  <div className="form-group form-group-ezs px-6 pt-3 mb-3 border-top">
+                  <div className="px-6 pt-3 mb-3 form-group form-group-ezs border-top">
                     <label className="mb-1 d-none d-md-flex justify-content-between">
                       Thời gian / Cơ sở
-                      {/* <span className="btn btn-label btn-light-primary label-inline cursor-pointer">
+                      {/* <span className="cursor-pointer btn btn-label btn-light-primary label-inline">
                       Lặp lại
                     </span> */}
                     </label>
@@ -559,7 +572,7 @@ function ModalCalendar({
                       onBlur={handleBlur}
                     />
                   </div>
-                  <div className="form-group form-group-ezs border-top px-6 pt-3 mb-3">
+                  <div className="px-6 pt-3 mb-3 form-group form-group-ezs border-top">
                     <label className="mb-1 d-none d-md-block">Dịch vụ</label>
                     <AsyncSelect
                       key={`${
@@ -601,7 +614,7 @@ function ModalCalendar({
                       }
                     />
                     {window?.top?.GlobalConfig?.APP?.Booking?.AtHome && (
-                      <div className="d-flex align-items-center justify-content-between mt-3">
+                      <div className="mt-3 d-flex align-items-center justify-content-between">
                         <label className="mr-3">Sử dụng dịch vụ tại nhà</label>
                         <span className="switch switch-sm switch-icon">
                           <label>
@@ -620,7 +633,7 @@ function ModalCalendar({
                       </div>
                     )}
                   </div>
-                  <div className="form-group form-group-ezs px-6 pt-3 mb-3 border-top">
+                  <div className="px-6 pt-3 mb-3 form-group form-group-ezs border-top">
                     <label className="mb-1 d-none d-md-block">
                       Nhân viên thực hiện
                     </label>
@@ -658,7 +671,7 @@ function ModalCalendar({
                         //isSearchable
                         isClearable
                         classNamePrefix="select"
-                        className="select-control mt-2"
+                        className="mt-2 select-control"
                         options={Array(10)
                           .fill()
                           .map((_, x) => ({
@@ -672,15 +685,43 @@ function ModalCalendar({
                         }
                         blurInputOnSelect={true}
                         noOptionsMessage={() => "Không có dữ liệu."}
-                        //menuIsOpen
-                        //menuPosition="fixed"
+                        menuPortalTarget={document.body}
+                        menuPosition="fixed"
+                        styles={{
+                          menuPortal: (base) => ({
+                            ...base,
+                            zIndex: 9999,
+                          }),
+                        }}
                       />
                     )}
+
+                    <Select
+                      //isSearchable
+                      isMulti
+                      isClearable
+                      classNamePrefix="select"
+                      className="mt-2 select-control"
+                      options={TagsList}
+                      placeholder="Chọn tags"
+                      value={values.TagSetting}
+                      onChange={(value) => setFieldValue("TagSetting", value)}
+                      blurInputOnSelect={true}
+                      noOptionsMessage={() => "Không có dữ liệu."}
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                      styles={{
+                        menuPortal: (base) => ({
+                          ...base,
+                          zIndex: 9999,
+                        }),
+                      }}
+                    />
 
                     <textarea
                       name="Desc"
                       value={values.Desc}
-                      className="form-control mt-2"
+                      className="mt-2 form-control"
                       rows="2"
                       placeholder="Nhập ghi chú"
                       onChange={handleChange}
@@ -688,7 +729,7 @@ function ModalCalendar({
                     ></textarea>
                   </div>
                   {values?.ID && (
-                    <div className="form-group form-group-ezs px-6 pt-3 mb-3 border-top d-flex">
+                    <div className="px-6 pt-3 mb-3 form-group form-group-ezs border-top d-flex">
                       <div className="flex-1">
                         <label className="mb-1 d-none d-md-block">
                           Nhân viên tạo
@@ -732,7 +773,7 @@ function ModalCalendar({
                         <div className="d-flex w-100">
                           <button
                             type="button"
-                            className="btn btn-sm btn-secondary mr-2"
+                            className="mr-2 btn btn-sm btn-secondary"
                             onClick={onHide}
                           >
                             Hủy

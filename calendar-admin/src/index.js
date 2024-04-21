@@ -7,18 +7,19 @@ import store from "./redux/store";
 import { SplashScreenProvider } from "./layout/_core/SplashScreen";
 import * as _redux from "./redux/index";
 import axiosClient from "./redux/axioClient";
-import {
-  QueryClient,
-  QueryClientProvider,
-} from 'react-query'
-
+import { QueryClient, QueryClientProvider } from "react-query";
 
 const { PUBLIC_URL } = process.env;
 
 _redux.setupAxios(axiosClient, store);
 
-const queryClient = new QueryClient()
-
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 ReactDOM.render(
   <React.StrictMode>
