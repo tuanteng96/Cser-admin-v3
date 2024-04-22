@@ -70,10 +70,10 @@ const Control = ({ children, ...props }) => {
   );
 };
 
-function AdvancedList({ formikProps }) {
+function AdvancedList({ formikProps, TagsList }) {
   const { values, setFieldValue } = formikProps;
   const [isOpen, setIsOpen] = useState(false);
-  
+
   return (
     <>
       <div className="d-flex border-[1px] rounded-sm !border-[#D1D3E0]">
@@ -199,6 +199,30 @@ function AdvancedList({ formikProps }) {
                 Control,
               }}
               menuPortalTarget={document.body}
+            />
+            <Select
+              classIcon="far fa-ballot-check"
+              isMulti
+              isClearable
+              classNamePrefix="select"
+              className="mt-2 select-control"
+              options={TagsList}
+              placeholder="Chọn tags"
+              value={values.Tags}
+              onChange={(value) => setFieldValue("Tags", value)}
+              blurInputOnSelect={true}
+              noOptionsMessage={() => "Không có dữ liệu."}
+              menuPortalTarget={document.body}
+              menuPosition="fixed"
+              styles={{
+                menuPortal: (base) => ({
+                  ...base,
+                  zIndex: 9999,
+                }),
+              }}
+              components={{
+                Control,
+              }}
             />
           </div>
         )}

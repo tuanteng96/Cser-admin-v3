@@ -203,36 +203,46 @@ function PickerSettingCalendar({ children, SettingCalendar }) {
                                 <th className="text-center w-55px">#</th>
                               </tr>
                             </thead>
-                            <tbody>
-                              {values.OriginalServices.map((service, index) => (
-                                <tr key={index}>
-                                  <td>{service.label}</td>
-                                  <td className="w-100px">
-                                    <input
-                                      type="color"
-                                      name={`OriginalServices[${index}].color`}
-                                      value={service.color}
-                                      onChange={handleChange}
-                                      onBlur={handleBlur}
-                                    />
-                                  </td>
-                                  <td className="w-55px">
-                                    <button
-                                      type="button"
-                                      className="btn btn-danger"
-                                      style={{
-                                        fontSize: "12px",
-                                        padding: "0px",
-                                        width: "30px",
-                                        height: "30px",
-                                      }}
-                                    >
-                                      <i className="p-0 font-size-sm fas fa-trash-alt"></i>
-                                    </button>
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
+                            <FieldArray
+                              name="OriginalServices"
+                              render={(arrayHelpers) => (
+                                <tbody>
+                                  {values.OriginalServices.map(
+                                    (service, index) => (
+                                      <tr key={index}>
+                                        <td>{service.label}</td>
+                                        <td className="w-100px">
+                                          <input
+                                            type="color"
+                                            name={`OriginalServices[${index}].color`}
+                                            value={service.color}
+                                            onChange={handleChange}
+                                            onBlur={handleBlur}
+                                          />
+                                        </td>
+                                        <td className="w-55px">
+                                          <button
+                                            onClick={() =>
+                                              arrayHelpers.remove(index)
+                                            }
+                                            type="button"
+                                            className="btn btn-danger"
+                                            style={{
+                                              fontSize: "12px",
+                                              padding: "0px",
+                                              width: "30px",
+                                              height: "30px",
+                                            }}
+                                          >
+                                            <i className="p-0 font-size-sm fas fa-trash-alt"></i>
+                                          </button>
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
+                                </tbody>
+                              )}
+                            />
                           </table>
                         </div>
                       )}

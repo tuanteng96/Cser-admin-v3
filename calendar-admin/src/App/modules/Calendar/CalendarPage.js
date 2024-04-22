@@ -122,6 +122,7 @@ function CalendarPage(props) {
       // "THUC_HIEN_XONG",
     ],
     StockID: AuthCrStockID,
+    Tags: "",
   });
   const [topCalendar, setTopCalendar] = useState({
     type: {
@@ -757,8 +758,8 @@ function CalendarPage(props) {
         StatusMember: filters?.StatusMember ? filters?.StatusMember.value : "",
         StatusBook: filters?.StatusBook ? filters?.StatusBook.value : "",
         StatusAtHome: filters?.StatusAtHome ? filters?.StatusAtHome.value : "",
+        Tags: filters?.Tags ? filters?.Tags.map((x) => x.value).toString() : "",
       };
-
       let data = await CalendarCrud.getBooking(newFilters);
       let dataOffline = [];
       if (topCalendar?.type?.value === "resourceTimeGridDay") {
@@ -957,11 +958,16 @@ function CalendarPage(props) {
       let { OriginalServices } = SettingCalendar.data;
       for (let i of OriginalServices) {
         if (book.Roots.findIndex((x) => x.ID === i.value) > -1) {
-          rs.push(i)
+          rs.push(i);
         }
       }
     }
-    return rs.map(x => `<div class="h-5px" style="background: ${x.color}"></div>`).toString();
+    return rs
+      .map(
+        (x) =>
+          `<div class="w-3px" style="background: ${x.color}; flex-grow: 1;"></div>`
+      )
+      .join("");
   };
 
   // const someMethod = () => {
@@ -989,6 +995,14 @@ function CalendarPage(props) {
             onOpenModalLock={onOpenModalLock}
             onOpenModalRoom={onOpenModalRoom}
             isRooms={isRooms}
+            TagsList={
+              SettingCalendar?.data?.Tags
+                ? SettingCalendar?.data?.Tags.split(",").map((x) => ({
+                    label: x,
+                    value: x,
+                  }))
+                : []
+            }
           />
           <div className="flex flex-col ezs-calendar__content">
             <div className="flex justify-between mb-4">
@@ -1519,7 +1533,7 @@ function CalendarPage(props) {
                       italicEl.innerHTML = `<div class="fc-title">
                       ${
                         !extendedProps?.os && extendedProps?.ID
-                          ? `<div class="position-absolute w-100 top-0 left-0">
+                          ? `<div class="position-absolute h-100 top-0 left-0 d-flex flex-column">
                         ${renderColor(extendedProps)}
                       </div>`
                           : ""

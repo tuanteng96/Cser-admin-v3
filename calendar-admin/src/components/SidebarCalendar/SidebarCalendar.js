@@ -78,6 +78,7 @@ function SidebarCalendar({
   onOpenModalLock,
   onOpenModalRoom,
   isRooms,
+  TagsList,
 }) {
   const [initialValues, setInitialValues] = useState(initialDefault);
   const { width } = useWindowSize();
@@ -271,7 +272,7 @@ function SidebarCalendar({
                     </div>
                   )}
 
-                  <AdvancedList formikProps={formikProps} />
+                  <AdvancedList formikProps={formikProps} TagsList={TagsList} />
                   <StatusList />
                   {/* <ModalProcessingBook>
                     {({ open, hidden }) => (
