@@ -109,7 +109,7 @@ function PickerSettingCalendar({ children, SettingCalendar }) {
                       onChange={(val) => {
                         setFieldValue("Tags", val);
                       }}
-                      placeholder="Nập tên tag"
+                      placeholder="Nhập tên tag"
                       menuPortalTarget={document.body}
                       menuPosition="fixed"
                       styles={{

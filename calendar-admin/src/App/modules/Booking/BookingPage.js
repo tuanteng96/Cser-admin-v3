@@ -1,19 +1,19 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import Select, { components } from "react-select";
 import AsyncSelect from "react-select/async";
 import CalendarCrud from "../Calendar/_redux/CalendarCrud";
-import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
-import "../../../_assets/sass/pages/_booking.scss";
 import Cookies from "js-cookie";
-
+import DatePicker from "react-datepicker";
 import moment from "moment";
 import "moment/locale/vi";
 import SelectStocks from "../../../components/Select/SelectStocks/SelectStocks";
 import SelectStaffsService from "../../../components/Select/SelectStaffsService/SelectStaffsService";
 import { Dropdown } from "react-bootstrap";
+import { useQuery } from "react-query";
+import "../../../_assets/sass/pages/_booking.scss";
 moment.locale("vi");
 
 const StatusArr = [
@@ -61,6 +61,11 @@ const initialDefault = {
   StockID: 0,
   UserServiceIDs: "",
   AtHome: false,
+  TagSetting: "",
+  AmountPeople: {
+    label: "1 khách",
+    value: 1,
+  },
 };
 function BookingPage() {
   const [initialValues, setInitialValues] = useState(initialDefault);
@@ -80,6 +85,32 @@ function BookingPage() {
 
   useEffect(() => {
     if (Book.ID > 0) {
+      let newDesc = Book.Desc;
+      let AmountPeople = {
+        label: "1 khách",
+        value: 1,
+      };
+      let TagSetting = [];
+      let descSplit = newDesc.split("\n");
+      for (let i of descSplit) {
+        if (i.includes("Số lượng khách:")) {
+          let SL = Number(i.match(/\d+/)[0]);
+          AmountPeople = {
+            label: SL + " khách",
+            value: SL,
+          };
+        }
+        if (i.includes("Tags:")) {
+          let newTagSetting = descSplit[1].replaceAll("Tags: ", "");
+          TagSetting = newTagSetting
+            .split(",")
+            .map((x) => ({ label: x, value: x }));
+        }
+        if (i.includes("Ghi chú:")) {
+          newDesc = i.replaceAll("Ghi chú: ", "");
+        }
+      }
+
       setInitialValues((prevState) => ({
         ...prevState,
         ID: Book.ID,
@@ -95,13 +126,15 @@ function BookingPage() {
         Status: Book.Status,
         BookDate: Book.BookDate,
         StockID: Book.StockID,
-        Desc: Book.Desc,
+        Desc: newDesc,
         UserServiceIDs: Book.UserServices.map((item) => ({
           ...item,
           value: item.ID,
           label: item.FullName,
         })),
         AtHome: Book.AtHome,
+        AmountPeople,
+        TagSetting,
       }));
     } else {
       setInitialValues((prevState) => ({
@@ -139,6 +172,20 @@ function BookingPage() {
       ...prevState,
       isBtnBooking: true,
     }));
+
+    let Desc = "";
+    if (window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Số lượng khách: ${values.AmountPeople.value}`;
+    }
+    if (values.TagSetting && values.TagSetting.length > 0) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
+    }
+    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc}`;
+
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
 
@@ -156,6 +203,7 @@ function BookingPage() {
               ? values.UserServiceIDs.map((item) => item.value).toString()
               : "",
           BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+          Desc,
         },
       ],
     };
@@ -194,6 +242,20 @@ function BookingPage() {
       ...prevState,
       isBtnBooking: true,
     }));
+
+    let Desc = "";
+    if (window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Số lượng khách: ${values.AmountPeople.value}`;
+    }
+    if (values.TagSetting && values.TagSetting.length > 0) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
+    }
+    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc}`;
+
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
 
@@ -209,6 +271,7 @@ function BookingPage() {
               : "",
           BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
           Status: "KHACH_DEN",
+          Desc
         },
       ],
     };
@@ -311,6 +374,28 @@ function BookingPage() {
     StockID: Yup.string().required("Vui lòng chọn cơ sở."),
   });
 
+  const SettingCalendar = useQuery({
+    queryKey: ["SettingCalendar"],
+    queryFn: async () => {
+      let { data } = await CalendarCrud.getConfigName(`ArticleRel`);
+      let rs = {
+        Tags: "",
+        OriginalServices: [],
+      };
+      if (data && data.length > 0) {
+        const result = JSON.parse(data[0].Value);
+        if (result) {
+          rs = result;
+        }
+      }
+      return rs;
+    },
+    initialData: {
+      Tags: "",
+      OriginalServices: [],
+    },
+  });
+
   return (
     <div className="booking">
       <Formik
@@ -363,9 +448,6 @@ function BookingPage() {
                 <div className="px-6 pt-3 form-group form-group-ezs">
                   <label className="mb-1 d-flex justify-content-between">
                     Thời gian / Cơ sở
-                    {/* <span className="cursor-pointer btn btn-label btn-light-primary label-inline">
-                      Lặp lại
-                    </span> */}
                   </label>
                   <DatePicker
                     minTime={
@@ -411,11 +493,7 @@ function BookingPage() {
                     }`}
                     classNamePrefix="select"
                     value={values.StockID}
-                    //isLoading={true}
-                    //isDisabled={true}
-                    //isClearable
                     isSearchable
-                    //menuIsOpen={true}
                     name="StockID"
                     placeholder="Chọn cơ sở"
                     onChange={(option) => {
@@ -445,7 +523,6 @@ function BookingPage() {
                     isDisabled={false}
                     isClearable
                     isSearchable
-                    //menuIsOpen={true}
                     value={values.RootIdS}
                     onChange={(option) => setFieldValue("RootIdS", option)}
                     name="RootIdS"
@@ -466,24 +543,25 @@ function BookingPage() {
                         : "Không tìm thấy dịch vụ"
                     }
                   />
-
-                  <div className="mt-3 d-flex align-items-center justify-content-between">
-                    <label className="mr-3">Sử dụng dịch vụ tại nhà</label>
-                    <span className="switch switch-sm switch-icon">
-                      <label>
-                        <input
-                          type="checkbox"
-                          name="AtHome"
-                          onChange={(evt) =>
-                            setFieldValue("AtHome", evt.target.checked)
-                          }
-                          onBlur={handleBlur}
-                          checked={values.AtHome}
-                        />
-                        <span />
-                      </label>
-                    </span>
-                  </div>
+                  {window?.top?.GlobalConfig?.APP?.Booking?.AtHome && (
+                    <div className="mt-3 d-flex align-items-center justify-content-between">
+                      <label className="mr-3">Sử dụng dịch vụ tại nhà</label>
+                      <span className="switch switch-sm switch-icon">
+                        <label>
+                          <input
+                            type="checkbox"
+                            name="AtHome"
+                            onChange={(evt) =>
+                              setFieldValue("AtHome", evt.target.checked)
+                            }
+                            onBlur={handleBlur}
+                            checked={values.AtHome}
+                          />
+                          <span />
+                        </label>
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <div className="px-6 pt-3 form-group form-group-ezs border-top">
                   <label className="mb-1">Nhân viên thực hiện</label>
@@ -500,7 +578,6 @@ function BookingPage() {
                     isSearchable
                     isMulti
                     menuPosition="fixed"
-                    //menuIsOpen={true}
                     name="UserServiceIDs"
                     value={values.UserServiceIDs}
                     onChange={(option) =>
@@ -515,6 +592,60 @@ function BookingPage() {
                         ? "Không có nhân viên"
                         : "Không tìm thấy nhân viên"
                     }
+                  />
+                  {window?.top?.GlobalConfig?.APP?.SL_khach && (
+                    <Select
+                      isClearable
+                      classNamePrefix="select"
+                      className="mt-2 select-control"
+                      options={Array(10)
+                        .fill()
+                        .map((_, x) => ({
+                          label: x + 1 + " khách",
+                          value: x + 1,
+                        }))}
+                      placeholder="Chọn số khách"
+                      value={values.AmountPeople}
+                      onChange={(value) => setFieldValue("AmountPeople", value)}
+                      blurInputOnSelect={true}
+                      noOptionsMessage={() => "Không có dữ liệu."}
+                      menuPortalTarget={document.body}
+                      menuPosition="fixed"
+                      styles={{
+                        menuPortal: (base) => ({
+                          ...base,
+                          zIndex: 9999,
+                        }),
+                      }}
+                    />
+                  )}
+
+                  <Select
+                    isMulti
+                    isClearable
+                    classNamePrefix="select"
+                    className="mt-2 select-control"
+                    options={
+                      SettingCalendar?.data?.Tags
+                        ? SettingCalendar?.data?.Tags.split(",").map((x) => ({
+                            label: x,
+                            value: x,
+                          }))
+                        : []
+                    }
+                    placeholder="Chọn tags"
+                    value={values.TagSetting}
+                    onChange={(value) => setFieldValue("TagSetting", value)}
+                    blurInputOnSelect={true}
+                    noOptionsMessage={() => "Không có dữ liệu."}
+                    menuPortalTarget={document.body}
+                    menuPosition="fixed"
+                    styles={{
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999,
+                      }),
+                    }}
                   />
                   <textarea
                     name="Desc"
