@@ -954,6 +954,7 @@ function CalendarPage(props) {
 
   const renderColor = (book) => {
     let rs = [];
+    console.log(book);
     if (book.Roots && book.Roots.length > 0) {
       let { OriginalServices } = SettingCalendar.data;
       for (let i of OriginalServices) {
@@ -962,10 +963,21 @@ function CalendarPage(props) {
         }
       }
     }
+    if (book?.os) {
+      let { OriginalServices } = SettingCalendar.data;
+      for (let i of OriginalServices) { 
+        if (
+          i.value === book?.os?.ProdServiceID ||
+          i.value === book?.os?.ProdServiceID2
+        ) {
+          rs.push(i);
+        }
+      }
+    }
     return rs
       .map(
         (x) =>
-          `<div class="w-3px" style="background: ${x.color}; flex-grow: 1;"></div>`
+          `<div class="w-5px" style="background: ${x.color}; flex-grow: 1;"></div>`
       )
       .join("");
   };
@@ -1531,13 +1543,9 @@ function CalendarPage(props) {
                   ) {
                     if (view.type !== "listWeek") {
                       italicEl.innerHTML = `<div class="fc-title">
-                      ${
-                        !extendedProps?.os && extendedProps?.ID
-                          ? `<div class="position-absolute h-100 top-0 left-0 d-flex flex-column">
+                      <div class="position-absolute h-100 top-0 left-0 d-flex flex-column">
                         ${renderColor(extendedProps)}
-                      </div>`
-                          : ""
-                      }
+                      </div>
                     <div class="d-flex justify-content-between"><div><span class="fullname">${
                       extendedProps?.AtHome
                         ? `<i class="fas fa-home text-white font-size-xs"></i>`
