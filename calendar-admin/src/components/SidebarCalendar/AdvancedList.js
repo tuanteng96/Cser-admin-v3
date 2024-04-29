@@ -46,7 +46,7 @@ const CustomOptionStaff = ({ children, ...props }) => {
   return (
     <components.Option {...props}>
       <div className="d-flex align-items-center">
-        <div className="w-20px h-20px mr-2 rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+        <div className="mr-2 overflow-hidden w-20px h-20px rounded-circle d-flex align-items-center justify-content-center">
           <img className="w-100" src={Thumbnail} alt={label} />
         </div>
         {children}
@@ -81,7 +81,7 @@ function AdvancedList({ formikProps, TagsList }) {
           classIcon="fa-regular fa-magnifying-glass"
           menuPlacement="bottom"
           isMulti
-          className="select-control select-border-none flex-1"
+          className="flex-1 select-control select-border-none"
           classNamePrefix="select"
           name="MemberID"
           value={values.MemberID}
@@ -96,12 +96,13 @@ function AdvancedList({ formikProps, TagsList }) {
           }}
           placeholder="Tìm kiếm"
           noOptionsMessage={({ inputValue }) =>
-            !inputValue ? "Không có khách hàng" : "Không tìm thấy khách hàng"
+            !inputValue ? "Nhập thông tin khách hàng cần tìm ?" : "Không tìm thấy khách hàng"
           }
           menuPortalTarget={document.body}
+          defaultOptions={false}
         />
         <div
-          className="d-flex align-items-center justify-content-center cursor-pointer"
+          className="cursor-pointer d-flex align-items-center justify-content-center"
           style={{
             width: "35px",
           }}
@@ -115,7 +116,7 @@ function AdvancedList({ formikProps, TagsList }) {
           ></div>
         </div>
       </div>
-      <div className="form-group form-group-ezs mb-0">
+      <div className="mb-0 form-group form-group-ezs">
         {isOpen && (
           <div className="pb-8px mt-[8px]">
             <SelectStaffsService

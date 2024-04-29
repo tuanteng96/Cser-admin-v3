@@ -105,7 +105,7 @@ function ModalCalendar({
   TagsList,
 }) {
   //console.log(initialValue)
-  const [initialValues, setInitialValues] = useState(initialDefault);
+
   const { AuthCrStockID, TimeOpen, TimeClose } = useSelector(
     ({ Auth, JsonConfig }) => ({
       AuthStocks: Auth.Stocks.filter(
@@ -116,7 +116,10 @@ function ModalCalendar({
       TimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
     })
   );
-
+  const [initialValues, setInitialValues] = useState({
+    ...initialDefault,
+    StockID: initialValue.StockID,
+  });
   const [isModalCreate, setIsModalCreate] = useState(false);
   const [initialCreate, setInitialCreate] = useState({
     FullName: "",
@@ -197,7 +200,7 @@ function ModalCalendar({
         }));
       }
     } else {
-      setInitialValues(initialDefault);
+      setInitialValues({ ...initialDefault, StockID: AuthCrStockID });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [show, initialValue]);

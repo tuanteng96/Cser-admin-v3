@@ -103,6 +103,7 @@ function CalendarPage(props) {
     TimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
     TimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
     isRooms: JsonConfig?.Admin?.isRooms,
+    StockRights: Auth?.StockRights || [],
   }));
 
   const [isModal, setIsModal] = useState(false);
@@ -308,40 +309,54 @@ function CalendarPage(props) {
       .then(({ data }) => {
         if (data && data.length > 0) {
           const result = data[0].Value ? JSON.parse(data[0].Value) : "";
+          let newValues = [];
+          if (result && result.length > 0) {
+            let StocksNews = StocksList;
 
-          const newResult =
-            result && result.length > 0
-              ? result.map((lock) => ({
-                  ...lock,
-                  ListDisable:
-                    lock.ListDisable && lock.ListDisable.length > 0
-                      ? lock.ListDisable.filter((item) =>
-                          moment().isSameOrBefore(
-                            moment(item.Date, "DD/MM/YYYY"),
-                            "day"
-                          )
-                        )
-                          .map((item) => ({
-                            ...item,
-                            Date: moment(item.Date, "DD/MM/YYYY").toDate(),
-                            TimeClose:
-                              item.TimeClose && item.TimeClose.length > 0
-                                ? item.TimeClose
-                                : [{ Start: "", End: "" }],
-                          }))
-                          .sort(
-                            (a, b) =>
-                              moment(a.Date).valueOf() -
-                              moment(b.Date).valueOf()
-                          )
-                      : [],
-                }))
-              : StocksList.map((o) => ({
-                  StockID: o.ID,
+            for (let stock of StocksNews) {
+              let index = result.findIndex((x) => stock.ID === x.StockID);
+              if (index > -1) {
+                newValues.push(result[index]);
+              } else {
+                newValues.push({
+                  StockID: stock.ID,
                   ListDisable: [],
-                }));
+                });
+              }
+            }
+          } else {
+            newValues = StocksList.map((o) => ({
+              StockID: o.ID,
+              ListDisable: [],
+            }));
+          }
+          newValues = newValues.map((lock) => ({
+            ...lock,
+            ListDisable:
+              lock.ListDisable && lock.ListDisable.length > 0
+                ? lock.ListDisable.filter((item) =>
+                    moment().isSameOrBefore(
+                      moment(item.Date, "DD/MM/YYYY"),
+                      "day"
+                    )
+                  )
+                    .map((item) => ({
+                      ...item,
+                      Date: moment(item.Date, "DD/MM/YYYY").toDate(),
+                      TimeClose:
+                        item.TimeClose && item.TimeClose.length > 0
+                          ? item.TimeClose
+                          : [{ Start: "", End: "" }],
+                    }))
+                    .sort(
+                      (a, b) =>
+                        moment(a.Date).valueOf() - moment(b.Date).valueOf()
+                    )
+                : [],
+          }));
+
           setListLock({
-            ListLocks: newResult,
+            ListLocks: newValues,
           });
           callback && callback();
         }
@@ -965,7 +980,7 @@ function CalendarPage(props) {
     }
     if (book?.os) {
       let { OriginalServices } = SettingCalendar.data;
-      for (let i of OriginalServices) { 
+      for (let i of OriginalServices) {
         if (
           i.value === book?.os?.ProdServiceID ||
           i.value === book?.os?.ProdServiceID2

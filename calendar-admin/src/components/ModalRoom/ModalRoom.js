@@ -42,10 +42,16 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
       .then(({ data }) => {
         if (data && data.length > 0) {
           const result = data[0].Value ? JSON.parse(data[0].Value) : [];
-          let newResult = [];
-          newResult =
-            result && result.length > 0
-              ? result.map((item) => ({
+
+          let newValues = [];
+          if (result && result.length > 0) {
+            let StocksNews = StocksList;
+
+            for (let stock of StocksNews) {
+              let index = result.findIndex((x) => stock.ID === x.StockID);
+              if (index > -1) {
+                let item = result[index];
+                newValues.push({
                   ...item,
                   ListRooms:
                     item.ListRooms && item.ListRooms.length > 0
@@ -73,10 +79,11 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                             ],
                           },
                         ],
-                }))
-              : StocksList.map((o) => ({
-                  StockID: o.ID,
-                  StockTitle: o.Title,
+                });
+              } else {
+                newValues.push({
+                  StockID: stock.ID,
+                  StockTitle: stock.Title,
                   ListRooms: [
                     {
                       ID: uuidv4(),
@@ -89,10 +96,31 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                       ],
                     },
                   ],
-                }));
+                });
+              }
+            }
+          } else {
+            newValues = StocksList.map((o) => ({
+              StockID: o.ID,
+              StockTitle: o.Title,
+              ListRooms: [
+                {
+                  ID: uuidv4(),
+                  label: "",
+                  Children: [
+                    {
+                      ID: uuidv4(),
+                      label: "",
+                    },
+                  ],
+                },
+              ],
+            }));
+          }
+          
           setInitialValues((prevState) => ({
             ...prevState,
-            RoomStocks: newResult,
+            RoomStocks: newValues,
           }));
           callback && callback();
         }

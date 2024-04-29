@@ -44,12 +44,34 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
             {
-              ID: 10053,
+              ID: 11343,
               Title: "Cser Hồ Chí Minh",
               ParentID: 778,
             },
+            {
+              ID: 11344,
+              Title: "Cser Đà nẵng",
+              ParentID: 778,
+            },
           ],
-          CrStockID: 11340, //8975
+          StockRights: [
+            {
+              ID: 11340,
+              Title: "Cser Hà Nội",
+              ParentID: 778,
+            },
+            {
+              ID: 11343,
+              Title: "Cser Hồ Chí Minh",
+              ParentID: 778,
+            },
+            {
+              ID: 11344,
+              Title: "Cser Đà nẵng",
+              ParentID: 778,
+            },
+          ],
+          CrStockID: 11344, //8975
           rightsSum: {
             pos: {
               hasRight: true,
