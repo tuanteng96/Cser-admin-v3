@@ -969,7 +969,6 @@ function CalendarPage(props) {
 
   const renderColor = (book) => {
     let rs = [];
-    console.log(book);
     if (book.Roots && book.Roots.length > 0) {
       let { OriginalServices } = SettingCalendar.data;
       for (let i of OriginalServices) {
