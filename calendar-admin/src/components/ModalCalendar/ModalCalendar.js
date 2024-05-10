@@ -148,7 +148,7 @@ function ModalCalendar({
             };
           }
           if (i.includes("Tags:")) {
-            let newTagSetting = descSplit[1].replaceAll("Tags: ", "");
+            let newTagSetting = i.replaceAll("Tags: ", "");
             TagSetting = newTagSetting
               .split(",")
               .map((x) => ({ label: x, value: x }));
