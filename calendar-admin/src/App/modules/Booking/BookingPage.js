@@ -184,7 +184,7 @@ function BookingPage() {
         (Desc ? Desc + "\n" : "") +
         `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
     }
-    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc}`;
+    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc || ""}`;
 
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
@@ -254,7 +254,7 @@ function BookingPage() {
         (Desc ? Desc + "\n" : "") +
         `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
     }
-    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc}`;
+    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc || ""}`;
 
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
