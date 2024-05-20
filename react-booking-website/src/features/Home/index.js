@@ -31,7 +31,8 @@ const initialValue = {
   AmountPeople: {
     value: 1,
     label: '1 khách'
-  }
+  },
+  OldBook: null
 }
 
 const BookingSchema = Yup.object().shape({
@@ -70,8 +71,26 @@ export default function Home() {
             : '',
           Desc:
             window.GlobalConfig?.APP?.SL_khach && itemBooking.AmountPeople
-              ? `Số lượng khách: ${itemBooking.AmountPeople.value}. \nGhi chú: ${itemBooking.Desc}`
-              : itemBooking.Desc
+              ? `Số lượng khách: ${
+                  itemBooking.AmountPeople.value
+                }. \nGhi chú: ${
+                  (itemBooking.Desc || '') +
+                  (itemBooking?.OldBook
+                    ? ` (Thay đổi từ ${
+                        itemBooking?.OldBook?.RootTitles
+                      } - ${moment(itemBooking?.OldBook?.BookDate).format(
+                        'HH:mm DD-MM-YYYY'
+                      )})`
+                    : '')
+                }`
+              : (itemBooking.Desc || '') +
+                (itemBooking?.OldBook
+                  ? ` (Thay đổi từ ${
+                      itemBooking?.OldBook?.RootTitles
+                    } - ${moment(itemBooking?.OldBook?.BookDate).format(
+                      'HH:mm DD-MM-YYYY'
+                    )}`
+                  : '')
         }
       ]
     }
@@ -116,7 +135,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-100 overflow-hidden position-relative tab-book">
+    <div className="overflow-hidden h-100 position-relative tab-book">
       <Formik
         initialValues={initialValues}
         onSubmit={onSubmit}
@@ -144,26 +163,40 @@ export default function Home() {
             formikProps.setFieldValue('RootIdS', obj.RootIdS)
             formikProps.setFieldValue('BookDate', obj.BookDate)
 
-            if (obj.Desc && obj.Desc.includes('Số lượng khách:')) {
-              let descSplit = obj.Desc.split('\n')
-              let SL = Number(descSplit[0].match(/\d+/)[0])
-
-              formikProps.setFieldValue(
-                'Desc',
-                descSplit[1].replaceAll('Ghi chú: ', '')
-              )
-              formikProps.setFieldValue('AmountPeople', {
-                label: SL + ' khách',
-                value: SL || 1
-              })
+            let newDesc = obj.Desc
+            let indexCut = newDesc && newDesc.indexOf('(Thay đổi từ')
+            if (indexCut > -1) {
+              newDesc = newDesc.substring(0, indexCut)
+            }
+            if (newDesc) {
+              let newAmountPeople = {
+                label: '1 khách',
+                value: 1
+              }
+              let descSplit = newDesc?.split('\n')
+              for (let i of descSplit) {
+                if (i.includes('Số lượng khách:')) {
+                  let SL = Number(i.match(/\d+/)[0])
+                  newAmountPeople = {
+                    label: SL + ' khách',
+                    value: SL
+                  }
+                }
+                if (i.includes('Ghi chú:')) {
+                  newDesc = i.replaceAll('Ghi chú: ', '')
+                }
+              }
+              formikProps.setFieldValue('Desc', newDesc)
+              formikProps.setFieldValue('AmountPeople', newAmountPeople)
             } else {
-              formikProps.setFieldValue('Desc', obj.Desc)
+              formikProps.setFieldValue('Desc', newDesc)
             }
 
             formikProps.setFieldValue('StockID', obj.StockID)
             formikProps.setFieldValue('MobilePhone', obj.MobilePhone)
             formikProps.setFieldValue('FullName', obj.FullName)
             formikProps.setFieldValue('UserServiceIDs', obj.UserServiceIDs)
+            formikProps.setFieldValue('OldBook', obj)
             setBookSet(obj.BookDate)
           }
           return (
