@@ -30,6 +30,11 @@ ModalCalendar.defaultProps = {
   onSubmit: null,
 };
 
+function getUniqueListBy(arr, key) {
+  return [...new Map(arr.map(item => [item[key], item])).values()]
+}
+
+
 const CustomOptionStaff = ({ children, ...props }) => {
   const { Thumbnail, label } = props.data;
   return (
@@ -229,7 +234,7 @@ function ModalCalendar({
         "",
         inputValue === "" ? 0 : ""
       );
-      const dataResult = data.map((item) => ({
+      let dataResult = data.map((item) => ({
         ...item,
         value: item.id,
         label:
@@ -238,6 +243,9 @@ function ModalCalendar({
             : item.text,
         Thumbnail: toUrlServer("/images/user.png"),
       }));
+
+      dataResult = getUniqueListBy(dataResult, 'value')
+
       callback(dataResult);
     }, 300);
   };
