@@ -87,16 +87,16 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
 
   return (
     <div className="d-flex flex-column h-100">
-      <div className="border-bottom p-15px text-uppercase fw-700 font-size-md bg-white text-center position-relative">
+      <div className="text-center bg-white border-bottom p-15px text-uppercase fw-700 font-size-md position-relative">
         <div
-          className="position-absolute w-50px h-100 left-0 top-0 d-flex align-items-center justify-content-center cursor-pointer"
+          className="top-0 left-0 cursor-pointer position-absolute w-50px h-100 d-flex align-items-center justify-content-center"
           onClick={prevStep}
         >
           <i className="fa-regular fa-chevron-left"></i>
         </div>
         Chọn dịch vụ
       </div>
-      <div className="confirm-search bg-white mt-2px p-15px">
+      <div className="bg-white confirm-search mt-2px p-15px">
         <div className="position-relative">
           <input
             className="form-control h-45px"
@@ -109,7 +109,7 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
         </div>
       </div>
       <div
-        className="flex-grow-1 bg-white overflow-auto px-15px"
+        className="overflow-auto bg-white flex-grow-1 px-15px"
         id="scrollableDiv"
       >
         <InfiniteScroll
@@ -165,7 +165,7 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
                       >
                         <div className="item-service__title fw-600">
                           {item.Title}
-                          <label className="badge badge-danger ml-5px">
+                          <label className="hot badge badge-danger ml-5px">
                             HOT
                           </label>
                         </div>
@@ -203,7 +203,7 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
           )}
         </InfiniteScroll>
       </div>
-      <div className="pt-15px bg-white">
+      <div className="bg-white pt-15px">
         <button
           type="submit"
           className={clsx(

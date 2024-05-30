@@ -418,6 +418,14 @@
       transform: translateY(-50%);
       color: #3333;
     }
+    .hot {
+      display: none;
+    }
+    &.deal-hot {
+      .hot {
+        display: inline-block;
+      }
+    }
   }
 }
 
