@@ -69,6 +69,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     if (data && data.length > 0) {
       let TotalPrice = getTotalPrice()
       let TotalCountWork = getTotalCountWork()
+      let TotalTimeToHour = getTotalTimeToHour()
       if (
         data &&
         data[0].WorkTrack?.Info?.ForDate &&
@@ -86,6 +87,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
           LUONG: data[0].WorkTrack?.Info?.LUONG
         }))
       } else if (SalaryConfigMons?.Values?.LUONG) {
+        
         let { Values, DayCount } = SalaryConfigMons
         let SalaryDay = 0
         if (Values?.NGAY_CONG) {
@@ -97,7 +99,9 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
         setInitialValues(prevState => ({
           ...prevState,
           ...data[0].WorkTrack?.Info,
-          LUONG: Math.floor(TotalCountWork * SalaryDay + TotalPrice),
+          LUONG: Math.floor(
+            TotalCountWork * SalaryDay + TotalPrice + TotalTimeToHour
+          ),
           CONG_CA: TotalCountWork,
           THUONG_PHAT: TotalPrice,
           ID: data[0].WorkTrack?.ID || 0,
@@ -106,7 +110,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
       } else {
         setInitialValues(prevState => ({
           ...prevState,
-          LUONG: 0,
+          LUONG: 0 + TotalTimeToHour,
           CONG_CA: TotalCountWork,
           THUONG_PHAT: TotalPrice,
           ID: data[0].WorkTrack?.ID || 0,
@@ -132,6 +136,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
 
   const getTotalPrice = () => {
     if (!data || data.length === 0) return 0
+
     return data.reduce(
       (n, { WorkTrack }) =>
         n +
@@ -145,12 +150,31 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     if (!data || data.length === 0) return 0
     return (
       Math.round(
-        data.reduce(
-          (n, { WorkTrack }) => n + Number(WorkTrack?.Info?.CountWork || 0),
-          0
-        ) * 100
+        data
+          .filter(x => !x?.WorkTrack?.Info?.WorkToday?.hiddenTime)
+          .reduce(
+            (n, { WorkTrack }) => n + Number(WorkTrack?.Info?.CountWork || 0),
+            0
+          ) * 100
       ) / 100
     )
+  }
+
+  const getTotalTimeToHour = () => {
+    if (!data || data.length === 0) return 0
+    let newData = data.filter(
+      x =>
+        x?.WorkTrack?.Info?.WorkToday?.hiddenTime &&
+        x?.WorkTrack?.CheckIn &&
+        x?.WorkTrack?.CheckOut
+    )
+    let total = 0
+    for (let i of newData) {
+      total +=
+        i?.WorkTrack?.Info?.WorkToday?.SalaryHours *
+        i?.WorkTrack?.Info?.WorkToday?.TotalTime
+    }
+    return total
   }
 
   const updateTimeKeepMutation = useMutation({
