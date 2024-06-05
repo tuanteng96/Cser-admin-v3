@@ -296,7 +296,9 @@ function TimekeepingHome(props) {
           <div className="flex items-center w-full h-full">
             <div className="flex-1">
               <NavLink
-                to={`/bang-cham-cong/${rowData.UserID}?CrDate=${moment(CrDate).format('DD/MM/YYYY')}`}
+                to={`/bang-cham-cong/${rowData.UserID}?CrDate=${moment(
+                  CrDate
+                ).format('DD/MM/YYYY')}`}
                 className="font-semibold text-black text-name text-decoration-none text-[12px] md:text-[15px] text-capitalize d-block pr-15px"
               >
                 <div>{rowData.FullName}</div>
@@ -305,8 +307,15 @@ function TimekeepingHome(props) {
                     {date.WorkTrack?.Info?.WorkToday?.Title && (
                       <div className="text-[12px] text-muted">
                         {date.WorkTrack?.Info?.WorkToday?.Title} (
-                        {date.WorkTrack?.Info?.WorkToday?.TimeFrom} -{' '}
-                        {date.WorkTrack?.Info?.WorkToday?.TimeTo})
+                        {date.WorkTrack?.Info?.WorkToday?.TimeFrom ? (
+                          <>
+                            {date.WorkTrack?.Info?.WorkToday?.TimeFrom} -{' '}
+                            {date.WorkTrack?.Info?.WorkToday?.TimeTo}
+                          </>
+                        ) : (
+                          <>Theo giờ</>
+                        )}
+                        )
                       </div>
                     )}
                     {date.WorkTrack?.StockID &&
@@ -526,7 +535,10 @@ function TimekeepingHome(props) {
                         >
                           {({ field, form, meta }) => (
                             <Select
-                              isDisabled={date?.isFinish}
+                              isDisabled={
+                                date?.isFinish ||
+                                date?.WorkTrack?.Info?.WorkToday?.hiddenTime
+                              }
                               isClearable
                               menuPortalTarget={document.body}
                               components={{
@@ -551,7 +563,17 @@ function TimekeepingHome(props) {
                               classNamePrefix="select"
                               placeholder="Loại vào"
                               menuPosition="fixed"
-                              value={field.value}
+                              value={
+                                field.value
+                                  ? {
+                                      ...field.value,
+                                      label: date?.WorkTrack?.Info?.WorkToday
+                                        ?.hiddenTime
+                                        ? 'Theo giờ'
+                                        : field.value.label
+                                    }
+                                  : null
+                              }
                               onChange={otp =>
                                 form.setFieldValue(
                                   `list[${rowIndex}].Dates[${index}].WorkTrack.Info.TimekeepingType`,

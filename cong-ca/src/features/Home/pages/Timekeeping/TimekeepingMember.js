@@ -87,7 +87,6 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
           LUONG: data[0].WorkTrack?.Info?.LUONG
         }))
       } else if (SalaryConfigMons?.Values?.LUONG) {
-        
         let { Values, DayCount } = SalaryConfigMons
         let SalaryDay = 0
         if (Values?.NGAY_CONG) {
@@ -110,7 +109,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
       } else {
         setInitialValues(prevState => ({
           ...prevState,
-          LUONG: 0 + TotalTimeToHour,
+          LUONG: 0 + TotalPrice,
           CONG_CA: TotalCountWork,
           THUONG_PHAT: TotalPrice,
           ID: data[0].WorkTrack?.ID || 0,
@@ -592,8 +591,15 @@ function TimekeepingMember(props) {
               {rowData.WorkTrack?.Info?.WorkToday?.Title && (
                 <div className="text-[12px] text-muted">
                   {rowData.WorkTrack?.Info?.WorkToday?.Title} (
-                  {rowData.WorkTrack?.Info?.WorkToday?.TimeFrom} -{' '}
-                  {rowData.WorkTrack?.Info?.WorkToday?.TimeTo})
+                  {rowData.WorkTrack?.Info?.WorkToday?.TimeFrom ? (
+                    <>
+                      {rowData.WorkTrack?.Info?.WorkToday?.TimeFrom} -{' '}
+                      {rowData.WorkTrack?.Info?.WorkToday?.TimeTo}
+                    </>
+                  ) : (
+                    <>Theo giờ</>
+                  )}
+                  )
                 </div>
               )}
               {rowData?.WorkTrack?.StockID &&
@@ -653,8 +659,14 @@ function TimekeepingMember(props) {
             <div className="grid w-full h-full grid-flow-col grid-rows-2">
               <div className="absolute w-full h-[1px] bg-[#eee] left-0 top-2/4"></div>
               <div className="flex items-center justify-between !text-success">
-                {rowData.WorkTrack.Info.TimekeepingType &&
-                  rowData.WorkTrack.Info.TimekeepingType.label}
+                {rowData.WorkTrack.Info?.WorkToday?.hiddenTime ? (
+                  <>Theo giờ</>
+                ) : (
+                  <>
+                    {rowData.WorkTrack.Info.TimekeepingType &&
+                      rowData.WorkTrack.Info.TimekeepingType.label}
+                  </>
+                )}
               </div>
               <div className="flex items-center justify-between !text-danger">
                 {rowData.WorkTrack.Info.CheckOut.TimekeepingType &&
