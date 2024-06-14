@@ -196,12 +196,12 @@ const BonusSales = () => {
       OrderID: OrderID,
       save: {
         them_hoa_hong: Hoa_Hong.map((item) => ({
-          Value: item.Value,
+          Value: item.Value || 0,
           ReceiverUserID: item.Staff?.ID,
           SubSourceID: item.Product?.ID,
         })).filter((o) => o.Value !== null),
         them_doanh_so: Doanh_So.map((item) => ({
-          Value: item.Value,
+          Value: item.Value || 0,
           ReceiverUserID: item.Staff?.ID,
           OrderItemID: item.Product?.ID,
           KpiType: item.Type,
@@ -244,12 +244,12 @@ const BonusSales = () => {
       OrderID: OrderID,
       save: {
         them_hoa_hong: Hoa_Hong.map((item) => ({
-          Value: item.Value,
+          Value: item.Value || 0,
           ReceiverUserID: item.Staff?.ID,
           SubSourceID: item.Product?.ID,
         })).filter((o) => o.Value !== null),
         them_doanh_so: Doanh_So.map((item) => ({
-          Value: item.Value,
+          Value: item.Value || 0,
           ReceiverUserID: item.Staff?.ID,
           OrderItemID: item.Product?.ID,
         })).filter((o) => o.Value !== null),
@@ -295,12 +295,12 @@ const BonusSales = () => {
       OrderID: OrderID,
       save: {
         them_hoa_hong: Hoa_Hong.map((item) => ({
-          Value: item.Value,
+          Value: item.Value || 0,
           ReceiverUserID: item.User?.ID,
           SubSourceID: item.SubSourceID,
         })).filter((o) => o.Value !== null),
         them_doanh_so: Doanh_So.map((item) => ({
-          Value: item.Value,
+          Value: item.Value || 0,
           ReceiverUserID: item.User?.ID,
           OrderItemID: item.OrderItemID,
           KpiType: item.Type ? item.Type.value : "",
@@ -341,7 +341,7 @@ const BonusSales = () => {
     const Hoa_hong = newData
       .filter((item) => item.Type.value === "hoa_hong")
       .map((item) => ({
-        Value: item.Value,
+        Value: item.Value || 0,
         ReceiverUserID: item.Staff?.ID,
         SubSourceID: item.Product?.ID,
       }))
@@ -349,7 +349,7 @@ const BonusSales = () => {
     const Doanh_so = newData
       .filter((item) => item.Type.value === "doanh_so")
       .map((item) => ({
-        Value: item.Value,
+        Value: item.Value || 0,
         ReceiverUserID: item.Staff?.ID,
         OrderItemID: item.Product?.ID,
       }))
@@ -425,12 +425,12 @@ const BonusSales = () => {
   };
 
   return (
-    <div className="container-fluid p-4">
+    <div className="p-4 container-fluid">
       {!hideButton && (
         <div className="mb-3 d-flex">
           {isVisible(Type) && (
             <button
-              className="btn btn-secondary me-2 mb-2 mb-sm-0"
+              className="mb-2 btn btn-secondary me-2 mb-sm-0"
               onClick={onToBack}
             >
               <i className="icon-xs ki ki-bold-arrow-back"></i>

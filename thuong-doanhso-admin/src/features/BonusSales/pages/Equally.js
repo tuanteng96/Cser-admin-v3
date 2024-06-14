@@ -96,7 +96,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                 Value:
                   item.gia_tri_doanh_so > 0
                     ? Math.round((user.Value * item.gia_tri_doanh_so) / 100)
-                    : null,
+                    : 0,
                 Type: item?.KpiType
                   ? { value: item?.KpiType, label: "Loại " + item?.KpiType }
                   : "",
