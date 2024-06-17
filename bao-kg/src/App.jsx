@@ -16,6 +16,7 @@ import {
   useDismiss,
 } from "@floating-ui/react";
 import { NumericFormat } from "react-number-format";
+import { SelectStocks } from "./partials/select/SelectStocks";
 
 const startCurrentMonth = moment().startOf("month").format("MM/DD/YYYY");
 const endCurrentMonth = moment().endOf("month").format("MM/DD/YYYY");
@@ -138,7 +139,7 @@ function App() {
           MemberID: filters.filter.MemberID
             ? filters.filter.MemberID?.value
             : null,
-          "m.ByStockID": StockID || null,
+          "m.ByStockID": filters.filter["m.ByStockID"] || 0,
         },
       });
       return data || {};
@@ -243,10 +244,27 @@ function App() {
   };
 
   return (
-    <div className="h-full p-4 flex flex-col">
+    <div className="flex flex-col h-full p-4">
       <div className="flex justify-between mb-4">
         <div className="flex">
-          <div className="w-[300px]">
+        <div className="md:w-[280px] xl:w-[300px]">
+            <SelectStocks
+              isClearable
+              className="select-control"
+              value={filters.filter["m.ByStockID"]}
+              onChange={(val) =>
+                setFilters((prevState) => ({
+                  ...prevState,
+                  pi: 1,
+                  filter: {
+                    ...prevState.filter,
+                    "m.ByStockID": val?.value || "",
+                  },
+                }))
+              }
+            />
+          </div>
+          <div className="w-[300px] ml-3">
             <SelectMembers
               isClearable
               className="select-control"
