@@ -270,6 +270,27 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                   <div className="mb-3 border rounded" key={index}>
                     <div className="p-3 border-bottom line-height-sm font-weight-boldest w-100 line-height-lg bg-light">
                       {item.Product.ProdTitle}
+                      {((item.Hoa_Hong && item.Hoa_Hong.length > 0) ||
+                        (item.Doanh_So && item.Doanh_So.length > 0)) && (
+                        <span
+                          className="cursor-pointer text-danger pl-5px"
+                          style={{ fontWeight: "400" }}
+                          onClick={() => {
+                            setFieldValue(
+                              `BounsSalesIn[${index}].Hoa_Hong`,
+                              [],
+                              false
+                            );
+                            setFieldValue(
+                              `BounsSalesIn[${index}].Doanh_So`,
+                              [],
+                              false
+                            );
+                          }}
+                        >
+                          [Xoá]
+                        </span>
+                      )}
                       <OverlayTrigger
                         trigger="click"
                         placement="bottom"
@@ -596,7 +617,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                   </div>
                 ))}
             </div>
-            <div className="d-none d-md-block">
+            <div className="d-none d-md-block position-relative">
               <Table className="mb-0" bordered responsive>
                 <thead>
                   <tr>
@@ -624,6 +645,28 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                           <div>
                             <div className="fw-bolder mb-10px">
                               {item.Product.ProdTitle}
+                              {((item.Hoa_Hong && item.Hoa_Hong.length > 0) ||
+                                (item.Doanh_So &&
+                                  item.Doanh_So.length > 0)) && (
+                                <span
+                                  className="cursor-pointer text-danger pl-5px"
+                                  style={{ fontWeight: "400" }}
+                                  onClick={() => {
+                                    setFieldValue(
+                                      `BounsSalesIn[${index}].Hoa_Hong`,
+                                      [],
+                                      false
+                                    );
+                                    setFieldValue(
+                                      `BounsSalesIn[${index}].Doanh_So`,
+                                      [],
+                                      false
+                                    );
+                                  }}
+                                >
+                                  [Xoá]
+                                </span>
+                              )}
                             </div>
                             <div>
                               SL : {item.Product.Qty} *{" "}

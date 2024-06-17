@@ -419,7 +419,7 @@ const BonusSales = () => {
             mid: 0,
             orderId: OrderID,
           });
-        getInfoOrder();
+        //getInfoOrder();
       })
       .catch((error) => console.log(error));
   };
