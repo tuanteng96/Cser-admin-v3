@@ -70,6 +70,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
       let TotalPrice = getTotalPrice()
       let TotalCountWork = getTotalCountWork()
       let TotalTimeToHour = getTotalTimeToHour()
+      let TotalAllowance = getTotalAllowance()
       if (
         data &&
         data[0].WorkTrack?.Info?.ForDate &&
@@ -99,7 +100,10 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
           ...prevState,
           ...data[0].WorkTrack?.Info,
           LUONG: Math.floor(
-            TotalCountWork * SalaryDay + TotalPrice + TotalTimeToHour
+            TotalCountWork * SalaryDay +
+              TotalPrice +
+              TotalTimeToHour +
+              TotalAllowance
           ),
           CONG_CA: TotalCountWork,
           THUONG_PHAT: TotalPrice,
@@ -109,7 +113,7 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
       } else {
         setInitialValues(prevState => ({
           ...prevState,
-          LUONG: 0 + TotalPrice,
+          LUONG: 0 + TotalPrice + TotalAllowance,
           CONG_CA: TotalCountWork,
           THUONG_PHAT: TotalPrice,
           ID: data[0].WorkTrack?.ID || 0,
@@ -157,6 +161,16 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
           ) * 100
       ) / 100
     )
+  }
+
+  const getTotalAllowance = () => {
+    if (!data || data.length === 0) return 0
+    let newData = data.filter(
+      x =>
+        x.WorkTrack.Info?.CountWork >=
+        (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
+    )
+    return newData.length * (SalaryConfigMons?.Values?.TRO_CAP_NGAY || 0)
   }
 
   const getTotalTimeToHour = () => {
@@ -325,6 +339,19 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     })
   }
 
+  const getNoticeHolidays = () => {
+    if (!data || data.length === 0) return <></>
+    let newData = data.filter(x => {
+      let date1 = moment(new Date()).format('DD-MM-YYYY')
+      let date2 = moment(x.Date, 'YYYY-MM-DD').format('DD-MM-YYYY')
+      return moment(date1, "DD-MM-YYYY").diff(moment(date2, "DD-MM-YYYY"), 'day') >= 0
+    })
+    let dataDayOff = newData.filter(x => !x.WorkTrack.CheckIn)
+    let dataT7 = newData.filter(x => moment(x.Date, 'YYYY-MM-DD').format('ddd') === "T7")
+    let dataCN = newData.filter(x => moment(x.Date, 'YYYY-MM-DD').format('ddd') === "CN")
+    return `Số ngày nghỉ: ${dataDayOff.length} ngày (${dataT7.length} Thứ 7 & ${dataCN.length} CN)`
+  }
+
   return (
     <div className="flex flex-col h-100">
       <div
@@ -348,6 +375,9 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
         <div className="w-[150px] min-w-[150px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid flex justify-center items-center font-semibold text-lg">
           {getTotalCountWork()}
         </div>
+        <div className="w-[150px] min-w-[150px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid flex items-center font-semibold text-lg px-3">
+          {PriceHelper.formatVND(getTotalAllowance())}
+        </div>
         <div className="w-[300px] min-w-[300px] border-l border-t-0 border-r-0 border-b-0 border-[#eee] border-solid" />
         <div
           style={{
@@ -366,58 +396,61 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
           const { values } = formikProps
           return (
             <Form
-              className="flex items-center justify-end px-3 border-top grow"
+              className="flex items-center justify-between px-3 border-top grow"
               autoComplete="off"
             >
-              <div className="font-medium text-base mr-3.5">
-                {Locked ? 'Đã chốt lương' : 'Lương dự kiến'}
-              </div>
-              <div className="mr-3.5">
-                <Field name="LUONG">
-                  {({ field, form, meta }) => (
-                    <NumericFormat
-                      allowLeadingZeros
-                      thousandSeparator={true}
-                      allowNegative={true}
-                      className="form-control form-control-solid !font-bold !text-lg"
-                      type="text"
-                      placeholder="Nhập lương dự kiến"
-                      onValueChange={({ floatValue }) => {
-                        form.setFieldValue(`LUONG`, floatValue)
-                      }}
-                      autoComplete="off"
-                      value={field.value}
-                    />
-                  )}
-                </Field>
-              </div>
-              <button
-                type="submit"
-                disabled={updateTimeKeepMutation.isLoading}
-                className={clsx(
-                  'btn btn-primary min-w-[102px]',
-                  updateTimeKeepMutation.isLoading &&
-                    'spinner spinner-white spinner-right'
-                )}
-              >
-                {Locked ? 'Cập nhập' : 'Chốt lương'}
-              </button>
-              {Locked && (
+              <div className="font-medium text-[14px]">{getNoticeHolidays()}</div>
+              <div className="flex items-center justify-between">
+                <div className="font-medium text-base mr-3.5">
+                  {Locked ? 'Đã chốt lương' : 'Lương dự kiến'}
+                </div>
+                <div className="mr-3.5">
+                  <Field name="LUONG">
+                    {({ field, form, meta }) => (
+                      <NumericFormat
+                        allowLeadingZeros
+                        thousandSeparator={true}
+                        allowNegative={true}
+                        className="form-control form-control-solid !font-bold !text-lg"
+                        type="text"
+                        placeholder="Nhập lương dự kiến"
+                        onValueChange={({ floatValue }) => {
+                          form.setFieldValue(`LUONG`, floatValue)
+                        }}
+                        autoComplete="off"
+                        value={field.value}
+                      />
+                    )}
+                  </Field>
+                </div>
                 <button
-                  type="button"
-                  disabled={unLockTimeKeepMutation.isLoading}
+                  type="submit"
+                  disabled={updateTimeKeepMutation.isLoading}
                   className={clsx(
-                    'btn btn-danger min-w-[102px] ml-2',
-                    unLockTimeKeepMutation.isLoading &&
+                    'btn btn-primary min-w-[102px]',
+                    updateTimeKeepMutation.isLoading &&
                       'spinner spinner-white spinner-right'
                   )}
-                  onClick={() => {
-                    unLockSubmit(values)
-                  }}
                 >
-                  Hủy chốt lương
+                  {Locked ? 'Cập nhập' : 'Chốt lương'}
                 </button>
-              )}
+                {Locked && (
+                  <button
+                    type="button"
+                    disabled={unLockTimeKeepMutation.isLoading}
+                    className={clsx(
+                      'btn btn-danger min-w-[102px] ml-2',
+                      unLockTimeKeepMutation.isLoading &&
+                        'spinner spinner-white spinner-right'
+                    )}
+                    onClick={() => {
+                      unLockSubmit(values)
+                    }}
+                  >
+                    Hủy chốt lương
+                  </button>
+                )}
+              </div>
             </Form>
           )
         }}
@@ -746,6 +779,21 @@ function TimekeepingMember(props) {
         headerClassName: () => 'justify-center',
         className: () => 'justify-center font-semibold',
         cellRenderer: ({ rowData }) => rowData.WorkTrack.Info.CountWork
+      },
+      {
+        width: 150,
+        title: 'Phụ cấp ngày',
+        key: 'Allowance',
+        sortable: false,
+        //headerClassName: () => 'justify-center',
+        className: () => 'font-semibold',
+        cellRenderer: ({ rowData }) =>
+          rowData.WorkTrack.Info?.CountWork >=
+          (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
+            ? PriceHelper.formatVND(
+                data?.SalaryConfigMons[0].Values?.TRO_CAP_NGAY
+              )
+            : ''
       },
       {
         width: 300,

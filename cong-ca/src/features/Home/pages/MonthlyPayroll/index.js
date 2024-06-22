@@ -116,6 +116,18 @@ function MonthlyPayroll(props) {
         sortable: false
       },
       {
+        width: width > 767 ? 200 : 120,
+        title: 'Phụ cấp ngày',
+        key: 'TrackValue.WorkQtyAllowance',
+        cellRenderer: ({ rowData }) => {
+          return PriceHelper.formatVND(
+            (rowData?.TrackValue?.WorkQtyAllowance || 0) *
+              (rowData?.TrackValue?.Config?.Values?.TRO_CAP_NGAY || 0)
+          )
+        },
+        sortable: false
+      },
+      {
         width: width > 767 ? 250 : 180,
         title: 'Tổng lương chấm công',
         key: 'NGAY_LUONG_CO_BAN',
@@ -154,7 +166,9 @@ function MonthlyPayroll(props) {
           PriceHelper.formatVND(
             rowData?.TrackValue?.WorkQty * rowData.NGAY_LUONG_CO_BAN -
               (rowData.TrackValue.DI_MUON + rowData.TrackValue.VE_SOM) +
-              (rowData.TrackValue.DI_SOM + rowData.TrackValue.VE_MUON)
+              (rowData.TrackValue.DI_SOM + rowData.TrackValue.VE_MUON) +
+              (rowData?.TrackValue?.WorkQtyAllowance || 0) *
+                (rowData?.TrackValue?.Config?.Values?.TRO_CAP_NGAY || 0)
           )
         // frozen: 'right'
       }
