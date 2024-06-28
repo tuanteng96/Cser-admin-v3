@@ -25,6 +25,7 @@ import { NumericFormat } from 'react-number-format'
 import { useSelector } from 'react-redux'
 import { Field, Form, Formik } from 'formik'
 import useWindowSize from 'src/hooks/useWindowSize'
+import PickerTimekeeping from '../../components/Picker/PickerTimekeeping'
 
 moment.locale('vi')
 
@@ -344,11 +345,18 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     let newData = data.filter(x => {
       let date1 = moment(new Date()).format('DD-MM-YYYY')
       let date2 = moment(x.Date, 'YYYY-MM-DD').format('DD-MM-YYYY')
-      return moment(date1, "DD-MM-YYYY").diff(moment(date2, "DD-MM-YYYY"), 'day') >= 0
+      return (
+        moment(date1, 'DD-MM-YYYY').diff(moment(date2, 'DD-MM-YYYY'), 'day') >=
+        0
+      )
     })
     let dataDayOff = newData.filter(x => !x.WorkTrack.CheckIn)
-    let dataT7 = newData.filter(x => moment(x.Date, 'YYYY-MM-DD').format('ddd') === "T7")
-    let dataCN = newData.filter(x => moment(x.Date, 'YYYY-MM-DD').format('ddd') === "CN")
+    let dataT7 = newData.filter(
+      x => moment(x.Date, 'YYYY-MM-DD').format('ddd') === 'T7'
+    )
+    let dataCN = newData.filter(
+      x => moment(x.Date, 'YYYY-MM-DD').format('ddd') === 'CN'
+    )
     return `Số ngày nghỉ: ${dataDayOff.length} ngày (${dataT7.length} Thứ 7 & ${dataCN.length} CN)`
   }
 
@@ -399,7 +407,25 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
               className="flex items-center justify-between px-3 border-top grow"
               autoComplete="off"
             >
-              <div className="font-medium text-[14px]">{getNoticeHolidays()}</div>
+              <div className="font-medium text-[14px]">
+                {getNoticeHolidays()}
+                {window?.top?.GlobalConfig?.Admin?.chi_tiet_cong && (
+                  <span className="pl-2">
+                    [
+                    <PickerTimekeeping data={data}>
+                      {({ open }) => (
+                        <span
+                          className="cursor-pointer text-primary"
+                          onClick={open}
+                        >
+                          Xem chi tiết
+                        </span>
+                      )}
+                    </PickerTimekeeping>
+                    ]
+                  </span>
+                )}
+              </div>
               <div className="flex items-center justify-between">
                 <div className="font-medium text-base mr-3.5">
                   {Locked ? 'Đã chốt lương' : 'Lương dự kiến'}
