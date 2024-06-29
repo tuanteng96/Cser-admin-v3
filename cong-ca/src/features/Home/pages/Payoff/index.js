@@ -225,7 +225,7 @@ function PayOffPage(props) {
                                         autoComplete="off"
                                         allowLeadingZeros
                                         thousandSeparator={true}
-                                        allowNegative={false}
+                                        //allowNegative={false}
                                       />
                                     </td>
                                     <td className="align-middle text-center !px-3 py-3">
