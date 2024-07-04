@@ -43,5 +43,38 @@ export const formatArray = {
     }
     array.splice(newIndex, 0, array.splice(oldIndex, 1)[0])
     return array
+  },
+  arrayHH: (count) => {
+    if (!count) return null
+    if (count === 1) {
+      return [100]
+    }
+    if (count === 2) {
+      return [50, 50]
+    }
+    if (count === 3) {
+      return [33.3, 33.3, 33.4]
+    }
+    if (count === 4) {
+      return [25, 25, 25, 25]
+    }
+    if (count === 5) {
+      return [20, 20, 20, 20, 20]
+    }
+    if (count === 6) {
+      return [16.7, 16.7, 16.7, 16.7, 16.7, 16.5]
+    }
+    if (count === 7) {
+      return [14.3, 14.3, 14.3, 14.3, 14.3, 14.3, 14.2]
+    }
+    if (count === 8) {
+      return [12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5]
+    }
+    if (count === 9) {
+      return [11.1, 11.1, 11.1, 11.1, 11.1, 11.1, 11.1, 11.1, 11.2]
+    }
+    if (count === 10) {
+      return [10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
+    }
   }
 }

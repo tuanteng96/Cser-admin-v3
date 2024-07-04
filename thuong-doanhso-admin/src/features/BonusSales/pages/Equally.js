@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import { TypeStaff } from "../../../Json/Json";
 import { useSelector } from "react-redux";
 import SelectType from "../components/SelectType";
+import { formatArray } from "../../../helpers/formatArray";
 
 function Equally({ OrderInfo, onSubmit, loading }) {
   const [initialValues, setInitialValues] = useState({ equally: [] });
@@ -133,26 +134,27 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                         placeholder="Chọn Nhân viên"
                         noOptionsMessage={() => "Không có lựa chọn"}
                         onChange={(option) => {
-                          let surplus = option.length === 8 ? 0 : 100 % option.length;
-                          const newOption =
-                            option && option.length > 0
-                              ? option.map((item, i) => ({
-                                  ...item,
-                                  Value:
-                                    surplus > 0
-                                      ? i === option.length - 1
-                                        ? Number(
-                                            (100 / option.length).toFixed(1)
-                                          ) +
-                                          surplus / 10
-                                        : Number(
-                                            (100 / option.length).toFixed(1)
-                                          )
-                                      : Number(
-                                          (100 / option.length).toFixed(1)
-                                        ),
-                                }))
-                              : [];
+                          let surplus = 100 % option.length;
+                          let newOption = [];
+                          if (option.length <= 10) {
+                            let arrCount = formatArray.arrayHH(option.length);
+                            newOption =
+                              option && option.length > 0
+                                ? option.map((item, i) => ({
+                                    ...item,
+                                    Value: arrCount[i],
+                                  }))
+                                : [];
+                          } else {
+                            newOption =
+                              option && option.length > 0
+                                ? option.map((item, i) => ({
+                                    ...item,
+                                    Value: 0,
+                                  }))
+                                : [];
+                          }
+
                           if (option && option.length > 0) {
                             const indexType = TypeStaff.findIndex(
                               (o) =>
