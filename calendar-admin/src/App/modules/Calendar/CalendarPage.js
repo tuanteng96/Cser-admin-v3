@@ -643,6 +643,7 @@ function CalendarPage(props) {
             {
               BookId: values?.ID,
               Status: window?.top?.GlobalConfig?.Admin?.kpiFinish,
+              Insert: true
             },
           ],
         };
