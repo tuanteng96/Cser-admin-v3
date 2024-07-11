@@ -211,7 +211,10 @@ function TimekeepingHome(props) {
                                   : '',
                                 Desc: date?.WorkTrack?.Info?.Desc || '',
                                 CountWork:
-                                  date?.WorkTrack?.Info?.WorkToday?.Value || 0,
+                                  date?.WorkTrack?.Info?.CheckOut?.WorkToday
+                                    ?.Value ||
+                                  date?.WorkTrack?.Info?.WorkToday?.Value ||
+                                  0,
                                 Note: date?.WorkTrack?.Info?.Note || '',
                                 CheckOut: {
                                   TimekeepingType:
@@ -1069,6 +1072,13 @@ function TimekeepingHome(props) {
         obj.Info.CheckOut.Type = WorkTrack.Info.CheckOut.Type.value
       }
       if (
+        WorkTrack?.Info?.CheckOut &&
+        WorkTrack?.Info?.CheckOut?.WorkToday?.Value === WorkTrack.Info.CountWork
+      ) {
+        obj.Info.CheckOut.WorkToday = {
+          Value: WorkTrack.Info.CountWork
+        }
+      } else if (
         WorkTrack.Info.WorkToday &&
         WorkTrack.Info.WorkToday.Value === WorkTrack.Info.CountWork
       ) {
