@@ -643,7 +643,7 @@ function CalendarPage(props) {
             {
               BookId: values?.ID,
               Status: window?.top?.GlobalConfig?.Admin?.kpiFinish,
-              Insert: true
+              Insert: true,
             },
           ],
         };
@@ -1552,12 +1552,27 @@ function CalendarPage(props) {
                   const { extendedProps } = event._def;
                   let italicEl = document.createElement("div");
                   italicEl.classList.add("fc-content");
+
+                  let AmountPeople = 1;
+                  if (extendedProps.Desc) {
+                    let descSplit = extendedProps.Desc.split("\n");
+                    for (let i of descSplit) {
+                      if (i.includes("Số lượng khách:")) {
+                        let SL = Number(i.match(/\d+/)[0]);
+                        AmountPeople = Number(SL);
+                      }
+                    }
+                  }
                   if (
                     typeof extendedProps !== "object" ||
                     Object.keys(extendedProps).length > 0
                   ) {
                     if (view.type !== "listWeek") {
-                      italicEl.innerHTML = `<div class="fc-title">
+                      italicEl.innerHTML = `${
+                        AmountPeople > 0
+                          ? `<div class="absolute text-[40px] -z-[1] opacity-60 left-2/4 top-2/4 -translate-x-2/4 -translate-y-2/4 text-white">${AmountPeople}N</div>`
+                          : ""
+                      }<div class="fc-title">
                       <div class="position-absolute h-100 top-0 left-0 d-flex flex-column">
                         ${renderColor(extendedProps)}
                       </div>

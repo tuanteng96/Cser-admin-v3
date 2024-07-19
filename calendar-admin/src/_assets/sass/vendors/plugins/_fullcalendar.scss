@@ -13,6 +13,9 @@
     $head-space-y: 0.75rem;
     $head-list-space-x: 1.25rem;
     .fc {
+        .fc-content {
+            position: relative;
+        }
         // Day
         .fc-day-grid td:not(.fc-axis) {
             padding: $cell-space-y $cell-space-x;
