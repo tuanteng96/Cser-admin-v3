@@ -1568,19 +1568,17 @@ function CalendarPage(props) {
                     Object.keys(extendedProps).length > 0
                   ) {
                     if (view.type !== "listWeek") {
-                      italicEl.innerHTML = `${
-                        AmountPeople > 0
-                          ? `<div class="absolute text-[40px] -z-[1] opacity-60 left-2/4 top-2/4 -translate-x-2/4 -translate-y-2/4 text-white">${AmountPeople}N</div>`
-                          : ""
-                      }<div class="fc-title">
+                      italicEl.innerHTML = `<div class="fc-title">
                       <div class="position-absolute h-100 top-0 left-0 d-flex flex-column">
                         ${renderColor(extendedProps)}
                       </div>
                     <div class="d-flex justify-content-between"><div><span class="fullname">${
-                      extendedProps?.AtHome
-                        ? `<i class="fas fa-home text-white font-size-xs"></i>`
-                        : ""
+                      AmountPeople > 1 ? `[${AmountPeople}]` : ``
                     } ${
+                        extendedProps?.AtHome
+                          ? `<i class="fas fa-home text-white font-size-xs"></i>`
+                          : ""
+                      } ${
                         extendedProps?.Star ? `(${extendedProps.Star})` : ""
                       } ${extendedProps?.MemberCurrent?.FullName ||
                         "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
