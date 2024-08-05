@@ -53,14 +53,14 @@ const PopoverRender = ({ children }) => {
           className="popover-arrow-container"
           arrowClassName="popover-arrow"
         >
-          <div className="bg-white shadow-lg border-0 rounded text-sm">
+          <div className="text-sm bg-white border-0 rounded shadow-lg">
             {children}
           </div>
         </ArrowContainer>
       )}
     >
       <i
-        className="fa-solid fa-circle-info text-warning ml-2"
+        className="ml-2 fa-solid fa-circle-info text-warning"
         onClick={() => setIsPopoverOpen(!isPopoverOpen)}
       ></i>
     </Popover>
@@ -280,7 +280,7 @@ const PickerModal = ({ children, item }) => {
         scrollable={true}
       >
         <form
-          className="h-full flex flex-col"
+          className="flex flex-col h-full"
           onSubmit={handleSubmit(onSubmit)}
         >
           <Modal.Header closeButton>
@@ -498,7 +498,7 @@ export default function ItemCard({ item, onRefetch, index }) {
   if (width < 768) {
     return (
       <div className="border mb-3 last:!mb-0 !rounded text-xs">
-        <div className="border-b p-3 bg-light">
+        <div className="p-3 border-b bg-light">
           <div>
             <span className="font-medium md:text-sm bg-success-light !text-success text-mini py-px px-1.5 !rounded font-medium inline-block mr-1.5">
               #{item.id}
@@ -508,7 +508,7 @@ export default function ItemCard({ item, onRefetch, index }) {
                 Khóa
               </span>
             )}
-            <span className="leading-6 font-medium">{item.ten}</span>
+            <span className="font-medium leading-6">{item.ten}</span>
           </div>
           <div className="mt-1 font-light">
             {item.dk_su_dung === 0 &&
@@ -516,7 +516,7 @@ export default function ItemCard({ item, onRefetch, index }) {
             {item.dk_su_dung === 1 && "Chi tiêu theo tỉ lệ thanh toán"}
             {item.dk_su_dung === 2 && "Chỉ được chi tiêu khi thanh toán hết"}
           </div>
-          <div className="font-light text-muted mt-1">
+          <div className="mt-1 font-light text-muted">
             HSD :
             <span className="pl-1">
               {!item.han_dung ? (
@@ -530,14 +530,14 @@ export default function ItemCard({ item, onRefetch, index }) {
               )}
             </span>
           </div>
-          <div className="font-light text-muted mt-1">
+          <div className="mt-1 font-light text-muted">
             Trạng thái :
             <span className="!text-danger pl-1 font-normal">
               {item.trang_thai === "Khóa" ? "Đang khoá" : "Đang sử dụng"}
             </span>
           </div>
         </div>
-        <div className="flex p-3 justify-between items-center">
+        <div className="flex items-center justify-between p-3">
           <div>Còn lại </div>
           <div>
             <span className="font-medium">
@@ -570,7 +570,7 @@ export default function ItemCard({ item, onRefetch, index }) {
               )}
           </div>
         </div>
-        <div className="p-3 border-t flex justify-between items-center">
+        <div className="flex items-center justify-between p-3 border-t">
           <div>
             {adminTools_byStock?.hasRight && (
               <PickerModal item={item}>
@@ -586,7 +586,7 @@ export default function ItemCard({ item, onRefetch, index }) {
               </PickerModal>
             )}
             {window.top?.GlobalConfig?.Admin?.the_tien_nang_cao ? (
-              window.top?.Info?.User?.ID === 1 && (
+              adminTools_byStock?.hasRight && (
                 <button
                   type="button"
                   className={`h-8 px-3 text-xs text-truncate text-white !rounded !bg-${
@@ -618,17 +618,17 @@ export default function ItemCard({ item, onRefetch, index }) {
             )}
           </div>
           <div
-            className="w-10 h-8 flex items-center justify-end"
+            className="flex items-center justify-end w-10 h-8"
             onClick={() => setIsOpen(!isOpen)}
           >
-            <i className="fa-solid fa-ellipsis-vertical text-base"></i>
+            <i className="text-base fa-solid fa-ellipsis-vertical"></i>
           </div>
         </div>
         {isOpen && (
           <div className="p-3 border-t">
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-muted font-light mb-1">
+                <div className="mb-1 font-light text-muted">
                   Giá trị thẻ tiền
                 </div>
                 <div className="font-medium">
@@ -656,7 +656,7 @@ export default function ItemCard({ item, onRefetch, index }) {
                 </div>
               </div>
               <div>
-                <div className="text-muted font-light mb-1">
+                <div className="mb-1 font-light text-muted">
                   Giá trị chi tiêu
                 </div>
                 <div>
@@ -690,11 +690,11 @@ export default function ItemCard({ item, onRefetch, index }) {
               {!MoneyCardDetail?.isLoading && (
                 <React.Fragment>
                   {MoneyCardDetail?.data && MoneyCardDetail?.data.length > 0 && (
-                    <div className="mt-3 border-t pt-3">
-                      <div className="mb-3 font-medium text-sm">
+                    <div className="pt-3 mt-3 border-t">
+                      <div className="mb-3 text-sm font-medium">
                         Lịch sử sử dụng
                       </div>
-                      <ol className="relative border-l border-gray-200 pl-3 mb-0">
+                      <ol className="relative pl-3 mb-0 border-l border-gray-200">
                         {MoneyCardDetail?.data.map((sub, idx) => (
                           <li className="mb-10 ml-4 last:!mb-0" key={idx}>
                             <div className="absolute w-3 h-3 bg-gray-200 !rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900 dark:bg-gray-700" />
@@ -720,7 +720,7 @@ export default function ItemCard({ item, onRefetch, index }) {
                             <h3 className="mt-1 text-sm font-semibold text-gray-900">
                               {formatVND(sub.gia_tri)}
                             </h3>
-                            <div className="font-normal text-gray-500 leading-5">
+                            <div className="font-normal leading-5 text-gray-500">
                               {sub.san_pham}
                             </div>
                           </li>
@@ -745,7 +745,7 @@ export default function ItemCard({ item, onRefetch, index }) {
             <span className="font-medium text-xs bg-success-light !text-success text-mini py-px px-1.5 !rounded font-medium inline-block mr-1.5">
               #{item.id}
             </span>
-            <span className="leading-6 font-medium">{item.ten}</span>
+            <span className="font-medium leading-6">{item.ten}</span>
           </div>
           <div className="mt-1 font-light">
             {item.dk_su_dung === 0 &&
@@ -753,7 +753,7 @@ export default function ItemCard({ item, onRefetch, index }) {
             {item.dk_su_dung === 1 && "Chi tiêu theo tỉ lệ thanh toán"}
             {item.dk_su_dung === 2 && "Chỉ được chi tiêu khi thanh toán hết"}
           </div>
-          <div className="font-light text-muted mt-1">
+          <div className="mt-1 font-light text-muted">
             HSD :
             <span className="pl-1">
               {!item.han_dung ? (
@@ -767,7 +767,7 @@ export default function ItemCard({ item, onRefetch, index }) {
               )}
             </span>
           </div>
-          <div className="font-light text-muted mt-1">
+          <div className="mt-1 font-light text-muted">
             Trạng thái :
             <span className="!text-danger pl-1 font-normal">
               {item.trang_thai === "Khóa" ? "Đang khoá" : "Đang sử dụng"}
@@ -824,7 +824,7 @@ export default function ItemCard({ item, onRefetch, index }) {
             )}
 
             {window.top?.GlobalConfig?.Admin?.the_tien_nang_cao ? (
-              window.top?.Info?.User?.ID === 1 && (
+              adminTools_byStock?.hasRight && (
                 <button
                   type="button"
                   className={`w-full text-white !rounded h-9 text-sm text-truncate px-3 !bg-${
@@ -836,7 +836,7 @@ export default function ItemCard({ item, onRefetch, index }) {
                   {updateMutation.isLoading && "Đang thực hiên"}
                   {!updateMutation.isLoading && (
                     <>{item.trang_thai === "Khóa" ? "Kích hoạt" : "Khóa thẻ"}</>
-                  )}{" "}
+                  )}
                 </button>
               )
             ) : (
@@ -873,7 +873,7 @@ export default function ItemCard({ item, onRefetch, index }) {
           >
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <div className="text-muted font-light mb-1">
+                <div className="mb-1 font-light text-muted">
                   Giá trị thẻ tiền
                 </div>
                 <div className="font-medium">
@@ -901,7 +901,7 @@ export default function ItemCard({ item, onRefetch, index }) {
                 </div>
               </div>
               <div>
-                <div className="text-muted font-light mb-1">
+                <div className="mb-1 font-light text-muted">
                   Giá trị chi tiêu
                 </div>
                 <div>
@@ -935,11 +935,11 @@ export default function ItemCard({ item, onRefetch, index }) {
               {!MoneyCardDetail.isLoading && (
                 <React.Fragment>
                   {MoneyCardDetail?.data && MoneyCardDetail?.data.length > 0 && (
-                    <div className="mt-3 border-t pt-3">
-                      <div className="mb-3 font-medium text-sm">
+                    <div className="pt-3 mt-3 border-t">
+                      <div className="mb-3 text-sm font-medium">
                         Lịch sử sử dụng
                       </div>
-                      <ol className="relative border-l border-gray-200 pl-3 mb-0">
+                      <ol className="relative pl-3 mb-0 border-l border-gray-200">
                         {MoneyCardDetail?.data.map((sub, idx) => (
                           <li className="mb-10 ml-4 last:!mb-0" key={idx}>
                             <div className="absolute w-3 h-3 bg-gray-200 !rounded-full mt-1.5 -left-1.5 border border-white dark:border-gray-900 dark:bg-gray-700" />
@@ -962,7 +962,7 @@ export default function ItemCard({ item, onRefetch, index }) {
                             <h3 className="mt-1 text-sm font-semibold text-gray-900">
                               {formatVND(sub.gia_tri)}
                             </h3>
-                            <div className="font-normal text-gray-500 leading-5">
+                            <div className="font-normal leading-5 text-gray-500">
                               {sub.san_pham}
                             </div>
                           </li>
