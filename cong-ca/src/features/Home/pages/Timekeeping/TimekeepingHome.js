@@ -212,7 +212,6 @@ function TimekeepingHome(props) {
                                 Desc: date?.WorkTrack?.Info?.Desc || '',
                                 CountWork:
                                   date?.WorkTrack?.Info?.CheckOut?.WorkToday
-                                    ?.Value !== ''
                                     ? date?.WorkTrack?.Info?.CheckOut?.WorkToday
                                         ?.Value
                                     : date?.WorkTrack?.Info?.WorkToday?.Value ||

@@ -568,12 +568,10 @@ function TimekeepingMember(props) {
                                 }
                               : '',
                             Desc: date?.WorkTrack?.Info?.Desc || '',
-                            CountWork:
-                              date?.WorkTrack?.Info?.CheckOut?.WorkToday
-                                ?.Value !== ''
-                                ? date?.WorkTrack?.Info?.CheckOut?.WorkToday
-                                    ?.Value
-                                : date?.WorkTrack?.Info?.WorkToday?.Value || 0,
+                            CountWork: date?.WorkTrack?.Info?.CheckOut?.WorkToday
+                              ? date?.WorkTrack?.Info?.CheckOut?.WorkToday
+                                  ?.Value
+                              : date?.WorkTrack?.Info?.WorkToday?.Value || 0,
                             Note: date?.WorkTrack?.Info?.Note || '',
                             CheckOut: {
                               TimekeepingType:
