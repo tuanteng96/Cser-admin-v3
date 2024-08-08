@@ -32,7 +32,7 @@ const WorksHelpers = {
     let initialValues = {
       ...Info
     }
-    console.log(WorkTrack)
+
     let MinutesPrice = 333
 
     //Xử lý CheckIn
@@ -63,7 +63,7 @@ const WorksHelpers = {
             moment(moment(CheckIn).format('HH:mm:ss'), 'HH:mm:ss'),
             'minute'
           )
-          initialValues.TimekeepingTypeValue = Math.abs(duration) * 333
+          initialValues.TimekeepingTypeValue = Math.abs(duration) * MinutesPrice
         }
         if (Info?.Type?.value === 'CONG_TY') {
           initialValues.TimekeepingType = {
@@ -84,7 +84,66 @@ const WorksHelpers = {
             moment(moment(CheckIn).format('HH:mm:ss'), 'HH:mm:ss'),
             'minute'
           )
-          initialValues.TimekeepingTypeValue = Math.abs(duration) * 333
+          initialValues.TimekeepingTypeValue = Math.abs(duration) * MinutesPrice
+        }
+        if (Info?.Type?.value === 'CONG_TY') {
+          initialValues.CountWork = 1
+          initialValues.TimekeepingType = {
+            value: 'DI_MUON',
+            label: 'Đi muộn'
+          }
+          initialValues.TimekeepingTypeValue = 0
+        }
+      }
+      if (indexIn === 3) {
+        if (Info?.Type?.value === 'CA_NHAN') {
+          initialValues.CountWork = 0.5
+          initialValues.TimekeepingType = {
+            value: 'DI_MUON',
+            label: 'Đi muộn'
+          }
+          let duration = moment(Intervals[indexIn].From, 'HH:mm:ss').diff(
+            moment(moment(CheckIn).format('HH:mm:ss'), 'HH:mm:ss'),
+            'minute'
+          )
+          initialValues.TimekeepingTypeValue = Math.abs(duration) * MinutesPrice
+        }
+        if (Info?.Type?.value === 'CONG_TY') {
+          initialValues.CountWork = 1
+          initialValues.TimekeepingType = {
+            value: 'DI_MUON',
+            label: 'Đi muộn'
+          }
+          initialValues.TimekeepingTypeValue = 0
+        }
+      }
+      if (indexIn === 4) {
+        if (Info?.Type?.value === 'CA_NHAN') {
+          initialValues.CountWork = 0
+          initialValues.TimekeepingType = {
+            value: 'DI_SOM',
+            label: 'Đi sớm'
+          }
+          let duration = moment(Intervals[indexIn].To, 'HH:mm:ss').diff(
+            moment(moment(CheckIn).format('HH:mm:ss'), 'HH:mm:ss'),
+            'minute'
+          )
+          initialValues.TimekeepingTypeValue = Math.abs(duration) * MinutesPrice
+        }
+        if (Info?.Type?.value === 'CONG_TY') {
+          initialValues.CountWork = 1
+          initialValues.TimekeepingType = {
+            value: 'DI_MUON',
+            label: 'Đi muộn'
+          }
+          initialValues.TimekeepingTypeValue = 0
+        }
+      }
+      if (indexIn === 5) {
+        if (Info?.Type?.value === 'CA_NHAN') {
+          initialValues.CountWork = 0
+          initialValues.TimekeepingType = ''
+          initialValues.TimekeepingTypeValue = 0
         }
         if (Info?.Type?.value === 'CONG_TY') {
           initialValues.CountWork = 1
@@ -122,11 +181,12 @@ const WorksHelpers = {
             label: 'VE_MUON',
             value: 'Về muộn'
           }
-          let duration = moment(Intervals[indexIn].From, 'HH:mm:ss').diff(
+          let duration = moment(Intervals[indexOut].From, 'HH:mm:ss').diff(
             moment(moment(CheckOut).format('HH:mm:ss'), 'HH:mm:ss'),
             'minute'
           )
-          initialValues.CheckOut.TimekeepingTypeValue = Math.abs(duration) * 333
+          initialValues.CheckOut.TimekeepingTypeValue =
+            Math.abs(duration) * MinutesPrice
         }
         if (Info.CheckOut?.Type?.value === 'CONG_TY') {
           initialValues.CheckOut.TimekeepingType = {
@@ -143,11 +203,12 @@ const WorksHelpers = {
             value: 'VE_SOM',
             label: 'Về sớm'
           }
-          let duration = moment(Intervals[indexIn].To, 'HH:mm:ss').diff(
+          let duration = moment(Intervals[indexOut].To, 'HH:mm:ss').diff(
             moment(moment(CheckOut).format('HH:mm:ss'), 'HH:mm:ss'),
             'minute'
           )
-          initialValues.CheckOut.TimekeepingTypeValue = Math.abs(duration) * 333
+          initialValues.CheckOut.TimekeepingTypeValue =
+            Math.abs(duration) * MinutesPrice
         }
         if (Info.CheckOut?.Type?.value === 'CONG_TY') {
           initialValues.CheckOut.TimekeepingType = {
@@ -157,116 +218,88 @@ const WorksHelpers = {
           initialValues.CheckOut.TimekeepingTypeValue = 0
         }
       }
+      if (indexOut === 3) {
+        if (Info.CheckOut?.Type?.value === 'CA_NHAN') {
+          initialValues.CountWork = initialValues.CountWork - 0.5
+          initialValues.CheckOut.TimekeepingType = {
+            value: 'VE_MUON',
+            label: 'Về muộn'
+          }
+          let duration = moment(Intervals[indexOut].From, 'HH:mm:ss').diff(
+            moment(moment(CheckOut).format('HH:mm:ss'), 'HH:mm:ss'),
+            'minute'
+          )
+          initialValues.CheckOut.TimekeepingTypeValue =
+            Math.abs(duration) * MinutesPrice
+        }
+        if (Info.CheckOut?.Type?.value === 'CONG_TY') {
+          initialValues.CheckOut.TimekeepingType = {
+            value: 'VE_SOM',
+            label: 'Về sớm'
+          }
+          initialValues.CheckOut.TimekeepingTypeValue = 0
+        }
+      }
+      if (indexOut === 4) {
+        if (Info.CheckOut?.Type?.value === 'CA_NHAN') {
+          initialValues.CheckOut.TimekeepingType = {
+            value: 'VE_SOM',
+            label: 'Về sớm'
+          }
+          let duration = moment(Intervals[indexOut].To, 'HH:mm:ss').diff(
+            moment(moment(CheckOut).format('HH:mm:ss'), 'HH:mm:ss'),
+            'minute'
+          )
+          initialValues.CheckOut.TimekeepingTypeValue =
+            Math.abs(duration) * MinutesPrice
+        }
+        if (Info.CheckOut?.Type?.value === 'CONG_TY') {
+          initialValues.CheckOut.TimekeepingType = {
+            value: 'VE_SOM',
+            label: 'Về sớm'
+          }
+          initialValues.CheckOut.TimekeepingTypeValue = 0
+        }
+      }
+      if (indexOut === 5) {
+        if (Info.CheckOut?.Type?.value === 'CA_NHAN') {
+          initialValues.CheckOut.TimekeepingType = {
+            value: 'VE_MUON',
+            label: 'Về muộn'
+          }
+          initialValues.CheckOut.TimekeepingTypeValue = 0
+        }
+        if (Info.CheckOut?.Type?.value === 'CONG_TY') {
+          initialValues.CheckOut.TimekeepingType = {
+            value: 'VE_MUON',
+            label: 'Về muộn'
+          }
+          let isSameOrAfter = moment(
+            moment(CheckIn).format('HH:mm:ss'),
+            'HH:mm:ss'
+          ).isSameOrAfter(moment(Intervals[indexOut].From, 'HH:mm:ss'))
+          if (!isSameOrAfter) {
+            let durationInNew = moment(
+              Intervals[indexOut].From,
+              'HH:mm:ss'
+            ).diff(
+              moment(moment(CheckOut).format('HH:mm:ss'), 'HH:mm:ss'),
+              'minute'
+            )
+            initialValues.CheckOut.TimekeepingTypeValue =
+              Math.abs(durationInNew) * MinutesPrice
+          } else {
+            let durationInNew = moment(CheckIn, 'HH:mm:ss').diff(
+              moment(moment(CheckOut).format('HH:mm:ss'), 'HH:mm:ss'),
+              'minute'
+            )
+            initialValues.CheckOut.TimekeepingTypeValue =
+              Math.abs(durationInNew) * MinutesPrice
+          }
+        }
+      }
     }
     return initialValues
-    // if (index > -1) {
-    //   let durationIn = moment(Intervals[index].From, 'HH:mm:ss').diff(
-    //     moment(moment(CrDate).format('HH:mm:ss'), 'HH:mm:ss'),
-    //     'minute'
-    //   )
-    //   let durationOut = moment(Intervals[index].To, 'HH:mm:ss').diff(
-    //     moment(moment(CrDate).format('HH:mm:ss'), 'HH:mm:ss'),
-    //     'minute'
-    //   )
-    //   if (!CheckIn) {
-    //     initialValues.Info.WorkToday = {
-    //       In: {
-    //         Interval: Intervals[index],
-    //         IntervalIndex: index,
-    //         durationIn,
-    //         durationOut,
-    //         MinutesPrice
-    //       }
-    //     }
-
-    //     initialValues.Info.Title = 'Hôm nay bạn đi muộn ?'
-
-    //     if (index === 0) {
-    //       initialValues.Info.WorkToday.Value = 1
-    //       delete initialValues.Info.Title
-    //       reject(initialValues)
-    //     }
-    //     if (index === 1) {
-    //       initialValues.Info.WorkToday.Value = 1
-    //       initialValues.Info['DI_MUON'] = {
-    //         Value: MinutesPrice * Math.abs(durationIn)
-    //       }
-    //     }
-    //     if (index === 2) {
-    //       initialValues.Info.WorkToday.Value = 0.5
-    //       initialValues.Info['DI_SOM'] = {
-    //         Value: MinutesPrice * Math.abs(durationOut)
-    //       }
-    //     }
-    //     if (index === 3) {
-    //       initialValues.Info.WorkToday.Value = 0.5
-    //       initialValues.Info['DI_MUON'] = {
-    //         Value: MinutesPrice * Math.abs(durationIn)
-    //       }
-    //     }
-    //     if (index === 4) {
-    //       initialValues.Info.WorkToday.Value = 0
-    //       initialValues.Info['DI_SOM'] = {
-    //         Value: MinutesPrice * Math.abs(durationOut)
-    //       }
-    //     }
-    //     if (index === 5) {
-    //       initialValues.Info.WorkToday.Value = 0
-    //     }
-    //   } else {
-    //     initialValues.Info.WorkToday = {
-    //       Out: {
-    //         Interval: Intervals[index],
-    //         IntervalIndex: index,
-    //         durationIn,
-    //         durationOut,
-    //         MinutesPrice
-    //       }
-    //     }
-
-    //     initialValues.Info.Title = 'Hôm nay bạn về sớm ?'
-
-    //     if (index === 0) {
-    //       initialValues.Info.WorkToday.Value = 0
-    //       delete initialValues.Info.Title
-    //       reject(initialValues)
-    //     }
-    //     if (index === 1) {
-    //       initialValues.Info.WorkToday.Value = 0
-    //       initialValues.Info['VE_MUON'] = {
-    //         Value: MinutesPrice * Math.abs(durationIn)
-    //       }
-    //     }
-    //     if (index === 2) {
-    //       initialValues.Info.WorkToday.Value =
-    //         (CheckIn?.Info?.WorkToday?.Value || 0) - 0.5
-    //       initialValues.Info['VE_SOM'] = {
-    //         Value: MinutesPrice * Math.abs(durationOut)
-    //       }
-    //     }
-    //     if (index === 3) {
-    //       initialValues.Info.WorkToday.Value =
-    //         (CheckIn?.Info?.WorkToday?.Value || 0) - 0.5
-    //       initialValues.Info['VE_MUON'] = {
-    //         Value: MinutesPrice * Math.abs(durationIn)
-    //       }
-    //     }
-    //     if (index === 4) {
-    //       initialValues.Info.WorkToday.Value =
-    //         CheckIn?.Info?.WorkToday?.Value || 0
-    //       initialValues.Info['VE_SOM'] = {
-    //         Value: MinutesPrice * Math.abs(durationOut)
-    //       }
-    //     }
-    //     if (index === 5) {
-    //       initialValues.Info.WorkToday.Value =
-    //         CheckIn?.Info?.WorkToday?.Value || 0
-    //       initialValues.Info['VE_MUON'] = {
-    //         Value: 0
-    //       }
-    //     }
-    //   }
-    // }
   }
 }
 

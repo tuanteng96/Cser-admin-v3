@@ -2,7 +2,7 @@
     "name": "react-teamplate",
     "version": "0.1.0",
     "private": true,
-    "_homepage": "/Admin/UserWork/",
+    "homepage": "/Admin/UserWork/",
     "dependencies": {
         "@floating-ui/react": "^0.22.3",
         "@heroicons/react": "^2.0.18",
