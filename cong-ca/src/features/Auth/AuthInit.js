@@ -64,6 +64,11 @@ function AuthInit(props) {
               ID: 11291,
               Title: 'Cser Hồ Chí Minh',
               ParentID: 778
+            },
+            {
+              ID: 11387,
+              Title: 'Cser Chấm công',
+              ParentID: 778
             }
           ],
           StockRights: [
@@ -76,15 +81,21 @@ function AuthInit(props) {
               ID: 11312,
               Title: 'Cser Hồ Chí Minh',
               ParentID: 778
+            },
+            {
+              ID: 11387,
+              Title: 'Cser Chấm công',
+              ParentID: 778
             }
           ],
-          CrStockID: 11384, //8975
+          CrStockID: 11387, //8975
           rightsSum: {
             cong_ca: {
               hasRight: true,
               stocks: [
                 { ID: 11384, Title: 'Cser Hà Nội' },
-                { ID: 11312, Title: 'Cser Hồ Chí Minh' }
+                { ID: 11312, Title: 'Cser Hồ Chí Minh' },
+                { ID: 11387, Title: 'Cser Chấm công' }
               ],
               IsAllStock: false
             }

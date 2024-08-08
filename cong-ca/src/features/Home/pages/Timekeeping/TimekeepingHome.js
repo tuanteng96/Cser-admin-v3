@@ -37,6 +37,7 @@ import useWindowSize from 'src/hooks/useWindowSize'
 
 import moment from 'moment'
 import 'moment/locale/vi'
+import WorksHelpers from 'src/helpers/WorksHelpers'
 
 moment.locale('vi')
 
@@ -210,12 +211,12 @@ function TimekeepingHome(props) {
                                     }
                                   : '',
                                 Desc: date?.WorkTrack?.Info?.Desc || '',
-                                CountWork:
-                                  date?.WorkTrack?.Info?.CheckOut?.WorkToday
-                                    ? date?.WorkTrack?.Info?.CheckOut?.WorkToday
-                                        ?.Value
-                                    : date?.WorkTrack?.Info?.WorkToday?.Value ||
-                                      0,
+                                CountWork: date?.WorkTrack?.Info?.CheckOut
+                                  ?.WorkToday
+                                  ? date?.WorkTrack?.Info?.CheckOut?.WorkToday
+                                      ?.Value
+                                  : date?.WorkTrack?.Info?.WorkToday?.Value ||
+                                    0,
                                 Note: date?.WorkTrack?.Info?.Note || '',
                                 CheckOut: {
                                   TimekeepingType:
@@ -288,6 +289,7 @@ function TimekeepingHome(props) {
     enabled: Boolean(filters.StockID && filters.From && filters.To),
     keepPreviousData: true
   })
+
   const columns = useMemo(
     () => [
       {
@@ -451,8 +453,8 @@ function TimekeepingHome(props) {
                                 )
                               }}
                               className="form-control w-full !font-medium text-success"
-                              dateFormat="HH:mm aa"
-                              timeFormat="HH:mm aa"
+                              dateFormat="HH:mm"
+                              timeFormat="HH:mm"
                               showTimeSelectOnly
                               showTimeSelect
                               timeIntervals={5}
@@ -494,8 +496,8 @@ function TimekeepingHome(props) {
                                 )
                               }
                               className="form-control w-full !font-medium text-danger"
-                              dateFormat="HH:mm aa"
-                              timeFormat="HH:mm aa"
+                              dateFormat="HH:mm"
+                              timeFormat="HH:mm"
                               showTimeSelectOnly
                               showTimeSelect
                               timeIntervals={5}
@@ -1106,6 +1108,41 @@ function TimekeepingHome(props) {
     })
   }
 
+  const autoUpdate = (values, resetForm) => {
+    let { list } = values
+    let newList = list.filter(
+      x =>
+        x.Dates.filter(d => d?.WorkTrack?.CheckIn || d?.WorkTrack?.CheckOut)
+          .length > 0
+    )
+    let result = []
+    for (let member of newList) {
+      let newMember = {
+        ...member
+      }
+      if (
+        member.Dates.filter(
+          d => d?.WorkTrack?.CheckIn || d?.WorkTrack?.CheckOut
+        ).length > 0
+      ) {
+        let newDates = []
+        for (let date of member.Dates) {
+          let newDate = { ...date }
+          let { WorkTrack } = date
+
+          let newInfo = WorksHelpers.getConfirmOutInDivide({ WorkTrack })
+
+          newDate.WorkTrack.Info = newInfo
+          newDates.push(newDate)
+        }
+        newMember.Dates = newDates
+      }
+
+      result.push(newMember)
+    }
+    resetForm({ list: result })
+  }
+
   const rowClassName = ({ rowData }) => {
     return (
       (rowData.Dates.some(x => x?.WorkTrack?.Info?.WorkToday?.isOff) &&
@@ -1114,7 +1151,6 @@ function TimekeepingHome(props) {
         '!bg-[#FFF4DE]')
     )
   }
-
   return (
     <>
       <Formik
@@ -1355,6 +1391,17 @@ function TimekeepingHome(props) {
                   />
                 </div>
                 <div className="card-footer d-flex justify-content-end align-items-center">
+                  <button
+                    type="button"
+                    onClick={() => autoUpdate(values, formikProps.resetForm)}
+                    className={clsx(
+                      'btn btn-primary fw-500 mr-2',
+                      saveTimeKeepMutation.isLoading &&
+                        'spinner spinner-white spinner-right'
+                    )}
+                  >
+                    Auto Update
+                  </button>
                   <button
                     type="submit"
                     disabled={saveTimeKeepMutation.isLoading}
