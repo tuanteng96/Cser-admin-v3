@@ -1400,7 +1400,7 @@ function TimekeepingHome(props) {
                         'spinner spinner-white spinner-right'
                     )}
                   >
-                    Auto Update
+                    Tự động tính lại
                   </button>
                   <button
                     type="submit"
