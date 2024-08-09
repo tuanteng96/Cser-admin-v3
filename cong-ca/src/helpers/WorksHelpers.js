@@ -45,6 +45,7 @@ const WorksHelpers = {
           moment(x.To, 'HH:mm:ss')
         )
     )
+
     if (indexIn > -1) {
       if (indexIn === 0) {
         initialValues.CountWork = 1
@@ -139,6 +140,7 @@ const WorksHelpers = {
           initialValues.TimekeepingTypeValue = 0
         }
       }
+
       if (indexIn === 5) {
         if (Info?.Type?.value === 'CA_NHAN') {
           initialValues.CountWork = 0
@@ -261,6 +263,7 @@ const WorksHelpers = {
           initialValues.CheckOut.TimekeepingTypeValue = 0
         }
       }
+
       if (indexOut === 5) {
         if (Info.CheckOut?.Type?.value === 'CA_NHAN') {
           initialValues.CheckOut.TimekeepingType = {
@@ -278,6 +281,7 @@ const WorksHelpers = {
             moment(CheckIn).format('HH:mm:ss'),
             'HH:mm:ss'
           ).isSameOrAfter(moment(Intervals[indexOut].From, 'HH:mm:ss'))
+
           if (!isSameOrAfter) {
             let durationInNew = moment(
               Intervals[indexOut].From,
@@ -289,10 +293,14 @@ const WorksHelpers = {
             initialValues.CheckOut.TimekeepingTypeValue =
               Math.abs(durationInNew) * MinutesPrice
           } else {
-            let durationInNew = moment(CheckIn, 'HH:mm:ss').diff(
+            let durationInNew = moment(
+              moment(CheckIn).format('HH:mm:ss'),
+              'HH:mm:ss'
+            ).diff(
               moment(moment(CheckOut).format('HH:mm:ss'), 'HH:mm:ss'),
               'minute'
             )
+
             initialValues.CheckOut.TimekeepingTypeValue =
               Math.abs(durationInNew) * MinutesPrice
           }

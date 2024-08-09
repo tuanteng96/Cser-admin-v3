@@ -1390,17 +1390,20 @@ function TimekeepingHome(props) {
                   />
                 </div>
                 <div className="card-footer d-flex justify-content-end align-items-center">
-                  <button
-                    type="button"
-                    onClick={() => autoUpdate(values, formikProps.resetForm)}
-                    className={clsx(
-                      'btn btn-primary fw-500 mr-2',
-                      saveTimeKeepMutation.isLoading &&
-                        'spinner spinner-white spinner-right'
-                    )}
-                  >
-                    Tự động tính lại
-                  </button>
+                  {window.top?.GlobalConfig?.Admin?.sua_ngay_cong && (
+                    <button
+                      type="button"
+                      onClick={() => autoUpdate(values, formikProps.resetForm)}
+                      className={clsx(
+                        'btn btn-primary fw-500 mr-2',
+                        saveTimeKeepMutation.isLoading &&
+                          'spinner spinner-white spinner-right'
+                      )}
+                    >
+                      Tự động tính lại
+                    </button>
+                  )}
+
                   <button
                     type="submit"
                     disabled={saveTimeKeepMutation.isLoading}

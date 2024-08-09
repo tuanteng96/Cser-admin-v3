@@ -88,7 +88,7 @@ function AuthInit(props) {
               ParentID: 778
             }
           ],
-          CrStockID: 11387, //8975
+          CrStockID: 11384, //8975
           rightsSum: {
             cong_ca: {
               hasRight: true,
