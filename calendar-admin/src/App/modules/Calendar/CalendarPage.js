@@ -938,7 +938,7 @@ function CalendarPage(props) {
               resourceIds:
                 topCalendar?.type?.value === "resourceTimelineDay"
                   ? [item?.os?.RoomID || 0]
-                  : item.staffs && Array.isArray(item.staffs)
+                  : item.staffs && Array.isArray(item.staffs) && item.staffs.length > 0
                   ? item.staffs.map((staf) => staf.ID)
                   : [0],
             }))
