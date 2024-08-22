@@ -32,7 +32,7 @@
             }
             rawFile.send(null);
         }
-        readTextFile(`${window.location.origin === 'http://localhost:3002' ? "https://cser.vn" : window.location.origin}/brand/global/Global.json`, function(result) {
+        readTextFile(`${window.location.origin === 'http://localhost:3002' ? "https://cserbeauty.com" : window.location.origin}/brand/global/Global.json`, function(result) {
             var data = JSON.parse(result);
             if (data.APP.Css) {
                 for (const key in data.APP.Css) {

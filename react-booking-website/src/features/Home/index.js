@@ -193,7 +193,7 @@ export default function Home() {
             }
 
             formikProps.setFieldValue('StockID', obj.StockID)
-            formikProps.setFieldValue('MobilePhone', obj.MobilePhone)
+            formikProps.setFieldValue('Phone', obj.MobilePhone)
             formikProps.setFieldValue('FullName', obj.FullName)
             formikProps.setFieldValue('UserServiceIDs', obj.UserServiceIDs)
             formikProps.setFieldValue('OldBook', obj)
