@@ -38,6 +38,7 @@ import useWindowSize from 'src/hooks/useWindowSize'
 import moment from 'moment'
 import 'moment/locale/vi'
 import WorksHelpers from 'src/helpers/WorksHelpers'
+import PickerChangeStock from '../../components/Picker/PickerChangeStock'
 
 moment.locale('vi')
 
@@ -324,18 +325,34 @@ function TimekeepingHome(props) {
                         )
                       </div>
                     )}
-                    {date.WorkTrack?.StockID &&
-                    date.WorkTrack?.StockID !== rowData.StockID ? (
-                      <div className="text-danger text-[12px]">
-                        <span className="pr-2">Khác điểm :</span>
-                        {date.WorkTrack?.StockTitle || 'Không xác định'}
-                      </div>
-                    ) : (
-                      ''
-                    )}
                   </Fragment>
                 ))}
               </NavLink>
+              {rowData.Dates.map((date, i) => (
+                <PickerChangeStock key={i} rowData={rowData} refetch={refetch}>
+                  {({ open }) => (
+                    <div onClick={open}>
+                      {date.WorkTrack?.StockID &&
+                      date.WorkTrack?.StockID !== rowData.StockID ? (
+                        <div className="text-danger text-[13px] font-medium mt-1 cursor-pointer">
+                          <span className="pr-2">Khác điểm :</span>
+                          {date.WorkTrack?.StockTitle || 'Không xác định'}
+                        </div>
+                      ) : (
+                        <>
+                          {date.WorkTrack?.CheckIn ? (
+                            <div className="text-muted text-[13px] font-medium mt-1 cursor-pointer">
+                              Đúng điểm
+                            </div>
+                          ) : (
+                            ''
+                          )}
+                        </>
+                      )}
+                    </div>
+                  )}
+                </PickerChangeStock>
+              ))}
             </div>
             <PopoverCustom>
               {({ onClose }) => (
@@ -1020,7 +1037,8 @@ function TimekeepingHome(props) {
         CreateDate: moment(Date).format('YYYY-MM-DD'),
         Info: {
           CheckOut: {}
-        }
+        },
+        StockID: filters.StockID?.value
       }
 
       obj.CheckIn = WorkTrack.CheckIn
@@ -1034,6 +1052,9 @@ function TimekeepingHome(props) {
       obj.Info.Note = WorkTrack.Info.Note || ''
       if (WorkTrack.ID) {
         obj.ID = WorkTrack.ID
+      }
+      if (WorkTrack.StockID) {
+        obj.StockID = WorkTrack.StockID
       }
       if (WorkTrack.Info.TimekeepingType) {
         if (
