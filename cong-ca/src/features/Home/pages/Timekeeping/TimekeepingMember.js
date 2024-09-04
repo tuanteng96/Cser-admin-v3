@@ -27,6 +27,7 @@ import { Field, Form, Formik } from 'formik'
 import useWindowSize from 'src/hooks/useWindowSize'
 import PickerTimekeeping from '../../components/Picker/PickerTimekeeping'
 import PickerSalary from '../../components/Picker/PickerSalary'
+import ExcelHepers from 'src/helpers/ExcelHepers'
 
 moment.locale('vi')
 
@@ -509,6 +510,8 @@ function TimekeepingMember(props) {
   const navigate = useNavigate()
   let { id } = useParams()
 
+  const [isExport, setIsExport] = useState(false)
+
   const { CrStockID } = useSelector(({ auth }) => ({
     CrStockID: auth?.Info?.CrStockID
   }))
@@ -872,6 +875,509 @@ function TimekeepingMember(props) {
     )
   }
 
+  const onExport = () => {
+    if (!data) return
+    setIsExport(true)
+    ExcelHepers.dataToExcel(
+      data?.FullName + ', T' + moment(filters.From).format('MM-YYYY'),
+      (sheet, workbook) => {
+        workbook.suspendPaint()
+        workbook.suspendEvent()
+        let Head = [
+          'Ngày',
+          'VÀO / RA',
+          'CƠ SỞ',
+          'LOẠI',
+          'TIỀN THƯỞNG / PHẠT',
+          'LÝ DO',
+          'MÔ TẢ LÝ DO',
+          'SỐ CÔNG',
+          'PHỤ CẤP NGÀY',
+          'GHI CHÚ'
+        ]
+
+        let Response = [Head]
+        let Rows = []
+
+        let indexStart = 2
+        if (data?.Dates) {
+          for (let obj of data?.Dates) {
+            indexStart += 1
+            if (indexStart % 2 !== 0) {
+              const rowObj = {
+                row: indexStart,
+                rowCount: 2
+              }
+              Rows.push(rowObj)
+
+              Response.push([
+                moment(obj.Date).format('DD-MM-YYYY'),
+                obj?.WorkTrack?.CheckIn
+                  ? moment(obj?.WorkTrack?.CheckIn).format('HH:mm:ss')
+                  : '',
+                obj?.WorkTrack?.StockID
+                  ? obj?.WorkTrack?.StockID !== data?.StockID
+                    ? 'Khác điểm ' + obj?.WorkTrack?.StockTitle
+                    : 'Đúng điểm'
+                  : '',
+                obj?.WorkTrack?.Info?.TimekeepingType?.label || '',
+                obj?.WorkTrack?.Info?.TimekeepingTypeValue || 0,
+                obj?.WorkTrack?.Info?.Type?.label || '',
+                obj?.WorkTrack?.Info?.Desc || '',
+                obj?.WorkTrack?.Info?.CountWork || '',
+                Number(obj?.WorkTrack?.Info?.CountWork) >
+                (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
+                  ? data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY
+                  : '',
+                obj?.WorkTrack?.Info?.Note || ''
+              ])
+            }
+            indexStart += 1
+
+            Response.push([
+              moment(obj.Date).format('DD-MM-YYYY'),
+              obj?.WorkTrack?.CheckOut
+                ? moment(obj?.WorkTrack?.CheckOut).format('HH:mm:ss')
+                : '',
+              obj?.WorkTrack?.StockID
+                ? obj?.WorkTrack?.StockID !== data?.StockID
+                  ? 'Khác điểm ' + obj?.WorkTrack?.StockTitle
+                  : 'Đúng điểm'
+                : '',
+              obj?.WorkTrack?.Info?.CheckOut?.TimekeepingType?.label || '',
+              obj?.WorkTrack?.Info?.CheckOut?.TimekeepingTypeValue || 0,
+              obj?.WorkTrack?.Info?.CheckOut?.Type?.label || '',
+              obj?.WorkTrack?.Info?.CheckOut?.Desc || '',
+              obj?.WorkTrack?.Info?.CountWork || '',
+              Number(obj?.WorkTrack?.Info?.CountWork) >
+              (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
+                ? data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY
+                : '',
+              obj?.WorkTrack?.Info?.Note || ''
+            ])
+          }
+        }
+
+        let getTotalPrice = () => {
+          if (!data) return 0
+
+          return data.Dates.reduce(
+            (n, { WorkTrack }) =>
+              n +
+              (WorkTrack.Info.TimekeepingTypeValue || 0) +
+              (WorkTrack.Info.CheckOut.TimekeepingTypeValue || 0),
+            0
+          )
+        }
+
+        let getTotalCountWork = () => {
+          if (!data) return 0
+          return (
+            Math.round(
+              data.Dates.filter(
+                x => !x?.WorkTrack?.Info?.WorkToday?.hiddenTime
+              ).reduce(
+                (n, { WorkTrack }) =>
+                  n + Number(WorkTrack?.Info?.CountWork || 0),
+                0
+              ) * 100
+            ) / 100
+          )
+        }
+
+        let getTotalAllowance = () => {
+          if (!data) return 0
+          let newData = data.Dates.filter(
+            x =>
+              x.WorkTrack.Info?.CountWork >=
+              (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
+          )
+          return (
+            newData.length *
+            (data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY || 0)
+          )
+        }
+
+        Response.push([
+          'Tổng',
+          '',
+          '',
+          '',
+          getTotalPrice(),
+          '',
+          '',
+          getTotalCountWork(),
+          getTotalAllowance(),
+          ''
+        ])
+
+        let TotalRow = Response.length
+        let TotalColumn = Head.length
+
+        sheet.setArray(2, 0, Response)
+
+        //title
+        workbook
+          .getActiveSheet()
+          .getCell(0, 0)
+          .value(
+            data?.FullName + ', T' + moment(filters.Month).format('MM-YYYY')
+          )
+        workbook.getActiveSheet().getCell(0, 0).font('18pt Arial')
+
+        workbook
+          .getActiveSheet()
+          .getRange(2, 0, 1, TotalColumn)
+          .font('12pt Arial')
+        workbook
+          .getActiveSheet()
+          .getRange(2, 0, 1, TotalColumn)
+          .backColor('#E7E9EB')
+        //border
+        var border = new window.GC.Spread.Sheets.LineBorder()
+        border.color = '#000'
+        border.style = window.GC.Spread.Sheets.LineStyle.thin
+        workbook
+          .getActiveSheet()
+          .getRange(2, 0, TotalRow, TotalColumn)
+          .borderLeft(border)
+        workbook
+          .getActiveSheet()
+          .getRange(2, 0, TotalRow, TotalColumn)
+          .borderRight(border)
+        workbook
+          .getActiveSheet()
+          .getRange(2, 0, TotalRow, TotalColumn)
+          .borderBottom(border)
+        workbook
+          .getActiveSheet()
+          .getRange(2, 0, TotalRow, TotalColumn)
+          .borderTop(border)
+        //filter
+        var cellrange = new window.GC.Spread.Sheets.Range(3, 0, 1, TotalColumn)
+        var hideRowFilter = new window.GC.Spread.Sheets.Filter.HideRowFilter(
+          cellrange
+        )
+        workbook.getActiveSheet().rowFilter(hideRowFilter)
+
+        //format number
+        workbook
+          .getActiveSheet()
+          .getCell(2, 0)
+          .hAlign(window.GC.Spread.Sheets.HorizontalAlign.center)
+
+        //auto fit width and height
+        workbook.getActiveSheet().autoFitRow(TotalRow + 2)
+        workbook.getActiveSheet().autoFitRow(0)
+
+        for (let i = 1; i < TotalColumn; i++) {
+          workbook.getActiveSheet().autoFitColumn(i)
+        }
+
+        workbook
+          .getActiveSheet()
+          .setColumnWidth(0, 150.0, window.GC.Spread.Sheets.SheetArea.viewport)
+        workbook
+          .getActiveSheet()
+          .setColumnWidth(1, 150.0, window.GC.Spread.Sheets.SheetArea.viewport)
+        workbook
+          .getActiveSheet()
+          .setColumnWidth(2, 250.0, window.GC.Spread.Sheets.SheetArea.viewport)
+        workbook
+          .getActiveSheet()
+          .setColumnWidth(3, 150.0, window.GC.Spread.Sheets.SheetArea.viewport)
+        workbook
+          .getActiveSheet()
+          .setColumnWidth(5, 150.0, window.GC.Spread.Sheets.SheetArea.viewport)
+
+        for (let i = 0; i <= TotalRow; i++) {
+          workbook.getActiveSheet().setFormatter(i + 3, 4, '#,#')
+          workbook.getActiveSheet().setFormatter(i + 3, 8, '#,#')
+        }
+
+        for (const x of Rows) {
+          for (let i of [0, 7, 8, 9]) {
+            //i là vị trí cột
+            workbook
+              .getActiveSheet()
+              .addSpan(
+                x.row,
+                i,
+                x.rowCount,
+                1,
+                window.GC.Spread.Sheets.SheetArea.viewport
+              )
+            workbook
+              .getActiveSheet()
+              .getCell(x.row, i)
+              .vAlign(window.GC.Spread.Sheets.VerticalAlign.center)
+          }
+        }
+
+        window.top?.toastr?.remove()
+
+        //Finish
+        workbook.resumePaint()
+        workbook.resumeEvent()
+
+        setIsExport(false)
+      }
+    )
+    // window?.top?.loading &&
+    //   window?.top?.loading('Đang thực hiện ...', () => {
+    //     ExcelHepers.dataToExcel(
+    //       data?.FullName + ', T' + moment(filters.From).format('MM-YYYY'),
+    //       (sheet, workbook) => {
+    //         workbook.suspendPaint()
+    //         workbook.suspendEvent()
+    //         let Head = [
+    //           'Ngày',
+    //           'VÀO / RA',
+    //           'LOẠI',
+    //           'TIỀN THƯỞNG / PHẠT',
+    //           'LÝ DO',
+    //           'MÔ TẢ LÝ DO',
+    //           'SỐ CÔNG',
+    //           'PHỤ CẤP NGÀY',
+    //           'GHI CHÚ'
+    //         ]
+
+    //         let Response = [Head]
+    //         let Rows = []
+
+    //         let indexStart = 2
+    //         if (data?.Dates) {
+    //           for (let obj of data?.Dates) {
+    //             indexStart += 1
+    //             if (indexStart % 2 !== 0) {
+    //               const rowObj = {
+    //                 row: indexStart,
+    //                 rowCount: 2
+    //               }
+    //               Rows.push(rowObj)
+
+    //               Response.push([
+    //                 moment(obj.Date).format('DD-MM-YYYY'),
+    //                 obj?.WorkTrack?.CheckIn
+    //                   ? moment(obj?.WorkTrack?.CheckIn).format('HH:mm:ss')
+    //                   : '',
+    //                 obj?.WorkTrack?.Info?.TimekeepingType?.label || '',
+    //                 obj?.WorkTrack?.Info?.TimekeepingTypeValue || 0,
+    //                 obj?.WorkTrack?.Info?.Type?.label || '',
+    //                 obj?.WorkTrack?.Info?.Desc || '',
+    //                 obj?.WorkTrack?.Info?.CountWork || '',
+    //                 Number(obj?.WorkTrack?.Info?.CountWork) >
+    //                 (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
+    //                   ? data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY
+    //                   : '',
+    //                 obj?.WorkTrack?.Info?.Note || ''
+    //               ])
+    //             }
+    //             indexStart += 1
+
+    //             Response.push([
+    //               moment(obj.Date).format('DD-MM-YYYY'),
+    //               obj?.WorkTrack?.CheckOut
+    //                 ? moment(obj?.WorkTrack?.CheckOut).format('HH:mm:ss')
+    //                 : '',
+    //               obj?.WorkTrack?.Info?.CheckOut?.TimekeepingType?.label || '',
+    //               obj?.WorkTrack?.Info?.CheckOut?.TimekeepingTypeValue || 0,
+    //               obj?.WorkTrack?.Info?.CheckOut?.Type?.label || '',
+    //               obj?.WorkTrack?.Info?.CheckOut?.Desc || '',
+    //               obj?.WorkTrack?.Info?.CountWork || '',
+    //               Number(obj?.WorkTrack?.Info?.CountWork) >
+    //               (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
+    //                 ? data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY
+    //                 : '',
+    //               obj?.WorkTrack?.Info?.Note || ''
+    //             ])
+    //           }
+    //         }
+
+    //         let getTotalPrice = () => {
+    //           if (!data) return 0
+
+    //           return data.Dates.reduce(
+    //             (n, { WorkTrack }) =>
+    //               n +
+    //               (WorkTrack.Info.TimekeepingTypeValue || 0) +
+    //               (WorkTrack.Info.CheckOut.TimekeepingTypeValue || 0),
+    //             0
+    //           )
+    //         }
+
+    //         let getTotalCountWork = () => {
+    //           if (!data) return 0
+    //           return (
+    //             Math.round(
+    //               data.Dates.filter(
+    //                 x => !x?.WorkTrack?.Info?.WorkToday?.hiddenTime
+    //               ).reduce(
+    //                 (n, { WorkTrack }) =>
+    //                   n + Number(WorkTrack?.Info?.CountWork || 0),
+    //                 0
+    //               ) * 100
+    //             ) / 100
+    //           )
+    //         }
+
+    //         let getTotalAllowance = () => {
+    //           if (!data) return 0
+    //           let newData = data.Dates.filter(
+    //             x =>
+    //               x.WorkTrack.Info?.CountWork >=
+    //               (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
+    //           )
+    //           return (
+    //             newData.length *
+    //             (data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY || 0)
+    //           )
+    //         }
+
+    //         Response.push([
+    //           'Tổng',
+    //           '',
+    //           '',
+    //           getTotalPrice(),
+    //           '',
+    //           '',
+    //           getTotalCountWork(),
+    //           getTotalAllowance(),
+    //           ''
+    //         ])
+
+    //         let TotalRow = Response.length
+    //         let TotalColumn = Head.length
+
+    //         sheet.setArray(2, 0, Response)
+
+    //         //title
+    //         workbook
+    //           .getActiveSheet()
+    //           .getCell(0, 0)
+    //           .value(
+    //             data?.FullName + ', T' + moment(filters.Month).format('MM-YYYY')
+    //           )
+    //         workbook.getActiveSheet().getCell(0, 0).font('18pt Arial')
+
+    //         workbook
+    //           .getActiveSheet()
+    //           .getRange(2, 0, 1, TotalColumn)
+    //           .font('12pt Arial')
+    //         workbook
+    //           .getActiveSheet()
+    //           .getRange(2, 0, 1, TotalColumn)
+    //           .backColor('#E7E9EB')
+    //         //border
+    //         var border = new window.GC.Spread.Sheets.LineBorder()
+    //         border.color = '#000'
+    //         border.style = window.GC.Spread.Sheets.LineStyle.thin
+    //         workbook
+    //           .getActiveSheet()
+    //           .getRange(2, 0, TotalRow, TotalColumn)
+    //           .borderLeft(border)
+    //         workbook
+    //           .getActiveSheet()
+    //           .getRange(2, 0, TotalRow, TotalColumn)
+    //           .borderRight(border)
+    //         workbook
+    //           .getActiveSheet()
+    //           .getRange(2, 0, TotalRow, TotalColumn)
+    //           .borderBottom(border)
+    //         workbook
+    //           .getActiveSheet()
+    //           .getRange(2, 0, TotalRow, TotalColumn)
+    //           .borderTop(border)
+    //         //filter
+    //         var cellrange = new window.GC.Spread.Sheets.Range(
+    //           3,
+    //           0,
+    //           1,
+    //           TotalColumn
+    //         )
+    //         var hideRowFilter =
+    //           new window.GC.Spread.Sheets.Filter.HideRowFilter(cellrange)
+    //         workbook.getActiveSheet().rowFilter(hideRowFilter)
+
+    //         //format number
+    //         workbook
+    //           .getActiveSheet()
+    //           .getCell(2, 0)
+    //           .hAlign(window.GC.Spread.Sheets.HorizontalAlign.center)
+
+    //         //auto fit width and height
+    //         workbook.getActiveSheet().autoFitRow(TotalRow + 2)
+    //         workbook.getActiveSheet().autoFitRow(0)
+
+    //         for (let i = 1; i < TotalColumn; i++) {
+    //           workbook.getActiveSheet().autoFitColumn(i)
+    //         }
+
+    //         workbook
+    //           .getActiveSheet()
+    //           .setColumnWidth(
+    //             0,
+    //             150.0,
+    //             window.GC.Spread.Sheets.SheetArea.viewport
+    //           )
+    //         workbook
+    //           .getActiveSheet()
+    //           .setColumnWidth(
+    //             1,
+    //             150.0,
+    //             window.GC.Spread.Sheets.SheetArea.viewport
+    //           )
+    //         workbook
+    //           .getActiveSheet()
+    //           .setColumnWidth(
+    //             2,
+    //             150.0,
+    //             window.GC.Spread.Sheets.SheetArea.viewport
+    //           )
+    //         workbook
+    //           .getActiveSheet()
+    //           .setColumnWidth(
+    //             5,
+    //             150.0,
+    //             window.GC.Spread.Sheets.SheetArea.viewport
+    //           )
+
+    //         for (let i = 0; i <= TotalRow; i++) {
+    //           workbook.getActiveSheet().setFormatter(i + 3, 3, '#,#')
+    //           workbook.getActiveSheet().setFormatter(i + 3, 7, '#,#')
+    //         }
+
+    //         for (const x of Rows) {
+    //           for (let i of [0, 6, 7, 8]) {
+    //             //i là vị trí cột
+    //             workbook
+    //               .getActiveSheet()
+    //               .addSpan(
+    //                 x.row,
+    //                 i,
+    //                 x.rowCount,
+    //                 1,
+    //                 window.GC.Spread.Sheets.SheetArea.viewport
+    //               )
+    //             workbook
+    //               .getActiveSheet()
+    //               .getCell(x.row, i)
+    //               .vAlign(window.GC.Spread.Sheets.VerticalAlign.center)
+    //           }
+    //         }
+
+    //         window.top?.toastr?.remove()
+
+    //         //Finish
+    //         workbook.resumePaint()
+    //         workbook.resumeEvent()
+
+    //         setIsExport(false)
+    //       }
+    //     )
+    //   })
+  }
+
   return (
     <div className="!overflow-x-hidden card h-100 timekeeping">
       <div className="card-header d-block p-20px min-h-125px min-h-md-auto">
@@ -905,6 +1411,16 @@ function TimekeepingMember(props) {
                 onChange={date => setCrDate(date)}
               />
               <i className="top-0 right-0 pointer-events-none fa-regular fa-calendar-range position-absolute w-25px h-100 d-flex align-items-center font-size-md text-muted"></i>
+            </div>
+            <div className="ml-15px">
+              <button
+                type="button"
+                className="h-[42px] bg-primary px-4 text-white border-0 rounded hover:opacity-90 transition-all"
+                onClick={onExport}
+                disabled={isExport}
+              >
+                Xuất Excel
+              </button>
             </div>
             <div className="h-40px w-1px border-right mx-15px"></div>
             <Navbar />

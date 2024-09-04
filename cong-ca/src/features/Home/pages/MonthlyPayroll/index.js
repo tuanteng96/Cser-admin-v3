@@ -148,9 +148,13 @@ function MonthlyPayroll(props) {
         key: 'DI_MUON+VE_SOM',
         sortable: false,
         cellRenderer: ({ rowData }) =>
-          `${PriceHelper.formatVND(
-            rowData.TrackValue.DI_MUON + rowData.TrackValue.VE_SOM
-          )}`
+          rowData.TrackValue.DI_MUON + rowData.TrackValue.VE_SOM > 0
+            ? `-${PriceHelper.formatVND(
+                rowData.TrackValue.DI_MUON + rowData.TrackValue.VE_SOM
+              )}`
+            : PriceHelper.formatVND(
+                rowData.TrackValue.DI_MUON + rowData.TrackValue.VE_SOM
+              )
       },
       {
         width: width > 767 ? 350 : 180,
@@ -233,7 +237,9 @@ function MonthlyPayroll(props) {
                     (item?.TrackValue?.WorkQtyAllowance || 0) *
                       (item?.TrackValue?.Config?.Values?.TRO_CAP_NGAY || 0),
                     item?.TrackValue?.WorkQty * item?.NGAY_LUONG_CO_BAN,
-                    item?.TrackValue.DI_MUON + item?.TrackValue.VE_SOM,
+                    item?.TrackValue.DI_MUON + item?.TrackValue.VE_SOM > 0
+                      ? `-${item?.TrackValue.DI_MUON + item?.TrackValue.VE_SOM}`
+                      : item?.TrackValue.DI_MUON + item?.TrackValue.VE_SOM,
                     item?.TrackValue.DI_SOM + item?.TrackValue.VE_MUON,
                     item?.TrackValue?.WorkQty * item.NGAY_LUONG_CO_BAN -
                       (item.TrackValue.DI_MUON + item.TrackValue.VE_SOM) +
@@ -527,7 +533,7 @@ function MonthlyPayroll(props) {
             </div>
           </div>
         </Modal.Body>
-        <div className='p-[16px]'>
+        <div className="p-[16px]">
           <button
             type="button"
             className="w-full h-[42px] bg-primary px-4 text-white border-0 rounded hover:opacity-90 transition-all"
