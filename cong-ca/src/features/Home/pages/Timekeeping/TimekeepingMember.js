@@ -1096,7 +1096,7 @@ function TimekeepingMember(props) {
         }
 
         for (const x of Rows) {
-          for (let i of [0, 7, 8, 9]) {
+          for (let i of [0, 2, 7, 8, 9]) {
             //i là vị trí cột
             workbook
               .getActiveSheet()
