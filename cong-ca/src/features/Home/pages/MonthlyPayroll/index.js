@@ -16,6 +16,7 @@ import { Modal } from 'react-bootstrap'
 import { PriceHelper } from 'src/helpers/PriceHelper'
 import { BarsArrowDownIcon } from '@heroicons/react/24/solid'
 import useWindowSize from 'src/hooks/useWindowSize'
+import ExcelHepers from 'src/helpers/ExcelHepers'
 
 function MonthlyPayroll(props) {
   const navigate = useNavigate()
@@ -32,6 +33,7 @@ function MonthlyPayroll(props) {
     pi: 1, // Trang hiện tại
     ps: 20 // Số lượng item
   })
+  const [isExport, setIsExport] = useState(false)
 
   const { width } = useWindowSize()
 
@@ -76,7 +78,10 @@ function MonthlyPayroll(props) {
           {
             ...data,
             pcount: data?.pcount || 1,
-            pi: pageParam
+            pi: pageParam,
+            list: data?.list
+              ? data?.list.map(x => ({ ...x, UserID: x.User.ID }))
+              : []
           } || []
         )
       },
@@ -189,6 +194,145 @@ function MonthlyPayroll(props) {
     </Text>
   )
 
+  const onExport = () => {
+    window?.top?.loading &&
+      window?.top?.loading('Đang thực hiện ...', () => {
+        setIsExport(true)
+        const newObj = {
+          mon: filters.Month ? moment(filters.Month).format('MM/YYYY') : '',
+          stockid: filters.StockID ? filters.StockID.ID : '',
+          // UserIDs: filters.UserID ? [filters.UserID.value] : '',
+          pi: 1,
+          ps: 5000
+        }
+        worksheetApi.listUserSalary(newObj).then(({ data }) => {
+          ExcelHepers.dataToExcel(
+            'Chấm công tháng-' + moment(filters.Month).format('MM-YYYY'),
+            (sheet, workbook) => {
+              workbook.suspendPaint()
+              workbook.suspendEvent()
+              let Head = [
+                'STT',
+                'HỌ TÊN NHÂN VIÊN',
+                'SỐ CÔNG',
+                'PHỤ CẤP NGÀY',
+                'TỔNG LƯƠNG CHẤM CÔNG',
+                'TỔNG PHẠT (ĐI SỚM / VỀ MUỘN)',
+                'TỔNG TĂNG CA, THÊM GIỜ',
+                'TỔNG LƯƠNG THÁNG'
+              ]
+
+              let Response = [Head]
+
+              if (data?.list && data?.list.length > 0) {
+                for (let [index, item] of data?.list.entries()) {
+                  let newArray = [
+                    index + 1,
+                    item?.User?.FullName,
+                    item?.TrackValue?.WorkQty,
+                    (item?.TrackValue?.WorkQtyAllowance || 0) *
+                      (item?.TrackValue?.Config?.Values?.TRO_CAP_NGAY || 0),
+                    item?.TrackValue?.WorkQty * item?.NGAY_LUONG_CO_BAN,
+                    item?.TrackValue.DI_MUON + item?.TrackValue.VE_SOM,
+                    item?.TrackValue.DI_SOM + item?.TrackValue.VE_MUON,
+                    item?.TrackValue?.WorkQty * item.NGAY_LUONG_CO_BAN -
+                      (item.TrackValue.DI_MUON + item.TrackValue.VE_SOM) +
+                      (item.TrackValue.DI_SOM + item.TrackValue.VE_MUON) +
+                      (item?.TrackValue?.WorkQtyAllowance || 0) *
+                        (item?.TrackValue?.Config?.Values?.TRO_CAP_NGAY || 0)
+                  ]
+                  Response.push(newArray)
+                }
+              }
+
+              let TotalRow = Response.length
+              let TotalColumn = Head.length
+
+              sheet.setArray(2, 0, Response)
+
+              //title
+              workbook
+                .getActiveSheet()
+                .getCell(0, 0)
+                .value(
+                  'Chấm công tháng- ' + moment(filters.Month).format('MM-YYYY')
+                )
+              workbook.getActiveSheet().getCell(0, 0).font('18pt Arial')
+
+              workbook
+                .getActiveSheet()
+                .getRange(2, 0, 1, TotalColumn)
+                .font('12pt Arial')
+              workbook
+                .getActiveSheet()
+                .getRange(2, 0, 1, TotalColumn)
+                .backColor('#E7E9EB')
+              //border
+              var border = new window.GC.Spread.Sheets.LineBorder()
+              border.color = '#000'
+              border.style = window.GC.Spread.Sheets.LineStyle.thin
+              workbook
+                .getActiveSheet()
+                .getRange(2, 0, TotalRow, TotalColumn)
+                .borderLeft(border)
+              workbook
+                .getActiveSheet()
+                .getRange(2, 0, TotalRow, TotalColumn)
+                .borderRight(border)
+              workbook
+                .getActiveSheet()
+                .getRange(2, 0, TotalRow, TotalColumn)
+                .borderBottom(border)
+              workbook
+                .getActiveSheet()
+                .getRange(2, 0, TotalRow, TotalColumn)
+                .borderTop(border)
+              //filter
+              var cellrange = new window.GC.Spread.Sheets.Range(
+                3,
+                0,
+                1,
+                TotalColumn
+              )
+              var hideRowFilter =
+                new window.GC.Spread.Sheets.Filter.HideRowFilter(cellrange)
+              workbook.getActiveSheet().rowFilter(hideRowFilter)
+
+              //format number
+              workbook
+                .getActiveSheet()
+                .getCell(2, 0)
+                .hAlign(window.GC.Spread.Sheets.HorizontalAlign.center)
+
+              //auto fit width and height
+              workbook.getActiveSheet().autoFitRow(TotalRow + 2)
+              workbook.getActiveSheet().autoFitRow(0)
+
+              for (let i = 1; i < TotalColumn; i++) {
+                workbook.getActiveSheet().autoFitColumn(i)
+              }
+
+              for (let i = 0; i <= TotalRow; i++) {
+                workbook.getActiveSheet().setFormatter(i + 3, 3, '#,#')
+                workbook.getActiveSheet().setFormatter(i + 3, 4, '#,#')
+                workbook.getActiveSheet().setFormatter(i + 3, 5, '#,#')
+                workbook.getActiveSheet().setFormatter(i + 3, 6, '#,#')
+                workbook.getActiveSheet().setFormatter(i + 3, 7, '#,#')
+              }
+
+              window.top?.toastr?.remove()
+
+              //Finish
+              workbook.resumePaint()
+              workbook.resumeEvent()
+
+              setIsExport(false)
+            }
+          )
+        })
+      })
+  }
+
   return (
     <div className="h-100 card">
       <div className="card-header d-block p-20px !min-h-[75px] !md-min-h-[125px]">
@@ -220,6 +364,14 @@ function MonthlyPayroll(props) {
                   isClearable={true}
                 />
               </div> */}
+              <button
+                type="button"
+                className="h-[42px] bg-primary px-4 text-white border-0 rounded hover:opacity-90 transition-all"
+                onClick={onExport}
+                disabled={isExport}
+              >
+                Xuất Excel
+              </button>
               <div className="w-225px mx-15px">
                 <Select
                   options={StocksList}
@@ -253,7 +405,7 @@ function MonthlyPayroll(props) {
               </div>
             </div>
             <div
-              className="xl:hidden w-[40px] h-[40px] !bg-success rounded text-white flex items-center justify-center"
+              className="xl:hidden w-[40px] h-[40px] !bg-success rounded text-white flex items-center justify-center ml-3"
               onClick={() => setVisible(true)}
             >
               <BarsArrowDownIcon className="w-7" />
@@ -267,7 +419,7 @@ function MonthlyPayroll(props) {
             <Table
               fixed
               components={{ TableCell, TableHeaderCell }}
-              rowKey="ID"
+              rowKey="UserID"
               width={width}
               height={height}
               columns={columns}
@@ -322,7 +474,7 @@ function MonthlyPayroll(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title className="font-title text-uppercase">
-            Bộ lọch
+            Bộ lọc
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -375,6 +527,16 @@ function MonthlyPayroll(props) {
             </div>
           </div>
         </Modal.Body>
+        <div className='p-[16px]'>
+          <button
+            type="button"
+            className="w-full h-[42px] bg-primary px-4 text-white border-0 rounded hover:opacity-90 transition-all"
+            onClick={onExport}
+            disabled={isExport}
+          >
+            Xuất Excel
+          </button>
+        </div>
       </Modal>
     </div>
   )

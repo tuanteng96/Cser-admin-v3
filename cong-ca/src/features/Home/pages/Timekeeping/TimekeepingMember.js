@@ -26,6 +26,7 @@ import { useSelector } from 'react-redux'
 import { Field, Form, Formik } from 'formik'
 import useWindowSize from 'src/hooks/useWindowSize'
 import PickerTimekeeping from '../../components/Picker/PickerTimekeeping'
+import PickerSalary from '../../components/Picker/PickerSalary'
 
 moment.locale('vi')
 
@@ -430,6 +431,25 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
                 <div className="font-medium text-base mr-3.5">
                   {Locked ? 'Đã chốt lương' : 'Lương dự kiến'}
                 </div>
+                {window?.top?.GlobalConfig?.Admin?.chi_tiet_cong && (
+                  <PickerSalary
+                    SalaryConfigMons={SalaryConfigMons}
+                    data={{
+                      CountWork: getTotalCountWork(),
+                      TotalPrice: getTotalPrice()
+                    }}
+                  >
+                    {({ open }) => (
+                      <div
+                        className="mr-3 cursor-pointer text-warning"
+                        onClick={() => open()}
+                      >
+                        <i className="fa-solid fa-circle-info text-[16px]"></i>
+                      </div>
+                    )}
+                  </PickerSalary>
+                )}
+
                 <div className="mr-3.5">
                   <Field name="LUONG">
                     {({ field, form, meta }) => (
@@ -568,7 +588,8 @@ function TimekeepingMember(props) {
                                 }
                               : '',
                             Desc: date?.WorkTrack?.Info?.Desc || '',
-                            CountWork: date?.WorkTrack?.Info?.CheckOut?.WorkToday
+                            CountWork: date?.WorkTrack?.Info?.CheckOut
+                              ?.WorkToday
                               ? date?.WorkTrack?.Info?.CheckOut?.WorkToday
                                   ?.Value
                               : date?.WorkTrack?.Info?.WorkToday?.Value || 0,

@@ -1451,7 +1451,7 @@ function TimekeepingHome(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title className="font-title text-uppercase">
-            Bộ lọch
+            Bộ lọc
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
