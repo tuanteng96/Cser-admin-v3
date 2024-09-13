@@ -22,20 +22,25 @@ const StatusArr = [
   },
   {
     value: "KHACH_KHONG_DEN",
-    label: "Đặt nhưng không đến",
+    label: "Khách không đến",
+    color: "#F64E60",
+    bg: "#FFE2E5",
+  },
+  {
+    value: "TU_CHOI",
+    label: "Khách hủy lịch",
     color: "#F64E60",
     bg: "#FFE2E5",
   },
   {
     value: "KHACH_DEN",
-    label: "Hoàn thành",
+    label: "Khách có đến",
     color: "#8950FC",
     bg: "#EEE5FF",
   },
   {
     value: "DANG_THUC_HIEN",
     label: "Đang thực hiện",
-
     color: "#1bc5bd",
     bg: "#C9F7F5",
   },
@@ -80,10 +85,10 @@ const CheckBox = (props) => (
           style={{ background: props.color }}
         ></span>
         {/* <div
-            className="w-30px h-18px rounded-2px mr-2 ml-2"
+            className="ml-2 mr-2 w-30px h-18px rounded-2px"
             style={{ background: props.color }}
           /> */}
-        <div className="font-size-smm ml-2" style={{ color: props.color }}>
+        <div className="ml-2 font-size-smm" style={{ color: props.color }}>
           {props.label}
         </div>
       </label>
@@ -94,14 +99,14 @@ const CheckBox = (props) => (
 function StatusList(props) {
   const [isOpen] = useState(true);
   return (
-    <div className="form-group form-group-ezs mb-0">
+    <div className="mb-0 form-group form-group-ezs">
       {isOpen && (
         <div className="py-8px">
           {/* <div className="font-size-minn font-weight-bold text-uppercase text-muted mb-10px">
             <span>Lịch dự kiến</span>
           </div> */}
           {StatusArr &&
-            StatusArr.slice(0, 5).map((item, index) => (
+            StatusArr.slice(0, 6).map((item, index) => (
               <CheckBox
                 isMargin={index === 0}
                 name="Status"
@@ -118,7 +123,7 @@ function StatusList(props) {
                 Lịch thực hiện
               </div>
               {StatusArr &&
-                StatusArr.slice(5, StatusArr.length).map((item, index) => (
+                StatusArr.slice(6, StatusArr.length).map((item, index) => (
                   <CheckBox
                     isMargin={index === 0}
                     name="Status"

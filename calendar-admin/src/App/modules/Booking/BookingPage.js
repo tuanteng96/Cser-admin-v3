@@ -24,7 +24,7 @@ const StatusArr = [
   },
   {
     value: "KHACH_DEN",
-    label: "Hoàn thành",
+    label: "Khách có đến",
     color: "#1bc5bd",
   },
   {
@@ -34,7 +34,7 @@ const StatusArr = [
   },
   {
     value: "TU_CHOI",
-    label: "Khách hủy",
+    label: "Khách hủy lịch",
     color: "#F64E60",
   },
 ];
@@ -271,7 +271,7 @@ function BookingPage() {
               : "",
           BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
           Status: "KHACH_DEN",
-          Desc
+          Desc,
         },
       ],
     };
@@ -788,7 +788,7 @@ function BookingPage() {
                                     href="#"
                                     onClick={() => onDelete(values)}
                                   >
-                                    Hủy lịch
+                                    Khách huỷ lịch
                                   </Dropdown.Item>
                                 </Dropdown.Menu>
                               </Dropdown>

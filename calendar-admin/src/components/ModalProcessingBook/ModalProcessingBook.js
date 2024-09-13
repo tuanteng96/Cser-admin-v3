@@ -68,7 +68,7 @@ function ModalProcessingBook({ children }) {
   const updateOs = (os, OSList) => {
     Swal.fire({
       icon: "warning",
-      title: `Xác nhận ${OSList ? "khách đến" : "khách hủy"}.`,
+      title: `Xác nhận ${OSList ? "khách đến" : "khách hủy lịch"}.`,
       confirmButtonText: "Xác nhận",
       customClass: {
         confirmButton: "btn btn-success",
@@ -185,7 +185,7 @@ function ModalProcessingBook({ children }) {
                                             os.RootIds ||
                                             "Chưa xác định"}
                                         </div>
-                                        <div className="pt-1 text-xs font-light text-right text-gray-600 w-28 hidden md:block">
+                                        <div className="hidden pt-1 text-xs font-light text-right text-gray-600 w-28 md:block">
                                           {moment(os.CreateDate).fromNow()}
                                         </div>
                                       </div>
@@ -223,7 +223,7 @@ function ModalProcessingBook({ children }) {
                                           )}
                                           onClick={() => updateOs(os, book?.OS)}
                                         >
-                                          {book?.OS ? "Khách đến" : "Khách hủy"}
+                                          {book?.OS ? "Khách đến" : "Khách hủy lịch"}
                                         </button>
                                       </div>
                                     </Fragment>
@@ -252,7 +252,7 @@ function ModalProcessingBook({ children }) {
                                         <div className="flex-1 pr-4 text-[15px] font-medium">
                                           {os.Title || "Chưa xác định"}
                                         </div>
-                                        <div className="pt-1 text-xs font-light text-right text-gray-600 w-28 hidden md:block">
+                                        <div className="hidden pt-1 text-xs font-light text-right text-gray-600 w-28 md:block">
                                           {moment(os.CreateDate).fromNow()}
                                         </div>
                                       </div>

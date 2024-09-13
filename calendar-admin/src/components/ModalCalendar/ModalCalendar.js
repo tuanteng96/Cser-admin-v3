@@ -288,9 +288,9 @@ function ModalCalendar({
         >
           <span>
             {Status === "XAC_NHAN" ? "Đã xác nhận" : ""}
-            {Status === "KHACH_KHONG_DEN" ? "Khách hàng không đến" : ""}
-            {Status === "KHACH_DEN" ? "Hoàn thành" : ""}
-            {Status === "TU_CHOI" ? "Hủy lịch" : ""}
+            {Status === "KHACH_KHONG_DEN" ? "Khách không đến" : ""}
+            {Status === "KHACH_DEN" ? "Khách có đến" : ""}
+            {Status === "TU_CHOI" ? "Khách hủy lịch" : ""}
           </span>
         </Dropdown.Toggle>
         <Dropdown.Menu className="super-colors">
@@ -308,7 +308,7 @@ function ModalCalendar({
             active={Status === "KHACH_KHONG_DEN"}
             onClick={() => setFieldValue("Status", "KHACH_KHONG_DEN", false)}
           >
-            Đặt nhưng không đến
+            Khách không đến
           </Dropdown.Item>
           <Dropdown.Item
             className="font-weight-bold"
@@ -316,7 +316,7 @@ function ModalCalendar({
             active={Status === "KHACH_DEN"}
             onClick={() => setFieldValue("Status", "KHACH_DEN", false)}
           >
-            Hoàn thành
+            Khách có đến
           </Dropdown.Item>
           <Dropdown.Item
             className="font-weight-bold"
@@ -324,7 +324,7 @@ function ModalCalendar({
             active={Status === "TU_CHOI"}
             onClick={() => setFieldValue("Status", "TU_CHOI", false)}
           >
-            Hủy lịch
+            Khách hủy lịch
           </Dropdown.Item>
         </Dropdown.Menu>
       </Dropdown>
@@ -905,7 +905,7 @@ function ModalCalendar({
                                         href="#"
                                         onClick={() => onDelete(values)}
                                       >
-                                        Hủy lịch
+                                        Khách hủy lịch
                                       </Dropdown.Item>
                                     </Dropdown.Menu>
                                   </Dropdown>
@@ -924,7 +924,7 @@ function ModalCalendar({
                                     onClick={() => onFinish(values)}
                                   >
                                     {initialValue?.ID && initialValue?.AtHome
-                                      ? "Hoàn thành"
+                                      ? "Khách có đến"
                                       : "Khách đến"}
                                   </button>
                                 </>

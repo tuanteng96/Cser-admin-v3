@@ -39,7 +39,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 0,
             },
             {
-              ID: 11387,
+              ID: 11409,
               Title: "Cser Hà Nội",
               ParentID: 778,
             },
@@ -56,7 +56,7 @@ function AuthInit({ isConfig, children }) {
           ],
           StockRights: [
             {
-              ID: 11387,
+              ID: 11409,
               Title: "Cser Hà Nội",
               ParentID: 778,
             },
@@ -71,29 +71,29 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
           ],
-          CrStockID: 11387, //8975
+          CrStockID: 11409, //8975
           rightsSum: {
             pos: {
               hasRight: true,
-              stocks: [{ ID: 11340, Title: "Cser Hà Nội" }],
+              stocks: [{ ID: 11409, Title: "Cser Hà Nội" }],
               IsAllStock: false,
             },
             tele: {
               hasRight: true,
               stocks: [
-                { ID: 11340, Title: "Cser Hà Nội" },
+                { ID: 11409, Title: "Cser Hà Nội" },
                 { ID: 10053, Title: "Cser Hồ Chí Minh" },
               ],
               IsAllStock: false,
             },
             teleAdv: {
               hasRight: true,
-              stocks: [{ ID: 11340, Title: "Cser Hồ Chí Minh" }],
+              stocks: [{ ID: 11409, Title: "Cser Hồ Chí Minh" }],
               IsAllStock: false,
             },
           },
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNjIwNSIsIm5iZiI6MTcyMzUxNzcyNSwiZXhwIjoxODA5OTE3NzI1LCJpYXQiOjE3MjM1MTc3MjV9.hcJY4eRSNqtjA1wlOc6eApYMKV0HzrLpBpYhME8O324",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNjMxNiIsIm5iZiI6MTcyNjExMzcwNiwiZXhwIjoxODEyNTEzNzA2LCJpYXQiOjE3MjYxMTM3MDZ9.bj3UszfkgOHkaEcc59aFYdnbgj6EMWVFA_JmKrZHqrQ",
         };
         window.GlobalConfig = {
           APP: {
