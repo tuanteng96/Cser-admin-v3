@@ -328,11 +328,8 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                             render={(arrayHelpers) =>
                               item.Hoa_Hong &&
                               item.Hoa_Hong.map((sub, idx) => (
-                                <div
-                                  className="my-3 d-flex align-items-center"
-                                  key={idx}
-                                >
-                                  <div className="mb-1 w-150px pe-2">
+                                <div className="my-3" key={idx}>
+                                  <div className="mb-2 w-100">
                                     <label className="text-truncate line-height-md font-weight-500 w-100">
                                       {sub.User.FullName}
                                     </label>
@@ -387,62 +384,65 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                       - <span>#{sub.ID}</span>
                                     </div>
                                   </div>
-                                  <NumberFormat
-                                    allowNegative={false}
-                                    name={`BounsSalesIn[${index}].Hoa_Hong[${idx}].Value`}
-                                    placeholder={"Nhập giá trị"}
-                                    className={`form-control flex-1`}
-                                    isNumericString={true}
-                                    thousandSeparator={true}
-                                    value={sub.Value}
-                                    onValueChange={(val) => {
-                                      setFieldValue(
-                                        `BounsSalesIn[${index}].Hoa_Hong[${idx}].Value`,
-                                        val.floatValue
-                                          ? val.floatValue
-                                          : val.value,
-                                        false
-                                      );
-                                    }}
-                                    onBlur={handleBlur}
-                                    disabled={
-                                      window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao
-                                        ? UserID !== 1
-                                        : !(
-                                            adminTools_byStock?.hasRight ||
-                                            moment(sub.CreateDate).format(
-                                              "DD-MM-YYYY"
-                                            ) === moment().format("DD-MM-YYYY")
-                                          )
-                                    }
-                                  />
-                                  {window.top?.GlobalConfig?.Admin
-                                    ?.thuong_ds_nang_cao
-                                    ? UserID === 1 && (
-                                        <div
-                                          className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
-                                          onClick={() =>
-                                            arrayHelpers.remove(idx)
-                                          }
-                                        >
-                                          Xóa
-                                        </div>
-                                      )
-                                    : (adminTools_byStock?.hasRight ||
-                                        moment(sub.CreateDate).format(
-                                          "DD-MM-YYYY"
-                                        ) ===
-                                          moment().format("DD-MM-YYYY")) && (
-                                        <div
-                                          className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
-                                          onClick={() =>
-                                            arrayHelpers.remove(idx)
-                                          }
-                                        >
-                                          Xóa
-                                        </div>
-                                      )}
+                                  <div className="d-flex align-items-center w-100">
+                                    <NumberFormat
+                                      allowNegative={false}
+                                      name={`BounsSalesIn[${index}].Hoa_Hong[${idx}].Value`}
+                                      placeholder={"Nhập giá trị"}
+                                      className={`form-control flex-1`}
+                                      isNumericString={true}
+                                      thousandSeparator={true}
+                                      value={sub.Value}
+                                      onValueChange={(val) => {
+                                        setFieldValue(
+                                          `BounsSalesIn[${index}].Hoa_Hong[${idx}].Value`,
+                                          val.floatValue
+                                            ? val.floatValue
+                                            : val.value,
+                                          false
+                                        );
+                                      }}
+                                      onBlur={handleBlur}
+                                      disabled={
+                                        window.top?.GlobalConfig?.Admin
+                                          ?.thuong_ds_nang_cao
+                                          ? UserID !== 1
+                                          : !(
+                                              adminTools_byStock?.hasRight ||
+                                              moment(sub.CreateDate).format(
+                                                "DD-MM-YYYY"
+                                              ) ===
+                                                moment().format("DD-MM-YYYY")
+                                            )
+                                      }
+                                    />
+                                    {window.top?.GlobalConfig?.Admin
+                                      ?.thuong_ds_nang_cao
+                                      ? UserID === 1 && (
+                                          <div
+                                            className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
+                                            onClick={() =>
+                                              arrayHelpers.remove(idx)
+                                            }
+                                          >
+                                            Xóa
+                                          </div>
+                                        )
+                                      : (adminTools_byStock?.hasRight ||
+                                          moment(sub.CreateDate).format(
+                                            "DD-MM-YYYY"
+                                          ) ===
+                                            moment().format("DD-MM-YYYY")) && (
+                                          <div
+                                            className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
+                                            onClick={() =>
+                                              arrayHelpers.remove(idx)
+                                            }
+                                          >
+                                            Xóa
+                                          </div>
+                                        )}
+                                  </div>
                                 </div>
                               ))
                             }
@@ -465,11 +465,8 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                             render={(arrayHelpers) =>
                               item.Doanh_So &&
                               item.Doanh_So.map((sub, idx) => (
-                                <div
-                                  className="my-3 d-flex align-items-center"
-                                  key={idx}
-                                >
-                                  <div className="mb-1 w-150px pe-2">
+                                <div className="my-3" key={idx}>
+                                  <div className="mb-2 w-100">
                                     <label className="text-truncate line-height-md font-weight-500 w-100">
                                       {sub.User.FullName}
                                     </label>
@@ -528,7 +525,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     allowNegative={false}
                                     name={`BounsSalesIn[${index}].Doanh_So[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
-                                    className={`form-control flex-1`}
+                                    className={`form-control`}
                                     isNumericString={true}
                                     thousandSeparator={true}
                                     value={sub.Value}
@@ -555,6 +552,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                     }
                                   />
                                   <SelectType
+                                    className="mt-2 select-control"
                                     name={`BounsSalesIn[${index}].Doanh_So[${idx}].Type`}
                                     value={sub.Type}
                                     placeholder="Chọn loại"
@@ -577,32 +575,34 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                                           )
                                     }
                                   />
-                                  {window.top?.GlobalConfig?.Admin
-                                    ?.thuong_ds_nang_cao
-                                    ? UserID === 1 && (
-                                        <div
-                                          className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
-                                          onClick={() =>
-                                            arrayHelpers.remove(idx)
-                                          }
-                                        >
-                                          Xóa
-                                        </div>
-                                      )
-                                    : (adminTools_byStock?.hasRight ||
-                                        moment(sub.CreateDate).format(
-                                          "DD-MM-YYYY"
-                                        ) ===
-                                          moment().format("DD-MM-YYYY")) && (
-                                        <div
-                                          className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
-                                          onClick={() =>
-                                            arrayHelpers.remove(idx)
-                                          }
-                                        >
-                                          Xóa
-                                        </div>
-                                      )}
+                                  <div className="mt-2">
+                                    {window.top?.GlobalConfig?.Admin
+                                      ?.thuong_ds_nang_cao
+                                      ? UserID === 1 && (
+                                          <div
+                                            className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
+                                            onClick={() =>
+                                              arrayHelpers.remove(idx)
+                                            }
+                                          >
+                                            Xóa
+                                          </div>
+                                        )
+                                      : (adminTools_byStock?.hasRight ||
+                                          moment(sub.CreateDate).format(
+                                            "DD-MM-YYYY"
+                                          ) ===
+                                            moment().format("DD-MM-YYYY")) && (
+                                          <div
+                                            className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
+                                            onClick={() =>
+                                              arrayHelpers.remove(idx)
+                                            }
+                                          >
+                                            Xóa
+                                          </div>
+                                        )}
+                                  </div>
                                 </div>
                               ))
                             }

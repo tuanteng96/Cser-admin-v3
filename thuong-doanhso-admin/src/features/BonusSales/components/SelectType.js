@@ -12,13 +12,16 @@ const getListType = () => {
   return data;
 };
 
-function SelectType(props) {
+function SelectType({
+  className = "select-control ml-10px w-150px",
+  ...props
+}) {
   const [TypeList] = useState(getListType());
   if (!window.top?.GlobalConfig?.Admin?.thuong_ds_theo_loai) return <></>;
   return (
     <Select
       classNamePrefix="select"
-      className={`select-control ml-10px w-150px`}
+      className={className}
       options={TypeList}
       placeholder="Chọn loại"
       noOptionsMessage={() => "Không có lựa chọn"}
