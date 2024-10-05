@@ -194,17 +194,16 @@ function CalendarPage(props) {
       From: moment(moment(topCalendar?.day, "YYYY-MM-DD")),
       To: moment(moment(topCalendar?.day, "YYYY-MM-DD")),
     };
+    
     switch (topCalendar?.type?.value) {
       case "dayGridMonth":
         params.From = params.From.startOf("month").format("YYYY-MM-DD");
         params.To = params.To.endOf("month").format("YYYY-MM-DD");
         break;
       case "timeGridWeek":
-        params.From = params.From.clone()
-          .weekday(0)
+        params.From = params.From
           .format("YYYY-MM-DD");
-        params.To = params.To.clone()
-          .weekday(6)
+        params.To = params.To.add(5, "day")
           .format("YYYY-MM-DD");
         break;
       default:
