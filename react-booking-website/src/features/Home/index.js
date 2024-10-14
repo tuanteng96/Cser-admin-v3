@@ -55,9 +55,36 @@ export default function Home() {
       ...values
     }
 
+    let Tags = []
+
     if (itemBooking.ID) {
       delete itemBooking.ID
     }
+    if (itemBooking.RootIdS && itemBooking.RootIdS.length > 0) {
+      if (
+        itemBooking.RootIdS.some(
+          item =>
+            item.OsBook > 0 ||
+            item.OsDoing > 0 ||
+            item.OsNew > 0 ||
+            item.OsBH > 0
+        )
+      ) {
+        Tags.push('Có thẻ')
+      }
+      if (
+        itemBooking.RootIdS.some(
+          item =>
+            item.OsBook === 0 &&
+            item.OsDoing === 0 &&
+            item.OsNew === 0 &&
+            item.OsBH === 0
+        )
+      ) {
+        Tags.push('Không thẻ')
+      }
+    }
+
     const newValues = {
       booking: [
         {
@@ -65,7 +92,9 @@ export default function Home() {
           BookDate: itemBooking.BookDate
             ? moment(itemBooking.BookDate).format('YYYY-MM-DD HH:mm')
             : '',
-          RootIdS: itemBooking.RootIdS ? itemBooking.RootIdS.join(',') : '',
+          RootIdS: itemBooking.RootIdS
+            ? itemBooking.RootIdS.map(x => x.ID).join(',')
+            : '',
           UserServiceIDs: itemBooking.UserServiceIDs
             ? itemBooking.UserServiceIDs.value
             : '',
@@ -73,7 +102,7 @@ export default function Home() {
             window.GlobalConfig?.APP?.SL_khach && itemBooking.AmountPeople
               ? `Số lượng khách: ${
                   itemBooking.AmountPeople.value
-                }. \nGhi chú: ${
+                }. \nTags: ${Tags.toString()} \n Ghi chú: ${
                   (itemBooking.Desc || '') +
                   (itemBooking?.OldBook
                     ? ` (Thay đổi từ ${
@@ -145,6 +174,7 @@ export default function Home() {
         {formikProps => {
           // errors, touched, handleChange, handleBlur
           const { values } = formikProps
+
           window.top.handleReset = () => {
             setKey('booking')
             setBookSet('')

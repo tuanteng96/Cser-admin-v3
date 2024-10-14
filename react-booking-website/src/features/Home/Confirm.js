@@ -11,7 +11,7 @@ Confirm.propTypes = {
 }
 
 function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
-  const { values } = formikProps
+  const { values, setFieldValue } = formikProps
   const [ListServices, setListServices] = useState([])
   const [loading, setLoading] = useState(false)
   const [noLoading, setNoLoading] = useState(false)
@@ -85,6 +85,8 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
     return item.Status.search('2') > -1
   }
 
+  let RootIdS = values?.RootIdS || []
+  
   return (
     <div className="d-flex flex-column h-100">
       <div className="text-center bg-white border-bottom p-15px text-uppercase fw-700 font-size-md position-relative">
@@ -152,10 +154,27 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
                 <>
                   {ListServices.map((item, index) => (
                     <div className="position-relative service-box" key={index}>
-                      <Field
+                      <input
                         type="checkbox"
-                        name="RootIdS"
-                        value={item.ID.toString()}
+                        onChange={e => {
+                          if (e.target.checked) {
+                            setFieldValue('RootIdS', [...RootIdS, item])
+                          } else {
+                            setFieldValue(
+                              'RootIdS',
+                              RootIdS.filter(x =>
+                                typeof x === 'object'
+                                  ? x.ID !== item.ID
+                                  : Number(x) !== item.ID
+                              )
+                            )
+                          }
+                        }}
+                        checked={RootIdS.some(x =>
+                          typeof x === 'object'
+                            ? x.ID === item.ID
+                            : Number(x) === item.ID
+                        )}
                       />
                       <div
                         className={clsx(
