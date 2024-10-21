@@ -203,7 +203,7 @@ function CalendarPage(props) {
       case "timeGridWeek":
         params.From = params.From
           .format("YYYY-MM-DD");
-        params.To = params.To.add(5, "day")
+        params.To = params.To.add(6, "day")
           .format("YYYY-MM-DD");
         break;
       default:
@@ -1274,7 +1274,7 @@ function CalendarPage(props) {
                   },
                   timeGridWeek: {
                     eventMaxStack: 2,
-                    duration: { days: width > 991 ? 6 : 3 },
+                    duration: { days: width > 991 ? 7 : 3 },
                     slotLabelContent: ({ date, text }) => {
                       return (
                         <>

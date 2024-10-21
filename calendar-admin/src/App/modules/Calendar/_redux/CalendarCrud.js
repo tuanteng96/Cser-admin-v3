@@ -12,6 +12,13 @@ const getMembers = (key, CurrentStockID, member = "") => {
     }&member=${member}`
   );
 };
+const getMembersByStocks = (key) => {
+  return axiosClient.get(
+    `/services/preview.aspx?cmd=search_member&key=${encodeURIComponent(
+      key
+    )}&typeSearch=sell&ps=50&pi=1&searchId=2&select=ID%2CFullName%2CMobilePhone%2CHomeAddress%2CByStockID%2CPresent%2CSource%2CAppInfo%2CBirthDate%2CTeleNote%2CJobs%2CReceiveInformation%2CPresent%2CPhoto&includes=GroupNames&isAdmin=true&__MemberCheckin=&__MemberMoney=0&__MyNoti=0&__AllNoti=0&__Birth=0&__MBirth=0&__Cate=false&__HasOrderService=0&__MemberGroups=false&__StaffID=0&__StockID=0&__Source=&__Tags=&from=top&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNjU0MiIsIm5iZiI6MTcyOTI0MzI2NSwiZXhwIjoxODE1NjQzMjY1LCJpYXQiOjE3MjkyNDMyNjV9.L6nsnpdEByLxQdkr77lmE4K_i__8K88Mnu8ViKnQ3UY`
+  );
+};
 const getStaffs = ({ StockID, key = "", All }) => {
   return axiosClient.get(
     `${GET_MEMBERS_STAFF_URL}?cmd=user&roles=DV&crstockid=${StockID}&q=${key}${
@@ -53,7 +60,7 @@ const getBooking = ({
   StatusMember,
   StatusBook,
   StatusAtHome,
-  Tags = ""
+  Tags = "",
 }) => {
   return axiosClient.get(
     `/api/v3/mbookadmin?cmd=getbooks&memberid=${MemberID}&from=${From}&to=${To}&stockid=${StockID}&status=${Status}&UserServiceIDs=${UserServiceIDs}&StatusMember=${StatusMember}&StatusBook=${StatusBook}&StatusAtHome=${StatusAtHome}&Tags=${Tags}`
@@ -109,5 +116,6 @@ const CalendarCrud = {
   updateRoom,
   getProcesingBook,
   updateProcesingBook,
+  getMembersByStocks,
 };
 export default CalendarCrud;
