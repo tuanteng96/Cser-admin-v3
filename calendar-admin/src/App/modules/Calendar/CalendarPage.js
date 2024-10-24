@@ -120,6 +120,9 @@ function CalendarPage(props) {
       ...(!window?.top?.GlobalConfig?.Admin?.isAdminBooks
         ? ["DANG_THUC_HIEN"]
         : []),
+        ...(window?.top?.GlobalConfig?.Admin?.PosStatus
+          ? [...window?.top?.GlobalConfig?.Admin?.PosStatus]
+          : []),
       // "THUC_HIEN_XONG",
     ],
     StockID: AuthCrStockID,
