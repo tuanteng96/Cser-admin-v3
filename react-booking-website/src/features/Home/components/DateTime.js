@@ -155,7 +155,10 @@ function DateTime({ formikProps, BookSet }) {
         }
         newListTime.push({
           Time: datetime,
-          Disable: moment().diff(datetime, 'minutes') > 0 || isDayOff
+          Disable:
+            moment()
+              .add(window?.GlobalConfig?.APP?.ScheduledMinutes || 0, 'minutes')
+              .diff(datetime, 'minutes') > 0 || isDayOff
         })
       }
 
@@ -208,7 +211,7 @@ function DateTime({ formikProps, BookSet }) {
       <div className="fw-700 text-uppercase mb-10px">Chọn thời gian</div>
       <Tab.Container activeKey={key}>
         <div className="border-bottom pb-15px mb-15px">
-          <div className="container-fluid p-0">
+          <div className="p-0 container-fluid">
             <Nav
               as="ul"
               className="row mx--6px"
@@ -262,15 +265,15 @@ function DateTime({ formikProps, BookSet }) {
         {!window.GlobalConfig?.APP?.Booking?.hideNoteTime && (
           <div className="d-flex justify-content-between mb-15px">
             <div className="d-flex align-items-center">
-              <div className="box w-45px h-25px bg-stripes rounded-sm border"></div>
+              <div className="border rounded-sm box w-45px h-25px bg-stripes"></div>
               <span className="fw-500 pl-8px note-text">Hết chỗ</span>
             </div>
             <div className="d-flex align-items-center">
-              <div className="box w-45px h-25px bg-white rounded-sm border"></div>
+              <div className="bg-white border rounded-sm box w-45px h-25px"></div>
               <span className="fw-500 pl-8px note-text">Còn chỗ</span>
             </div>
             <div className="d-flex align-items-center">
-              <div className="box w-45px h-25px bg-ezs rounded-sm border-ezs border"></div>
+              <div className="border rounded-sm box w-45px h-25px bg-ezs border-ezs"></div>
               <span className="fw-500 pl-8px note-text">Đang chọn</span>
             </div>
           </div>
