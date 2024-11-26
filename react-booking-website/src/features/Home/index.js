@@ -103,7 +103,7 @@ export default function Home() {
               ? `Số lượng khách: ${
                   itemBooking.AmountPeople.value
                 }. \nTags: ${Tags.toString()} \n Ghi chú: ${
-                  (itemBooking.Desc || '') +
+                  (itemBooking.Desc ? itemBooking.Desc.replaceAll("\n", "</br>") : '') +
                   (itemBooking?.OldBook
                     ? ` (Thay đổi từ ${
                         itemBooking?.OldBook?.RootTitles
@@ -216,10 +216,10 @@ export default function Home() {
                   newDesc = i.replaceAll('Ghi chú: ', '')
                 }
               }
-              formikProps.setFieldValue('Desc', newDesc)
+              formikProps.setFieldValue('Desc', newDesc ? newDesc.replaceAll("</br>", "\n") : '')
               formikProps.setFieldValue('AmountPeople', newAmountPeople)
             } else {
-              formikProps.setFieldValue('Desc', newDesc)
+              formikProps.setFieldValue('Desc', newDesc ? newDesc.replaceAll("</br>", "\n") : '')
             }
 
             formikProps.setFieldValue('StockID', obj.StockID)
