@@ -126,7 +126,7 @@ function BookingPage() {
         Status: Book.Status,
         BookDate: Book.BookDate,
         StockID: Book.StockID,
-        Desc: newDesc,
+        Desc: newDesc.replaceAll("</br>", "\n"),
         UserServiceIDs: Book.UserServices.map((item) => ({
           ...item,
           value: item.ID,
@@ -184,7 +184,9 @@ function BookingPage() {
         (Desc ? Desc + "\n" : "") +
         `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
     }
-    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc || ""}`;
+    Desc =
+      (Desc ? Desc + "\n" : "") +
+      `Ghi chú: ${values.Desc ? values.Desc.replace(/\n\r?/g, "</br>") : ""}`;
 
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
@@ -254,7 +256,9 @@ function BookingPage() {
         (Desc ? Desc + "\n" : "") +
         `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
     }
-    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc || ""}`;
+    Desc =
+      (Desc ? Desc + "\n" : "") +
+      `Ghi chú: ${values.Desc ? values.Desc.replace(/\n\r?/g, "</br>") : ""}`;
 
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");

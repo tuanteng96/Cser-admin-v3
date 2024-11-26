@@ -120,9 +120,9 @@ function CalendarPage(props) {
       ...(!window?.top?.GlobalConfig?.Admin?.isAdminBooks
         ? ["DANG_THUC_HIEN"]
         : []),
-        ...(window?.top?.GlobalConfig?.Admin?.PosStatus
-          ? [...window?.top?.GlobalConfig?.Admin?.PosStatus]
-          : []),
+      ...(window?.top?.GlobalConfig?.Admin?.PosStatus
+        ? [...window?.top?.GlobalConfig?.Admin?.PosStatus]
+        : []),
       // "THUC_HIEN_XONG",
     ],
     StockID: AuthCrStockID,
@@ -197,17 +197,15 @@ function CalendarPage(props) {
       From: moment(moment(topCalendar?.day, "YYYY-MM-DD")),
       To: moment(moment(topCalendar?.day, "YYYY-MM-DD")),
     };
-    
+
     switch (topCalendar?.type?.value) {
       case "dayGridMonth":
         params.From = params.From.startOf("month").format("YYYY-MM-DD");
         params.To = params.To.endOf("month").format("YYYY-MM-DD");
         break;
       case "timeGridWeek":
-        params.From = params.From
-          .format("YYYY-MM-DD");
-        params.To = params.To.add(6, "day")
-          .format("YYYY-MM-DD");
+        params.From = params.From.format("YYYY-MM-DD");
+        params.To = params.To.add(6, "day").format("YYYY-MM-DD");
         break;
       default:
         params.From = params.From.format("YYYY-MM-DD");
@@ -454,7 +452,9 @@ function CalendarPage(props) {
         (Desc ? Desc + "\n" : "") +
         `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
     }
-    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc}`;
+    Desc =
+      (Desc ? Desc + '\n' : "") +
+      `Ghi chú: ${values.Desc ? values.Desc.replace(/\n\r?/g, "</br>") : ""}`;
 
     const objBooking = {
       ...values,
@@ -475,7 +475,6 @@ function CalendarPage(props) {
       //     : values.Desc,
       IsAnonymous: values.MemberID?.PassersBy || false,
     };
-
     if (values?.MemberID?.isCreate) {
       objBooking.FullName = values.MemberID?.text;
       objBooking.Phone = values.MemberID?.suffix;
@@ -576,7 +575,9 @@ function CalendarPage(props) {
         (Desc ? Desc + "\n" : "") +
         `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
     }
-    Desc = (Desc ? Desc + "\n" : "") + `Ghi chú: ${values.Desc}`;
+    Desc =
+      (Desc ? Desc + "\n" : "") +
+      `Ghi chú: ${values.Desc ? values.Desc.replace(/\n\r?/g, "</br>") : ""}`;
 
     const objBooking = {
       ...values,
@@ -940,7 +941,9 @@ function CalendarPage(props) {
               resourceIds:
                 topCalendar?.type?.value === "resourceTimelineDay"
                   ? [item?.os?.RoomID || 0]
-                  : item.staffs && Array.isArray(item.staffs) && item.staffs.length > 0
+                  : item.staffs &&
+                    Array.isArray(item.staffs) &&
+                    item.staffs.length > 0
                   ? item.staffs.map((staf) => staf.ID)
                   : [0],
             }))
