@@ -183,7 +183,7 @@ function ModalCalendar({
           Status: initialValue.Status,
           BookDate: initialValue.BookDate,
           StockID: initialValue.StockID,
-          Desc: newDesc,
+          Desc: newDesc.replaceAll("</br>", "\n"),
           UserServiceIDs: initialValue.UserServices.map((item) => ({
             ...item,
             value: item.ID,
