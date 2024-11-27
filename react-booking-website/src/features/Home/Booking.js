@@ -5,6 +5,7 @@ import DateTime from './components/DateTime'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 import StaffAtHome from './components/StaffAtHome'
 import InfoBook from './components/InfoBook'
+import bookingApi from 'src/api/booking.api'
 
 Booking.propTypes = {
   onSubmit: PropTypes.func
@@ -19,6 +20,9 @@ function Booking({ formikProps, nextStep, BookSet }) {
   const { errors, submitForm, setErrors } = formikProps
   const [isSubmiting, setIsSubmiting] = useState(false)
 
+  const [loading, setLoading] = useState(false)
+  const [ListsStocks, setListsStocks] = useState([])
+
   useEffect(() => {
     if (
       !errors.StockID &&
@@ -32,6 +36,29 @@ function Booking({ formikProps, nextStep, BookSet }) {
     }
   }, [errors])
 
+  useEffect(() => {
+    getListStock()
+  }, [])
+
+  const getListStock = () => {
+    setLoading(false)
+    bookingApi
+      .getStock()
+      .then(({ data }) => {
+        const StocksNotBook = window?.GlobalConfig?.StocksNotBook || ''
+        const newStocks = data?.data?.all
+          ? data.data.all
+              .filter(
+                item => item.ParentID !== 0 && !StocksNotBook.includes(item.ID)
+              )
+              .map(item => ({ ...item, ID: `${item.ID}` }))
+          : []
+        setListsStocks(newStocks)
+        setLoading(false)
+      })
+      .catch(error => console.log(error))
+  }
+
   const onSubmit = () => {
     if (isSubmiting) {
       nextStep(setErrors)
@@ -42,15 +69,23 @@ function Booking({ formikProps, nextStep, BookSet }) {
 
   return (
     <div className="d-flex flex-column h-100">
-      <div className="border-bottom p-15px text-uppercase fw-700 font-size-md bg-white text-center">
+      <div className="text-center bg-white border-bottom p-15px text-uppercase fw-700 font-size-md">
         Đặt lịch dịch vụ
       </div>
       <PerfectScrollbar
         options={perfectScrollbarOptions}
         className="flex-grow-1 scroll"
       >
-        <ListStocks formikProps={formikProps} />
-        <DateTime formikProps={formikProps} BookSet={BookSet} />
+        <ListStocks
+          formikProps={formikProps}
+          loading={loading}
+          ListStocks={ListsStocks}
+        />
+        <DateTime
+          formikProps={formikProps}
+          BookSet={BookSet}
+          ListStocks={ListsStocks}
+        />
         <StaffAtHome formikProps={formikProps} />
         <InfoBook formikProps={formikProps} />
       </PerfectScrollbar>

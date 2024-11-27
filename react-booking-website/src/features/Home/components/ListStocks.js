@@ -10,11 +10,9 @@ ListStocks.propTypes = {
   formikProps: PropTypes.object
 }
 
-function ListStocks({ formikProps }) {
+function ListStocks({ formikProps, ListStocks, loading }) {
   const [StockName, setStockName] = useState('Đang kiểm tra ...')
   const [visible, setVisible] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [ListStocks, setListStocks] = useState([])
 
   const { touched, errors, setFieldValue, values } = formikProps
 
@@ -34,33 +32,10 @@ function ListStocks({ formikProps }) {
     }
   }, [values.StockID, ListStocks])
 
-  useEffect(() => {
-    getListStock()
-  }, [])
-
-  const getListStock = () => {
-    setLoading(false)
-    bookingApi
-      .getStock()
-      .then(({ data }) => {
-        const StocksNotBook = window?.GlobalConfig?.StocksNotBook || ''
-        const newStocks = data?.data?.all
-          ? data.data.all
-              .filter(
-                item => item.ParentID !== 0 && !StocksNotBook.includes(item.ID)
-              )
-              .map(item => ({ ...item, ID: `${item.ID}` }))
-          : []
-        setListStocks(newStocks)
-        setLoading(false)
-      })
-      .catch(error => console.log(error))
-  }
-
   return (
     <div className="bg-white mt-3px pt-15px pl-15px pr-15px pb-5px location">
       <div className="fw-700 text-uppercase mb-10px">Chọn cơ sở</div>
-      <div className="container-fluid p-0">
+      <div className="p-0 container-fluid">
         {!loading && (
           <>
             {window?.GlobalConfig?.APP?.ByProvince && (
@@ -75,7 +50,7 @@ function ListStocks({ formikProps }) {
                 )}
 
                 <div
-                  className="text-primary mt-2px text-underline cursor-pointer"
+                  className="cursor-pointer text-primary mt-2px text-underline"
                   onClick={() => setVisible(true)}
                 >
                   {values.StockID ? 'Thay đổi cơ sở ?' : 'Chọn cơ sở ?'}

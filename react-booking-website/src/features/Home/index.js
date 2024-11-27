@@ -167,6 +167,10 @@ export default function Home() {
     setKey('booking')
   }
 
+  console.log(initialValue)
+
+  
+
   return (
     <div className="overflow-hidden h-100 position-relative tab-book">
       <Formik
@@ -178,7 +182,7 @@ export default function Home() {
         {formikProps => {
           // errors, touched, handleChange, handleBlur
           const { values } = formikProps
-
+          console.log(values)
           window.top.handleReset = () => {
             setKey('booking')
             setBookSet('')
@@ -191,6 +195,7 @@ export default function Home() {
           }
 
           window.top.setInitialValue = obj => {
+            console.log(obj)
             formikProps.setFieldValue('ID', obj.ID)
             formikProps.setFieldValue('AtHome', obj.AtHome)
             formikProps.setFieldValue('MemberID', obj.MemberID)

@@ -22,7 +22,7 @@ const GroupByCount = (List, Count) => {
   }, [])
 }
 
-function DateTime({ formikProps, BookSet }) {
+function DateTime({ formikProps, BookSet, ListStocks }) {
   const [key, setKey] = useState('tab-0')
   const [ListChoose, setListChoose] = useState([])
   const [DateChoose, setDateChoose] = useState()
@@ -31,7 +31,7 @@ function DateTime({ formikProps, BookSet }) {
 
   useEffect(() => {
     getListDisable()
-  }, [])
+  }, [ListStocks])
 
   useEffect(() => {
     if (BookSet?.value) {
@@ -89,7 +89,47 @@ function DateTime({ formikProps, BookSet }) {
       .catch(error => console.log(error))
   }
   const getListChoose = DateChoose => {
-    const { TimeOpen, TimeClose, TimeNext } = window?.GlobalConfig?.APP?.Booking
+    const { TimeNext } = window?.top?.GlobalConfig?.APP?.Booking
+
+    let TimeOpen = window?.top?.GlobalConfig?.APP?.Booking?.TimeOpen
+      ? { ...window?.top?.GlobalConfig?.APP?.Booking?.TimeOpen }
+      : ''
+    let TimeClose = window?.top?.GlobalConfig?.APP?.Booking?.TimeClose
+      ? { ...window?.top?.GlobalConfig?.APP?.Booking?.TimeClose }
+      : ''
+
+    //
+    let indexCr = ListStocks
+      ? ListStocks.findIndex(x => Number(x.ID) === Number(values.StockID))
+      : -1
+
+    if (indexCr > -1) {
+      let StockI = ListStocks[indexCr].NameFr
+      if (StockI) {
+        let timeSplit = StockI.split(';')
+        var isValid = time =>
+          /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time)
+        if (
+          timeSplit &&
+          timeSplit.length >= 1 &&
+          isValid(timeSplit[0]) &&
+          isValid(timeSplit[1])
+        ) {
+          TimeOpen.hour = timeSplit[0].split(':')[0]
+          TimeOpen.minute = timeSplit[0].split(':')[1]
+          TimeClose.hour = timeSplit[1].split(':')[0]
+          TimeClose.minute = timeSplit[1].split(':')[1]
+        } else {
+          TimeOpen = window?.top?.GlobalConfig?.APP?.Booking?.TimeOpen
+          TimeClose = window?.top?.GlobalConfig?.APP?.Booking?.TimeClose
+        }
+      } else {
+        TimeOpen = window?.top?.GlobalConfig?.APP?.Booking?.TimeOpen
+        TimeClose = window?.top?.GlobalConfig?.APP?.Booking?.TimeClose
+      }
+    }
+
+    //
     const newListChoose = []
     let ListDisable = []
     if (ListLock && ListLock.length > 0) {
@@ -157,7 +197,10 @@ function DateTime({ formikProps, BookSet }) {
           Time: datetime,
           Disable:
             moment()
-              .add(window?.GlobalConfig?.APP?.ScheduledMinutes || 0, 'minutes')
+              .add(
+                window?.top?.GlobalConfig?.APP?.ScheduledMinutes || 0,
+                'minutes'
+              )
               .diff(datetime, 'minutes') > 0 || isDayOff
         })
       }
@@ -262,7 +305,7 @@ function DateTime({ formikProps, BookSet }) {
             </Nav>
           </div>
         </div>
-        {!window.GlobalConfig?.APP?.Booking?.hideNoteTime && (
+        {!window?.top?.GlobalConfig?.APP?.Booking?.hideNoteTime && (
           <div className="d-flex justify-content-between mb-15px">
             <div className="d-flex align-items-center">
               <div className="border rounded-sm box w-45px h-25px bg-stripes"></div>
@@ -323,7 +366,7 @@ function DateTime({ formikProps, BookSet }) {
             ))}
         </Tab.Content>
       </Tab.Container>
-      {!window.GlobalConfig?.APP?.Booking?.hideNoteWarning && (
+      {!window?.top?.GlobalConfig?.APP?.Booking?.hideNoteWarning && (
         <div className="text-danger font-size-sm mt-8px">
           (*) Nếu khung giờ bạn chọn đã kín lịch, chúng tôi sẽ liên hệ trực tiếp
           để thông báo
