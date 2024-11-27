@@ -109,7 +109,6 @@ function ModalCalendar({
   onDelete,
   TagsList,
 }) {
-  //console.log(initialValue)
 
   const { AuthCrStockID, TimeOpen, TimeClose } = useSelector(
     ({ Auth, JsonConfig }) => ({

@@ -93,18 +93,29 @@ const getStatusClss = (Status, item) => {
 function CalendarPage(props) {
   const {
     AuthCrStockID,
-    TimeOpen,
-    TimeClose,
+    GTimeOpen,
+    GTimeClose,
     StocksList,
     isRooms,
+    Stocks,
   } = useSelector(({ Auth, JsonConfig }) => ({
     AuthCrStockID: Auth.CrStockID,
     StocksList: Auth?.Stocks.filter((x) => x.ParentID !== 0),
-    TimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
-    TimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
+    GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
+    GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
     isRooms: JsonConfig?.Admin?.isRooms,
     StockRights: Auth?.StockRights || [],
+    Stocks: Auth?.Stocks
+      ? Auth?.Stocks.filter((x) => x.ParentID !== 0).map((o) => ({
+          ...o,
+          value: o.ID,
+          label: o.Title,
+        }))
+      : [],
   }));
+
+  const [TimeOpen, setTimeOpen] = useState(GTimeOpen);
+  const [TimeClose, setTimeClose] = useState(GTimeClose);
 
   const [isModal, setIsModal] = useState(false);
   const [btnLoading, setBtnLoading] = useState({
@@ -243,6 +254,29 @@ function CalendarPage(props) {
     getListLock();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [AuthCrStockID]);
+
+  useEffect(() => {
+    if (AuthCrStockID && Stocks) {
+      let index = Stocks.findIndex((x) => x.ID === Number(AuthCrStockID));
+      if (index > -1) {
+        let StockI = Stocks[index].NameFr;
+        if (StockI) {
+          let timeSplit = StockI.split(";");
+          var isValid = (time) =>
+            /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time);
+          if (
+            timeSplit &&
+            timeSplit.length >= 1 &&
+            isValid(timeSplit[0]) &&
+            isValid(timeSplit[1])
+          ) {
+            setTimeOpen(timeSplit[0])
+            setTimeClose(timeSplit[1])
+          }
+        }
+      }
+    }
+  }, [AuthCrStockID, Stocks]);
 
   const ListRooms = useQuery({
     queryKey: ["ListRooms", AuthCrStockID],
@@ -453,7 +487,7 @@ function CalendarPage(props) {
         `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
     }
     Desc =
-      (Desc ? Desc + '\n' : "") +
+      (Desc ? Desc + "\n" : "") +
       `Ghi chú: ${values.Desc ? values.Desc.replace(/\n\r?/g, "</br>") : ""}`;
 
     const objBooking = {

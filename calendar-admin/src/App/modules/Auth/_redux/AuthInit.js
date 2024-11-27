@@ -41,33 +41,27 @@ function AuthInit({ isConfig, children }) {
             {
               ID: 11424,
               Title: "Cser Hà Nội",
+              NameFr: "11:30;23:30",
               ParentID: 778,
             },
             {
-              ID: 11343,
+              ID: 11425,
               Title: "Cser Hồ Chí Minh",
-              ParentID: 778,
-            },
-            {
-              ID: 11344,
-              Title: "Cser Đà nẵng",
+              NameFr: "",
               ParentID: 778,
             },
           ],
           StockRights: [
             {
-              ID: 11409,
+              ID: 11424,
               Title: "Cser Hà Nội",
+              NameFr: "11:30;23:30",
               ParentID: 778,
             },
             {
-              ID: 11343,
+              ID: 11425,
               Title: "Cser Hồ Chí Minh",
-              ParentID: 778,
-            },
-            {
-              ID: 11344,
-              Title: "Cser Đà nẵng",
+              NameFr: "",
               ParentID: 778,
             },
           ],
@@ -75,20 +69,58 @@ function AuthInit({ isConfig, children }) {
           rightsSum: {
             pos: {
               hasRight: true,
-              stocks: [{ ID: 11409, Title: "Cser Hà Nội" }],
+              stocks: [
+                [
+                  {
+                    ID: 11424,
+                    Title: "Cser Hà Nội",
+                    NameFr: "11:30;23:30",
+                    ParentID: 778,
+                  },
+                  {
+                    ID: 11425,
+                    Title: "Cser Hồ Chí Minh",
+                    NameFr: "",
+                    ParentID: 778,
+                  },
+                ],
+              ],
               IsAllStock: false,
             },
             tele: {
               hasRight: true,
               stocks: [
-                { ID: 11409, Title: "Cser Hà Nội" },
-                { ID: 10053, Title: "Cser Hồ Chí Minh" },
+                {
+                  ID: 11424,
+                  Title: "Cser Hà Nội",
+                  NameFr: "11:30;23:30",
+                  ParentID: 778,
+                },
+                {
+                  ID: 11425,
+                  Title: "Cser Hồ Chí Minh",
+                  NameFr: "",
+                  ParentID: 778,
+                },
               ],
               IsAllStock: false,
             },
             teleAdv: {
               hasRight: true,
-              stocks: [{ ID: 11409, Title: "Cser Hồ Chí Minh" }],
+              stocks: [
+                {
+                  ID: 11424,
+                  Title: "Cser Hà Nội",
+                  NameFr: "11:30;23:30",
+                  ParentID: 778,
+                },
+                {
+                  ID: 11425,
+                  Title: "Cser Hồ Chí Minh",
+                  NameFr: "",
+                  ParentID: 778,
+                },
+              ],
               IsAllStock: false,
             },
           },
