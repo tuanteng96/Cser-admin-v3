@@ -259,7 +259,7 @@ function CalendarPage(props) {
     if (AuthCrStockID && Stocks) {
       let index = Stocks.findIndex((x) => x.ID === Number(AuthCrStockID));
       if (index > -1) {
-        let StockI = Stocks[index].NameFr;
+        let StockI = Stocks[index].KeySEO;
         if (StockI) {
           let timeSplit = StockI.split(";");
           var isValid = (time) =>

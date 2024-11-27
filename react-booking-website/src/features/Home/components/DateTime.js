@@ -104,7 +104,7 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
       : -1
 
     if (indexCr > -1) {
-      let StockI = ListStocks[indexCr].NameFr
+      let StockI = ListStocks[indexCr].KeySEO
       if (StockI) {
         let timeSplit = StockI.split(';')
         var isValid = time =>
