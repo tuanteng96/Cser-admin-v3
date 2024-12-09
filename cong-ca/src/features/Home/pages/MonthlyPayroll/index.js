@@ -78,12 +78,11 @@ function MonthlyPayroll(props) {
       queryFn: async ({ pageParam = 1 }) => {
         const newObj = {
           mon: filters.Month ? moment(filters.Month).format('MM/YYYY') : '',
-          stockid: filters.StockID ? filters.StockID.ID : '',
+          stockid: filters.stockid ? filters.stockid.ID : '',
           // UserIDs: filters.UserID ? [filters.UserID.value] : '',
           pi: pageParam,
           ps: filters.ps
         }
-
         const { data } = await worksheetApi.listUserSalary(newObj)
         return (
           {
