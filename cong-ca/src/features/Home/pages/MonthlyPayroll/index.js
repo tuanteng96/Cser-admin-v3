@@ -21,10 +21,12 @@ import ExcelHepers from 'src/helpers/ExcelHepers'
 function MonthlyPayroll(props) {
   const navigate = useNavigate()
 
-  const { Stocks, CrStockID } = useSelector(({ auth }) => ({
+  const { Stocks, CrStockID, rightsSum } = useSelector(({ auth }) => ({
     Stocks: auth?.Info?.Stocks || [],
-    CrStockID: auth?.Info?.CrStockID
+    CrStockID: auth?.Info?.CrStockID,
+    rightsSum: auth?.Info?.rightsSum?.cong_ca || {}
   }))
+
   const [StocksList, setStocksList] = useState([])
   const [visible, setVisible] = useState(false)
   const [filters, setFilters] = useState({
@@ -45,6 +47,14 @@ function MonthlyPayroll(props) {
         label: stock.Title
       })
     )
+
+    if (rightsSum?.IsAllStock) {
+      newStocks.unshift({
+        label: 'Tất cả cơ sở',
+        value: ''
+      })
+    }
+
     if (newStocks.length > 0) {
       if (!CrStockID) {
         setFilters(prevState => ({
@@ -58,6 +68,7 @@ function MonthlyPayroll(props) {
         }))
       }
     }
+
     setStocksList(newStocks)
   }, [Stocks, CrStockID])
 

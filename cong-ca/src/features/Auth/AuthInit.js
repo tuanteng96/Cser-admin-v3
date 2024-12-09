@@ -56,29 +56,24 @@ function AuthInit(props) {
               ParentID: 0
             },
             {
-              ID: 11389,
+              ID: 11424,
               Title: 'Cser Hà Nội',
               ParentID: 778
             },
             {
-              ID: 11291,
+              ID: 11425,
               Title: 'Cser Hồ Chí Minh',
-              ParentID: 778
-            },
-            {
-              ID: 11387,
-              Title: 'Cser Chấm công',
               ParentID: 778
             }
           ],
           StockRights: [
             {
-              ID: 11389,
+              ID: 11424,
               Title: 'Cser Hà Nội',
               ParentID: 778
             },
             {
-              ID: 11312,
+              ID: 11425,
               Title: 'Cser Hồ Chí Minh',
               ParentID: 778
             },
@@ -88,21 +83,21 @@ function AuthInit(props) {
               ParentID: 778
             }
           ],
-          CrStockID: 11389, //8975
+          CrStockID: 11424, //8975
           rightsSum: {
             cong_ca: {
               hasRight: true,
               stocks: [
-                { ID: 11389, Title: 'Cser Hà Nội' },
-                { ID: 11390, Title: 'Cser Hồ Chí Minh' },
+                { ID: 11424, Title: 'Cser Hà Nội' },
+                { ID: 11425, Title: 'Cser Hồ Chí Minh' },
                 { ID: 11395, Title: 'Cser Đà nẵng' }
               ],
-              IsAllStock: false
+              IsAllStock: true
             }
           }
         }
         window.token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNjI3MiIsIm5iZiI6MTcyNTAwMjg2OCwiZXhwIjoxODExNDAyODY4LCJpYXQiOjE3MjUwMDI4Njh9.kwO1xUM1xziNePzOFCuSSNbFWz6tE2Am19SJHRpffzA'
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNjg0MiIsIm5iZiI6MTczMzM4NDEyMywiZXhwIjoxODE5Nzg0MTIzLCJpYXQiOjE3MzMzODQxMjN9.fcfOBvpSW7SOaTt_GU8yDDOoOoF0xUjwdFyr6HuHEyY'
         window.GlobalConfig = {
           APP: {
             Working: {
