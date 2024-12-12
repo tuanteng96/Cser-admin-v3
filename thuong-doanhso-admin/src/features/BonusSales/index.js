@@ -68,7 +68,7 @@ const BonusSales = () => {
     advanced: false,
     equally: false,
     autoBouns: false,
-    salesin: false
+    salesin: false,
   });
 
   useEffect(() => {
@@ -491,6 +491,12 @@ const BonusSales = () => {
           onSubmit={onSubmitUpdate}
           onRefresh={getInfoOrder}
           loading={loading.salesin}
+          setLoading={() =>
+            setLoading((prevState) => ({
+              ...prevState,
+              salesin: true,
+            }))
+          }
         />
       )}
 
