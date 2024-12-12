@@ -206,7 +206,7 @@ const PickerDateDS = ({ children, sub, onRefresh }) => {
   );
 };
 
-function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
+function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading }) {
   const { UserID } = useSelector(({ Auth }) => ({
     UserID: Auth?.User?.ID,
   }));
@@ -951,11 +951,20 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh }) {
                 </tbody>
               </Table>
             </div>
-            <AutoSubmit
+            <div className="mt-3 d-flex justify-content-end">
+              <button
+                className="btn btn-primary"
+                disabled={loading}
+                type="submit"
+              >
+                {loading ? "Đang cập nhập..." : "Cập nhập"}
+              </button>
+            </div>
+            {/* <AutoSubmit
               values={values}
               submitForm={submitForm}
               initialValues={initialValues}
-            />
+            /> */}
           </Form>
         );
       }}

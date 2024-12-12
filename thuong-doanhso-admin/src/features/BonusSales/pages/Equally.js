@@ -91,19 +91,23 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                 //     ? getValueHH({ user, item, Type })
                 //     : null,
               })),
-              Doanh_So: ToAdd.map((user) => ({
-                Product: item,
-                Staff: user,
-                Value:
-                  item.gia_tri_doanh_so > 0
-                    ? Math.round((user.Value * item.gia_tri_doanh_so) / 100)
-                    : 0,
-                Type: item?.KpiType
-                  ? { value: item?.KpiType, label: "Loại " + item?.KpiType }
-                  : "",
-              })),
+            Doanh_So: ToAdd.map((user) => {
+                console.log(item.gia_tri_doanh_so);
+                return {
+                  Product: item,
+                  Staff: user,
+                  Value:
+                    item.gia_tri_doanh_so > 0
+                      ? Math.round((user.Value * item.gia_tri_doanh_so) / 100)
+                      : 0,
+                  Type: item?.KpiType
+                    ? { value: item?.KpiType, label: "Loại " + item?.KpiType }
+                    : "",
+                };
+              }),
             }))
           : [];
+
       setInitialValues({ equally: newArr });
       resetForm();
     }

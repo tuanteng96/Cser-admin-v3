@@ -75,7 +75,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
     const { ToAdd } = values;
     const itemChange =
       ToAdd && ToAdd.length > 0 ? ToAdd.filter((item) => item.Staff) : [];
-
+    
     if (itemChange.length > 0) {
       const newArr = itemChange.map((item) => ({
         Product: item.Product,

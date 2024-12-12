@@ -51,14 +51,14 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
     User: {
       ID: 1,
     },
-    CrStockID: 8975,
+    CrStockID: 11424,
   };
 
   window.top.token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNjM3MSIsIm5iZiI6MTcyNjg4NjA4OSwiZXhwIjoxODEzMjg2MDg5LCJpYXQiOjE3MjY4ODYwODl9.z4BLjJeC0ydD1n_zhgkOqrBLdEf3oDLgaIxTpuSQ6hc";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNjg4NyIsIm5iZiI6MTczMzk4NzU3NCwiZXhwIjoxODIwMzg3NTc0LCJpYXQiOjE3MzM5ODc1NzR9.Ce62j79RusO4N6CAyKzPZYtobV2I6pCRw25nk0bMUd8";
 
   window.top.OrderBonus23Info = {
-    OrderID: 48579,
+    OrderID: 50108,
     Order: {
       //Status: "finish",
       //AdminAction: "TANG_DH_KET_THUC_NO",

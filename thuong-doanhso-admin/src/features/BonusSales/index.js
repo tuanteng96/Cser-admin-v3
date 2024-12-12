@@ -68,6 +68,7 @@ const BonusSales = () => {
     advanced: false,
     equally: false,
     autoBouns: false,
+    salesin: false
   });
 
   useEffect(() => {
@@ -381,6 +382,10 @@ const BonusSales = () => {
   };
 
   const onSubmitUpdate = async ({ BounsSalesIn }) => {
+    setLoading((prevState) => ({
+      ...prevState,
+      salesin: true,
+    }));
     const Hoa_Hong = [].concat.apply(
       [],
       BounsSalesIn && BounsSalesIn.length > 0
@@ -413,13 +418,18 @@ const BonusSales = () => {
     };
     BonusSaleCrud.postOrderItem(dataSubmit)
       .then((response) => {
-        window.top.bodyEvent &&
-          window.top.bodyEvent("ui_changed", {
-            name: "AD_chinh_sua",
-            mid: 0,
-            orderId: OrderID,
-          });
-        //getInfoOrder();
+        getInfoOrder(() => {
+          setLoading((prevState) => ({
+            ...prevState,
+            salesin: false,
+          }));
+          window.top.bodyEvent &&
+            window.top.bodyEvent("ui_changed", {
+              name: "AD_chinh_sua",
+              mid: 0,
+              orderId: OrderID,
+            });
+        });
       })
       .catch((error) => console.log(error));
   };
@@ -480,6 +490,7 @@ const BonusSales = () => {
           OrderInfo={OrderInfo}
           onSubmit={onSubmitUpdate}
           onRefresh={getInfoOrder}
+          loading={loading.salesin}
         />
       )}
 
