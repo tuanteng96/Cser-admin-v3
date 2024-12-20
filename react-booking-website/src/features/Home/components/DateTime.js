@@ -22,6 +22,37 @@ const GroupByCount = (List, Count) => {
   }, [])
 }
 
+const formatTimeOpenClose = ({ Text, InitialTime, Date }) => {
+  let Times = { ...InitialTime };
+
+  let CommonTime = Array.from(Text.matchAll(/\[([^\][]*)]/g), (x) => x[1]);
+
+  if (CommonTime && CommonTime.length > 0) {
+    let CommonTimeJs = CommonTime[0].split(";");
+    Times.TimeOpen = CommonTimeJs[0];
+    Times.TimeClose = CommonTimeJs[1];
+  }
+
+  let PrivateTime = Array.from(Text.matchAll(/{+([^}]+)}+/g), (x) => x[1]);
+  PrivateTime = PrivateTime.filter((x) => x.split(";").length > 2).map((x) => ({
+    DayName: x.split(";")[0],
+    TimeOpen: x.split(";")[1],
+    TimeClose: x.split(";")[2],
+  }));
+  if (Date) {
+    let index = PrivateTime.findIndex(
+      (x) => x.DayName === moment(Date, "DD/MM/YYYY").format("ddd")
+    );
+
+    if (index > -1) {
+      Times.TimeOpen = PrivateTime[index].TimeOpen;
+      Times.TimeClose = PrivateTime[index].TimeClose;
+    }
+  }
+
+  return Times;
+};
+
 function DateTime({ formikProps, BookSet, ListStocks }) {
   const [key, setKey] = useState('tab-0')
   const [ListChoose, setListChoose] = useState([])
@@ -31,7 +62,7 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
 
   useEffect(() => {
     getListDisable()
-  }, [ListStocks])
+  }, [ListStocks, key])
 
   useEffect(() => {
     if (BookSet?.value) {
@@ -97,32 +128,38 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
     let TimeClose = window?.top?.GlobalConfig?.APP?.Booking?.TimeClose
       ? { ...window?.top?.GlobalConfig?.APP?.Booking?.TimeClose }
       : ''
-
+    
     //
     let indexCr = ListStocks
       ? ListStocks.findIndex(x => Number(x.ID) === Number(values.StockID))
       : -1
-
+      
     if (indexCr > -1) {
       let StockI = ListStocks[indexCr].KeySEO
       if (StockI) {
-        let timeSplit = StockI.split(';')
-        var isValid = time =>
-          /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time)
-        if (
-          timeSplit &&
-          timeSplit.length >= 1 &&
-          isValid(timeSplit[0]) &&
-          isValid(timeSplit[1])
-        ) {
-          TimeOpen.hour = timeSplit[0].split(':')[0]
-          TimeOpen.minute = timeSplit[0].split(':')[1]
-          TimeClose.hour = timeSplit[1].split(':')[0]
-          TimeClose.minute = timeSplit[1].split(':')[1]
-        } else {
-          TimeOpen = window?.top?.GlobalConfig?.APP?.Booking?.TimeOpen
-          TimeClose = window?.top?.GlobalConfig?.APP?.Booking?.TimeClose
+        let bookDate = moment().format("DD/MM/YYYY")
+        if(key === "tab-1") {
+          bookDate = moment().add(1, "day").format("DD/MM/YYYY")
         }
+        if(DateChoose) {
+          bookDate = moment(DateChoose).format("DD/MM/YYYY")
+        }
+        let TimesObj = formatTimeOpenClose({
+          Text: StockI,
+          InitialTime: {
+            TimeOpen: TimeOpen
+              ? moment().set(TimeOpen).format("HH:mm:ss")
+              : "06:00:00",
+            TimeClose: TimeClose
+              ? moment().set(TimeClose).format("HH:mm:ss")
+              : "18:00:00",
+          },
+          Date: bookDate,
+        });
+        TimeOpen.hour = TimesObj.TimeOpen.split(":")[0];
+        TimeOpen.minute = TimesObj.TimeOpen.split(":")[1];
+        TimeClose.hour = TimesObj.TimeClose.split(":")[0];
+        TimeClose.minute = TimesObj.TimeClose.split(":")[1];
       } else {
         TimeOpen = window?.top?.GlobalConfig?.APP?.Booking?.TimeOpen
         TimeClose = window?.top?.GlobalConfig?.APP?.Booking?.TimeClose
