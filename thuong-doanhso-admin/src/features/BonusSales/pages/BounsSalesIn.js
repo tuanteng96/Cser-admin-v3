@@ -420,7 +420,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                   </div>
                                   <div className="d-flex align-items-center w-100">
                                     <NumberFormat
-                                      allowNegative={false}
+                                      allowNegative
                                       name={`BounsSalesIn[${index}].Hoa_Hong[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
                                       className={`form-control flex-1`}
@@ -556,7 +556,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     </div>
                                   </div>
                                   <NumberFormat
-                                    allowNegative={false}
+                                    allowNegative
                                     name={`BounsSalesIn[${index}].Doanh_So[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
                                     className={`form-control`}
@@ -774,7 +774,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     </div>
                                   </div>
                                   <NumberFormat
-                                    allowNegative={false}
+                                    allowNegative
                                     name={`BounsSalesIn[${index}].Hoa_Hong[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
                                     className={`form-control flex-1`}
@@ -897,7 +897,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     </div>
                                   </div>
                                   <NumberFormat
-                                    allowNegative={false}
+                                    allowNegative
                                     name={`BounsSalesIn[${index}].Doanh_So[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
                                     className={`form-control flex-1`}

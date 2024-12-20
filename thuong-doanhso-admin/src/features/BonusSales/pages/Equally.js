@@ -91,8 +91,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                 //     ? getValueHH({ user, item, Type })
                 //     : null,
               })),
-            Doanh_So: ToAdd.map((user) => {
-                console.log(item.gia_tri_doanh_so);
+              Doanh_So: ToAdd.map((user) => {
                 return {
                   Product: item,
                   Staff: user,
@@ -100,6 +99,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                     item.gia_tri_doanh_so > 0
                       ? Math.round((user.Value * item.gia_tri_doanh_so) / 100)
                       : 0,
+                      Value2: 0,
                   Type: item?.KpiType
                     ? { value: item?.KpiType, label: "Loại " + item?.KpiType }
                     : "",
@@ -201,7 +201,6 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                         />
                       </div>
                     )}
-
                     <div>
                       {values.ToAdd &&
                         values.ToAdd.length > 1 &&
@@ -290,6 +289,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
           >
             {(formikProps) => {
               const { values, handleBlur, setFieldValue } = formikProps;
+
               return (
                 <Form className="overflow-auto">
                   <div className="d-md-none">
@@ -315,7 +315,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
-                                      allowNegative={false}
+                                      allowNegative
                                       name={`equally[${index}].Hoa_Hong[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
                                       className={`form-control flex-1`}
@@ -360,7 +360,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
-                                      allowNegative={false}
+                                      allowNegative
                                       name={`equally[${index}].Doanh_So[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
                                       className={`form-control flex-1`}
@@ -443,7 +443,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
-                                        allowNegative={false}
+                                        allowNegative
                                         name={`equally[${index}].Hoa_Hong[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
                                         className={`form-control flex-1`}
@@ -455,8 +455,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                             `equally[${index}].Hoa_Hong[${idx}].Value`,
                                             val.floatValue
                                               ? val.floatValue
-                                              : val.value,
-                                            false
+                                              : val.value
                                           );
                                         }}
                                         onBlur={handleBlur}
@@ -483,7 +482,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
-                                        allowNegative={false}
+                                        allowNegative
                                         name={`equally[${index}].Doanh_So[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
                                         className={`form-control flex-1`}
@@ -494,12 +493,9 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                           setFieldValue(
                                             `equally[${index}].Doanh_So[${idx}].Value`,
                                             val.floatValue
-                                              ? val.floatValue
-                                              : val.value,
-                                            false
                                           );
                                         }}
-                                        onBlur={handleBlur}
+                                        //onBlur={handleBlur}
                                         disabled={
                                           window.top?.GlobalConfig?.Admin
                                             ?.thuong_ds_nang_cao && UserID !== 1

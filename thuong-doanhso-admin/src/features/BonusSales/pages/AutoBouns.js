@@ -105,7 +105,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
               {values &&
                 values.AutoBouns &&
                 values.AutoBouns.map((item, index) => (
-                  <div className="border rounded mb-3" key={index}>
+                  <div className="mb-3 border rounded" key={index}>
                     <div className="p-3 border-bottom line-height-sm font-weight-boldest w-100 line-height-lg bg-light">
                       {item.Product.ProdTitle}
                       <OverlayTrigger
@@ -154,7 +154,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                               item.Hoa_Hong &&
                               item.Hoa_Hong.map((sub, idx) => (
                                 <div
-                                  className="d-flex align-items-center my-3"
+                                  className="my-3 d-flex align-items-center"
                                   key={idx}
                                 >
                                   <div className="mb-1 w-120px pe-2">
@@ -163,7 +163,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     </label>
                                   </div>
                                   <NumberFormat
-                                    allowNegative={false}
+                                    allowNegative
                                     name={`AutoBouns[${index}].Hoa_Hong[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
                                     className={`form-control flex-1`}
@@ -182,7 +182,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     onBlur={handleBlur}
                                   />
                                   <div
-                                    className="text-danger w-30px text-end cursor-pointer pl-5px font-size-sm"
+                                    className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
                                     onClick={() => arrayHelpers.remove(idx)}
                                   >
                                     Xóa
@@ -210,7 +210,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                               item.Doanh_So &&
                               item.Doanh_So.map((sub, idx) => (
                                 <div
-                                  className="d-flex align-items-center my-4"
+                                  className="my-4 d-flex align-items-center"
                                   key={idx}
                                 >
                                   <div className="mb-1 w-120px pe-2">
@@ -219,7 +219,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     </label>
                                   </div>
                                   <NumberFormat
-                                    allowNegative={false}
+                                    allowNegative
                                     name={`AutoBouns[${index}].Doanh_So[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
                                     className={`form-control flex-1`}
@@ -250,7 +250,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     }}
                                   />
                                   <div
-                                    className="text-danger w-30px text-end cursor-pointer pl-5px font-size-sm"
+                                    className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
                                     onClick={() => arrayHelpers.remove(idx)}
                                   >
                                     Xóa
@@ -274,7 +274,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                 <thead>
                   <tr>
                     <th className="min-w-200px w-30">Sản phẩm</th>
-                    <th className="min-w-300px text-center w-35">Hoa hồng</th>
+                    <th className="text-center min-w-300px w-35">Hoa hồng</th>
                     <th
                       className="text-center w-35"
                       style={{
@@ -350,7 +350,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                               item.Hoa_Hong &&
                               item.Hoa_Hong.map((sub, idx) => (
                                 <div
-                                  className="d-flex align-items-center my-3"
+                                  className="my-3 d-flex align-items-center"
                                   key={idx}
                                 >
                                   <div className="mb-1 w-120px pe-2">
@@ -359,7 +359,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     </label>
                                   </div>
                                   <NumberFormat
-                                    allowNegative={false}
+                                    allowNegative
                                     name={`AutoBouns[${index}].Hoa_Hong[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
                                     className={`form-control flex-1`}
@@ -378,7 +378,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     onBlur={handleBlur}
                                   />
                                   <div
-                                    className="text-danger w-30px text-end cursor-pointer"
+                                    className="cursor-pointer text-danger w-30px text-end"
                                     onClick={() => arrayHelpers.remove(idx)}
                                   >
                                     Xóa
@@ -395,7 +395,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                               item.Doanh_So &&
                               item.Doanh_So.map((sub, idx) => (
                                 <div
-                                  className="d-flex align-items-center my-4"
+                                  className="my-4 d-flex align-items-center"
                                   key={idx}
                                 >
                                   <div className="mb-1 w-120px pe-2">
@@ -404,7 +404,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     </label>
                                   </div>
                                   <NumberFormat
-                                    allowNegative={false}
+                                    allowNegative
                                     name={`AutoBouns[${index}].Doanh_So[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
                                     className={`form-control flex-1`}
@@ -435,7 +435,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     }}
                                   />
                                   <div
-                                    className="text-danger w-30px text-end cursor-pointer"
+                                    className="cursor-pointer text-danger w-30px text-end"
                                     onClick={() => arrayHelpers.remove(idx)}
                                   >
                                     Xóa

@@ -235,7 +235,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
-                                      allowNegative={false}
+                                      allowNegative
                                       name={`divided[${index}].Hoa_Hong[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
                                       className={`form-control flex-1`}
@@ -280,7 +280,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
-                                      allowNegative={false}
+                                      allowNegative
                                       name={`divided[${index}].Doanh_So[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
                                       className={`form-control flex-1`}
@@ -343,7 +343,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
-                                        allowNegative={false}
+                                        allowNegative
                                         name={`divided[${index}].Hoa_Hong[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
                                         className={`form-control flex-1`}
@@ -383,7 +383,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
-                                        allowNegative={false}
+                                        allowNegative
                                         name={`divided[${index}].Doanh_So[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
                                         className={`form-control flex-1`}

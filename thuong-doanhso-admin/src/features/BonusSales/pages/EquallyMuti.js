@@ -125,7 +125,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
               const { values, setFieldValue, handleBlur } = formikProps;
               return (
                 <Form>
-                  <div className="border rounded mb-3 px-4 py-4">
+                  <div className="px-4 py-4 mb-3 border rounded">
                     <div className="mb-3">
                       <div className="mb-1">Kỹ thuật viên</div>
                       <div className="w-100">
@@ -293,7 +293,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                           values.Types[keyName].length > 0
                       )
                       .map((keyName, i) => (
-                        <div className="border rounded mb-3 px-4 py-4" key={i}>
+                        <div className="px-4 py-4 mb-3 border rounded" key={i}>
                           <div
                             className="text-uppercase"
                             style={{ fontWeight: 600 }}
@@ -306,7 +306,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                             {values.Types[keyName] &&
                               values.Types[keyName].map((item, index) => (
                                 <div
-                                  className="d-flex align-items-center mt-3"
+                                  className="mt-3 d-flex align-items-center"
                                   key={index}
                                 >
                                   <div className="w-200px font-weight-bold">
@@ -343,7 +343,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                                         }}
                                         onBlur={handleBlur}
                                       />
-                                      <div className="position-absolute top-0 right-0 h-100 w-45px d-flex align-items-center justify-content-center">
+                                      <div className="top-0 right-0 position-absolute h-100 w-45px d-flex align-items-center justify-content-center">
                                         %
                                       </div>
                                     </div>
@@ -358,7 +358,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                     (keyName, i) =>
                       values.Types[keyName] && values.Types[keyName].length > 0
                   ) && (
-                    <div className="text-end mt-3 mb-5">
+                    <div className="mt-3 mb-5 text-end">
                       <button type="submit" className="btn btn-primary">
                         Tạo mới
                       </button>
@@ -384,7 +384,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                 <Form className="overflow-auto">
                   <div className="d-md-none">
                     {values.equally.map((item, index) => (
-                      <div className="border rounded mb-3" key={index}>
+                      <div className="mb-3 border rounded" key={index}>
                         <div className="p-3 border-bottom line-height-sm font-weight-boldest w-100 line-height-lg bg-light">
                           {item.Product.ProdTitle}
                         </div>
@@ -398,14 +398,14 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                               render={(arrayHelpers) =>
                                 item.Hoa_Hong.map((sub, idx) => (
                                   <div
-                                    className="d-flex align-items-center my-2"
+                                    className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
-                                      allowNegative={false}
+                                      allowNegative
                                       name={`equally[${index}].Hoa_Hong[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
                                       className={`form-control flex-1`}
@@ -443,14 +443,14 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                               render={(arrayHelpers) =>
                                 item.Doanh_So.map((sub, idx) => (
                                   <div
-                                    className="d-flex align-items-center my-2"
+                                    className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
-                                      allowNegative={false}
+                                      allowNegative
                                       name={`equally[${index}].Doanh_So[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
                                       className={`form-control flex-1`}
@@ -497,12 +497,12 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                     <Table bordered responsive>
                       <thead>
                         <tr>
-                          <th className="min-w-250px w-20">Sản phẩm</th>
-                          <th className="text-center min-w-250px w-40">
+                          <th className="w-20 min-w-250px">Sản phẩm</th>
+                          <th className="w-40 text-center min-w-250px">
                             Hoa hồng
                           </th>
                           <th
-                            className="text-center w-40"
+                            className="w-40 text-center"
                             style={{
                               minWidth: window.top?.GlobalConfig?.Admin
                                 ?.thuong_ds_theo_loai
@@ -526,14 +526,14 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                                 render={(arrayHelpers) =>
                                   item.Hoa_Hong.map((sub, idx) => (
                                     <div
-                                      className="d-flex align-items-center my-2"
+                                      className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
-                                        allowNegative={false}
+                                        allowNegative
                                         name={`equally[${index}].Hoa_Hong[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
                                         className={`form-control flex-1`}
@@ -566,14 +566,14 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                                 render={(arrayHelpers) =>
                                   item.Doanh_So.map((sub, idx) => (
                                     <div
-                                      className="d-flex align-items-center my-2"
+                                      className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="font-weight-boldest mb-1 w-140px text-truncate pe-3">
+                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
-                                        allowNegative={false}
+                                        allowNegative
                                         name={`equally[${index}].Doanh_So[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
                                         className={`form-control flex-1`}

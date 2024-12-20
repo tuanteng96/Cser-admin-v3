@@ -40,7 +40,7 @@ function Advanced({ OrderInfo, onSubmit, loading }) {
                         name="advanced"
                         render={(arrayHelpers) =>
                           values.advanced.map((item, index) => (
-                            <div className="rounded mb-3 pb-3 border-bottom" key={index}>
+                            <div className="pb-3 mb-3 rounded border-bottom" key={index}>
                               <div className="mb-2">
                                 <Select
                                   classNamePrefix="select"
@@ -114,7 +114,7 @@ function Advanced({ OrderInfo, onSubmit, loading }) {
                               </div>
                               <div className="mb-2">
                                 <NumberFormat
-                                  allowNegative={false}
+                                  allowNegative
                                   name={`advanced[${index}].Value`}
                                   placeholder={"Nhập giá trị"}
                                   className={`form-control`}
@@ -179,7 +179,7 @@ function Advanced({ OrderInfo, onSubmit, loading }) {
                             <th className="text-center min-w-200px w-25">
                               Nhân viên
                             </th>
-                            <th className="text-center min-w-200px w-20">
+                            <th className="w-20 text-center min-w-200px">
                               Giá trị
                             </th>
                             <th className="text-center min-w-200px w-100px">
@@ -272,7 +272,7 @@ function Advanced({ OrderInfo, onSubmit, loading }) {
                                   </td>
                                   <td>
                                     <NumberFormat
-                                      allowNegative={false}
+                                      allowNegative
                                       name={`advanced[${index}].Value`}
                                       placeholder={"Nhập giá trị"}
                                       className={`form-control`}

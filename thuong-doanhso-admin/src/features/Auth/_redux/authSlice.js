@@ -55,10 +55,10 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
   };
 
   window.top.token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNjg4NyIsIm5iZiI6MTczMzk4NzU3NCwiZXhwIjoxODIwMzg3NTc0LCJpYXQiOjE3MzM5ODc1NzR9.Ce62j79RusO4N6CAyKzPZYtobV2I6pCRw25nk0bMUd8";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNzAxNSIsIm5iZiI6MTczNDY2NzU1MywiZXhwIjoxODIxMDY3NTUzLCJpYXQiOjE3MzQ2Njc1NTN9.81WYIQqwE5pzbUl_tA8QDnAMsJ_zQHxADYtt6u-tA6E";
 
   window.top.OrderBonus23Info = {
-    OrderID: 50108,
+    OrderID: 50344,
     Order: {
       //Status: "finish",
       //AdminAction: "TANG_DH_KET_THUC_NO",
