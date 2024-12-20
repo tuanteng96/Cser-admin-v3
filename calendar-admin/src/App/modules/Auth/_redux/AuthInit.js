@@ -41,7 +41,7 @@ function AuthInit({ isConfig, children }) {
             {
               ID: 11424,
               Title: "Cser Hà Nội",
-              KeySEO: "11:30;23:30",
+              KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
               ParentID: 778,
             },
             {
@@ -55,7 +55,7 @@ function AuthInit({ isConfig, children }) {
             {
               ID: 11424,
               Title: "Cser Hà Nội",
-              KeySEO: "11:30;23:30",
+              KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
               ParentID: 778,
             },
             {
@@ -74,7 +74,7 @@ function AuthInit({ isConfig, children }) {
                   {
                     ID: 11424,
                     Title: "Cser Hà Nội",
-                    KeySEO: "11:30;23:30",
+                    KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                     ParentID: 778,
                   },
                   {
@@ -93,7 +93,7 @@ function AuthInit({ isConfig, children }) {
                 {
                   ID: 11424,
                   Title: "Cser Hà Nội",
-                  KeySEO: "11:30;23:30",
+                  KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                   ParentID: 778,
                 },
                 {
@@ -111,7 +111,7 @@ function AuthInit({ isConfig, children }) {
                 {
                   ID: 11424,
                   Title: "Cser Hà Nội",
-                  KeySEO: "11:30;23:30",
+                  KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                   ParentID: 778,
                 },
                 {

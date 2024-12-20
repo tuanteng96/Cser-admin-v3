@@ -66,6 +66,39 @@ const viLocales = {
   noEventsText: "Không có dịch vụ",
 };
 
+const formatTimeOpenClose = ({ Text, InitialTime, Date }) => {
+  let Times = {
+    ...InitialTime,
+  };
+
+  let CommonTime = Array.from(Text.matchAll(/\[([^\][]*)]/g), (x) => x[1]);
+
+  if (CommonTime && CommonTime.length > 0) {
+    let CommonTimeJs = CommonTime[0].split(";");
+    Times.TimeOpen = CommonTimeJs[0];
+    Times.TimeClose = CommonTimeJs[1];
+  }
+
+  let PrivateTime = Array.from(Text.matchAll(/{+([^}]+)}+/g), (x) => x[1]);
+  PrivateTime = PrivateTime.filter((x) => x.split(";").length > 2).map((x) => ({
+    DayName: x.split(";")[0],
+    TimeOpen: x.split(";")[1],
+    TimeClose: x.split(";")[2],
+  }));
+  if (Date) {
+    let index = PrivateTime.findIndex(
+      (x) => x.DayName === moment(Date, "DD/MM/YYYY").format("ddd")
+    );
+
+    if (index > -1) {
+      Times.TimeOpen = PrivateTime[index].TimeOpen;
+      Times.TimeClose = PrivateTime[index].TimeClose;
+    }
+  }
+
+  return Times;
+};
+
 const getStatusClss = (Status, item) => {
   const isAuto =
     item?.Desc && item.Desc.toUpperCase().indexOf("TỰ ĐỘNG ĐẶT LỊCH");
@@ -258,25 +291,26 @@ function CalendarPage(props) {
   useEffect(() => {
     if (AuthCrStockID && Stocks) {
       let index = Stocks.findIndex((x) => x.ID === Number(AuthCrStockID));
+
       if (index > -1) {
         let StockI = Stocks[index].KeySEO;
         if (StockI) {
-          let timeSplit = StockI.split(";");
-          var isValid = (time) =>
-            /^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time);
-          if (
-            timeSplit &&
-            timeSplit.length >= 1 &&
-            isValid(timeSplit[0]) &&
-            isValid(timeSplit[1])
-          ) {
-            setTimeOpen(timeSplit[0])
-            setTimeClose(timeSplit[1])
-          }
+          let TimesObj = formatTimeOpenClose({
+            Text: StockI,
+            InitialTime: {
+              TimeOpen: GTimeOpen,
+              TimeClose: GTimeClose,
+            },
+            Date: moment(topCalendar.day).format("DD/MM/YYYY"),
+          });
+
+          setTimeOpen(TimesObj.TimeOpen);
+          setTimeClose(TimesObj.TimeClose);
         }
       }
     }
-  }, [AuthCrStockID, Stocks]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [AuthCrStockID, Stocks, topCalendar.day]);
 
   const ListRooms = useQuery({
     queryKey: ["ListRooms", AuthCrStockID],
