@@ -231,6 +231,12 @@ function BookingPage() {
         { timeOut: 2000 }
       );
       window?.top?.MemberBookInfo && window.top.MemberBookInfo.callback();
+      window?.top?.OnMemberBook &&
+        window?.top?.OnMemberBook({
+          Member: values.MemberID,
+          booking: dataPost,
+          action: "ADD_EDIT",
+        });
     } catch (error) {
       setBtnLoading((prevState) => ({
         ...prevState,
@@ -308,6 +314,12 @@ function BookingPage() {
         { timeOut: 2000 }
       );
       window?.top?.MemberBookInfo && window.top.MemberBookInfo.callback();
+      window?.top?.OnMemberBook &&
+        window?.top?.OnMemberBook({
+          Member: values.MemberID,
+          booking: dataPost,
+          action: "ADD_EDIT",
+        });
     } catch (error) {
       setBtnLoading((prevState) => ({
         ...prevState,
@@ -356,6 +368,12 @@ function BookingPage() {
         });
       window.top.toastr.success("Hủy lịch thành công.", "", { timeOut: 2000 });
       window?.top?.MemberBookInfo && window.top.MemberBookInfo.callback();
+      window?.top?.OnMemberBook &&
+        window?.top?.OnMemberBook({
+          Member: values.MemberID,
+          booking: dataPost,
+          action: "DELETE",
+        });
     } catch (error) {
       setBtnLoading((prevState) => ({
         ...prevState,
