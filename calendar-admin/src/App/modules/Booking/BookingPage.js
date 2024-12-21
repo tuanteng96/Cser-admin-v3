@@ -200,6 +200,7 @@ function BookingPage() {
             values.RootIdS && values.RootIdS.length > 0
               ? values.RootIdS.map((item) => item.value).toString()
               : "",
+          Roots: values.RootIdS,
           UserServiceIDs:
             values.UserServiceIDs && values.UserServiceIDs.length > 0
               ? values.UserServiceIDs.map((item) => item.value).toString()
@@ -234,7 +235,7 @@ function BookingPage() {
       window?.top?.OnMemberBook &&
         window?.top?.OnMemberBook({
           Member: values.MemberID,
-          booking: dataPost,
+          booking: dataPost.booking[0],
           action: "ADD_EDIT",
         });
     } catch (error) {
@@ -275,6 +276,7 @@ function BookingPage() {
           ...values,
           MemberID: values.MemberID.value,
           RootIdS: values.RootIdS.map((item) => item.value).toString(),
+          Roots: values.RootIdS,
           UserServiceIDs:
             values.UserServiceIDs && values.UserServiceIDs.length > 0
               ? values.UserServiceIDs.map((item) => item.value).toString()
@@ -317,7 +319,7 @@ function BookingPage() {
       window?.top?.OnMemberBook &&
         window?.top?.OnMemberBook({
           Member: values.MemberID,
-          booking: dataPost,
+          booking: dataPost.booking[0],
           action: "ADD_EDIT",
         });
     } catch (error) {
@@ -342,6 +344,7 @@ function BookingPage() {
           ...values,
           MemberID: values.MemberID.value,
           RootIdS: values.RootIdS.map((item) => item.value).toString(),
+          Roots: values.RootIdS,
           UserServiceIDs:
             values.UserServiceIDs && values.UserServiceIDs.length > 0
               ? values.UserServiceIDs.map((item) => item.value).toString()
@@ -371,7 +374,7 @@ function BookingPage() {
       window?.top?.OnMemberBook &&
         window?.top?.OnMemberBook({
           Member: values.MemberID,
-          booking: dataPost,
+          booking: dataPost.booking[0],
           action: "DELETE",
         });
     } catch (error) {

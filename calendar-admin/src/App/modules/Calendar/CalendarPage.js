@@ -523,6 +523,10 @@ function CalendarPage(props) {
     Desc =
       (Desc ? Desc + "\n" : "") +
       `Ghi chú: ${values.Desc ? values.Desc.replace(/\n\r?/g, "</br>") : ""}`;
+    
+    let Members = {
+      ...values.MemberID,
+    };
 
     const objBooking = {
       ...values,
@@ -574,6 +578,7 @@ function CalendarPage(props) {
           return;
         }
         objBooking.MemberID = newMember?.member?.ID || 0;
+        if (newMember?.member) Members = { ...newMember?.member };
       }
 
       const dataPost = {
@@ -607,6 +612,14 @@ function CalendarPage(props) {
           name: "cld_dat_lich_moi",
           mid: objBooking.MemberID || 0,
         });
+      
+      window?.top?.OnMemberBook &&
+        window?.top?.OnMemberBook({
+          Member: Members,
+          booking: objBooking,
+          action: "ADD_EDIT",
+        });
+      
       ListCalendars.refetch().then(() => {
         toast.success(getTextToast(values.Status), {
           position: toast.POSITION.TOP_RIGHT,
@@ -666,6 +679,10 @@ function CalendarPage(props) {
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
 
+    let Members = {
+      ...values.MemberID,
+    };
+
     try {
       if (values.IsMemberCurrent.IsAnonymous) {
         if (!values?.IsMemberCurrent?.MemberPhone) {
@@ -689,8 +706,10 @@ function CalendarPage(props) {
             return;
           }
           objBooking.MemberID = newMember?.member?.ID;
+          Members = { ...newMember?.member };
         } else {
           objBooking.MemberID = values?.IsMemberCurrent?.MemberPhone.ID;
+          Members = { ...values?.IsMemberCurrent?.MemberPhone };
         }
       }
 
@@ -725,6 +744,12 @@ function CalendarPage(props) {
         window.top.bodyEvent("ui_changed", {
           name: "cld_thuc_hien_lich",
           mid: objBooking.MemberID || 0,
+        });
+      window?.top?.OnMemberBook &&
+        window?.top?.OnMemberBook({
+          Member: Members,
+          booking: objBooking,
+          action: "ADD_EDIT",
         });
       ListCalendars.refetch().then(() => {
         window.top.location.href = `/admin/?mdl=store&act=sell#mp:${objBooking.MemberID}`;
@@ -790,6 +815,22 @@ function CalendarPage(props) {
         window.top.bodyEvent("ui_changed", {
           name: "cld_huy_lich",
           mid: values.MemberID.value || 0,
+        });
+      window?.top?.OnMemberBook &&
+        window?.top?.OnMemberBook({
+          Member: values.MemberID,
+          booking: {
+            ...values,
+            MemberID: values.MemberID.value,
+            RootIdS: values.RootIdS.map((item) => item.value).toString(),
+            UserServiceIDs:
+              values.UserServiceIDs && values.UserServiceIDs.length > 0
+                ? values.UserServiceIDs.map((item) => item.value).toString()
+                : "",
+            BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+            Status: "TU_CHOI",
+          },
+          action: "DELETE",
         });
       ListCalendars.refetch().then(() => {
         toast.success("Hủy lịch thành công !", {
