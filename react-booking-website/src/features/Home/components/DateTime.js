@@ -23,35 +23,35 @@ const GroupByCount = (List, Count) => {
 }
 
 const formatTimeOpenClose = ({ Text, InitialTime, Date }) => {
-  let Times = { ...InitialTime };
+  let Times = { ...InitialTime }
 
-  let CommonTime = Array.from(Text.matchAll(/\[([^\][]*)]/g), (x) => x[1]);
+  let CommonTime = Array.from(Text.matchAll(/\[([^\][]*)]/g), x => x[1])
 
   if (CommonTime && CommonTime.length > 0) {
-    let CommonTimeJs = CommonTime[0].split(";");
-    Times.TimeOpen = CommonTimeJs[0];
-    Times.TimeClose = CommonTimeJs[1];
+    let CommonTimeJs = CommonTime[0].split(';')
+    Times.TimeOpen = CommonTimeJs[0]
+    Times.TimeClose = CommonTimeJs[1]
   }
 
-  let PrivateTime = Array.from(Text.matchAll(/{+([^}]+)}+/g), (x) => x[1]);
-  PrivateTime = PrivateTime.filter((x) => x.split(";").length > 2).map((x) => ({
-    DayName: x.split(";")[0],
-    TimeOpen: x.split(";")[1],
-    TimeClose: x.split(";")[2],
-  }));
+  let PrivateTime = Array.from(Text.matchAll(/{+([^}]+)}+/g), x => x[1])
+  PrivateTime = PrivateTime.filter(x => x.split(';').length > 2).map(x => ({
+    DayName: x.split(';')[0],
+    TimeOpen: x.split(';')[1],
+    TimeClose: x.split(';')[2]
+  }))
   if (Date) {
     let index = PrivateTime.findIndex(
-      (x) => x.DayName === moment(Date, "DD/MM/YYYY").format("ddd")
-    );
+      x => x.DayName === moment(Date, 'DD/MM/YYYY').format('ddd')
+    )
 
     if (index > -1) {
-      Times.TimeOpen = PrivateTime[index].TimeOpen;
-      Times.TimeClose = PrivateTime[index].TimeClose;
+      Times.TimeOpen = PrivateTime[index].TimeOpen
+      Times.TimeClose = PrivateTime[index].TimeClose
     }
   }
 
-  return Times;
-};
+  return Times
+}
 
 function DateTime({ formikProps, BookSet, ListStocks }) {
   const [key, setKey] = useState('tab-0')
@@ -128,38 +128,38 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
     let TimeClose = window?.top?.GlobalConfig?.APP?.Booking?.TimeClose
       ? { ...window?.top?.GlobalConfig?.APP?.Booking?.TimeClose }
       : ''
-    
+
     //
     let indexCr = ListStocks
       ? ListStocks.findIndex(x => Number(x.ID) === Number(values.StockID))
       : -1
-      
+
     if (indexCr > -1) {
       let StockI = ListStocks[indexCr].KeySEO
       if (StockI) {
-        let bookDate = moment().format("DD/MM/YYYY")
-        if(key === "tab-1") {
-          bookDate = moment().add(1, "day").format("DD/MM/YYYY")
+        let bookDate = moment().format('DD/MM/YYYY')
+        if (key === 'tab-1') {
+          bookDate = moment().add(1, 'day').format('DD/MM/YYYY')
         }
-        if(DateChoose) {
-          bookDate = moment(DateChoose).format("DD/MM/YYYY")
+        if (DateChoose) {
+          bookDate = moment(DateChoose).format('DD/MM/YYYY')
         }
         let TimesObj = formatTimeOpenClose({
           Text: StockI,
           InitialTime: {
             TimeOpen: TimeOpen
-              ? moment().set(TimeOpen).format("HH:mm:ss")
-              : "06:00:00",
+              ? moment().set(TimeOpen).format('HH:mm:ss')
+              : '06:00:00',
             TimeClose: TimeClose
-              ? moment().set(TimeClose).format("HH:mm:ss")
-              : "18:00:00",
+              ? moment().set(TimeClose).format('HH:mm:ss')
+              : '18:00:00'
           },
-          Date: bookDate,
-        });
-        TimeOpen.hour = TimesObj.TimeOpen.split(":")[0];
-        TimeOpen.minute = TimesObj.TimeOpen.split(":")[1];
-        TimeClose.hour = TimesObj.TimeClose.split(":")[0];
-        TimeClose.minute = TimesObj.TimeClose.split(":")[1];
+          Date: bookDate
+        })
+        TimeOpen.hour = TimesObj.TimeOpen.split(':')[0]
+        TimeOpen.minute = TimesObj.TimeOpen.split(':')[1]
+        TimeClose.hour = TimesObj.TimeClose.split(':')[0]
+        TimeClose.minute = TimesObj.TimeClose.split(':')[1]
       } else {
         TimeOpen = window?.top?.GlobalConfig?.APP?.Booking?.TimeOpen
         TimeClose = window?.top?.GlobalConfig?.APP?.Booking?.TimeClose
