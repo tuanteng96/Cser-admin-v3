@@ -78,7 +78,7 @@ function MonthlyPayroll(props) {
       queryFn: async ({ pageParam = 1 }) => {
         const newObj = {
           mon: filters.Month ? moment(filters.Month).format('MM/YYYY') : '',
-          stockid: filters.stockid ? filters.stockid.ID : '',
+          stockid: filters.StockID ? filters.StockID.value : '',
           // UserIDs: filters.UserID ? [filters.UserID.value] : '',
           pi: pageParam,
           ps: filters.ps
