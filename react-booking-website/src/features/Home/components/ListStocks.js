@@ -18,9 +18,10 @@ function ListStocks({ formikProps, ListStocks, loading }) {
 
   useEffect(() => {
     setFieldValue('UserServiceIDs', '')
+    setFieldValue('BookDate', '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.StockID])
-
+  
   useEffect(() => {
     if (values.StockID) {
       let index = ListStocks.findIndex(
