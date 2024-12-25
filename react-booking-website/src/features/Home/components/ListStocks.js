@@ -21,7 +21,7 @@ function ListStocks({ formikProps, ListStocks, loading }) {
     setFieldValue('BookDate', '')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.StockID])
-  
+
   useEffect(() => {
     if (values.StockID) {
       let index = ListStocks.findIndex(
@@ -56,6 +56,10 @@ function ListStocks({ formikProps, ListStocks, loading }) {
                 >
                   {values.StockID ? 'Thay đổi cơ sở ?' : 'Chọn cơ sở ?'}
                 </div>
+
+                {errors.StockID && touched.StockID && (
+                  <div className="text-danger mt-3px">Vui lòng chọn cơ sở đặt lịch.</div>
+                )}
 
                 <StocksProvincesFilter
                   isOpen={visible}
