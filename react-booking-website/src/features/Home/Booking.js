@@ -17,24 +17,17 @@ const perfectScrollbarOptions = {
 }
 
 function Booking({ formikProps, nextStep, BookSet }) {
-  const { errors, submitForm, setErrors } = formikProps
-  const [isSubmiting, setIsSubmiting] = useState(false)
+  const {
+    errors,
+    submitForm,
+    setErrors,
+    setFieldError,
+    setFieldTouched,
+    values
+  } = formikProps
 
   const [loading, setLoading] = useState(false)
   const [ListsStocks, setListsStocks] = useState([])
-
-  useEffect(() => {
-    if (
-      !errors.StockID &&
-      !errors.FullName &&
-      !errors.Phone &&
-      !errors.StockID
-    ) {
-      setIsSubmiting(true)
-    } else {
-      setIsSubmiting(false)
-    }
-  }, [errors])
 
   useEffect(() => {
     getListStock()
@@ -60,10 +53,30 @@ function Booking({ formikProps, nextStep, BookSet }) {
   }
 
   const onSubmit = () => {
+    let isSubmiting = true
+
+    if (!values.BookDate) {
+      isSubmiting = false
+      setFieldError('BookDate', 'Chọn ngày đặt lịch.')
+      setFieldTouched('BookDate', true, true)
+    }
+    if (!values.FullName) {
+      isSubmiting = false
+      setFieldError('FullName', 'Nhập họ tên.')
+      setFieldTouched('FullName', true, true)
+    }
+    if (!values.Phone) {
+      isSubmiting = false
+      setFieldError('Phone', 'Nhập số điện thoại.')
+      setFieldTouched('Phone', true, true)
+    }
+    if (!values.StockID) {
+      isSubmiting = false
+      setFieldError('StockID', 'Vui lòng chọn cơ sở.')
+      setFieldTouched('StockID', true, true)
+    }
     if (isSubmiting) {
       nextStep(setErrors)
-    } else {
-      submitForm()
     }
   }
 

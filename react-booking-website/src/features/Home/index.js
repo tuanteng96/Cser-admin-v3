@@ -167,8 +167,6 @@ export default function Home() {
     setKey('booking')
   }
 
-  
-
   return (
     <div className="overflow-hidden h-100 position-relative tab-book">
       <Formik
@@ -180,7 +178,7 @@ export default function Home() {
         {formikProps => {
           // errors, touched, handleChange, handleBlur
           const { values } = formikProps
-          
+
           window.top.handleReset = () => {
             setKey('booking')
             setBookSet('')

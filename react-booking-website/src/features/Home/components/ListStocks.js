@@ -14,14 +14,15 @@ function ListStocks({ formikProps, ListStocks, loading }) {
   const [StockName, setStockName] = useState('Đang kiểm tra ...')
   const [visible, setVisible] = useState(false)
 
-  const { touched, errors, setFieldValue, values } = formikProps
+  const { touched, errors, setErrors, setFieldValue, values } = formikProps
 
   useEffect(() => {
     setFieldValue('UserServiceIDs', '')
-    setFieldValue('BookDate', '')
+    setFieldValue('BookDate', '', false)
+    setErrors({})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.StockID])
-
+  
   useEffect(() => {
     if (values.StockID) {
       let index = ListStocks.findIndex(
@@ -58,7 +59,9 @@ function ListStocks({ formikProps, ListStocks, loading }) {
                 </div>
 
                 {errors.StockID && touched.StockID && (
-                  <div className="text-danger mt-3px">Vui lòng chọn cơ sở đặt lịch.</div>
+                  <div className="text-danger mt-3px">
+                    Vui lòng chọn cơ sở đặt lịch.
+                  </div>
                 )}
 
                 <StocksProvincesFilter

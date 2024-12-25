@@ -42,6 +42,9 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
     const { data } = await bookingApi.getService(objFilters)
     const lst =
       filters.Pi > 1 ? [...new Set([...ListServices, ...data.lst])] : data.lst
+    if (lst.length >= data.total) {
+      setHasMore(false)
+    }
     setLoading(false)
     setTotal(data.total)
     setListServices(lst)
@@ -86,7 +89,7 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
   }
 
   let RootIdS = values?.RootIdS || []
-  
+
   return (
     <div className="d-flex flex-column h-100">
       <div className="text-center bg-white border-bottom p-15px text-uppercase fw-700 font-size-md position-relative">
@@ -118,7 +121,7 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
           dataLength={ListServices.length}
           next={fetchMoreService}
           hasMore={hasMore}
-          loader={ListServices.length < Total && 'Đang tải ...'}
+          loader={<>Đang tải ...</>}
           //inverse={true}
           scrollThreshold={1}
           scrollableTarget="scrollableDiv"
@@ -229,6 +232,7 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
             'btn btn-ezs w-100 rounded-0 text-uppercase h-42px fw-500',
             loadingBtn && 'spinner spinner-white spinner-right'
           )}
+          disabled={loadingBtn || !RootIdS || RootIdS.length === 0}
         >
           {values.ID ? 'Thay đổi lịch' : 'Đặt lịch ngay'}
         </button>
