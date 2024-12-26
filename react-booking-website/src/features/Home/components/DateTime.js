@@ -184,7 +184,12 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
         day = DateChoose
       }
       let startDate = moment(day).set(TimeOpen)
-      let closeDate = moment(day).set(TimeClose)
+      let closeDate = moment(day)
+        .set(TimeClose)
+        .subtract(
+          window?.top?.GlobalConfig?.APP?.ScheduledMinutes || 0,
+          'minutes'
+        )
       var duration = moment.duration(closeDate.diff(startDate))
       var MinutesTotal = duration.asMinutes()
       let newListTime = []
