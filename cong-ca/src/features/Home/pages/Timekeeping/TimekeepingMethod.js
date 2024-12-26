@@ -11,17 +11,20 @@ function TimekeepingMethod(props) {
     updated: []
   })
 
-  let { StockRights } = useSelector(({ auth }) => ({
-    StockRights: auth?.Info?.rightsSum?.cong_ca?.stocks || []
+  let { StockRights, IsAllStock } = useSelector(({ auth }) => ({
+    StockRights: auth?.Info?.rightsSum?.cong_ca?.stocks || [],
+    IsAllStock: auth?.Info?.rightsSum?.cong_ca?.IsAllStock || false
   }))
+  
   const { isLoading, refetch } = useQuery({
     queryKey: ['ListStocks', StockRights],
     queryFn: async () => {
       const { data } = await worksheetApi.getStocks()
+      
       return data?.data?.all
         ? data?.data?.all
-            .filter(x => x.ParentID !== 0)
-            .filter(x => StockRights.some(o => o.ID === x.ID))
+            .filter(x => IsAllStock ? true : x.ParentID !== 0)
+            .filter(x => x.ID === 778 ? IsAllStock : StockRights.some(o => o.ID === x.ID))
         : []
     },
     onSuccess: data => {
@@ -132,7 +135,7 @@ function TimekeepingMethod(props) {
                   <FieldArray
                     name="updated"
                     render={arrayHelpers => (
-                      <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         {values.updated &&
                           values.updated.length > 0 &&
                           values.updated.map((item, index) => (
@@ -141,7 +144,7 @@ function TimekeepingMethod(props) {
                               key={index}
                             >
                               <div
-                                className="uppercase font-bold text-lg px-4 py-3"
+                                className="px-4 py-3 text-lg font-bold uppercase"
                                 style={{
                                   borderBottom: '1px solid #ebedf3'
                                 }}
