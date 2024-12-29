@@ -13,14 +13,18 @@ const CustomOption = ({ children, data, ...props }) => {
     <components.Option {...props}>
       <div className="d-flex justify-content-between align-items-center">
         {children}
-        <ReactStars
-          count={5}
-          size={20}
-          activeColor="#f3cd00"
-          value={data.source.AverRate}
-          edit={false}
-          isHalf={true}
-        />
+        {window.GlobalConfig?.Admin?.dat_lich_nhan_vien_sao ? (
+          <ReactStars
+            count={5}
+            size={20}
+            activeColor="#f3cd00"
+            value={data.source.AverRate}
+            edit={false}
+            isHalf={true}
+          />
+        ) : (
+          <></>
+        )}
       </div>
     </components.Option>
   )
@@ -87,7 +91,7 @@ function StaffAtHome({ formikProps }) {
       )}
 
       {window.GlobalConfig?.APP?.Booking?.AtHome && (
-        <div className="d-flex align-items-center justify-content-between mt-3">
+        <div className="mt-3 d-flex align-items-center justify-content-between">
           <label className="mr-3">Sử dụng dịch vụ tại nhà</label>
           <span className="switch switch-sm switch-icon">
             <label>
