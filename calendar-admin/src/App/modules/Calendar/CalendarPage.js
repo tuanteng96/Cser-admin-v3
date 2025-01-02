@@ -69,6 +69,7 @@ const viLocales = {
 const formatTimeOpenClose = ({ Text, InitialTime, Date }) => {
   let Times = {
     ...InitialTime,
+    TimeAdd: 0,
   };
 
   let CommonTime = Array.from(Text.matchAll(/\[([^\][]*)]/g), (x) => x[1]);
@@ -77,6 +78,9 @@ const formatTimeOpenClose = ({ Text, InitialTime, Date }) => {
     let CommonTimeJs = CommonTime[0].split(";");
     Times.TimeOpen = CommonTimeJs[0];
     Times.TimeClose = CommonTimeJs[1];
+    if (CommonTimeJs.length > 1) {
+      Times.TimeAdd = Number(CommonTimeJs[2]);
+    }
   }
 
   let PrivateTime = Array.from(Text.matchAll(/{+([^}]+)}+/g), (x) => x[1]);
@@ -84,6 +88,7 @@ const formatTimeOpenClose = ({ Text, InitialTime, Date }) => {
     DayName: x.split(";")[0],
     TimeOpen: x.split(";")[1],
     TimeClose: x.split(";")[2],
+    TimeAdd: x.split(";").length > 2 ? Number(x.split(";")[3]) : 0,
   }));
   if (Date) {
     let index = PrivateTime.findIndex(
@@ -93,6 +98,7 @@ const formatTimeOpenClose = ({ Text, InitialTime, Date }) => {
     if (index > -1) {
       Times.TimeOpen = PrivateTime[index].TimeOpen;
       Times.TimeClose = PrivateTime[index].TimeClose;
+      Times.TimeAdd = PrivateTime[index].TimeAdd;
     }
   }
 
@@ -304,8 +310,30 @@ function CalendarPage(props) {
             Date: moment(topCalendar.day).format("DD/MM/YYYY"),
           });
 
-          setTimeOpen(TimesObj.TimeOpen);
-          setTimeClose(TimesObj.TimeClose);
+          let newTimeOpen = moment(TimesObj.TimeOpen, "HH:mm:ss");
+
+          setTimeOpen(
+            moment()
+              .set({
+                hour: newTimeOpen.get("hour"),
+                minute: newTimeOpen.get("minute"),
+                second: newTimeOpen.get("second"),
+              })
+              .subtract(TimesObj?.TimeAdd || 0, "minutes")
+              .format("HH:mm:ss")
+          );
+          let newTimeClose = moment(TimesObj.TimeClose, "HH:mm:ss");
+
+          setTimeClose(
+            moment()
+              .set({
+                hour: newTimeClose.get("hour"),
+                minute: newTimeClose.get("minute"),
+                second: newTimeClose.get("second"),
+              })
+              .add(TimesObj?.TimeAdd || 0, "minutes")
+              .format("HH:mm:ss")
+          );
         }
       }
     }
@@ -523,7 +551,7 @@ function CalendarPage(props) {
     Desc =
       (Desc ? Desc + "\n" : "") +
       `Ghi chú: ${values.Desc ? values.Desc.replace(/\n\r?/g, "</br>") : ""}`;
-    
+
     let Members = {
       ...values.MemberID,
     };
@@ -613,14 +641,14 @@ function CalendarPage(props) {
           name: "cld_dat_lich_moi",
           mid: objBooking.MemberID || 0,
         });
-      
+
       window?.top?.OnMemberBook &&
         window?.top?.OnMemberBook({
           Member: Members,
           booking: objBooking,
           action: "ADD_EDIT",
         });
-      
+
       ListCalendars.refetch().then(() => {
         toast.success(getTextToast(values.Status), {
           position: toast.POSITION.TOP_RIGHT,

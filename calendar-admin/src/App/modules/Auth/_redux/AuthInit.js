@@ -41,7 +41,7 @@ function AuthInit({ isConfig, children }) {
             {
               ID: 11424,
               Title: "Cser Hà Nội",
-              KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
+              KeySEO: "[05:00;20:00;60]{CN;10:00;21:00;120}{T2;09:00;18:30}",
               ParentID: 778,
             },
             {
