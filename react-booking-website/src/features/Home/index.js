@@ -9,41 +9,44 @@ import bookingApi from 'src/api/booking.api'
 
 import moment from 'moment'
 import 'moment/locale/vi'
+import { useTranslation } from 'react-i18next'
 moment.locale('vi')
 
-const initialValue = {
-  AtHome: false,
-  MemberID: window.top?.Member?.ID || '',
-  RootIdS: '',
-  BookDate: '',
-  Desc: '',
-  StockID:
-    window?.GlobalConfig?.StocksNotBook &&
-    window.top?.MemberSelectStockID &&
-    window?.GlobalConfig?.StocksNotBook.includes(
-      window.top?.MemberSelectStockID
-    )
-      ? ''
-      : window.top?.MemberSelectStockID || '',
-  FullName: window.top?.Member?.FullName || '',
-  Phone: window.top?.Member?.MobilePhone || '',
-  UserServiceIDs: '',
-  AmountPeople: {
-    value: 1,
-    label: '1 khách'
-  },
-  OldBook: null
-}
-
-const BookingSchema = Yup.object().shape({
-  StockID: Yup.string().required('Vui lòng chọn cơ sở.'),
-  BookDate: Yup.string().required('Chọn ngày đặt lịch.'),
-  Phone: Yup.string().required('Nhập số điện thoại.'),
-  FullName: Yup.string().required('Nhập họ tên.'),
-  RootIdS: Yup.array().required('Chọn dịch vụ.')
-})
-
 export default function Home() {
+  const { t } = useTranslation()
+
+  const initialValue = {
+    AtHome: false,
+    MemberID: window.top?.Member?.ID || '',
+    RootIdS: '',
+    BookDate: '',
+    Desc: '',
+    StockID:
+      window?.GlobalConfig?.StocksNotBook &&
+      window.top?.MemberSelectStockID &&
+      window?.GlobalConfig?.StocksNotBook.includes(
+        window.top?.MemberSelectStockID
+      )
+        ? ''
+        : window.top?.MemberSelectStockID || '',
+    FullName: window.top?.Member?.FullName || '',
+    Phone: window.top?.Member?.MobilePhone || '',
+    UserServiceIDs: '',
+    AmountPeople: {
+      value: 1,
+      label: '1 ' + t('booking.KHACH')
+    },
+    OldBook: null
+  }
+
+  const BookingSchema = Yup.object().shape({
+    StockID: Yup.string().required(t('booking.VUI_ONG_CHON_CS')),
+    BookDate: Yup.string().required(t('booking.CHON_NGAY_DAT_LICH')),
+    Phone: Yup.string().required(t('booking.NHAP_SO_DIEN_THOAI')),
+    FullName: Yup.string().required(t('booking.NHAP_HO_TEN')),
+    RootIdS: Yup.array().required(t('booking.CHON_DICH_VU'))
+  })
+
   const [key, setKey] = useState('booking')
   const [loadingBtn, setLoadingBtn] = useState(false)
   const [initialValues] = useState(initialValue)
@@ -141,14 +144,17 @@ export default function Home() {
           setLoadingBtn(false)
           resetForm()
           window.top?.toastr &&
-            window.top?.toastr.success('Thay đổi lịch thành công!', {
-              timeOut: 2500
-            })
+            window.top?.toastr.success(
+              t('booking.THAY_DOI_LICH_THANH_CONG') + '!',
+              {
+                timeOut: 2500
+              }
+            )
         } else {
           setLoadingBtn(false)
           resetForm()
           window.top?.toastr &&
-            window.top?.toastr.success('Đặt lịch thành công!', {
+            window.top?.toastr.success(t('booking.DAT_LICH_THANH_CONG') + '!', {
               timeOut: 2500
             })
         }
@@ -204,7 +210,7 @@ export default function Home() {
             }
             if (newDesc) {
               let newAmountPeople = {
-                label: '1 khách',
+                label: '1 ' + t('booking.KHACH'),
                 value: 1
               }
               let descSplit = newDesc?.split('\n')
@@ -212,7 +218,7 @@ export default function Home() {
                 if (i.includes('Số lượng khách:')) {
                   let SL = Number(i.match(/\d+/)[0])
                   newAmountPeople = {
-                    label: SL + ' khách',
+                    label: SL + ' ' + t('booking.KHACH'),
                     value: SL
                   }
                 }

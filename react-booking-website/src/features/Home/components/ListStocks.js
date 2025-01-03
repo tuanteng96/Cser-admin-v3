@@ -5,13 +5,16 @@ import { Placeholder } from 'react-bootstrap'
 import { clsx } from 'clsx'
 import { Field } from 'formik'
 import StocksProvincesFilter from './StocksProvincesFilter'
+import { useTranslation } from 'react-i18next'
 
 ListStocks.propTypes = {
   formikProps: PropTypes.object
 }
 
 function ListStocks({ formikProps, ListStocks, loading }) {
-  const [StockName, setStockName] = useState('Đang kiểm tra ...')
+  const { t } = useTranslation()
+
+  const [StockName, setStockName] = useState(t('booking.DANG_KIEM_TRA'))
   const [visible, setVisible] = useState(false)
 
   const { touched, errors, setErrors, setFieldValue, values } = formikProps
@@ -22,7 +25,7 @@ function ListStocks({ formikProps, ListStocks, loading }) {
     setErrors({})
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.StockID])
-  
+
   useEffect(() => {
     if (values.StockID) {
       let index = ListStocks.findIndex(
@@ -30,13 +33,13 @@ function ListStocks({ formikProps, ListStocks, loading }) {
       )
       if (index > -1) setStockName(ListStocks[index].Title)
     } else {
-      setStockName('Đang kiểm tra ...')
+      setStockName(t('booking.DANG_KIEM_TRA'))
     }
   }, [values.StockID, ListStocks])
 
   return (
     <div className="bg-white mt-3px pt-15px pl-15px pr-15px pb-5px location">
-      <div className="fw-700 text-uppercase mb-10px">Chọn cơ sở</div>
+      <div className="fw-700 text-uppercase mb-10px">{t('booking.CHON_CO_SO')}</div>
       <div className="p-0 container-fluid">
         {!loading && (
           <>
@@ -44,23 +47,23 @@ function ListStocks({ formikProps, ListStocks, loading }) {
               <div className="mb-8px">
                 {values.StockID ? (
                   <div>
-                    Bạn đang đặt lịch tại
+                    {t('booking.BAN_DANG_DAT_LICH_TAI')}
                     <span className="pl-6px text-app2 fw-600">{StockName}</span>
                   </div>
                 ) : (
-                  'Bạn chưa chọn cơ sở đặt lịch.'
+                  <>{t('booking.BAN_CHUA_CHON_CO_SO_DAT_LICH')}</>
                 )}
 
                 <div
                   className="cursor-pointer text-primary mt-2px text-underline"
                   onClick={() => setVisible(true)}
                 >
-                  {values.StockID ? 'Thay đổi cơ sở ?' : 'Chọn cơ sở ?'}
+                  {values.StockID ? <>{t('booking.THAY_DOI_CO_SO')}?</> : <>{t('booking.CHON_CO_SO')}?</>}
                 </div>
 
                 {errors.StockID && touched.StockID && (
                   <div className="text-danger mt-3px">
-                    Vui lòng chọn cơ sở đặt lịch.
+                    {t('booking.VUI_LONG_CHON_CS_DAT_LICH')}
                   </div>
                 )}
 

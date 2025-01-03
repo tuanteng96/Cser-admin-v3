@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { createPortal } from 'react-dom'
 import clsx from 'clsx'
 import Select from 'react-select'
+import { useTranslation } from 'react-i18next'
 
 function StocksProvincesFilter({
   isOpen,
@@ -11,6 +12,8 @@ function StocksProvincesFilter({
   onChange,
   StockActive
 }) {
+  const { t } = useTranslation()
+
   let [StocksList, setStocksList] = useState([])
   let [StocksProvider, setStocksProvider] = useState([])
 
@@ -140,9 +143,9 @@ function StocksProvincesFilter({
               overflow: 'hidden'
             }}
           >
-            <div className="h-full flex flex-col">
+            <div className="flex flex-col h-full">
               <div className="flex justify-between items-center border-b px-[16px] py-[10px] mb-[16px]">
-                <div className="font-semibold text-[16px]">Chọn cơ sở</div>
+                <div className="font-semibold text-[16px]">{t("booking.CHON_CO_SO")}</div>
                 <div onClick={onClose}>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -166,12 +169,12 @@ function StocksProvincesFilter({
                     isClearable
                     className="select-control"
                     classNamePrefix="select"
-                    placeholder="Tỉnh / TP"
+                    placeholder={t("booking.TINH_TP")}
                     value={ActiveProvinces}
                     options={ProvincesList || []}
-                    label="Chọn Tỉnh / Thành phố"
+                    label={t("booking.CHON_TINH_TP")}
                     onChange={val => setActiveProvinces(val)}
-                    noOptionsMessage={() => 'Không có dữ liệu'}
+                    noOptionsMessage={() => t("booking.KHONG_CO_DU_LIEU")}
                   />
                 </div>
                 <div>
@@ -179,13 +182,13 @@ function StocksProvincesFilter({
                     isClearable
                     className="select-control"
                     classNamePrefix="select"
-                    placeholder="Quận / Huyện"
+                    placeholder={t("booking.QUAN_HUYEN")}
                     value={ActiveDistricts}
                     options={ActiveProvinces?.Districts || []}
-                    label="Chọn Tỉnh / Thành phố"
+                    label={t("booking.CHON_QUAN_HUYEN")}
                     onChange={val => setActiveDistricts(val)}
                     isDisabled={!ActiveProvinces}
-                    noOptionsMessage={() => 'Không có dữ liệu'}
+                    noOptionsMessage={() => t("booking.KHONG_CO_DU_LIEU")}
                   />
                 </div>
               </div>

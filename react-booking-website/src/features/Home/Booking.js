@@ -6,6 +6,7 @@ import PerfectScrollbar from 'react-perfect-scrollbar'
 import StaffAtHome from './components/StaffAtHome'
 import InfoBook from './components/InfoBook'
 import bookingApi from 'src/api/booking.api'
+import { useTranslation } from 'react-i18next'
 
 Booking.propTypes = {
   onSubmit: PropTypes.func
@@ -17,6 +18,8 @@ const perfectScrollbarOptions = {
 }
 
 function Booking({ formikProps, nextStep, BookSet }) {
+  const { t } = useTranslation()
+
   const {
     errors,
     submitForm,
@@ -83,7 +86,7 @@ function Booking({ formikProps, nextStep, BookSet }) {
   return (
     <div className="d-flex flex-column h-100">
       <div className="text-center bg-white border-bottom p-15px text-uppercase fw-700 font-size-md">
-        Đặt lịch dịch vụ
+        {t('booking.step1.TIEU_DE')}
       </div>
       <PerfectScrollbar
         options={perfectScrollbarOptions}
@@ -108,7 +111,7 @@ function Booking({ formikProps, nextStep, BookSet }) {
           className="btn btn-ezs w-100 rounded-0 text-uppercase h-42px fw-500"
           onClick={onSubmit}
         >
-          Chọn dịch vụ
+          {t('booking.step1.BUTTON')}
         </button>
       </div>
     </div>

@@ -3,17 +3,20 @@ import PropTypes from 'prop-types'
 import { NumericFormat } from 'react-number-format'
 import clsx from 'clsx'
 import Select from 'react-select'
+import { useTranslation } from 'react-i18next'
 
 InfoBook.propTypes = {
   formikProps: PropTypes.object
 }
 
 function InfoBook({ formikProps }) {
+  const { t } = useTranslation()
+  
   const { values, handleBlur, handleChange, setFieldValue, errors, touched } =
     formikProps
   return (
     <div className="bg-white mt-1px pt-15px pl-15px pr-15px pb-10px date-time">
-      <div className="fw-700 text-uppercase mb-10px">Thông tin khách hàng</div>
+      <div className="fw-700 text-uppercase mb-10px">{t("booking.THONG_TIN_KHACH_HANG")}</div>
       <div className="container p-0">
         <div className="row mx--6px">
           <div className="col-6 px-6px">
@@ -28,7 +31,7 @@ function InfoBook({ formikProps }) {
                     touched.FullName &&
                     'is-invalid solid-invalid'
                 )}
-                placeholder="Họ và tên"
+                placeholder={t("booking.HO_VA_TEN")}
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
@@ -40,7 +43,7 @@ function InfoBook({ formikProps }) {
                 allowNegative={false}
                 allowLeadingZeros
                 name="Phone"
-                placeholder="Số điện thoại"
+                placeholder={t("booking.SO_DIEN_THOAI")}
                 className={clsx(
                   'form-control',
                   errors.Phone && touched.Phone && 'is-invalid solid-invalid'
@@ -67,14 +70,14 @@ function InfoBook({ formikProps }) {
                 options={Array(10)
                   .fill()
                   .map((_, x) => ({
-                    label: x + 1 + ' khách',
+                    label: x + 1 + ' ' + t("booking.KHACH"),
                     value: x + 1
                   }))}
                 menuPlacement="top"
-                placeholder="Chọn số khách"
+                placeholder={t("booking.CHON_SO_KHACH")}
                 value={values.AmountPeople}
                 onChange={value => setFieldValue('AmountPeople', value)}
-                noOptionsMessage={() => 'Không có dữ liệu.'}
+                noOptionsMessage={() => t("booking.KHONG_CO_DU_LIEU")}
               />
             )}
           </div>
@@ -82,7 +85,7 @@ function InfoBook({ formikProps }) {
             <textarea
               name="Desc"
               className="form-control mt-10px"
-              placeholder="Ghi chú"
+              placeholder={t("booking.GHI_CHU")}
               rows="4"
               onChange={handleChange}
               onBlur={handleBlur}

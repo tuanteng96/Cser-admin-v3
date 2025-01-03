@@ -8,6 +8,7 @@ import { clsx } from 'clsx'
 import moment from 'moment'
 import 'moment/locale/vi'
 import bookingApi from 'src/api/booking.api'
+import { useTranslation } from 'react-i18next'
 moment.locale('vi')
 
 DateTime.propTypes = {
@@ -54,6 +55,8 @@ const formatTimeOpenClose = ({ Text, InitialTime, Date }) => {
 }
 
 function DateTime({ formikProps, BookSet, ListStocks }) {
+  const { t } = useTranslation()
+
   const [key, setKey] = useState('tab-0')
   const [ListChoose, setListChoose] = useState([])
   const [DateChoose, setDateChoose] = useState()
@@ -277,7 +280,7 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
         onClick={nextSlide}
       >
         <div className="support-scroll__text">
-          Chọn khung giờ khác {nextDisabled}
+          {t('booking.CHON_KHUNG_GIO_KHAC')} {nextDisabled}
         </div>
         <div className="support-scroll__icon">
           <div className="line"></div>
@@ -293,7 +296,7 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
 
   return (
     <div className="bg-white mt-1px pt-15px pl-15px pr-15px pb-10px date-time">
-      <div className="fw-700 text-uppercase mb-10px">Chọn thời gian</div>
+      <div className="fw-700 text-uppercase mb-10px">{(t('booking.CHON_THOI_GIAN'))}</div>
       <Tab.Container activeKey={key}>
         <div className="border-bottom pb-15px mb-15px">
           <div className="p-0 container-fluid">
@@ -310,7 +313,7 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
             >
               {ListChoose &&
                 ListChoose.map((item, index) => (
-                  <Nav.Item className="col-4 px-6px" as="li" key={index}>
+                  <Nav.Item className="col-4 px-5px" as="li" key={index}>
                     {index === ListChoose.length - 1 ? (
                       <div className="position-relative">
                         <DatePicker
@@ -320,7 +323,7 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
                             setDateChoose(date)
                           }}
                           selected={DateChoose}
-                          placeholderText="Chọn ngày khác"
+                          placeholderText={t('booking.CHON_KHUNG_GIO_KHAC')}
                           className={clsx(
                             'form-control min-h-38px min-h-md-auto',
                             DateChoose && 'border-ezs text-ezs'
@@ -336,9 +339,9 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
                       >
                         {moment(item.day).calendar({
                           sameDay: now =>
-                            `[Hôm nay] ${moment(item.day).format('DD/MM')}`,
+                            `[${t('booking.HOM_NAY')}] ${moment(item.day).format('DD/MM')}`,
                           nextDay: now =>
-                            `[Ngày mai] ${moment(item.day).format('DD/MM')}`
+                            `[${t('booking.NGAY_MAI')}] ${moment(item.day).format('DD/MM')}`
                         })}
                       </Nav.Link>
                     )}
@@ -351,15 +354,15 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
           <div className="d-flex justify-content-between mb-15px">
             <div className="d-flex align-items-center">
               <div className="border rounded-sm box w-45px h-25px bg-stripes"></div>
-              <span className="fw-500 pl-8px note-text">Hết chỗ</span>
+              <span className="fw-500 pl-8px note-text">{t('booking.HET_CHO')}</span>
             </div>
             <div className="d-flex align-items-center">
               <div className="bg-white border rounded-sm box w-45px h-25px"></div>
-              <span className="fw-500 pl-8px note-text">Còn chỗ</span>
+              <span className="fw-500 pl-8px note-text">{t('booking.CON_CHO')}</span>
             </div>
             <div className="d-flex align-items-center">
               <div className="border rounded-sm box w-45px h-25px bg-ezs border-ezs"></div>
-              <span className="fw-500 pl-8px note-text">Đang chọn</span>
+              <span className="fw-500 pl-8px note-text">{t('booking.DANG_CHON')}</span>
             </div>
           </div>
         )}
@@ -410,8 +413,7 @@ function DateTime({ formikProps, BookSet, ListStocks }) {
       </Tab.Container>
       {!window?.top?.GlobalConfig?.APP?.Booking?.hideNoteWarning && (
         <div className="text-danger font-size-sm mt-8px">
-          (*) Nếu khung giờ bạn chọn đã kín lịch, chúng tôi sẽ liên hệ trực tiếp
-          để thông báo
+          (*) {t('booking.NOTE_KHUNG_GIO')}
         </div>
       )}
     </div>

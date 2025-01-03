@@ -5,12 +5,15 @@ import bookingApi from 'src/api/booking.api'
 import clsx from 'clsx'
 import { Field } from 'formik'
 import { Placeholder } from 'react-bootstrap'
+import { useTranslation } from 'react-i18next'
 
 Confirm.propTypes = {
   prevStep: PropTypes.func
 }
 
 function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
+  const { t } = useTranslation()
+
   const { values, setFieldValue } = formikProps
   const [ListServices, setListServices] = useState([])
   const [loading, setLoading] = useState(false)
@@ -99,14 +102,14 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
         >
           <i className="fa-regular fa-chevron-left"></i>
         </div>
-        Chọn dịch vụ
+        {t("booking.CHON_DICH_VU")}
       </div>
       <div className="bg-white confirm-search mt-2px p-15px">
         <div className="position-relative">
           <input
             className="form-control h-45px"
             type="text"
-            placeholder="Nhập tên dịch vụ bạn cần ?"
+            placeholder={t("booking.NHAP_TEN_DICH_VU_BAN_CAN")}
             value={valueS}
             onChange={e => handleSearch(e.target.value)}
           />
@@ -121,7 +124,7 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
           dataLength={ListServices.length}
           next={fetchMoreService}
           hasMore={hasMore}
-          loader={<>Đang tải ...</>}
+          loader={<>{t("booking.DANG_TAI")}.</>}
           //inverse={true}
           scrollThreshold={1}
           scrollableTarget="scrollableDiv"
@@ -200,8 +203,8 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
                             <i className="text-ezs fa-solid fa-tag pr-8px"></i>
                             <span>
                               {item.OsBH > 0
-                                ? 'Đang có thẻ bảo hành'
-                                : 'Đang có thẻ liệu trình'}
+                                ? t("booking.DANG_CO_THE_BAO_HANH")
+                                : t("booking.DANG_CO_THE_LIEU_TRINH")}
                             </span>
                           </div>
                         )}
@@ -219,7 +222,7 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
                   ))}
                 </>
               ) : (
-                <div>Chưa có dịch vụ</div>
+                <div>{t("booking.CHUA_CO_DICH_VU")}</div>
               )}
             </>
           )}
@@ -234,7 +237,7 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
           )}
           disabled={loadingBtn || !RootIdS || RootIdS.length === 0}
         >
-          {values.ID ? 'Thay đổi lịch' : 'Đặt lịch ngay'}
+          {values.ID ? t("booking.THAY_DOI_LICH") : t("booking.DAT_LICH_NGAY")}
         </button>
       </div>
     </div>
