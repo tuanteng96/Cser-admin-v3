@@ -34,13 +34,14 @@ function Confirm({ prevStep, formikProps, onSubmit, loadingBtn }) {
   useEffect(() => {
     getListServices()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters])
+  }, [filters, values?.StockID])
 
   const getListServices = async () => {
     !loading && !noLoading && setLoading(true)
     const objFilters = {
+      ...filters,
       Key: filters.Key || valueS,
-      ...filters
+      StockID: values?.StockID || ''
     }
     const { data } = await bookingApi.getService(objFilters)
     const lst =
