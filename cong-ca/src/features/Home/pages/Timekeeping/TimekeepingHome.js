@@ -10,14 +10,15 @@ import { FastField, FieldArray, Form, Formik } from 'formik'
 import clsx from 'clsx'
 import 'react-base-table/styles.css'
 import { useMutation, useQuery } from 'react-query'
-import { Dropdown, Modal } from 'react-bootstrap'
+import { Dropdown, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap'
 import PickerMachineCode from '../../components/Picker/PickerMachineCode'
 import PickerTypeShift from '../../components/Picker/PickerTypeShift'
 import Table, { AutoResizer } from 'react-base-table'
 import {
   ArrowLeftOnRectangleIcon,
   ArrowRightOnRectangleIcon,
-  BarsArrowDownIcon
+  BarsArrowDownIcon,
+  PlusIcon
 } from '@heroicons/react/24/solid'
 import Portal from 'react-overlays/cjs/Portal'
 import { CheckInOutHelpers } from 'src/helpers/CheckInOutHelpers'
@@ -39,6 +40,8 @@ import moment from 'moment'
 import 'moment/locale/vi'
 import WorksHelpers from 'src/helpers/WorksHelpers'
 import PickerChangeStock from '../../components/Picker/PickerChangeStock'
+import Swal from 'sweetalert2'
+import { useRoles } from 'src/hooks/useRoles'
 
 moment.locale('vi')
 
@@ -112,11 +115,15 @@ const PopoverCustom = ({ children }) => {
 
 function TimekeepingHome(props) {
   const navigate = useNavigate()
-  const { Stocks, CrStockID, rightsSum } = useSelector(({ auth }) => ({
-    Stocks: auth?.Info?.Stocks || [],
-    rightsSum: auth?.Info?.rightsSum?.cong_ca || {},
-    CrStockID: auth?.Info?.CrStockID
-  }))
+  const { Stocks, CrStockID, rightsSum, rightTree } = useSelector(
+    ({ auth }) => ({
+      Stocks: auth?.Info?.Stocks || [],
+      rightsSum: auth?.Info?.rightsSum?.cong_ca || {},
+      CrStockID: auth?.Info?.CrStockID,
+      rightTree: auth?.Info?.rightTree
+    })
+  )
+
   const [StocksList, setStocksList] = useState([])
   const [CrDate, setCrDate] = useState(new Date())
   const [visible, setVisible] = useState(false)
@@ -160,6 +167,11 @@ function TimekeepingHome(props) {
     }
     setStocksList(newStocks)
   }, [Stocks, CrStockID, rightsSum])
+
+  const { usrmng } = useRoles({
+    nameRoles: 'usrmng',
+    useAuth: { RightTree: rightTree, CrStocks: { ID: filters?.StockID?.ID } }
+  })
 
   useEffect(() => {
     setFilters(prevState => ({
@@ -291,6 +303,54 @@ function TimekeepingHome(props) {
     keepPreviousData: true
   })
 
+  const resetMutation = useMutation({
+    mutationFn: async body => {
+      let data = await worksheetApi.resetPwd(body)
+      await refetch()
+      return data
+    }
+  })
+
+  const onResetPwd = user => {
+    if (!usrmng?.hasRight) {
+      window.top.toastr.error('Bạn không có quyền reset mật khẩu.', '', {
+        timeOut: 1500
+      })
+      return
+    }
+    Swal.fire({
+      customClass: {
+        confirmButton: '!bg-primary'
+      },
+      title: 'Xác nhận reset mật khẩu ?',
+      html: `Mật khẩu sẽ tự động reset thành <span class="text-danger font-semibold">1234</span.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Thực hiện Reset',
+      cancelButtonText: 'Đóng',
+      reverseButtons: true,
+      showLoaderOnConfirm: true,
+      preConfirm: async () => {
+        const data = await resetMutation.mutateAsync({
+          reset: [
+            {
+              UserName: user.UserName,
+              Password: '1234'
+            }
+          ]
+        })
+        return data
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    }).then(result => {
+      if (result.isConfirmed) {
+        window.top.toastr.success('Reset mật khẩu thành công.', '', {
+          timeOut: 800
+        })
+      }
+    })
+  }
+
   const columns = useMemo(
     () => [
       {
@@ -309,6 +369,7 @@ function TimekeepingHome(props) {
                 className="font-semibold text-black text-name text-decoration-none text-[12px] md:text-[15px] text-capitalize d-block pr-15px"
               >
                 <div>{rowData.FullName}</div>
+
                 {rowData.Dates.map((date, i) => (
                   <Fragment key={i}>
                     {date.WorkTrack?.Info?.WorkToday?.Title && (
@@ -356,7 +417,22 @@ function TimekeepingHome(props) {
             </div>
             <PopoverCustom>
               {({ onClose }) => (
-                <div className="bg-white shadow-lg py-2.5 min-w-[150px]">
+                <div className="bg-white shadow-lg py-2.5 min-w-[250px]">
+                  <div className="px-3 border-bottom pb-2.5 mb-2.5">
+                    <div className="mb-2 font-semibold">
+                      Thông tin đăng nhập
+                    </div>
+                    <div className="mb-1.5">
+                      <div className="font-light text-muted">Tên miền Spa</div>
+                      <div className="font-medium">
+                        {window.top.location.hostname}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="font-light text-muted">Tài khoản</div>
+                      <div className="font-medium">{rowData?.UserName}</div>
+                    </div>
+                  </div>
                   {
                     <PickerTypeShift item={rowData}>
                       {({ open }) => (
@@ -387,6 +463,17 @@ function TimekeepingHome(props) {
                       )}
                     </PickerMachineCode>
                   }
+                  <div
+                    className={clsx(
+                      'text-danger py-2.5 px-3 hover:bg-[#f3f6f9] cursor-pointer',
+                      !usrmng?.hasRight && 'opacity-40'
+                    )}
+                    onClick={() => {
+                      onResetPwd(rowData)
+                    }}
+                  >
+                    Reset mật khẩu
+                  </div>
                 </div>
               )}
             </PopoverCustom>
@@ -424,7 +511,34 @@ function TimekeepingHome(props) {
               </Dropdown.Menu>
             </Dropdown> */}
           </div>
-        )
+        ),
+        headerRenderer: () => {
+          return (
+            <div className="flex items-center justify-between w-full h-full">
+              <div className="uppercase">Nhân viên</div>
+              <div
+                onClick={() => {
+                  if (!usrmng?.hasRight) {
+                    window.top.toastr.error('Bạn không có quyền.', '', {
+                      timeOut: 1500
+                    })
+                  } else {
+                    window.top?.createUserIframe && window.top?.createUserIframe({
+                      StockID: filters?.StockID?.ID,
+                      refetch
+                    })
+                  }
+                }}
+                className={clsx(
+                  'flex items-center justify-center w-12 h-full cursor-pointer text-primary',
+                  !usrmng?.hasRight && 'opacity-40'
+                )}
+              >
+                <PlusIcon className="w-6" />
+              </div>
+            </div>
+          )
+        }
       },
       {
         width: width > 767 ? 180 : 140,
@@ -1016,7 +1130,7 @@ function TimekeepingHome(props) {
       }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [width, CrDate]
+    [width, CrDate, usrmng]
   )
 
   const saveTimeKeepMutation = useMutation({

@@ -44,6 +44,7 @@ const worksheetApi = {
     http.post('/api/v3/WorkTrack@UserDaily', JSON.stringify(data)),
   getStocks: () => http.get(`/api/v3/web?cmd=getStock`),
   updateLatLng: body =>
-    http.post(`/api/v3/cate25@UpdateLatLng`, JSON.stringify(body))
+    http.post(`/api/v3/cate25@UpdateLatLng`, JSON.stringify(body)),
+  resetPwd: body => http.post(`/api/v3/User24@ResetPwd`, JSON.stringify(body)),
 }
 export default worksheetApi

@@ -56,24 +56,24 @@ function AuthInit(props) {
               ParentID: 0
             },
             {
-              ID: 11424,
+              ID: 11440,
               Title: 'Cser Hà Nội',
               ParentID: 778
             },
             {
-              ID: 11425,
+              ID: 11441,
               Title: 'Cser Hồ Chí Minh',
               ParentID: 778
             }
           ],
           StockRights: [
             {
-              ID: 11424,
+              ID: 11440,
               Title: 'Cser Hà Nội',
               ParentID: 778
             },
             {
-              ID: 11425,
+              ID: 11441,
               Title: 'Cser Hồ Chí Minh',
               ParentID: 778
             },
@@ -83,21 +83,51 @@ function AuthInit(props) {
               ParentID: 778
             }
           ],
-          CrStockID: 11424, //8975
+          CrStockID: 11440, //8975
           rightsSum: {
             cong_ca: {
               hasRight: true,
               stocks: [
-                { ID: 11424, Title: 'Cser Hà Nội' },
+                { ID: 11440, Title: 'Cser Hà Nội' },
                 { ID: 11425, Title: 'Cser Hồ Chí Minh' },
                 { ID: 11395, Title: 'Cser Đà nẵng' }
               ],
               IsAllStock: true
             }
+          },
+          rightTree: {
+            groups: [
+              {
+                group: 'Cài đặt',
+                rights: [
+                  {
+                    IsAllStock: true,
+                    hasRight: true,
+                    name: 'user',
+                    text: 'Quản lý nhân viên',
+                    subs: [
+                      {
+                        IsAllStock: false,
+                        hasRight: true,
+                        name: 'usrmng',
+                        stocks: '',
+                        text: 'Quản lý nhân viên',
+                        stocksList: [
+                          {
+                            ID: 11440,
+                            Title: 'Cser Hà Nội'
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
           }
         }
         window.token =
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNjg0MiIsIm5iZiI6MTczMzM4NDEyMywiZXhwIjoxODE5Nzg0MTIzLCJpYXQiOjE3MzMzODQxMjN9.fcfOBvpSW7SOaTt_GU8yDDOoOoF0xUjwdFyr6HuHEyY'
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEyMjEzNCIsIm5iZiI6MTczODU5Njc0NywiZXhwIjoxODI0OTk2NzQ3LCJpYXQiOjE3Mzg1OTY3NDd9.uQuCvhUgoTOpZMSXnKMwPyk_jvqVrj7PwhrNoBgvbYo'
         window.GlobalConfig = {
           APP: {
             Working: {
