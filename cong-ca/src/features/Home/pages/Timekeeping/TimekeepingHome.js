@@ -10,7 +10,7 @@ import { FastField, FieldArray, Form, Formik } from 'formik'
 import clsx from 'clsx'
 import 'react-base-table/styles.css'
 import { useMutation, useQuery } from 'react-query'
-import { Dropdown, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap'
+import { Dropdown, Modal } from 'react-bootstrap'
 import PickerMachineCode from '../../components/Picker/PickerMachineCode'
 import PickerTypeShift from '../../components/Picker/PickerTypeShift'
 import Table, { AutoResizer } from 'react-base-table'
@@ -523,10 +523,11 @@ function TimekeepingHome(props) {
                       timeOut: 1500
                     })
                   } else {
-                    window.top?.createUserIframe && window.top?.createUserIframe({
-                      StockID: filters?.StockID?.ID,
-                      refetch
-                    })
+                    window.top?.createUserIframe &&
+                      window.top?.createUserIframe({
+                        StockID: filters?.StockID?.ID,
+                        refetch
+                      })
                   }
                 }}
                 className={clsx(
@@ -1302,7 +1303,7 @@ function TimekeepingHome(props) {
                   <h3 className="text-uppercase">
                     <div>
                       Chấm công
-                      <span className="text-muted text-capitalize fw-500 font-size-sm pl-5px">
+                      <span className="d-md-none text-muted text-capitalize fw-500 font-size-sm pl-5px">
                         Ngày
                         <span className="font-number pl-3px">
                           {moment(CrDate).format('DD-MM-YYYY')}
@@ -1393,17 +1394,17 @@ function TimekeepingHome(props) {
                           <Dropdown.Item
                             onClick={() => navigate('danh-sach-xin-nghi')}
                           >
-                            Danh sách ngày nghỉ
+                            Xem danh sách ngày nghỉ
                           </Dropdown.Item>
                           <Dropdown.Item
                             onClick={() => navigate('danh-sach-theo-thang')}
                           >
-                            Chấm công theo tháng
+                            Xem chấm công theo tháng
                           </Dropdown.Item>
                           <Dropdown.Item
                             onClick={() => navigate('lich-lam-viec')}
                           >
-                            Lịch làm việc
+                            Xem lịch làm việc
                           </Dropdown.Item>
                           <Dropdown.Divider
                             style={{
@@ -1423,10 +1424,38 @@ function TimekeepingHome(props) {
                     <div className="hidden xl:flex">
                       <Dropdown>
                         <Dropdown.Toggle
+                          className="border !w-11 !h-11 flex items-center justify-center after:hidden !p-0 !text-[#7e8299] mr-3"
+                          id="dropdown-basic"
+                        >
+                          {/* <i className="fa-regular fa-gear"></i> */}
+                          <i className="far fa-ellipsis-h"></i>
+                        </Dropdown.Toggle>
+
+                        <Dropdown.Menu>
+                          <Dropdown.Item
+                            onClick={() => navigate('danh-sach-theo-thang')}
+                          >
+                            Xem chấm công theo tháng
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            onClick={() => navigate('lich-lam-viec')}
+                          >
+                            Xem lịch làm việc
+                          </Dropdown.Item>
+                          <Dropdown.Item
+                            className="text-danger"
+                            onClick={() => navigate('danh-sach-xin-nghi')}
+                          >
+                            Xem danh sách xin nghỉ
+                          </Dropdown.Item>
+                        </Dropdown.Menu>
+                      </Dropdown>
+                      <Dropdown>
+                        <Dropdown.Toggle
                           className="border !w-11 !h-11 flex items-center justify-center after:hidden !p-0 !text-[#7e8299]"
                           id="dropdown-basic"
                         >
-                          <i className="fa-regular fa-gear"></i>
+                          <i className="fa-regular fa-eye"></i>
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
@@ -1448,34 +1477,6 @@ function TimekeepingHome(props) {
                             }
                           >
                             Định vị - Wifi
-                          </Dropdown.Item>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          className="border !w-11 !h-11 flex items-center justify-center after:hidden !p-0 !text-[#7e8299] ml-3"
-                          id="dropdown-basic"
-                        >
-                          {/* <i className="fa-regular fa-gear"></i> */}
-                          <i className="far fa-ellipsis-h"></i>
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                          <Dropdown.Item
-                            onClick={() => navigate('danh-sach-theo-thang')}
-                          >
-                            Chấm công theo tháng
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() => navigate('lich-lam-viec')}
-                          >
-                            Lịch làm việc
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            className="text-danger"
-                            onClick={() => navigate('danh-sach-xin-nghi')}
-                          >
-                            Danh sách xin nghỉ
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>

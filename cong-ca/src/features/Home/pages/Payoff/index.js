@@ -6,6 +6,7 @@ import { useMutation, useQuery } from 'react-query'
 import { useNavigate } from 'react-router-dom'
 import moreApi from 'src/api/more.api'
 import { NumericFormat } from 'react-number-format'
+import PickerReward from '../../components/Picker/PickerReward'
 
 function PayOffPage(props) {
   const navigate = useNavigate()
@@ -208,25 +209,58 @@ function PayOffPage(props) {
                                       />
                                     </td>
                                     <td className="!px-3 py-3">
-                                      <NumericFormat
-                                        name="Value"
-                                        value={x.Value}
-                                        className="form-control"
-                                        type="text"
-                                        placeholder="Nhập giá trị"
-                                        onValueChange={val =>
-                                          setFieldValue(
-                                            `${item}[${i}].Value`,
-                                            val.floatValue
-                                              ? val.floatValue
-                                              : val.value
-                                          )
-                                        }
-                                        autoComplete="off"
-                                        allowLeadingZeros
-                                        thousandSeparator={true}
-                                        //allowNegative={false}
-                                      />
+                                      <div className="position-relative">
+                                        <NumericFormat
+                                          name="Value"
+                                          value={x.Value}
+                                          className="form-control"
+                                          type="text"
+                                          placeholder="Nhập giá trị"
+                                          onValueChange={val =>
+                                            setFieldValue(
+                                              `${item}[${i}].Value`,
+                                              val.floatValue
+                                                ? val.floatValue
+                                                : val.value
+                                            )
+                                          }
+                                          autoComplete="off"
+                                          allowLeadingZeros
+                                          thousandSeparator={true}
+                                          //allowNegative={false}
+                                        />
+                                        <PickerReward
+                                          Title={`${getByName(
+                                            item
+                                          )} (Giá trị từ ${
+                                            x.FromMinute || '--'
+                                          } phút đến ${
+                                            x.ToMinute || '--'
+                                          } phút)`}
+                                          onChange={val => {
+                                            setFieldValue(
+                                              `${item}[${i}].Value`,
+                                              val
+                                            )
+                                          }}
+                                        >
+                                          {({ open }) => (
+                                            <div
+                                              onClick={open}
+                                              className="top-0 right-0 cursor-pointer position-absolute h-100 text-warning"
+                                              style={{
+                                                width: '40px',
+                                                fontSize: '16px',
+                                                display: 'flex',
+                                                justifyContent: 'center',
+                                                alignItems: 'center'
+                                              }}
+                                            >
+                                              <i className="fas fa-info-circle"></i>
+                                            </div>
+                                          )}
+                                        </PickerReward>
+                                      </div>
                                     </td>
                                     <td className="align-middle text-center !px-3 py-3">
                                       <button
