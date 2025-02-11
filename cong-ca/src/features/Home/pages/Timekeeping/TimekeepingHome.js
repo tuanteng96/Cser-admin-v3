@@ -1428,7 +1428,7 @@ function TimekeepingHome(props) {
                           id="dropdown-basic"
                         >
                           {/* <i className="fa-regular fa-gear"></i> */}
-                          <i className="far fa-ellipsis-h"></i>
+                          <i className="fa-regular fa-eye"></i>
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
@@ -1443,7 +1443,6 @@ function TimekeepingHome(props) {
                             Xem lịch làm việc
                           </Dropdown.Item>
                           <Dropdown.Item
-                            className="text-danger"
                             onClick={() => navigate('danh-sach-xin-nghi')}
                           >
                             Xem danh sách xin nghỉ
@@ -1455,7 +1454,7 @@ function TimekeepingHome(props) {
                           className="border !w-11 !h-11 flex items-center justify-center after:hidden !p-0 !text-[#7e8299]"
                           id="dropdown-basic"
                         >
-                          <i className="fa-regular fa-eye"></i>
+                          <i className="fas fa-cog"></i>
                         </Dropdown.Toggle>
 
                         <Dropdown.Menu>
