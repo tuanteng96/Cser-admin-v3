@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom'
 import moreApi from 'src/api/more.api'
 import { NumericFormat } from 'react-number-format'
 import PickerReward from '../../components/Picker/PickerReward'
+import { PriceHelper } from 'src/helpers/PriceHelper'
 
 function PayOffPage(props) {
   const navigate = useNavigate()
@@ -76,6 +77,79 @@ function PayOffPage(props) {
     }
   }
 
+  const renderNote = ({ Name, Item }) => {
+    let text = ''
+    let note = ''
+
+    switch (Name) {
+      case 'DI_SOM':
+        if (Item.Value > 100) {
+          note = `Được cộng tiền = ${PriceHelper.formatVND(Item.Value)}`
+        } else if (Item.Value <= 100 && Item.Value >= 0) {
+          note = `Được cộng tiền = ${Item.Value} lần lương 1 giờ`
+        } else if (Item.Value === -60) {
+          note = `Được cộng tiền = Số phút vênh x ( Lương cơ bản / 60 phút )`
+        } else if (Item.Value < 0 && Item.Value >= -10) {
+          note = `Được + ${Item.Value * -1} công`
+        } else {
+          note = `Được cộng tiền = Số phút vênh x ${PriceHelper.formatVNDPositive(
+            Item.Value
+          )}`
+        }
+        text = `Đi sớm từ ${Item.FromMinute} - ${Item.ToMinute} Phút : ${note}`
+        break
+      case 'DI_MUON':
+        if (Item.Value > 100) {
+          note = `Bị trừ ${PriceHelper.formatVND(Item.Value)}`
+        } else if (Item.Value <= 100 && Item.Value >= 0) {
+          note = `Bị trừ ${Item.Value} lần lương 1 giờ`
+        } else if (Item.Value === -60) {
+          note = `Bị trừ tiền = Số phút vênh x ( Lương cơ bản / 60 phút )`
+        } else if (Item.Value < 0 && Item.Value >= -10) {
+          note = `Trừ + ${Item.Value * -1} công`
+        } else {
+          note = `Bị trừ tiền = Số phút vênh x ${PriceHelper.formatVNDPositive(
+            Item.Value
+          )}`
+        }
+        text = `Đi muộn từ ${Item.FromMinute} - ${Item.ToMinute} Phút : ${note}`
+        break
+      case 'VE_SOM':
+        if (Item.Value > 100) {
+          note = `Bị trừ ${PriceHelper.formatVND(Item.Value)}`
+        } else if (Item.Value <= 100 && Item.Value >= 0) {
+          note = `Bị trừ ${Item.Value} lần lương 1 giờ`
+        } else if (Item.Value === -60) {
+          note = `Bị trừ tiền = Số phút vênh x ( Lương cơ bản / 60 phút )`
+        } else if (Item.Value < 0 && Item.Value >= -10) {
+          note = `Trừ + ${Item.Value * -1} công`
+        } else {
+          note = `Bị trừ tiền = Số phút vênh x ${PriceHelper.formatVNDPositive(
+            Item.Value
+          )}`
+        }
+        text = `Về sớm từ ${Item.FromMinute} - ${Item.ToMinute} Phút : ${note}`
+        break
+      case 'VE_MUON':
+        if (Item.Value > 100) {
+          note = `Được cộng tiền = ${PriceHelper.formatVND(Item.Value)}`
+        } else if (Item.Value <= 100 && Item.Value >= 0) {
+          note = `Được cộng tiền = ${Item.Value} lần lương 1 giờ`
+        } else if (Item.Value === -60) {
+          note = `Được cộng tiền = Số phút vênh x ( Lương cơ bản / 60 phút )`
+        } else if (Item.Value < 0 && Item.Value >= -10) {
+          note = `Được + ${Item.Value * -1} công`
+        } else {
+          note = `Được cộng tiền = Số phút vênh x ${PriceHelper.formatVNDPositive(
+            Item.Value
+          )}`
+        }
+        text = `Về muộn từ ${Item.FromMinute} - ${Item.ToMinute} Phút : ${note}`
+        break
+    }
+    return <div>{text}</div>
+  }
+
   return (
     <Formik
       initialValues={initialValues}
@@ -132,7 +206,7 @@ function PayOffPage(props) {
               </div>
             </div>
             <div className="relative overflow-auto card-body p-20px">
-              <div className="max-w-[900px] mx-auto">
+              <div className="max-w-[1000px] mx-auto">
                 {Object.keys(values).map((item, index) => (
                   <div
                     className="!border border-solid border-[#f4f4f4] !rounded !mb-4 last:!mb-0 shadow-sm"
@@ -157,6 +231,7 @@ function PayOffPage(props) {
                             <th className="!px-3 py-3 min-w-[180px]">
                               Giá trị
                             </th>
+                            <th className="!px-3 py-3 min-w-[180px]"></th>
                             <th className="text-center !px-3 py-3 w-[90px] min-w-[90px]">
                               #
                             </th>
@@ -261,6 +336,13 @@ function PayOffPage(props) {
                                           )}
                                         </PickerReward>
                                       </div>
+                                    </td>
+                                    <td className="!px-3 py-3">
+                                      {x.Value !== '' &&
+                                        renderNote({
+                                          Name: item,
+                                          Item: x
+                                        })}
                                     </td>
                                     <td className="align-middle text-center !px-3 py-3">
                                       <button

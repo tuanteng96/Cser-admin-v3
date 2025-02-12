@@ -79,7 +79,7 @@ function PickerAddShift({ children, onSubmit }) {
                     Đóng
                   </Button>
                   <Button type="submit" variant="primary">
-                    Tạo mới
+                    Tiếp tục
                   </Button>
                 </Modal.Footer>
               </Form>

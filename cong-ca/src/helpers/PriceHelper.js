@@ -1,13 +1,13 @@
 export const PriceHelper = {
   formatVND: price => {
-    if (!price || price === 0) {
+    if (!price || price === 0 || Number(price) === 0) {
       return '0'
     } else {
       return price.toFixed(0).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1.')
     }
   },
   formatVNDPositive: price => {
-    if (!price || price === 0) {
+    if (!price || price === 0 || Number(price) === 0) {
       return '0'
     } else {
       return Math.abs(price)
@@ -16,7 +16,7 @@ export const PriceHelper = {
     }
   },
   formatValueVoucher: price => {
-    if (!price || price === 0) {
+    if (!price || price === 0 || Number(price) === 0) {
       return '0'
     } else if (Math.abs(price) <= 100) {
       return `${price}%`

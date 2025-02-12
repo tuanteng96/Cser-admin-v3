@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, Modal } from 'react-bootstrap'
 import { createPortal } from 'react-dom'
 import { useQueryClient } from 'react-query'
-import Select from 'react-select'
+import Select, { components } from 'react-select'
 import { NumericFormat } from 'react-number-format'
 import clsx from 'clsx'
 
@@ -35,28 +35,50 @@ function PickerReward({ children, onChange, Title }) {
 
   let options = [
     {
-      label: 'Theo số tiền ( x > 100 )',
-      value: 1
+      label: 'Theo số tiền (x > 100)',
+      value: 1,
+      desc: 'Ví dụ: 5000, 10000 hay 1 số tiền Spa quy định',
+      sub: '(Số nhập vào phải lớn hơn 100)'
     },
     {
-      label: 'Theo lương theo giờ của từng nhân viên ( 0 <= x <=100 )',
-      value: 2
+      label: 'Theo lương tính theo giờ của nhân viên ( 0 <= x <=100 )',
+      value: 2,
+      desc: 'Ví dụ: Nhập 0.5 nếu được tính 50% lương 1 giờ của nhân viên',
+      sub: '(Số nhập vào phải từ 0 đến 100)'
+    },
+    {
+      label: 'Theo số phút & theo lương giờ từng nhân viên ( x = -60 )',
+      value: 3,
+      desc: 'Ví dụ: Lương 1 giờ được 60.000 VNĐ - Mỗi phút sẽ là 1.000 VNĐ; Số tiền = Số phút vênh x 1.000đ',
+      sub: '(Số nhập vào phải = 60)'
     },
     {
       label: 'Theo số công làm việc ( -10 <= x < 0 )',
-      value: 3
+      value: 4,
+      desc: 'Ví dụ: Nhập 0.5 nếu tính theo nữa ngày công',
+      sub: '(Số nhập vào phải từ 0 đến 10)'
     },
     {
-      label:
-        'Theo số phút , mỗi phút tính cố định không theo nhân viên ( x = -60 )',
-      value: 4
-    },
-    {
-      label:
-        'Theo số phút , mỗi phút tính theo từng nhân viên ( x < -10 && x != -60)',
-      value: 5
+      label: 'Theo số phút & cố định số tiền ( x < -10)',
+      value: 5,
+      desc: 'Ví dụ: Số tiền sẽ được tính bằng số phút vênh nhân với số tiền nhập vào cho tất cả nhân viên',
+      sub: '(Số nhập vào phải lớn hơn 100)'
     }
   ]
+
+  const Option = props => {
+    const { label, desc, sub } = props.data
+
+    return (
+      <components.Option {...props}>
+        <div>{label}</div>
+        <div style={{ fontWeight: '300', color: '#6c757d', fontSize: '13px' }}>
+          <div>{desc}</div>
+          <div>{sub}</div>
+        </div>
+      </components.Option>
+    )
+  }
 
   return (
     <>
@@ -115,31 +137,40 @@ function PickerReward({ children, onChange, Title }) {
                               setErrors({})
                             }
 
-                            if (val?.value === 4) {
+                            if (val?.value === 3) {
                               setErrors({})
                               setFieldValue('Value', 60, false)
                             }
 
                             if (values.Value) {
                               if (val?.value === 1) {
-                                if (values.Value < 100) {
+                                if (values.Value <= 100) {
                                   setFieldError(
                                     'Value',
                                     'Giá trị phải lớn hơn 100'
                                   )
+                                } else {
+                                  setErrors({})
                                 }
                               }
                               if (val?.value === 2) {
-                                if (values.Value >= 0 && values.Value < 100) {
+                                if (values.Value >= 0 && values.Value <= 100) {
                                   setErrors({})
                                 } else {
                                   setFieldError(
                                     'Value',
-                                    'Giá trị phải nằm trong khoảng >= 0 & < 100'
+                                    'Giá trị phải nằm trong khoảng >= 0 & <= 100'
                                   )
                                 }
                               }
                               if (val?.value === 3) {
+                                if (values.Value === 60) {
+                                  setErrors({})
+                                } else {
+                                  setFieldError('Value', 'Giá trị phải = 60')
+                                }
+                              }
+                              if (val?.value === 4) {
                                 if (values.Value > 0 && values.Value <= 10) {
                                   setErrors({})
                                 } else {
@@ -150,18 +181,16 @@ function PickerReward({ children, onChange, Title }) {
                                 }
                               }
                               if (val?.value === 5) {
-                                if (values.Value > 10 && values.Value !== 60) {
+                                if (values.Value > 100) {
                                   setErrors({})
                                 } else {
-                                  setFieldError(
-                                    'Value',
-                                    'Giá trị phải > 10 & != 60'
-                                  )
+                                  setFieldError('Value', 'Giá trị phải > 100')
                                 }
                               }
                             }
                           }}
                           value={values.Type}
+                          components={{ Option }}
                         />
                       </div>
                     </div>
@@ -185,7 +214,7 @@ function PickerReward({ children, onChange, Title }) {
                             )
                             if (values.Type) {
                               if (values.Type?.value === 1) {
-                                if (val.floatValue < 100) {
+                                if (val.floatValue <= 100) {
                                   setFieldError(
                                     'Value',
                                     'Giá trị phải lớn hơn 100'
@@ -197,17 +226,24 @@ function PickerReward({ children, onChange, Title }) {
                               if (values.Type?.value === 2) {
                                 if (
                                   val.floatValue >= 0 &&
-                                  val.floatValue < 100
+                                  val.floatValue <= 100
                                 ) {
                                   setErrors({})
                                 } else {
                                   setFieldError(
                                     'Value',
-                                    'Giá trị phải nằm trong khoảng >= 0 & < 100'
+                                    'Giá trị phải nằm trong khoảng >= 0 & <= 100'
                                   )
                                 }
                               }
                               if (values.Type?.value === 3) {
+                                if (val.floatValue === 60) {
+                                  setErrors({})
+                                } else {
+                                  setFieldError('Value', 'Giá trị phải = 60')
+                                }
+                              }
+                              if (values.Type?.value === 4) {
                                 if (
                                   val.floatValue > 0 &&
                                   val.floatValue <= 10
@@ -220,24 +256,11 @@ function PickerReward({ children, onChange, Title }) {
                                   )
                                 }
                               }
-                              if (values.Type?.value === 4) {
-                                if (val.floatValue === 60) {
-                                  setErrors({})
-                                } else {
-                                  setFieldError('Value', 'Giá trị phải = 60')
-                                }
-                              }
                               if (values.Type?.value === 5) {
-                                if (
-                                  val.floatValue > 10 &&
-                                  val.floatValue !== 60
-                                ) {
+                                if (val.floatValue > 100) {
                                   setErrors({})
                                 } else {
-                                  setFieldError(
-                                    'Value',
-                                    'Giá trị phải > 10 & != 60'
-                                  )
+                                  setFieldError('Value', 'Giá trị phải > 100')
                                 }
                               }
                             }
