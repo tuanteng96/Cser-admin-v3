@@ -1608,7 +1608,7 @@ function TimekeepingHome(props) {
             />
           </div>
           <div>
-            <div className="mb-1">Ngày nghỉ</div>
+            <div className="mb-1">Ngày chấm công</div>
             <div className="position-relative">
               <DatePicker
                 selected={CrDate}
