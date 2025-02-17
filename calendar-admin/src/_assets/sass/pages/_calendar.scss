@@ -148,3 +148,12 @@
     cursor: not-allowed;
     opacity: 1;
 }
+
+.fc .fc-bg-event.fc-no-event-lock {
+    background: transparent;
+    background-image: linear-gradient(45deg, #ffe2e5 25%, transparent 0, transparent 50%, #ffe2e5 0, #ffe2e5 75%, transparent 0, transparent) !important;
+    background-image: linear-gradient(45deg, #ffe2e5 25%, transparent 0, transparent 50%, #ffe2e5 0, #ffe2e5 75%, transparent 0, transparent) !important;
+    background-size: 4px 4px;
+    opacity: 1;
+    cursor: pointer;
+}

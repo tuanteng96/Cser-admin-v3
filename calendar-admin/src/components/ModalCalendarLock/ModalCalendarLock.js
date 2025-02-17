@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { Modal } from "react-bootstrap";
 import { FieldArray, Form, Formik } from "formik";
 import DatePicker from "react-datepicker";
@@ -24,7 +24,16 @@ function ModalCalendarLock({
   ListLock,
   btnLoadingLock,
   AuthCrStockID,
+  refetch,
+  isLoading,
 }) {
+  useEffect(() => {
+    if (show) {
+      refetch();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show]);
+
   return (
     <Modal
       size="md"
@@ -41,7 +50,7 @@ function ModalCalendarLock({
       >
         {(formikProps) => {
           const { values, setFieldValue } = formikProps;
-          
+
           return (
             <Form className="h-100 d-flex flex-column">
               <Modal.Header className="open-close" closeButton>
@@ -285,9 +294,11 @@ function ModalCalendarLock({
                 <button
                   type="submit"
                   className={`btn btn-sm btn-primary ml-8px ${
-                    btnLoadingLock ? "spinner spinner-white spinner-right" : ""
+                    btnLoadingLock || isLoading
+                      ? "spinner spinner-white spinner-right"
+                      : ""
                   } w-auto my-0 mr-0 h-auto`}
-                  disabled={btnLoadingLock}
+                  disabled={btnLoadingLock || isLoading}
                 >
                   Cập nhập khóa lịch
                 </button>

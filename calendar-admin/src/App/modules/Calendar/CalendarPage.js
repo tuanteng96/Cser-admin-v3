@@ -290,11 +290,6 @@ function CalendarPage(props) {
   }, [calendarRef]);
 
   useEffect(() => {
-    getListLock();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [AuthCrStockID]);
-
-  useEffect(() => {
     if (AuthCrStockID && Stocks) {
       let index = Stocks.findIndex((x) => x.ID === Number(AuthCrStockID));
 
@@ -400,65 +395,67 @@ function CalendarPage(props) {
     },
   });
 
-  const getListLock = (callback) => {
-    CalendarCrud.getConfigName(`giocam`)
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          const result = data[0].Value ? JSON.parse(data[0].Value) : "";
-          let newValues = [];
-          if (result && result.length > 0) {
-            let StocksNews = StocksList;
+  const BanTimeCalendar = useQuery({
+    queryKey: ["BanTimeCalendar", AuthCrStockID],
+    queryFn: async () => {
+      let { data } = await CalendarCrud.getConfigName(`giocam`);
+      let newValues = [];
+      if (data && data.length > 0) {
+        const result = data[0].Value ? JSON.parse(data[0].Value) : "";
 
-            for (let stock of StocksNews) {
-              let index = result.findIndex((x) => stock.ID === x.StockID);
-              if (index > -1) {
-                newValues.push(result[index]);
-              } else {
-                newValues.push({
-                  StockID: stock.ID,
-                  ListDisable: [],
-                });
-              }
+        if (result && result.length > 0) {
+          let StocksNews = StocksList;
+
+          for (let stock of StocksNews) {
+            let index = result.findIndex((x) => stock.ID === x.StockID);
+            if (index > -1) {
+              newValues.push(result[index]);
+            } else {
+              newValues.push({
+                StockID: stock.ID,
+                ListDisable: [],
+              });
             }
-          } else {
-            newValues = StocksList.map((o) => ({
-              StockID: o.ID,
-              ListDisable: [],
-            }));
           }
-          newValues = newValues.map((lock) => ({
-            ...lock,
-            ListDisable:
-              lock.ListDisable && lock.ListDisable.length > 0
-                ? lock.ListDisable.filter((item) =>
-                    moment().isSameOrBefore(
-                      moment(item.Date, "DD/MM/YYYY"),
-                      "day"
-                    )
-                  )
-                    .map((item) => ({
-                      ...item,
-                      Date: moment(item.Date, "DD/MM/YYYY").toDate(),
-                      TimeClose:
-                        item.TimeClose && item.TimeClose.length > 0
-                          ? item.TimeClose
-                          : [{ Start: "", End: "" }],
-                    }))
-                    .sort(
-                      (a, b) =>
-                        moment(a.Date).valueOf() - moment(b.Date).valueOf()
-                    )
-                : [],
+        } else {
+          newValues = StocksList.map((o) => ({
+            StockID: o.ID,
+            ListDisable: [],
           }));
-
-          setListLock({
-            ListLocks: newValues,
-          });
-          callback && callback();
         }
-      })
-      .catch((error) => console.log(error));
-  };
+        newValues = newValues.map((lock) => ({
+          ...lock,
+          ListDisable:
+            lock.ListDisable && lock.ListDisable.length > 0
+              ? lock.ListDisable.filter((item) =>
+                  moment().isSameOrBefore(
+                    moment(item.Date, "DD/MM/YYYY"),
+                    "day"
+                  )
+                )
+                  .map((item) => ({
+                    ...item,
+                    Date: moment(item.Date, "DD/MM/YYYY").toDate(),
+                    TimeClose:
+                      item.TimeClose && item.TimeClose.length > 0
+                        ? item.TimeClose
+                        : [{ Start: "", End: "" }],
+                  }))
+                  .sort(
+                    (a, b) =>
+                      moment(a.Date).valueOf() - moment(b.Date).valueOf()
+                  )
+              : [],
+        }));
+      }
+      return newValues;
+    },
+    onSuccess: (data) => {
+      setListLock({
+        ListLocks: data,
+      });
+    },
+  });
 
   const onSubmitLock = ({ ListLocks }) => {
     setBtnLoadingLock(true);
@@ -491,10 +488,10 @@ function CalendarPage(props) {
           }))
         : [];
     CalendarCrud.saveConfigName("giocam", newListLock)
-      .then((response) => {
-        getListLock(() => {
-          onHideModalLock();
-        });
+      .then(async (response) => {
+        await ListCalendars.refetch();
+        await BanTimeCalendar.refetch();
+        onHideModalLock();
       })
       .catch((error) => {
         console.log(error);
@@ -897,7 +894,7 @@ function CalendarPage(props) {
   };
 
   const ListCalendars = useQuery({
-    queryKey: ["ListCalendars", filters],
+    queryKey: ["ListCalendars", { ListLock, filters }],
     queryFn: async () => {
       const newFilters = {
         ...filters,
@@ -922,6 +919,7 @@ function CalendarPage(props) {
       };
       let data = await CalendarCrud.getBooking(newFilters);
       let dataOffline = [];
+
       if (topCalendar?.type?.value === "resourceTimeGridDay") {
         dataOffline =
           data?.dayOffs && data?.dayOffs.length > 0
@@ -1017,6 +1015,44 @@ function CalendarPage(props) {
                     });
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+
+      if (ListLock && ListLock?.ListLocks.length > 0) {
+        let LockCrIndex = ListLock?.ListLocks.findIndex(
+          (x) => x.StockID === filters.StockID
+        );
+        if (LockCrIndex > -1 && ListLock?.ListLocks[LockCrIndex].ListDisable) {
+          for (let DateDisable of ListLock?.ListLocks[LockCrIndex]
+            .ListDisable) {
+            if (
+              moment(DateDisable.Date).format("YYYY-MM-DD") === filters.From
+            ) {
+              for (let TimeClose of DateDisable.TimeClose) {
+                let timeStart = moment(TimeClose.Start, "HH:mm");
+                let timeEnd = moment(TimeClose.End, "HH:mm");
+
+                dataOffline.push({
+                  start: moment(DateDisable.Date)
+                    .set({
+                      hour: timeStart.get("hour"),
+                      minute: timeStart.get("minute"),
+                      second: "00",
+                    })
+                    .toDate(),
+                  end: moment(DateDisable.Date)
+                    .set({
+                      hour: timeEnd.get("hour"),
+                      minute: timeEnd.get("minute"),
+                      second: "00",
+                    })
+                    .toDate(),
+                  display: "background",
+                  className: ["fc-no-event fc-no-event-lock"],
+                });
               }
             }
           }
@@ -1881,6 +1917,8 @@ function CalendarPage(props) {
         onSubmit={onSubmitLock}
         btnLoadingLock={btnLoadingLock}
         AuthCrStockID={AuthCrStockID}
+        refetch={BanTimeCalendar.refetch}
+        isLoading={BanTimeCalendar.isLoading}
       />
       <ModalRoom
         show={isModalRoom}
