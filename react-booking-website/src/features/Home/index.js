@@ -160,6 +160,7 @@ export default function Home() {
         }
         window.top?.onRefreshListBook && window.top?.onRefreshListBook()
         window.top?.onHideBooking && window.top.onHideBooking()
+        window.top?.onAlertBooking && window.top.onAlertBooking(values)
       })
       .catch(error => console.log(error))
   }

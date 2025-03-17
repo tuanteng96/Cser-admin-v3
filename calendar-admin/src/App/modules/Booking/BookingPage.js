@@ -440,7 +440,7 @@ function BookingPage() {
           } = formikProps;
           return (
             <Form className="h-100 d-flex flex-column">
-              <div className="booking-body">
+              <div className="overflow-auto grow">
                 {values.ID && (
                   <div className="px-6 pt-3 pb-4 m-0 form-group form-group-ezs border-bottom">
                     <label className="mb-1">Trạng thái</label>
@@ -683,7 +683,7 @@ function BookingPage() {
                   ></textarea>
                 </div>
               </div>
-              {initialValues?.Status === "CHUA_XAC_NHAN" && (
+              {initialValues?.Status !== "CHUA_XAC_NHAN" && (
                 <div className="px-6 py-5 border-top booking-footer">
                   <div className="flex-1 w-100">
                     {!values?.ID && (
