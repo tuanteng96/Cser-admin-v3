@@ -683,172 +683,176 @@ function BookingPage() {
                   ></textarea>
                 </div>
               </div>
-              <div className="px-6 py-5 border-top booking-footer">
-                <div className="flex-1 w-100">
-                  {!values?.ID && (
-                    <div className="d-flex w-100">
-                      <button
-                        type="button"
-                        className="mr-2 btn btn-sm btn-secondary"
-                        onClick={() =>
-                          window?.top?.MemberBookInfo &&
-                          window?.top?.MemberBookInfo?.callback()
-                        }
-                      >
-                        Hủy
-                      </button>
-                      <button
-                        type="submit"
-                        className={`btn btn-sm btn-primary flex-1 ${
-                          btnLoading.isBtnBooking
-                            ? "spinner spinner-white spinner-right"
-                            : ""
-                        } w-auto my-0 mr-0 h-auto`}
-                        disabled={btnLoading.isBtnBooking}
-                      >
-                        Đặt lịch ngay
-                      </button>
-                    </div>
-                  )}
-                  {values?.ID && (
-                    <div className="w-100 d-flex">
-                      {initialValues.Status === "CHUA_XAC_NHAN" ? (
-                        <>
-                          <button
-                            type="submit"
-                            className={`btn btn-sm btn-primary mr-2 flex-1 ${
-                              btnLoading.isBtnBooking
-                                ? "spinner spinner-white spinner-right"
-                                : ""
-                            } w-auto my-0 mr-0 h-auto`}
-                            disabled={btnLoading.isBtnBooking}
-                            onClick={() => {
-                              setFieldValue(
-                                "Status",
-                                "XAC_NHAN",
-                                formikProps.submitForm()
-                              ); //submitForm()
-                            }}
-                          >
-                            Xác nhận
-                          </button>
-                          <button
-                            type="button"
-                            className={`btn btn-sm btn-danger ${
-                              btnLoading.isBtnDelete
-                                ? "spinner spinner-white spinner-right"
-                                : ""
-                            } w-auto my-0 mr-0 h-auto`}
-                            disabled={btnLoading.isBtnDelete}
-                            onClick={() => onDelete(values)}
-                          >
-                            Hủy lịch
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            type="submit"
-                            className={`btn btn-sm btn-success text-truncate flex-1 ${
-                              btnLoading.isBtnBooking &&
-                              values.Status !== "KHACH_KHONG_DEN" &&
-                              values.Status !== "TU_CHOI" &&
-                              values.Status !== "KHACH_DEN"
-                                ? "spinner spinner-white spinner-right"
-                                : ""
-                            } w-auto my-0 mr-0 h-auto`}
-                            disabled={
-                              btnLoading.isBtnBooking &&
-                              values.Status !== "KHACH_KHONG_DEN" &&
-                              values.Status !== "TU_CHOI" &&
-                              values.Status !== "KHACH_DEN"
-                            }
-                          >
-                            Cập nhập
-                          </button>
-                          {initialValues.Status !== "KHACH_DEN" && (
-                            <>
-                              <Dropdown>
-                                <Dropdown.Toggle
-                                  className={`btn btn-danger hide-icon-after text-truncate ml-2 ${((btnLoading.isBtnBooking &&
-                                    values.Status === "KHACH_KHONG_DEN") ||
-                                    btnLoading.isBtnDelete) &&
-                                    "spinner spinner-white spinner-right"}`}
-                                  disabled={
-                                    (btnLoading.isBtnBooking &&
+              {initialValues?.Status === "CHUA_XAC_NHAN" && (
+                <div className="px-6 py-5 border-top booking-footer">
+                  <div className="flex-1 w-100">
+                    {!values?.ID && (
+                      <div className="d-flex w-100">
+                        <button
+                          type="button"
+                          className="mr-2 btn btn-sm btn-secondary"
+                          onClick={() =>
+                            window?.top?.MemberBookInfo &&
+                            window?.top?.MemberBookInfo?.callback()
+                          }
+                        >
+                          Hủy
+                        </button>
+                        <button
+                          type="submit"
+                          className={`btn btn-sm btn-primary flex-1 ${
+                            btnLoading.isBtnBooking
+                              ? "spinner spinner-white spinner-right"
+                              : ""
+                          } w-auto my-0 mr-0 h-auto`}
+                          disabled={btnLoading.isBtnBooking}
+                        >
+                          Đặt lịch ngay
+                        </button>
+                      </div>
+                    )}
+                    {values?.ID && (
+                      <div className="w-100 d-flex">
+                        {initialValues.Status === "CHUA_XAC_NHAN" ? (
+                          <>
+                            <button
+                              type="submit"
+                              className={`btn btn-sm btn-primary mr-2 flex-1 ${
+                                btnLoading.isBtnBooking
+                                  ? "spinner spinner-white spinner-right"
+                                  : ""
+                              } w-auto my-0 mr-0 h-auto`}
+                              disabled={btnLoading.isBtnBooking}
+                              onClick={() => {
+                                setFieldValue(
+                                  "Status",
+                                  "XAC_NHAN",
+                                  formikProps.submitForm()
+                                ); //submitForm()
+                              }}
+                            >
+                              Xác nhận
+                            </button>
+                            <button
+                              type="button"
+                              className={`btn btn-sm btn-danger ${
+                                btnLoading.isBtnDelete
+                                  ? "spinner spinner-white spinner-right"
+                                  : ""
+                              } w-auto my-0 mr-0 h-auto`}
+                              disabled={btnLoading.isBtnDelete}
+                              onClick={() => onDelete(values)}
+                            >
+                              Hủy lịch
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              type="submit"
+                              className={`btn btn-sm btn-success text-truncate flex-1 ${
+                                btnLoading.isBtnBooking &&
+                                values.Status !== "KHACH_KHONG_DEN" &&
+                                values.Status !== "TU_CHOI" &&
+                                values.Status !== "KHACH_DEN"
+                                  ? "spinner spinner-white spinner-right"
+                                  : ""
+                              } w-auto my-0 mr-0 h-auto`}
+                              disabled={
+                                btnLoading.isBtnBooking &&
+                                values.Status !== "KHACH_KHONG_DEN" &&
+                                values.Status !== "TU_CHOI" &&
+                                values.Status !== "KHACH_DEN"
+                              }
+                            >
+                              Cập nhập
+                            </button>
+                            {initialValues.Status !== "KHACH_DEN" && (
+                              <>
+                                <Dropdown>
+                                  <Dropdown.Toggle
+                                    className={`btn btn-danger hide-icon-after text-truncate ml-2 ${((btnLoading.isBtnBooking &&
                                       values.Status === "KHACH_KHONG_DEN") ||
-                                    btnLoading.isBtnDelete
+                                      btnLoading.isBtnDelete) &&
+                                      "spinner spinner-white spinner-right"}`}
+                                    disabled={
+                                      (btnLoading.isBtnBooking &&
+                                        values.Status === "KHACH_KHONG_DEN") ||
+                                      btnLoading.isBtnDelete
+                                    }
+                                  >
+                                    Hủy
+                                    <i
+                                      className="ml-1 fa-sharp fa-light fa-angle-down"
+                                      style={{ fontSize: "14px" }}
+                                    ></i>
+                                    {((btnLoading.isBtnBooking &&
+                                      values.Status === "KHACH_KHONG_DEN") ||
+                                      btnLoading.isBtnDelete) && (
+                                      <div
+                                        class="spinner-border"
+                                        role="status"
+                                      ></div>
+                                    )}
+                                  </Dropdown.Toggle>
+
+                                  <Dropdown.Menu
+                                    className="w-100"
+                                    variant="dark"
+                                  >
+                                    <Dropdown.Item
+                                      href="#"
+                                      onClick={() => {
+                                        setFieldValue(
+                                          "Status",
+                                          "KHACH_KHONG_DEN",
+                                          formikProps.submitForm()
+                                        );
+                                      }}
+                                    >
+                                      Khách không đến
+                                    </Dropdown.Item>
+                                    <Dropdown.Item
+                                      className="text-danger"
+                                      href="#"
+                                      onClick={() => onDelete(values)}
+                                    >
+                                      Khách huỷ lịch
+                                    </Dropdown.Item>
+                                  </Dropdown.Menu>
+                                </Dropdown>
+                                <button
+                                  type="button"
+                                  className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
+                                    btnLoading.isBtnBooking &&
+                                    values.Status === "KHACH_DEN"
+                                      ? "spinner spinner-white spinner-right"
+                                      : ""
+                                  } w-auto my-0 mr-0 h-auto`}
+                                  disabled={
+                                    btnLoading.isBtnBooking &&
+                                    values.Status === "KHACH_DEN"
+                                  }
+                                  onClick={() =>
+                                    setFieldValue(
+                                      "Status",
+                                      "KHACH_DEN",
+                                      onFinish(values)
+                                    )
                                   }
                                 >
-                                  Hủy
-                                  <i
-                                    className="ml-1 fa-sharp fa-light fa-angle-down"
-                                    style={{ fontSize: "14px" }}
-                                  ></i>
-                                  {((btnLoading.isBtnBooking &&
-                                    values.Status === "KHACH_KHONG_DEN") ||
-                                    btnLoading.isBtnDelete) && (
-                                    <div
-                                      class="spinner-border"
-                                      role="status"
-                                    ></div>
-                                  )}
-                                </Dropdown.Toggle>
-
-                                <Dropdown.Menu className="w-100" variant="dark">
-                                  <Dropdown.Item
-                                    href="#"
-                                    onClick={() => {
-                                      setFieldValue(
-                                        "Status",
-                                        "KHACH_KHONG_DEN",
-                                        formikProps.submitForm()
-                                      );
-                                    }}
-                                  >
-                                    Khách không đến
-                                  </Dropdown.Item>
-                                  <Dropdown.Item
-                                    className="text-danger"
-                                    href="#"
-                                    onClick={() => onDelete(values)}
-                                  >
-                                    Khách huỷ lịch
-                                  </Dropdown.Item>
-                                </Dropdown.Menu>
-                              </Dropdown>
-                              <button
-                                type="button"
-                                className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
-                                  btnLoading.isBtnBooking &&
-                                  values.Status === "KHACH_DEN"
-                                    ? "spinner spinner-white spinner-right"
-                                    : ""
-                                } w-auto my-0 mr-0 h-auto`}
-                                disabled={
-                                  btnLoading.isBtnBooking &&
-                                  values.Status === "KHACH_DEN"
-                                }
-                                onClick={() =>
-                                  setFieldValue(
-                                    "Status",
-                                    "KHACH_DEN",
-                                    onFinish(values)
-                                  )
-                                }
-                              >
-                                {Book.ID && Book.AtHome
-                                  ? "Hoàn thành"
-                                  : "Khách đến"}
-                              </button>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-                {/* {renderFooterModal(initialValues.Status, formikProps)}
+                                  {Book.ID && Book.AtHome
+                                    ? "Hoàn thành"
+                                    : "Khách đến"}
+                                </button>
+                              </>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {/* {renderFooterModal(initialValues.Status, formikProps)}
                 {values.ID && (
                   <button
                     type="button"
@@ -863,7 +867,8 @@ function BookingPage() {
                     Hủy lịch
                   </button>
                 )} */}
-              </div>
+                </div>
+              )}
             </Form>
           );
         }}

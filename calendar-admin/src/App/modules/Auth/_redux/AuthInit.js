@@ -39,7 +39,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 0,
             },
             {
-              ID: 11450,
+              ID: 11499,
               Title: "Cser Hà Nội",
               KeySEO: "[05:00;20:00;60]{CN;10:00;21:00;120}{T2;09:00;18:30}",
               ParentID: 778,
@@ -53,7 +53,7 @@ function AuthInit({ isConfig, children }) {
           ],
           StockRights: [
             {
-              ID: 11450,
+              ID: 11499,
               Title: "Cser Hà Nội",
               KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
               ParentID: 778,
@@ -65,7 +65,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
           ],
-          CrStockID: 11450, //8975
+          CrStockID: 11499, //8975
           rightsSum: {
             pos: {
               hasRight: true,
@@ -125,7 +125,7 @@ function AuthInit({ isConfig, children }) {
             },
           },
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEyMjEzMzEyMjEzOCIsIm5iZiI6MTczODgwOTg2MSwiZXhwIjoxODI1MjA5ODYxLCJpYXQiOjE3Mzg4MDk4NjF9.bwdaHx64wn8uH-KM1egIMGMYyt-SWw4XUMxqQlO3tV8",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEyMjEzMzEyMjQ2NyIsIm5iZiI6MTc0MjExMzU5NSwiZXhwIjoxODI4NTEzNTk1LCJpYXQiOjE3NDIxMTM1OTV9.GSfYtooEjjsPyZgO1Ix_7RSsJiq2dWMoOjNYwOcplxU",
         };
         window.GlobalConfig = {
           APP: {
