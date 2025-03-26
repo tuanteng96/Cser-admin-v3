@@ -29,6 +29,7 @@ import clsx from "clsx";
 import DateTimePicker from "../../../shared/DateTimePicker/DateTimePicker";
 import { Dropdown } from "react-bootstrap";
 import PickerSettingCalendar from "../../../components/PickerSettingCalendar/PickerSettingCalendar";
+import { PickerSettingBookOnline } from "./components";
 
 moment.locale("vi");
 
@@ -1381,7 +1382,7 @@ function CalendarPage(props) {
                     <i className="fa-light fa-gear pr-0 text-[15px] !text-[#8561f9] group-hover:!text-white"></i>
                   </Dropdown.Toggle>
 
-                  <Dropdown.Menu className="w-100" variant="dark">
+                  <Dropdown.Menu className="w-[200px]" variant="dark">
                     {
                       <PickerSettingCalendar SettingCalendar={SettingCalendar}>
                         {({ open }) => (
@@ -1401,6 +1402,18 @@ function CalendarPage(props) {
                       <Dropdown.Item href="#" onClick={onOpenModalRoom}>
                         Cài đặt phòng
                       </Dropdown.Item>
+                    )}
+                    {window?.top?.GlobalConfig?.Admin?.SettingBookOnline && (
+                      <PickerSettingBookOnline
+                        TimeOpen={TimeOpen}
+                        TimeClose={TimeClose}
+                      >
+                        {({ open }) => (
+                          <Dropdown.Item href="#" onClick={open}>
+                            Cài đặt đặt lịch Online
+                          </Dropdown.Item>
+                        )}
+                      </PickerSettingBookOnline>
                     )}
                   </Dropdown.Menu>
                 </Dropdown>

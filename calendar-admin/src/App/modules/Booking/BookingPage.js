@@ -136,6 +136,8 @@ function BookingPage() {
         AmountPeople,
         TagSetting,
       }));
+
+      
     } else {
       setInitialValues((prevState) => ({
         ...prevState,

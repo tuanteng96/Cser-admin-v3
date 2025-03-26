@@ -31,6 +31,16 @@
         box-shadow: 0 0 40px 0 rgba(82, 63, 105, 0.1);
         border-radius: 0.42rem;
         padding: 10px;
+        &.react-datepicker--time-only {
+            min-width: auto;
+            .react-datepicker__time-list-item  {
+                font-size: 14px !important;
+            }
+            .react-datepicker__time-container  {
+                width: 125px !important;
+                border: 0 !important;
+            }
+        }
         .react-datepicker__triangle {
             display: none;
         }
@@ -470,4 +480,7 @@
             }
         }
     }
+}
+.react-datepicker__header.react-datepicker-year-header {
+    height: 45px;
 }

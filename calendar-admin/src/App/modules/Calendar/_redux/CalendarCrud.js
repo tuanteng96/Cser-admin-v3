@@ -80,6 +80,18 @@ const getConfigName = (name) => {
   );
 };
 
+const getListBookConfig = (data) => {
+  return axiosClient.post(`/api/v3/MemberBookConfig@get`, JSON.stringify(data));
+};
+
+const addEditBookConfig = (data) => {
+  return axiosClient.post(`/api/v3/memberbookconfig@edit`, JSON.stringify(data));
+};
+
+const deleteBookConfig = (data) => {
+  return axiosClient.post(`/api/v3/memberbookconfig@delete`, JSON.stringify(data));
+};
+
 const saveConfigName = (name, data) => {
   return axiosClient.post(
     `/api/v3/ConfigJson@save?name=${name}`,
@@ -117,5 +129,8 @@ const CalendarCrud = {
   getProcesingBook,
   updateProcesingBook,
   getMembersByStocks,
+  getListBookConfig,
+  addEditBookConfig,
+  deleteBookConfig
 };
 export default CalendarCrud;

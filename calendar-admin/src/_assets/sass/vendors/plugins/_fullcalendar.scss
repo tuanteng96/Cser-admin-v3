@@ -667,6 +667,189 @@
                 }
             }
         }
+        .fc-setting-book-online.fc-resource-timeline {
+            .fc-timeline-event-harness {
+                top: 0 !important;
+            }
+            .fc-scrollgrid-liquid {
+                >thead {
+                    .fc-scroller {
+                        //overflow-y: hidden !important;
+                    }
+                }
+                >tbody {
+                    .fc-scrollgrid-section {
+                        >td:first-child {
+                            .fc-scroller-liquid-absolute {
+                                &::-webkit-scrollbar-track {
+                                    border-radius: 10px;
+                                    background-color: #fff;
+                                }
+                                &::-webkit-scrollbar {
+                                    width: 12px;
+                                    background-color: #fff;
+                                }
+                                &::-webkit-scrollbar-thumb {
+                                    border-radius: 10px;
+                                    background-color: #fff;
+                                }
+                            }
+                            .fc-datagrid-cell-frame {
+                                height: 50px !important;
+                                .fc-datagrid-cell-cushion {
+                                    height: 100%;
+                                    display: flex;
+                                    flex-direction: column;
+                                    justify-content: center;
+                                    .fc-datagrid-cell-main {
+                                        font-size: 13px;
+                                        font-weight: 600;
+                                        overflow: hidden;
+                                        white-space: nowrap;
+                                        text-overflow: ellipsis;
+                                        @media (max-width: 767px) {
+                                            font-size: 12px;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        // .fc-scroller {
+                        //     &::-webkit-scrollbar-track {
+                        //         border-radius: 10px;
+                        //         background-color: #fff;
+                        //     }
+                        //     &::-webkit-scrollbar {
+                        //         width: 12px;
+                        //         background-color: #fff;
+                        //     }
+                        //     &::-webkit-scrollbar-thumb {
+                        //         border-radius: 10px;
+                        //         background-color: #fff;
+                        //     }
+                        // }
+                    }
+                }
+                .fc-timeline-slot-cushion {
+                    width: 100%;
+                    padding: 0;
+                    &:hover {
+                        text-decoration: none;
+                    }
+                    span {
+                        color: #70757a;
+                        font-weight: 500;
+                        font-size: 12px;
+                    }
+                }
+            }
+            .fc-timeline-body {
+                >.fc-scrollgrid-sync-table {
+                    tr {
+                        td {
+                            height: 50px !important;
+                            .fc-timeline-lane-frame {
+                                height: 50px !important;
+                            }
+                        }
+                    }
+                }
+            }
+            .fc-scrollgrid-section-header .fc-datagrid-cell-main {
+                color: #70757a !important;
+                font-size: 12px !important;
+            }
+            .fc-resource-timeline-divider {
+                width: 0;
+            }
+            >table {
+                >tbody {
+                    >tr {
+                        td:first-child {
+                            //border-right: 0;
+                        }
+                    }
+                }
+            }
+            .fc-scrollgrid-section-header {
+                >th:first-child {
+                    //border-right: 0;
+                }
+            }
+            &.fc-resourceTimelineDay-view {
+                .fc-scrollgrid-section-header {
+                    .fc-scroller-harness {
+                        height: 100%;
+                        .fc-scroller {
+                            height: 100%;
+                            .fc-timeline-header {
+                                height: 100%;
+                                .fc-scrollgrid-sync-table {
+                                    height: 100%;
+                                    .fc-timeline-slot-frame {
+                                        align-items: center;
+                                        height: 100%;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .fc-scrollgrid-liquid>tbody .fc-scrollgrid-section>td:first-child .fc-datagrid-cell-frame .fc-datagrid-cell-cushion {
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: left;
+                }
+                .fc-scrollgrid-section-header .fc-scroller {
+                    border-bottom: 0;
+                }
+                >table {
+                    >thead {
+                        >tr {
+                            >th {
+                                .fc-scroller {
+                                    -ms-overflow-style: none;
+                                    /* IE and Edge */
+                                    scrollbar-width: none;
+                                    /* Firefox */
+                                    &::-webkit-scrollbar {
+                                        width: 0px;
+                                        display: none;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    >tbody {
+                        >tr {
+                            >td:first-child {
+                                .fc-scroller {
+                                    &::-webkit-scrollbar {
+                                        background-color: #fff;
+                                    }
+                                    &::-webkit-scrollbar {
+                                        background-color: #fff;
+                                    }
+                                    &::-webkit-scrollbar-thumb {
+                                        background-color: #fff;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .fc-scrollgrid-liquid {
+                    .fc-resource-group:not([rowspan]) {
+                        .fc-datagrid-cell-frame {
+                            height: 49px !important;
+                        }
+                    }
+                }
+                .fc-timeline-body>.fc-scrollgrid-sync-table tr td {
+                    height: 50px !important;
+                }
+            }
+        }
         .fc-resourceTimeGridDay-view {
             &.fc-view {
                 overflow-x: auto;
