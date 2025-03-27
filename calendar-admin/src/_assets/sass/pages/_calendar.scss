@@ -140,7 +140,7 @@
     }
 }
 
-.fc .fc-bg-event {
+.fc .fc-bg-event:not(.fc-event-active) {
     background: transparent;
     background-image: linear-gradient(45deg, #ddd 25%, transparent 0, transparent 50%, #ddd 0, #ddd 75%, transparent 0, transparent)!important;
     background-image: linear-gradient(45deg, #ddd 25%, transparent 0, transparent 50%, #ddd 0, #ddd 75%, transparent 0, transparent)!important;
@@ -156,4 +156,8 @@
     background-size: 4px 4px;
     opacity: 1;
     cursor: pointer;
+}
+
+.fc-event-active.fc-bg-event {
+    //background: #ffa800;
 }

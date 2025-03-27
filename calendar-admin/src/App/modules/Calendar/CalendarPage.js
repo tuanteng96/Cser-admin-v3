@@ -29,7 +29,7 @@ import clsx from "clsx";
 import DateTimePicker from "../../../shared/DateTimePicker/DateTimePicker";
 import { Dropdown } from "react-bootstrap";
 import PickerSettingCalendar from "../../../components/PickerSettingCalendar/PickerSettingCalendar";
-import { PickerSettingBookOnline } from "./components";
+import { PickerControlBookOnline, PickerSettingBookOnline } from "./components";
 
 moment.locale("vi");
 
@@ -1321,62 +1321,72 @@ function CalendarPage(props) {
               </div>
 
               <div className="flex">
-                <Select
-                  options={[
-                    {
-                      value: "dayGridMonth",
-                      label: "Theo Tháng",
-                      hidden: false,
-                    },
-                    {
-                      value: "timeGridWeek",
-                      label: "Theo Tuần",
-                      hidden: false,
-                    },
-                    {
-                      value: "timeGridDay",
-                      label: "Theo Ngày",
-                      hidden: false,
-                    },
-                    {
-                      value: "listWeek",
-                      label: "Danh sách",
-                      hidden: false,
-                    },
-                    {
-                      value: "resourceTimeGridDay",
-                      label: "Nhân viên",
-                      hidden: false,
-                    },
-                    {
-                      value: "resourceTimelineDay",
-                      label: "Buồng / Phòng",
-                      hidden: !isRooms,
-                    },
-                  ].filter((x) => !x.hidden)}
-                  value={topCalendar.type}
-                  onChange={(val) => {
-                    setTopCalendar((prevState) => ({
-                      ...prevState,
-                      type: val,
-                    }));
-                    // if (calendarRef?.current?.getApi()) {
-                    //   let calendarApi = calendarRef.current.getApi();
-                    //   calendarApi.changeView(val.value);
-                    // }
-                  }}
-                  menuPosition="fixed"
-                  styles={{
-                    menuPortal: (base) => ({
-                      ...base,
-                      zIndex: 9999,
-                    }),
-                  }}
-                  menuPortalTarget={document.body}
-                  isClearable={false}
-                  className="select-control w-[165px] md:w-[200px] select-control-solid font-medium"
-                  classNamePrefix="select"
-                />
+                <PickerControlBookOnline>
+                  {({ open }) => (
+                    <Select
+                      options={[
+                        {
+                          value: "dayGridMonth",
+                          label: "Theo Tháng",
+                          hidden: false,
+                        },
+                        {
+                          value: "timeGridWeek",
+                          label: "Theo Tuần",
+                          hidden: false,
+                        },
+                        {
+                          value: "timeGridDay",
+                          label: "Theo Ngày",
+                          hidden: false,
+                        },
+                        {
+                          value: "listWeek",
+                          label: "Danh sách",
+                          hidden: false,
+                        },
+                        {
+                          value: "resourceTimeGridDay",
+                          label: "Nhân viên",
+                          hidden: false,
+                        },
+                        {
+                          value: "resourceTimelineDay",
+                          label: "Buồng / Phòng",
+                          hidden: !isRooms,
+                        },
+                        {
+                          value: "Popup",
+                          label: "Kiểm soát đặt lịch Online",
+                          hidden:
+                            window?.top?.GlobalConfig?.Admin?.SettingBookOnline,
+                        },
+                      ].filter((x) => !x.hidden)}
+                      value={topCalendar.type}
+                      onChange={(val) => {
+                        if (val?.value === "Popup") {
+                          open()
+                        } else {
+                          setTopCalendar((prevState) => ({
+                            ...prevState,
+                            type: val,
+                          }));
+                        }
+                      }}
+                      menuPosition="fixed"
+                      styles={{
+                        menuPortal: (base) => ({
+                          ...base,
+                          zIndex: 9999,
+                        }),
+                      }}
+                      menuPortalTarget={document.body}
+                      isClearable={false}
+                      className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
+                      classNamePrefix="select"
+                    />
+                  )}
+                </PickerControlBookOnline>
                 <Dropdown className="w-auto ml-[8px]">
                   <Dropdown.Toggle className="!bg-[#ede7fe] hover:!bg-[#8561f9] !border-0 h-[40px] px-10px w-100 hide-icon-after no-after group">
                     <i className="fa-light fa-gear pr-0 text-[15px] !text-[#8561f9] group-hover:!text-white"></i>
@@ -1403,7 +1413,7 @@ function CalendarPage(props) {
                         Cài đặt phòng
                       </Dropdown.Item>
                     )}
-                    {window?.top?.GlobalConfig?.Admin?.SettingBookOnline && (
+                    {!window?.top?.GlobalConfig?.Admin?.SettingBookOnline && (
                       <PickerSettingBookOnline
                         TimeOpen={TimeOpen}
                         TimeClose={TimeClose}

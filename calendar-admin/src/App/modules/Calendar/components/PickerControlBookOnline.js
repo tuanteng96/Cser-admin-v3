@@ -13,94 +13,79 @@ import interactionPlugin from "@fullcalendar/interaction";
 import moment from "moment";
 import vi from "date-fns/locale/vi";
 
-function getAllDatesOfMonth(date) {
-  const mDate = moment(date, "MM-YYYY");
-  return Array.from({ length: moment(mDate).daysInMonth() }, (x, i) => ({
-    title: moment(mDate)
-      .startOf("month")
-      .add(i, "days")
-      .format("DD-MM-YYYY"),
-    id: moment(mDate)
-      .startOf("month")
-      .add(i, "days")
-      .format("DD_MM_YYYY"),
-    date: moment(mDate)
-      .startOf("month")
-      .add(i, "days")
-      .toDate(),
-  }));
-}
-
-function PickerControlBookOnline({ children, TimeOpen, TimeClose }) {
+function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
   const { AuthCrStockID } = useSelector(({ Auth }) => ({
     AuthCrStockID: Auth.CrStockID,
   }));
 
   const [visible, setVisible] = useState(false);
   const [filters, setFilters] = useState({
-    Month: new Date(),
+    CrDate: new Date(),
     StockID: AuthCrStockID,
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ["SettingBookOnline", filters],
+    queryKey: ["SettingControlOnline", filters],
     queryFn: async () => {
-      const startOfMonth = moment(filters.Month)
-        .startOf("month")
-        .format("YYYY-MM-DD");
-      const endOfMonth = moment(filters.Month)
-        .endOf("month")
-        .format("YYYY-MM-DD");
-
       let { list } = await CalendarCrud.getListBookConfig({
         StockID: filters.StockID || AuthCrStockID,
-        From: startOfMonth,
-        To: endOfMonth,
+        From: moment(filters.CrDate).format("YYYY-MM-DD"),
+        To: moment(filters.CrDate).format("YYYY-MM-DD"),
         pi: 1,
         ps: 1000,
       });
-      let rs = [];
-      for (let item of list) {
-        let obj = {
-          ...item,
-          start: moment()
-            .set({
-              hour: moment(
-                moment(item.Config.from, "YYYY-MM-DD HH:mm").format("HH:mm"),
-                "HH:mm"
-              ).get("hour"),
-              minute: moment(
-                moment(item.Config.from, "YYYY-MM-DD HH:mm").format("HH:mm"),
-                "HH:mm"
-              ).get("minute"),
-              second: moment(
-                moment(item.Config.from, "YYYY-MM-DD HH:mm").format("HH:mm"),
-                "HH:mm"
-              ).get("second"),
-            })
-            .toDate(),
-          end: moment()
-            .set({
-              hour: moment(
-                moment(item.Config.to, "YYYY-MM-DD HH:mm").format("HH:mm"),
-                "HH:mm"
-              ).get("hour"),
-              minute: moment(
-                moment(item.Config.to, "YYYY-MM-DD HH:mm").format("HH:mm"),
-                "HH:mm"
-              ).get("minute"),
-              second: moment(
-                moment(item.Config.to, "YYYY-MM-DD HH:mm").format("HH:mm"),
-                "HH:mm"
-              ).get("second"),
-            })
-            .toDate(),
-          resourceIds: [moment(item.CreateDate).format("DD_MM_YYYY")],
-          className: `fc-event-solid-primary`,
-        };
-        rs.push(obj);
+      let { data: Stafss } = await CalendarCrud.getListStaff(AuthCrStockID);
+      let data = await CalendarCrud.getBooking({
+        From: moment(filters.CrDate).format("YYYY-MM-DD"),
+        To: moment(filters.CrDate).format("YYYY-MM-DD"),
+        MemberID: "",
+        StockID: AuthCrStockID,
+        Status: "XAC_NHAN,CHUA_XAC_NHAN",
+        UserServiceIDs: "",
+        StatusMember: "",
+        StatusBook: "",
+        StatusAtHome: "",
+        Tags: "",
+      });
+
+      let Lists = [
+        // {
+        //   start: "2025-03-27T10:00:00",
+        //   end: "2025-03-27T16:00:00",
+        //   resourceIds: [1],
+        //   display: "inverse-background",
+        //   extendedProps: {
+        //     noEvent: true,
+        //   },
+        //   className: ["bg-danger"],
+        // },
+      ];
+
+      let MaxBook = Stafss.length;
+      if (list && list.length > 0) {
+        MaxBook = Math.max(...list.map((x) => Number(x.Config.MaxBook)));
+
+        for (let item of list) {
+          let newObj = {
+            start: moment(item.Config.from, "YYYY-MM-DD HH:mm").toDate(),
+            end: moment(item.Config.to, "YYYY-MM-DD HH:mm").toDate(),
+            display: "background",
+            resourceIds: Array.from(
+              { length: item.Config.MaxBook },
+              (_, i) => i + 1
+            ),
+            className: ["fc-event-active"],
+          };
+          Lists.push(newObj);
+        }
       }
-      return rs;
+      return {
+        resources: Array.from({ length: MaxBook }, (_, i) => ({
+          id: i + 1,
+          title: i + 1,
+        })).concat([{ id: 0, title: "no" }]),
+        Lists,
+      };
     },
     enabled: visible,
     keepPreviousData: true,
@@ -116,77 +101,51 @@ function PickerControlBookOnline({ children, TimeOpen, TimeClose }) {
       {visible &&
         createPortal(
           <div className="fixed top-0 left-0 z-[1003] bg-white !h-full w-full flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="text-xl font-medium">Cài đặt đặt lịch Online</div>
-              <div className="cursor-pointer" onClick={onHide}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-8"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18 18 6M6 6l12 12"
+            <div className="flex items-center justify-between px-4 py-3.5 border-b">
+              <div className="text-xl font-medium">
+                Kiểm soát đặt lịch Online
+              </div>
+              <div className="flex">
+                <div>
+                  <DatePicker
+                    locale={vi}
+                    selected={filters.CrDate ? new Date(filters.CrDate) : null}
+                    onChange={(date) =>
+                      setFilters((prevState) => ({
+                        ...prevState,
+                        CrDate: date,
+                      }))
+                    }
+                    className="!h-11 form-control !rounded-[4px]"
+                    shouldCloseOnSelect={true}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Chọn tháng"
                   />
-                </svg>
-              </div>
-            </div>
-            <div className="flex justify-between px-4 pt-4">
-              <div>
-                <DatePicker
-                  locale={vi}
-                  showMonthYearPicker
-                  selected={filters.Month ? new Date(filters.Month) : ""}
-                  onChange={(date) =>
-                    setFilters((prevState) => ({
-                      ...prevState,
-                      Month: date,
-                    }))
-                  }
-                  className="!h-12 form-control"
-                  shouldCloseOnSelect={true}
-                  dateFormat="MM/yyyy"
-                  placeholderText="Chọn tháng"
-                />
-              </div>
-              <div>
-                <PickerAddEditBookOnline
-                  TimeOpen={TimeOpen}
-                  TimeClose={TimeClose}
-                  AuthCrStockID={AuthCrStockID}
+                </div>
+                <div className="h-11 w-[1px] bg-gray-300 ml-4 mr-2"></div>
+                <div
+                  className="cursor-pointer h-11 flex items-center justify-center w-12"
+                  onClick={onHide}
                 >
-                  {({ open }) => (
-                    <button
-                      className="h-12 px-5 text-white rounded-[3px] bg-primary"
-                      type="button"
-                      onClick={() =>
-                        open({
-                          StockID: AuthCrStockID,
-                          CreateDate: "",
-                          arr: [
-                            {
-                              ID: "",
-                              Config: {
-                                from: "",
-                                to: "",
-                                MaxBook: "",
-                              },
-                            },
-                          ],
-                        })
-                      }
-                    >
-                      Thêm mới
-                    </button>
-                  )}
-                </PickerAddEditBookOnline>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-8"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18 18 6M6 6l12 12"
+                    />
+                  </svg>
+                </div>
               </div>
             </div>
             <div className="relative p-4 grow [&>*]:h-full">
+              {console.log(data?.Lists)}
               <PickerAddEditBookOnline
                 TimeOpen={TimeOpen}
                 TimeClose={TimeClose}
@@ -207,22 +166,21 @@ function PickerControlBookOnline({ children, TimeOpen, TimeClose }) {
                     editable={false}
                     navLinks={true}
                     allDaySlot={false}
-                    resources={getAllDatesOfMonth(
-                      moment(filters.Month).format("MM-YYYY")
-                    )}
+                    resources={data?.resources || []}
+                    resourceOrder={null}
                     views={{
                       resourceTimelineDay: {
                         type: "resourceTimelineDay",
                         nowIndicator: true,
                         now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
                         scrollTime: moment(new Date()).format("HH:mm"),
-                        resourceAreaWidth: "150px",
+                        resourceAreaWidth: "80px",
                         slotMinWidth: 50,
                         stickyHeaderDates: true,
                         // slotMinTime: TimeOpen,
                         // slotMaxTime: TimeClose,
                         //buttonText: "Phòng",
-                        resourceAreaHeaderContent: () => "Ngày / Giờ",
+                        resourceAreaHeaderContent: () => "Giờ",
                         slotLabelContent: ({ date, text }) => {
                           return (
                             <>
@@ -241,7 +199,7 @@ function PickerControlBookOnline({ children, TimeOpen, TimeClose }) {
                       interactionPlugin,
                     ]}
                     //resourceGroupField="RoomTitle"
-                    events={data || []}
+                    events={data?.Lists || []}
                     headerToolbar={false}
                     //selectable={true}
                     selectMirror={true}
@@ -349,17 +307,15 @@ function PickerControlBookOnline({ children, TimeOpen, TimeClose }) {
                       const { extendedProps } = event._def;
 
                       let italicEl = document.createElement("div");
-                      italicEl.classList.add("fc-content", "h-5");
+                      italicEl.classList.add("fc-content");
                       let arrayOfDomNodes = [italicEl];
                       if (
                         typeof extendedProps !== "object" ||
                         Object.keys(extendedProps).length > 0
                       ) {
-                        italicEl.innerHTML = `<div class="fc-title flex justify-center h-full items-center">${extendedProps?.Config?.MaxBook}</div>`;
+                        italicEl.innerHTML = `<div class="w-full h-full flex items-center justify-center">${extendedProps?.Config?.MaxBook}</div>`;
                       } else {
-                        italicEl.innerHTML = `<div class="fc-title">
-                          Không có lịch
-                        </div>`;
+                        italicEl.innerHTML = ``;
                       }
                       return {
                         domNodes: arrayOfDomNodes,
@@ -410,4 +366,4 @@ function PickerControlBookOnline({ children, TimeOpen, TimeClose }) {
   );
 }
 
-export default PickerControlBookOnline;
+export default PickerSettingBookOnline;

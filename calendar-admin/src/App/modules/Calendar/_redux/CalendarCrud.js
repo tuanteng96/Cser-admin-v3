@@ -5,6 +5,12 @@ const GET_MEMBERS_STAFF_URL = "/api/gl/select2";
 const GET_ROOT_SERVICES_URL = "/api/v3/mbook";
 const POST_BOOKING_URL = "/api/v3/mbookadmin?cmd=AdminBooking";
 
+const getListStaff = (stockid) => {
+  return axiosClient.get(
+    `/api/gl/select2?cmd=user&includeRoles=1&includeSource=1&crstockid=${stockid}&roles=DV`
+  );
+};
+
 const getMembers = (key, CurrentStockID, member = "") => {
   return axiosClient.get(
     `${GET_MEMBERS_STAFF_URL}?cmd=member&q=${key}&CurrentStockID=${
@@ -85,11 +91,17 @@ const getListBookConfig = (data) => {
 };
 
 const addEditBookConfig = (data) => {
-  return axiosClient.post(`/api/v3/memberbookconfig@edit`, JSON.stringify(data));
+  return axiosClient.post(
+    `/api/v3/memberbookconfig@edit`,
+    JSON.stringify(data)
+  );
 };
 
 const deleteBookConfig = (data) => {
-  return axiosClient.post(`/api/v3/memberbookconfig@delete`, JSON.stringify(data));
+  return axiosClient.post(
+    `/api/v3/memberbookconfig@delete`,
+    JSON.stringify(data)
+  );
 };
 
 const saveConfigName = (name, data) => {
@@ -131,6 +143,7 @@ const CalendarCrud = {
   getMembersByStocks,
   getListBookConfig,
   addEditBookConfig,
-  deleteBookConfig
+  deleteBookConfig,
+  getListStaff,
 };
 export default CalendarCrud;
