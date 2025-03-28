@@ -142,6 +142,7 @@ function AuthInit({ isConfig, children }) {
             kpiSuccess: "Đặt lịch thành công",
             isRooms: true,
             isAdminBooks: false,
+            SettingBookOnline: true
           },
         };
       }

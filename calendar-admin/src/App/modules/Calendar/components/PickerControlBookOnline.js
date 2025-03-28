@@ -52,11 +52,13 @@ function missingItems(arr, n) {
 }
 
 function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
-  const { AuthCrStockID, SettingBookOnlineMinutes } = useSelector(({ Auth, JsonConfig }) => ({
-    AuthCrStockID: Auth.CrStockID,
-    SettingBookOnlineMinutes: JsonConfig?.Admin?.SettingBookOnlineMinutes,
-  }));
-  
+  const { AuthCrStockID, SettingBookOnlineMinutes } = useSelector(
+    ({ Auth, JsonConfig }) => ({
+      AuthCrStockID: Auth.CrStockID,
+      SettingBookOnlineMinutes: JsonConfig?.Admin?.SettingBookOnlineMinutes,
+    })
+  );
+
   const [visible, setVisible] = useState(false);
   const [filters, setFilters] = useState({
     CrDate: new Date(),
@@ -89,8 +91,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
         To: moment(filters.CrDate).format("YYYY-MM-DD"),
         MemberID: "",
         StockID: AuthCrStockID,
-        Status:
-          "XAC_NHAN,DANG_THUC_HIEN,THUC_HIEN_XONG,CHUA_XAC_NHAN,KHACH_DEN",
+        Status: "XAC_NHAN,DANG_THUC_HIEN,THUC_HIEN_XONG,CHUA_XAC_NHAN",
         UserServiceIDs: "",
         StatusMember: "",
         StatusBook: "",
@@ -109,8 +110,8 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
         })),
       ].sort((left, right) =>
         moment.utc(left.BookDate).diff(moment.utc(right.BookDate))
-      );
-
+      ).map((x) => ({...x, Index: x.Status === "CHUA_XAC_NHAN" ? 0 : 1})).sort((a,b) => b.Index - a.Index);
+      
       let Lists = [
         // {
         //   start: "2025-03-27T10:00:00",
@@ -190,6 +191,31 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                 "[)"
               )
           );
+
+          if (book.Status === "CHUA_XAC_NHAN") {
+            crList = Lists.filter(
+              (x) =>
+                !x.display &&
+                moment(
+                  moment(x.start, "YYYY-MM-DD HH:mm").format("HH:mm"),
+                  "HH:mm"
+                ).isBetween(
+                  moment(
+                    moment(book.BookDate, "YYYY-MM-DD HH:mm").format("HH:mm"),
+                    "HH:mm"
+                  ),
+                  moment(
+                    moment(book.BookDate, "YYYY-MM-DD HH:mm")
+                      .add(book.RootMinutes || 60, "minutes")
+                      .subtract(SettingBookOnlineMinutes || 0, "minutes")
+                      .format("HH:mm"),
+                    "HH:mm"
+                  ),
+                  null,
+                  "[)"
+                )
+            );
+          }
 
           if (crList && crList.length > 0) {
             let ArrMaxBook = Math.max(...crList.map((x) => x.resourceIds[0]));
