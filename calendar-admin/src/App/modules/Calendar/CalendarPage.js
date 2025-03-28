@@ -138,12 +138,14 @@ function CalendarPage(props) {
     StocksList,
     isRooms,
     Stocks,
+    SettingBookOnline,
   } = useSelector(({ Auth, JsonConfig }) => ({
     AuthCrStockID: Auth.CrStockID,
     StocksList: Auth?.Stocks.filter((x) => x.ParentID !== 0),
     GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
     GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
     isRooms: JsonConfig?.Admin?.isRooms,
+    SettingBookOnline: JsonConfig?.Admin?.SettingBookOnline,
     StockRights: Auth?.StockRights || [],
     Stocks: Auth?.Stocks
       ? Auth?.Stocks.filter((x) => x.ParentID !== 0).map((o) => ({
@@ -1358,14 +1360,13 @@ function CalendarPage(props) {
                         {
                           value: "Popup",
                           label: "Kiểm soát đặt lịch Online",
-                          hidden:
-                            window?.top?.GlobalConfig?.Admin?.SettingBookOnline,
+                          hidden: !SettingBookOnline,
                         },
                       ].filter((x) => !x.hidden)}
                       value={topCalendar.type}
                       onChange={(val) => {
                         if (val?.value === "Popup") {
-                          open()
+                          open();
                         } else {
                           setTopCalendar((prevState) => ({
                             ...prevState,
@@ -1413,7 +1414,7 @@ function CalendarPage(props) {
                         Cài đặt phòng
                       </Dropdown.Item>
                     )}
-                    {!window?.top?.GlobalConfig?.Admin?.SettingBookOnline && (
+                    {SettingBookOnline && (
                       <PickerSettingBookOnline
                         TimeOpen={TimeOpen}
                         TimeClose={TimeClose}
