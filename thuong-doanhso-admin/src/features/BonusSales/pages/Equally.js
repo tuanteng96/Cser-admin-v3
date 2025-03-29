@@ -8,12 +8,15 @@ import { TypeStaff } from "../../../Json/Json";
 import { useSelector } from "react-redux";
 import SelectType from "../components/SelectType";
 import { formatArray } from "../../../helpers/formatArray";
+import { useRoles } from "../../../helpers/useRoles";
 
 function Equally({ OrderInfo, onSubmit, loading }) {
   const [initialValues, setInitialValues] = useState({ equally: [] });
   const { UserID } = useSelector(({ Auth }) => ({
     UserID: Auth?.User?.ID,
   }));
+
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
   const getValueHH = ({ user, item, Type }) => {
     if (
@@ -99,7 +102,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                     item.gia_tri_doanh_so > 0
                       ? Math.round((user.Value * item.gia_tri_doanh_so) / 100)
                       : 0,
-                      Value2: 0,
+                  Value2: 0,
                   Type: item?.KpiType
                     ? { value: item?.KpiType, label: "Loại " + item?.KpiType }
                     : "",
@@ -112,6 +115,12 @@ function Equally({ OrderInfo, onSubmit, loading }) {
       resetForm();
     }
   };
+
+  let isHiddenPrice = false;
+
+  if (window.top?.GlobalConfig?.Admin.hoa_hong_an_gia) {
+    if (!adminTools_byStock?.hasRight) isHiddenPrice = true;
+  }
 
   return (
     <Fragment>
@@ -201,6 +210,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                         />
                       </div>
                     )}
+
                     <div>
                       {values.ToAdd &&
                         values.ToAdd.length > 1 &&
@@ -315,13 +325,14 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
+                                      type={isHiddenPrice ? "password" : "text"}
                                       allowNegative
                                       name={`equally[${index}].Hoa_Hong[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
                                       className={`form-control flex-1`}
                                       isNumericString={true}
                                       thousandSeparator={true}
-                                      value={sub.Value}
+                                      value={sub.Value} // sub.Value
                                       onValueChange={(val) => {
                                         setFieldValue(
                                           `equally[${index}].Hoa_Hong[${idx}].Value`,
@@ -333,8 +344,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao && UserID !== 1
+                                        (window.top?.GlobalConfig?.Admin
+                                          ?.thuong_ds_nang_cao &&
+                                          UserID !== 1) ||
+                                        isHiddenPrice
                                       }
                                     />
                                   </div>
@@ -360,6 +373,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
+                                      type={isHiddenPrice ? "password" : "text"}
                                       allowNegative
                                       name={`equally[${index}].Doanh_So[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
@@ -378,8 +392,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao && UserID !== 1
+                                        (window.top?.GlobalConfig?.Admin
+                                          ?.thuong_ds_nang_cao &&
+                                          UserID !== 1) ||
+                                        isHiddenPrice
                                       }
                                     />
                                     <SelectType
@@ -393,6 +409,12 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                           false
                                         );
                                       }}
+                                      disabled={
+                                        (window.top?.GlobalConfig?.Admin
+                                          ?.thuong_ds_nang_cao &&
+                                          UserID !== 1) ||
+                                        isHiddenPrice
+                                      }
                                     />
                                   </div>
                                 ))
@@ -443,6 +465,9 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
+                                        type={
+                                          isHiddenPrice ? "password" : "text"
+                                        }
                                         allowNegative
                                         name={`equally[${index}].Hoa_Hong[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
@@ -460,8 +485,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                         }}
                                         onBlur={handleBlur}
                                         disabled={
-                                          window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao && UserID !== 1
+                                          (window.top?.GlobalConfig?.Admin
+                                            ?.thuong_ds_nang_cao &&
+                                            UserID !== 1) ||
+                                          isHiddenPrice
                                         }
                                       />
                                     </div>
@@ -482,6 +509,9 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
+                                        type={
+                                          isHiddenPrice ? "password" : "text"
+                                        }
                                         allowNegative
                                         name={`equally[${index}].Doanh_So[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
@@ -497,8 +527,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                         }}
                                         //onBlur={handleBlur}
                                         disabled={
-                                          window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao && UserID !== 1
+                                          (window.top?.GlobalConfig?.Admin
+                                            ?.thuong_ds_nang_cao &&
+                                            UserID !== 1) ||
+                                          isHiddenPrice
                                         }
                                       />
                                       <SelectType

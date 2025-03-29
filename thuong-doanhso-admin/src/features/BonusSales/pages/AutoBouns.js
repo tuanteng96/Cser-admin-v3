@@ -6,12 +6,15 @@ import { Formik, FieldArray, Form } from "formik";
 import NumberFormat from "react-number-format";
 import moment from "moment";
 import SelectType from "../components/SelectType";
+import { useRoles } from "../../../helpers/useRoles";
 moment.locale(); // vi
 
 function AutoBouns({ OrderInfo, onSubmit, loading }) {
   const [initialValues, setInitialValues] = useState({
     AutoBouns: [],
   });
+
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
   useEffect(() => {
     if (OrderInfo) {
@@ -90,6 +93,13 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
     }
   }, [OrderInfo]);
 
+  let isHiddenPrice = false;
+
+  if (window.top?.GlobalConfig?.Admin.hoa_hong_an_gia) {
+    if (!adminTools_byStock?.hasRight) isHiddenPrice = true;
+  }
+
+
   return (
     <Formik
       enableReinitialize
@@ -163,6 +173,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     </label>
                                   </div>
                                   <NumberFormat
+                                    type={isHiddenPrice ? "password" : "text"}
                                     allowNegative
                                     name={`AutoBouns[${index}].Hoa_Hong[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
@@ -180,6 +191,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                       );
                                     }}
                                     onBlur={handleBlur}
+                                    disabled={isHiddenPrice}
                                   />
                                   <div
                                     className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
@@ -219,6 +231,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     </label>
                                   </div>
                                   <NumberFormat
+                                    type={isHiddenPrice ? "password" : "text"}
                                     allowNegative
                                     name={`AutoBouns[${index}].Doanh_So[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
@@ -236,6 +249,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                       );
                                     }}
                                     onBlur={handleBlur}
+                                    disabled={isHiddenPrice}
                                   />
                                   <SelectType
                                     name={`AutoBouns[${index}].Doanh_So[${idx}].Type`}
@@ -359,6 +373,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     </label>
                                   </div>
                                   <NumberFormat
+                                    type={isHiddenPrice ? "password" : "text"}
                                     allowNegative
                                     name={`AutoBouns[${index}].Hoa_Hong[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
@@ -376,6 +391,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                       );
                                     }}
                                     onBlur={handleBlur}
+                                    disabled={isHiddenPrice}
                                   />
                                   <div
                                     className="cursor-pointer text-danger w-30px text-end"
@@ -404,6 +420,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                     </label>
                                   </div>
                                   <NumberFormat
+                                    type={isHiddenPrice ? "password" : "text"}
                                     allowNegative
                                     name={`AutoBouns[${index}].Doanh_So[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
@@ -421,6 +438,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                       );
                                     }}
                                     onBlur={handleBlur}
+                                    disabled={isHiddenPrice}
                                   />
                                   <SelectType
                                     name={`AutoBouns[${index}].Doanh_So[${idx}].Type`}

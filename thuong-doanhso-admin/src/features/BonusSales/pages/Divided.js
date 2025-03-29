@@ -6,13 +6,17 @@ import { Formik, FieldArray, Form } from "formik";
 import PropTypes from "prop-types";
 import { TypeStaff } from "../../../Json/Json";
 import { useSelector } from "react-redux";
+import { useRoles } from "../../../helpers/useRoles";
 
 function Divided({ OrderInfo, onSubmit, loading }) {
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
+
   const { UserID } = useSelector(({ Auth }) => ({
     UserID: Auth?.User?.ID,
   }));
   const [initialValuesAdd, setInitialValuesAdd] = useState({ ToAdd: [] });
   const [initialValues, setInitialValues] = useState({ divided: [] });
+
   useEffect(() => {
     if (OrderInfo) {
       const { oiItems } = OrderInfo;
@@ -75,7 +79,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
     const { ToAdd } = values;
     const itemChange =
       ToAdd && ToAdd.length > 0 ? ToAdd.filter((item) => item.Staff) : [];
-    
+
     if (itemChange.length > 0) {
       const newArr = itemChange.map((item) => ({
         Product: item.Product,
@@ -101,6 +105,13 @@ function Divided({ OrderInfo, onSubmit, loading }) {
       resetForm();
     }
   };
+
+  let isHiddenPrice = false;
+
+  if (window.top?.GlobalConfig?.Admin.hoa_hong_an_gia) {
+    if (!adminTools_byStock?.hasRight) isHiddenPrice = true;
+  }
+
   return (
     <Fragment>
       <div className="row">
@@ -235,6 +246,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
+                                      type={isHiddenPrice ? "password" : "text"}
                                       allowNegative
                                       name={`divided[${index}].Hoa_Hong[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
@@ -253,8 +265,8 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao && UserID !== 1
+                                        (window.top?.GlobalConfig?.Admin
+                                          ?.thuong_ds_nang_cao && UserID !== 1) || isHiddenPrice
                                       }
                                     />
                                   </div>
@@ -280,6 +292,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       {sub.Staff.Fn}
                                     </label>
                                     <NumberFormat
+                                      type={isHiddenPrice ? "password" : "text"}
                                       allowNegative
                                       name={`divided[${index}].Doanh_So[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
@@ -298,8 +311,8 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao && UserID !== 1
+                                        (window.top?.GlobalConfig?.Admin
+                                          ?.thuong_ds_nang_cao && UserID !== 1) || isHiddenPrice
                                       }
                                     />
                                   </div>
@@ -343,6 +356,9 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
+                                        type={
+                                          isHiddenPrice ? "password" : "text"
+                                        }
                                         allowNegative
                                         name={`divided[${index}].Hoa_Hong[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
@@ -361,8 +377,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                         }}
                                         onBlur={handleBlur}
                                         disabled={
-                                          window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao && UserID !== 1
+                                          (window.top?.GlobalConfig?.Admin
+                                            ?.thuong_ds_nang_cao &&
+                                            UserID !== 1) ||
+                                          isHiddenPrice
                                         }
                                       />
                                     </div>
@@ -383,6 +401,9 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                         {sub.Staff.Fn}
                                       </label>
                                       <NumberFormat
+                                        type={
+                                          isHiddenPrice ? "password" : "text"
+                                        }
                                         allowNegative
                                         name={`divided[${index}].Doanh_So[${idx}].Value`}
                                         placeholder={"Nhập giá trị"}
@@ -401,8 +422,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                         }}
                                         onBlur={handleBlur}
                                         disabled={
-                                          window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao && UserID !== 1
+                                          (window.top?.GlobalConfig?.Admin
+                                            ?.thuong_ds_nang_cao &&
+                                            UserID !== 1) ||
+                                          isHiddenPrice
                                         }
                                       />
                                     </div>

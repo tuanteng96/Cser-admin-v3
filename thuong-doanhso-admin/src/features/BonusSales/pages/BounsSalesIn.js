@@ -246,6 +246,12 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
 
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
+  let isHiddenPrice = false;
+
+  if (window.top?.GlobalConfig?.Admin.hoa_hong_an_gia) {
+    if (!adminTools_byStock?.hasRight) isHiddenPrice = true;
+  }
+
   return (
     <Formik
       enableReinitialize
@@ -259,7 +265,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
           handleBlur,
           setFieldValue,
           initialValues,
-          errors
+          errors,
         } = formikProps;
 
         return (
@@ -420,6 +426,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                   </div>
                                   <div className="d-flex align-items-center w-100">
                                     <NumberFormat
+                                      type={isHiddenPrice ? "password" : "text"}
                                       allowNegative
                                       name={`BounsSalesIn[${index}].Hoa_Hong[${idx}].Value`}
                                       placeholder={"Nhập giá trị"}
@@ -438,7 +445,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        window.top?.GlobalConfig?.Admin
+                                        (window.top?.GlobalConfig?.Admin
                                           ?.thuong_ds_nang_cao
                                           ? UserID !== 1
                                           : !(
@@ -447,7 +454,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                                 "DD-MM-YYYY"
                                               ) ===
                                                 moment().format("DD-MM-YYYY")
-                                            )
+                                            )) || isHiddenPrice
                                       }
                                     />
                                     {window.top?.GlobalConfig?.Admin
@@ -556,6 +563,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     </div>
                                   </div>
                                   <NumberFormat
+                                    type={isHiddenPrice ? "password" : "text"}
                                     allowNegative
                                     name={`BounsSalesIn[${index}].Doanh_So[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
@@ -574,7 +582,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     }}
                                     onBlur={handleBlur}
                                     disabled={
-                                      window.top?.GlobalConfig?.Admin
+                                      (window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao
                                         ? UserID !== 1
                                         : !(
@@ -582,7 +590,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                             moment(sub.CreateDate).format(
                                               "DD-MM-YYYY"
                                             ) === moment().format("DD-MM-YYYY")
-                                          )
+                                          )) || isHiddenPrice
                                     }
                                   />
                                   <SelectType
@@ -774,6 +782,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     </div>
                                   </div>
                                   <NumberFormat
+                                    type={isHiddenPrice ? "password" : "text"}
                                     allowNegative
                                     name={`BounsSalesIn[${index}].Hoa_Hong[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
@@ -792,7 +801,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     }}
                                     onBlur={handleBlur}
                                     disabled={
-                                      window.top?.GlobalConfig?.Admin
+                                      (window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao
                                         ? UserID !== 1
                                         : !(
@@ -800,7 +809,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                             moment(sub.CreateDate).format(
                                               "DD-MM-YYYY"
                                             ) === moment().format("DD-MM-YYYY")
-                                          )
+                                          )) || isHiddenPrice
                                     }
                                   />
                                   {window.top?.GlobalConfig?.Admin
@@ -897,6 +906,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     </div>
                                   </div>
                                   <NumberFormat
+                                    type={isHiddenPrice ? "password" : "text"}
                                     allowNegative
                                     name={`BounsSalesIn[${index}].Doanh_So[${idx}].Value`}
                                     placeholder={"Nhập giá trị"}
@@ -915,7 +925,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     }}
                                     onBlur={handleBlur}
                                     disabled={
-                                      window.top?.GlobalConfig?.Admin
+                                      (window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao
                                         ? UserID !== 1
                                         : !(
@@ -923,7 +933,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                             moment(sub.CreateDate).format(
                                               "DD-MM-YYYY"
                                             ) === moment().format("DD-MM-YYYY")
-                                          )
+                                          )) || isHiddenPrice
                                     }
                                   />
                                   <SelectType

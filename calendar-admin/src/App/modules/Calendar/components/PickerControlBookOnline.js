@@ -108,22 +108,14 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
           Member: x.member,
           Status: x.os.Status,
         })),
-      ].sort((left, right) =>
-        moment.utc(left.BookDate).diff(moment.utc(right.BookDate))
-      ).map((x) => ({...x, Index: x.Status === "CHUA_XAC_NHAN" ? 0 : 1})).sort((a,b) => b.Index - a.Index);
-      
-      let Lists = [
-        // {
-        //   start: "2025-03-27T10:00:00",
-        //   end: "2025-03-27T16:00:00",
-        //   resourceIds: [1],
-        //   display: "inverse-background",
-        //   extendedProps: {
-        //     noEvent: true,
-        //   },
-        //   className: ["bg-danger"],
-        // },
-      ];
+      ]
+        .sort((left, right) =>
+          moment.utc(left.BookDate).diff(moment.utc(right.BookDate))
+        )
+        .map((x) => ({ ...x, Index: x.Status === "CHUA_XAC_NHAN" ? 0 : 1 }))
+        .sort((a, b) => b.Index - a.Index);
+
+      let Lists = [];
 
       let MaxBook = Stafss.length;
       if (list && list.length > 0) {
@@ -196,7 +188,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
             crList = Lists.filter(
               (x) =>
                 !x.display &&
-                moment(
+                (moment(
                   moment(x.start, "YYYY-MM-DD HH:mm").format("HH:mm"),
                   "HH:mm"
                 ).isBetween(
@@ -213,7 +205,24 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                   ),
                   null,
                   "[)"
-                )
+                ) ||
+                  moment(
+                    moment(book.BookDate, "YYYY-MM-DD HH:mm").format("HH:mm"),
+                    "HH:mm"
+                  ).isBetween(
+                    moment(
+                      moment(x.start, "YYYY-MM-DD HH:mm").format("HH:mm"),
+                      "HH:mm"
+                    ),
+                    moment(
+                      moment(x.end, "YYYY-MM-DD HH:mm")
+                        .subtract(SettingBookOnlineMinutes || 0, "minutes")
+                        .format("HH:mm"),
+                      "HH:mm"
+                    ),
+                    null,
+                    "[)"
+                  ))
             );
           }
 
@@ -224,6 +233,10 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
               crList.map((x) => x.resourceIds[0]),
               Resources.length
             );
+
+            if (book.Status === "CHUA_XAC_NHAN") {
+              console.log(crList);
+            }
 
             let resourceId = ArrMaxBook + 1;
 
@@ -432,7 +445,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                 </div>
               </div>
             </div>
-            <div className="relative p-4 grow [&>*]:h-full">
+            <div className="relative p-4 grow [&>*]:h-full lg:h-[calc(100%-73px)]">
               <PickerAddEditBookOnline
                 TimeOpen={TimeOpen}
                 TimeClose={TimeClose}
@@ -625,7 +638,9 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                           } ${extendedProps?.MemberCurrent?.FullName ||
                             "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
                             ?.MemberCurrent?.MobilePhone ||
-                            "Chưa xác định"}</span></div><span class="${!extendedProps?.isBook &&
+                            "Chưa xác định"} - ${
+                            extendedProps.ID
+                          }</span></div><span class="${!extendedProps?.isBook &&
                             "d-none"}">${extendedProps?.BookCount?.Done ||
                             0}/${extendedProps?.BookCount?.Total ||
                             0}</span></div>
@@ -653,7 +668,9 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                                           } ${
                             extendedProps?.Star ? `(${extendedProps.Star})` : ""
                           } ${extendedProps?.MemberCurrent.FullName ||
-                            "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
+                            "Chưa xác định"} - ${
+                            extendedProps.ID
+                          }</span><span class="d-none d-md-inline"> - ${extendedProps
                             ?.MemberCurrent?.MobilePhone ||
                             "Chưa xác định"}</span><span> - ${
                             extendedProps?.RootTitles

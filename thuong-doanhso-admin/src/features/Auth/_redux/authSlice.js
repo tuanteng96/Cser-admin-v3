@@ -39,7 +39,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
               subs: [
                 {
                   name: "adminTools_byStock",
-                  IsAllStock: true,
+                  IsAllStock: false,
                   hasRight: false,
                 },
               ],
@@ -55,10 +55,10 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
   };
 
   window.top.token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEwNjEzMzEwNzAxNSIsIm5iZiI6MTczNDY2NzU1MywiZXhwIjoxODIxMDY3NTUzLCJpYXQiOjE3MzQ2Njc1NTN9.81WYIQqwE5pzbUl_tA8QDnAMsJ_zQHxADYtt6u-tA6E";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEyMjEzMzEyMjU1MSIsIm5iZiI6MTc0Mjk3Mjc4NywiZXhwIjoxODI5MzcyNzg3LCJpYXQiOjE3NDI5NzI3ODd9.vwatIHUpXSpoqKyMmXXCWlJt0ofO1BlM49tMNFJp2x4";
 
   window.top.OrderBonus23Info = {
-    OrderID: 50344,
+    OrderID: 56983,
     Order: {
       //Status: "finish",
       //AdminAction: "TANG_DH_KET_THUC_NO",
@@ -68,6 +68,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
   window.top.GlobalConfig = {
     Admin: {
       thuong_ds_nang_cao: false,
+      hoa_hong_an_gia: true
     },
   };
 }
