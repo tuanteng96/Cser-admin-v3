@@ -234,10 +234,6 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
               Resources.length
             );
 
-            if (book.Status === "CHUA_XAC_NHAN") {
-              console.log(crList);
-            }
-
             let resourceId = ArrMaxBook + 1;
 
             if (missNumber && missNumber.length > 0) {

@@ -309,6 +309,14 @@
     &.is-invalid {
         @include border-radius(3px);
     }
+    &.select-control-md {
+        .select__control {
+            min-height: 44px;
+            .select__placeholder {
+                font-size: 15px;
+            }
+        }
+    }
     .select__control {
         border-color: $input-border-color;
         min-height: $input-height;

@@ -125,6 +125,13 @@ const updateRoom = (data) => {
   );
 };
 
+const getCareSchedule = (data) => {
+  return axiosClient.post(
+    `/api/v3/OSNR@afterservice`,
+    JSON.stringify(data)
+  );
+};
+
 const CalendarCrud = {
   getMembers,
   getStaffs,
@@ -145,5 +152,6 @@ const CalendarCrud = {
   addEditBookConfig,
   deleteBookConfig,
   getListStaff,
+  getCareSchedule
 };
 export default CalendarCrud;
