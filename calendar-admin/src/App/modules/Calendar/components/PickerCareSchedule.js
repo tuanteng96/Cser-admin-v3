@@ -90,7 +90,7 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
         dataKey: "CreateDate",
         width: 200,
         cellRenderer: ({ rowData }) => (
-          <div>{moment(rowData).format("HH:mm DD-MM-YYYY")}</div>
+          <div>{moment(rowData.CreateDate).format("HH:mm DD-MM-YYYY")}</div>
         ),
         sortable: false,
       },
