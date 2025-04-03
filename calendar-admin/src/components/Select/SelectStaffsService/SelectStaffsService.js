@@ -16,7 +16,7 @@ const CustomOptionStaff = ({ children, components, ...props }) => {
     <components.Option {...props}>
       <div className="d-flex align-items-center">
         {Thumbnail && (
-          <div className="w-20px h-20px mr-8px rounded-circle overflow-hidden d-flex align-items-center justify-content-center">
+          <div className="overflow-hidden w-20px h-20px mr-8px rounded-circle d-flex align-items-center justify-content-center">
             <img className="w-100" src={Thumbnail} alt={label} />
           </div>
         )}
@@ -27,7 +27,14 @@ const CustomOptionStaff = ({ children, components, ...props }) => {
   );
 };
 
-function SelectStaffsService({ onChange, value, isLoading, adv, ...props }) {
+function SelectStaffsService({
+  onChange,
+  value,
+  isLoading,
+  adv,
+  StockID = "",
+  ...props
+}) {
   const { posHasRight, posIsAllStocks, posPermissionStocks } = useSelector(
     ({ Auth }) => ({
       posHasRight: Auth?.rightsSum?.pos?.hasRight,
@@ -48,7 +55,7 @@ function SelectStaffsService({ onChange, value, isLoading, adv, ...props }) {
     setLoading(true);
     const { data } = await CalendarCrud.getStaffs({
       All: true,
-      StockID: "",
+      StockID: StockID,
       key: "",
     });
     const { Items } = {

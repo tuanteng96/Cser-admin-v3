@@ -37,6 +37,11 @@ const getRootServices = ({ MemberID, StockID, Key }) => {
     `${GET_ROOT_SERVICES_URL}?cmd=getroot&memberid=${MemberID}&ps=15&pi=1&key=${Key}&stockid=${StockID}`
   );
 };
+const getCardServices = ({ Key }) => {
+  return axiosClient.get(
+    `/api/gl/select2?cmd=prod&cate_name=dich_vu&ignore_rootsv=1&ignore_all=1&q=${Key}`
+  );
+};
 const postBooking = (data, { CurrentStockID, u_id_z4aDf2 }) => {
   return axiosClient.post(
     `${POST_BOOKING_URL}&CurrentStockID=${CurrentStockID}&u_id_z4aDf2=${u_id_z4aDf2}`,
@@ -126,10 +131,39 @@ const updateRoom = (data) => {
 };
 
 const getCareSchedule = (data) => {
-  return axiosClient.post(
-    `/api/v3/OSNR@afterservice`,
-    JSON.stringify(data)
-  );
+  return axiosClient.post(`/api/v3/OSNR@afterservice`, JSON.stringify(data));
+};
+
+const getCalendarClass = (data) => {
+  return axiosClient.post(`/api/v3/OSC@ClassList`, JSON.stringify(data));
+};
+
+const addEditCalendarClass = (data) => {
+  return axiosClient.post(`/api/v3/OSC@ClassEDIT`, JSON.stringify(data));
+};
+
+const deleteCalendarClass = (data) => {
+  return axiosClient.post(`/api/v3/OSC@ClassDelete`, JSON.stringify(data));
+};
+
+const getCalendarClassMembers = (data) => {
+  return axiosClient.post(`/api/v3/OSC@ClassMemberList`, JSON.stringify(data));
+};
+
+const CalendarClassMembersAddEdit = (data) => {
+  return axiosClient.post(`/api/v3/OSC@ClassMemberEDIT`, JSON.stringify(data));
+};
+
+const CalendarClassMembersUpdateOs = (data) => {
+  return axiosClient.post(`/api/v3/OS25@UpdateList`, JSON.stringify(data));
+};
+
+const CalendarClassMembersDelete = (data) => {
+  return axiosClient.post(`/api/v3/OSC@ClassMemberDelete`, JSON.stringify(data));
+};
+
+const getOsMemberCalendar = (data) => {
+  return axiosClient.post(`/api/v3/OS25@Min`, JSON.stringify(data));
 };
 
 const CalendarCrud = {
@@ -152,6 +186,15 @@ const CalendarCrud = {
   addEditBookConfig,
   deleteBookConfig,
   getListStaff,
-  getCareSchedule
+  getCareSchedule,
+  getCalendarClass,
+  getCardServices,
+  addEditCalendarClass,
+  deleteCalendarClass,
+  getCalendarClassMembers,
+  CalendarClassMembersAddEdit,
+  CalendarClassMembersDelete,
+  getOsMemberCalendar,
+  CalendarClassMembersUpdateOs
 };
 export default CalendarCrud;

@@ -34,7 +34,7 @@ function SelectStocks({ value, allStock, ...props }) {
   useEffect(() => {
     setStocksList([]);
     let newStocks = [...Stocks];
-    
+
     if (!posHasRight) {
       newStocks = [];
     } else {

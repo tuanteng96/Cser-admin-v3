@@ -4,31 +4,21 @@ import AsyncSelect from "react-select/async";
 import CalendarCrud from "../../../App/modules/Calendar/_redux/CalendarCrud";
 import { toUrlServer } from "../../../helpers/AssetsHelpers";
 
-function SelectMember({ removeMembers, ...props }) {
+function SelectProdServiceCard(props) {
   const { AuthCrStockID } = useSelector(({ Auth }) => ({
     AuthCrStockID: Auth.CrStockID,
   }));
   const loadOptions = (inputValue) =>
     new Promise(async (resolve, reject) => {
-      const { data } = await CalendarCrud.getMembers(inputValue, AuthCrStockID);
-      
-      const result = data
-        .map((item) => ({
-          value: item.id,
-          label: item.text,
-          phone: item.suffix,
-          Thumbnail: toUrlServer("/images/user.png"),
-        }))
-        .filter((x) =>
-          removeMembers && removeMembers.length > 0
-            ? !removeMembers.includes(x.value)
-            : true
-        );
+      const { data } = await CalendarCrud.getCardServices({ Key: inputValue });
+      const result = data.map((item) => ({
+        value: item.id,
+        label: item.text,
+      }));
       resolve(result);
     });
   return (
     <AsyncSelect
-      key={JSON.stringify(removeMembers)}
       cacheOptions
       loadOptions={loadOptions}
       defaultOptions
@@ -37,4 +27,4 @@ function SelectMember({ removeMembers, ...props }) {
   );
 }
 
-export default SelectMember;
+export default SelectProdServiceCard;

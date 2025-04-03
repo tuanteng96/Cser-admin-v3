@@ -78,14 +78,14 @@ function AuthInit({ isConfig, children }) {
                     ParentID: 778,
                   },
                   {
-                    ID: 11451,
+                    ID: 11542,
                     Title: "Cser Hồ Chí Minh",
                     KeySEO: "",
                     ParentID: 778,
                   },
                 ],
               ],
-              IsAllStock: false,
+              IsAllStock: true,
             },
             tele: {
               hasRight: true,
@@ -124,8 +124,38 @@ function AuthInit({ isConfig, children }) {
               IsAllStock: false,
             },
           },
+          rightTree: {
+            groups: [
+              {
+                group: "Chức năng khác",
+                rights: [
+                  {
+                    IsAllStock: true,
+                    hasRight: true,
+                    name: "adminTools",
+                    subs: [
+                      {
+                        IsAllStock: true,
+                        hasRight: true,
+                        name: "adminTools_byStock",
+                        name_and_group: "adminTools_byStock_adminTools",
+                        stocks: "",
+                        text: "Công cụ hệ thống - Điểm",
+                        stocksList: [
+                          {
+                            ID: 11541,
+                            Title: "Cser Beauty Hà Nội",
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEyMjEzMzEyMjU1MSIsIm5iZiI6MTc0Mjk3Mjc4NywiZXhwIjoxODI5MzcyNzg3LCJpYXQiOjE3NDI5NzI3ODd9.vwatIHUpXSpoqKyMmXXCWlJt0ofO1BlM49tMNFJp2x4",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjEyMjEzMzEyMjU4MyIsIm5iZiI6MTc0MzIyMzMxMiwiZXhwIjoxODI5NjIzMzEyLCJpYXQiOjE3NDMyMjMzMTJ9.7BtSfGj4P02r12RQZ4w59pVmg6aQ7O2RyZfRAODQBMQ",
         };
         window.GlobalConfig = {
           APP: {
@@ -143,7 +173,8 @@ function AuthInit({ isConfig, children }) {
             isRooms: true,
             isAdminBooks: false,
             SettingBookOnline: true,
-            SettingBookOnlineMinutes: 0
+            SettingBookOnlineMinutes: 0,
+            lop_hoc_pt: true,
           },
         };
       }

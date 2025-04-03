@@ -30,7 +30,9 @@ import DateTimePicker from "../../../shared/DateTimePicker/DateTimePicker";
 import { Dropdown } from "react-bootstrap";
 import PickerSettingCalendar from "../../../components/PickerSettingCalendar/PickerSettingCalendar";
 import {
+  PickerCalendarClass,
   PickerCareSchedule,
+  PickerClass,
   PickerControlBookOnline,
   PickerSettingBookOnline,
 } from "./components";
@@ -143,6 +145,7 @@ function CalendarPage(props) {
     isRooms,
     Stocks,
     SettingBookOnline,
+    lop_hoc_pt,
   } = useSelector(({ Auth, JsonConfig }) => ({
     AuthCrStockID: Auth.CrStockID,
     StocksList: Auth?.Stocks.filter((x) => x.ParentID !== 0),
@@ -150,6 +153,7 @@ function CalendarPage(props) {
     GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
     isRooms: JsonConfig?.Admin?.isRooms,
     SettingBookOnline: JsonConfig?.Admin?.SettingBookOnline,
+    lop_hoc_pt: JsonConfig?.Admin?.lop_hoc_pt,
     StockRights: Auth?.StockRights || [],
     Stocks: Auth?.Stocks
       ? Auth?.Stocks.filter((x) => x.ParentID !== 0).map((o) => ({
@@ -1328,79 +1332,93 @@ function CalendarPage(props) {
 
               <div className="flex">
                 <PickerCareSchedule>
-                  {(props) => (
-                    <PickerControlBookOnline>
-                      {({ open }) => (
-                        <Select
-                          options={[
-                            {
-                              value: "dayGridMonth",
-                              label: "Theo Tháng",
-                              hidden: false,
-                            },
-                            {
-                              value: "timeGridWeek",
-                              label: "Theo Tuần",
-                              hidden: false,
-                            },
-                            {
-                              value: "timeGridDay",
-                              label: "Theo Ngày",
-                              hidden: false,
-                            },
-                            {
-                              value: "listWeek",
-                              label: "Danh sách",
-                              hidden: false,
-                            },
-                            {
-                              value: "resourceTimeGridDay",
-                              label: "Nhân viên",
-                              hidden: false,
-                            },
-                            {
-                              value: "resourceTimelineDay",
-                              label: "Buồng / Phòng",
-                              hidden: !isRooms,
-                            },
-                            {
-                              value: "Popup",
-                              label: "Kiểm soát đặt lịch Online",
-                              hidden: !SettingBookOnline,
-                            },
-                            {
-                              value: "CareSchedule",
-                              label: "Lịch chăm sóc",
-                              hidden: !SettingBookOnline,
-                            },
-                          ].filter((x) => !x.hidden)}
-                          value={topCalendar.type}
-                          onChange={(val) => {
-                            if (val?.value === "Popup") {
-                              open();
-                            } else if (val?.value === "CareSchedule") {
-                              props.open();
-                            } else {
-                              setTopCalendar((prevState) => ({
-                                ...prevState,
-                                type: val,
-                              }));
-                            }
-                          }}
-                          menuPosition="fixed"
-                          styles={{
-                            menuPortal: (base) => ({
-                              ...base,
-                              zIndex: 9999,
-                            }),
-                          }}
-                          menuPortalTarget={document.body}
-                          isClearable={false}
-                          className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
-                          classNamePrefix="select"
-                        />
+                  {(CareSchedule) => (
+                    <PickerCalendarClass>
+                      {(CalendarClass) => (
+                        <PickerControlBookOnline>
+                          {(ControlBookOnline) => (
+                            <Select
+                              options={[
+                                {
+                                  value: "dayGridMonth",
+                                  label: "Theo Tháng",
+                                  hidden: false,
+                                },
+                                {
+                                  value: "timeGridWeek",
+                                  label: "Theo Tuần",
+                                  hidden: false,
+                                },
+                                {
+                                  value: "timeGridDay",
+                                  label: "Theo Ngày",
+                                  hidden: false,
+                                },
+                                {
+                                  value: "listWeek",
+                                  label: "Danh sách",
+                                  hidden: false,
+                                },
+                                {
+                                  value: "resourceTimeGridDay",
+                                  label: "Nhân viên",
+                                  hidden: false,
+                                },
+                                {
+                                  value: "resourceTimelineDay",
+                                  label: "Buồng / Phòng",
+                                  hidden: !isRooms,
+                                },
+                                {
+                                  value: "PickerCalendarClass",
+                                  label: "Bảng lịch lớp học",
+                                  hidden: !lop_hoc_pt,
+                                },
+                                {
+                                  value: "PickerControlBookOnline",
+                                  label: "Kiểm soát đặt lịch Online",
+                                  hidden: !SettingBookOnline,
+                                },
+                                {
+                                  value: "PickerCareSchedule",
+                                  label: "Lịch chăm sóc",
+                                },
+                              ].filter((x) => !x.hidden)}
+                              value={topCalendar.type}
+                              onChange={(val) => {
+                                if (val?.value === "PickerCalendarClass") {
+                                  CalendarClass.open();
+                                } else if (
+                                  val?.value === "PickerControlBookOnline"
+                                ) {
+                                  ControlBookOnline.open();
+                                } else if (
+                                  val?.value === "PickerCareSchedule"
+                                ) {
+                                  CareSchedule.open();
+                                } else {
+                                  setTopCalendar((prevState) => ({
+                                    ...prevState,
+                                    type: val,
+                                  }));
+                                }
+                              }}
+                              menuPosition="fixed"
+                              styles={{
+                                menuPortal: (base) => ({
+                                  ...base,
+                                  zIndex: 9999,
+                                }),
+                              }}
+                              menuPortalTarget={document.body}
+                              isClearable={false}
+                              className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
+                              classNamePrefix="select"
+                            />
+                          )}
+                        </PickerControlBookOnline>
                       )}
-                    </PickerControlBookOnline>
+                    </PickerCalendarClass>
                   )}
                 </PickerCareSchedule>
 
@@ -1442,6 +1460,45 @@ function CalendarPage(props) {
                         )}
                       </PickerSettingBookOnline>
                     )}
+                    {lop_hoc_pt && (
+                      <PickerClass TimeOpen={TimeOpen} TimeClose={TimeClose}>
+                        {({ open }) => (
+                          <Dropdown.Item href="#" onClick={open}>
+                            Cài đặt lớp học
+                          </Dropdown.Item>
+                        )}
+                      </PickerClass>
+                    )}
+
+                    {/* <div className="w-100 h-[1px] bg-gray-300 my-2.5"></div>
+                    {lop_hoc_pt && (
+                      <PickerCalendarClass
+                        TimeOpen={TimeOpen}
+                        TimeClose={TimeClose}
+                      >
+                        {({ open }) => (
+                          <Dropdown.Item href="#" onClick={open}>
+                            Bảng lịch lớp học
+                          </Dropdown.Item>
+                        )}
+                      </PickerCalendarClass>
+                    )}
+                    {SettingBookOnline && (
+                      <PickerControlBookOnline>
+                        {({ open }) => (
+                          <Dropdown.Item href="#" onClick={open}>
+                            Kiểm soát đặt lịch Online
+                          </Dropdown.Item>
+                        )}
+                      </PickerControlBookOnline>
+                    )}
+                    <PickerCareSchedule>
+                      {({ open }) => (
+                        <Dropdown.Item href="#" onClick={open}>
+                          Lịch chăm sóc
+                        </Dropdown.Item>
+                      )}
+                    </PickerCareSchedule> */}
                   </Dropdown.Menu>
                 </Dropdown>
               </div>

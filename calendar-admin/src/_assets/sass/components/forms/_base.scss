@@ -317,6 +317,14 @@
             }
         }
     }
+    &.select-control-sm {
+        .select__control {
+            min-height: 40px;
+            .select__placeholder {
+                font-size: 14px;
+            }
+        }
+    }
     .select__control {
         border-color: $input-border-color;
         min-height: $input-height;
@@ -397,4 +405,8 @@
     background-color: #ecf1f6;
     border-color: #ecf1f6;
     color: #7e8299;
+}
+
+.select-control.is-invalid.solid-invalid .select__control {
+    border-color: $danger-hover
 }
