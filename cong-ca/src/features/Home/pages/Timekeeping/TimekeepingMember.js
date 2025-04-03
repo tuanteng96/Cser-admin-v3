@@ -550,6 +550,8 @@ function TimekeepingMember(props) {
 
   let CrDateQuery = searchParams.get('CrDate')
 
+  let StockID = searchParams.get('StockID')
+
   useEffect(() => {
     if (CrDateQuery) {
       setCrDate(moment(CrDateQuery, 'DD/MM/YYYY').toDate())
@@ -582,7 +584,7 @@ function TimekeepingMember(props) {
         ...filters,
         From: filters.From,
         To: filters.To,
-        StockID: CrStockID
+        StockID: StockID || CrStockID
       }
 
       const { data } = await worksheetApi.getAllWorkSheet(newObj)

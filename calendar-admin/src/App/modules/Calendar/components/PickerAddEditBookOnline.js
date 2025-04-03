@@ -8,7 +8,6 @@ import moment from "moment";
 import { useMutation, useQueryClient } from "react-query";
 import CalendarCrud from "../_redux/CalendarCrud";
 import clsx from "clsx";
-import Swal from "sweetalert2";
 import * as Yup from "yup";
 
 const AddEditSchema = Yup.object().shape({

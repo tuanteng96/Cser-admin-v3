@@ -5,7 +5,6 @@ import scrollGridPlugin from "@fullcalendar/scrollgrid";
 import FullCalendar from "@fullcalendar/react";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
-import PickerAddEditBookOnline from "./PickerAddEditBookOnline";
 import { useMutation, useQuery } from "react-query";
 import CalendarCrud from "../_redux/CalendarCrud";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -15,6 +14,7 @@ import vi from "date-fns/locale/vi";
 import { Form, Formik } from "formik";
 import Swal from "sweetalert2";
 import PickerClassManage from "./PickerClassManage";
+import PickerCalendarMemberReport from "./PickerCalendarMemberReport";
 
 function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
   const { AuthCrStockID } = useSelector(({ Auth }) => ({
@@ -225,8 +225,6 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                   const {
                     values,
                     setFieldValue,
-                    handleBlur,
-                    handleChange,
                   } = formikProps;
 
                   return (
@@ -316,6 +314,18 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                           </div>
                         )}
                       </button>
+                      <PickerCalendarMemberReport>
+                        {({ open }) => (
+                          <button
+                            onClick={open}
+                            type="button"
+                            className="rounded-[4px] px-4 text-[#3F4254] bg-[#D1D3E0]"
+                          >
+                            Thống kê
+                          </button>
+                        )}
+                      </PickerCalendarMemberReport>
+
                       <div className="h-11 w-[1px] bg-gray-300"></div>
                       <div
                         className="flex items-center justify-center w-12 cursor-pointer h-11"

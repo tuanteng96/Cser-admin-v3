@@ -54,7 +54,6 @@ function PickerClassAddEdit({ children, rowData }) {
     CreateDate: "",
     Title: "",
     Desc: "",
-    CreateDate: "",
     StockID: AuthCrStockID,
     MemberTotal: "",
     ProdIDs: "",
@@ -110,6 +109,8 @@ function PickerClassAddEdit({ children, rowData }) {
         TimeSlot: ListClassRooms?.data || defaultWeekdays,
       });
     }
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   let ListClassRooms = useQuery({

@@ -6,11 +6,9 @@ import { Form, Formik, useFormikContext } from "formik";
 import { useWindowSize } from "../../hooks/useWindowSize";
 import StatusList from "./StatusList";
 import AdvancedList from "./AdvancedList";
-import { Dropdown } from "react-bootstrap";
 import PerfectScrollbar from "react-perfect-scrollbar";
 import { AppContext } from "../../App/App";
 import SelectStocksTelesale from "../Select/SelectStocksTelesale/SelectStocksTelesale";
-import ModalProcessingBook from "../ModalProcessingBook/ModalProcessingBook";
 
 SidebarCalendar.propTypes = {
   onOpenModal: PropTypes.func,

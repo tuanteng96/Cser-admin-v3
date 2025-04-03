@@ -11,7 +11,7 @@ SelectStocks.defaultProps = {
   allStock: true,
 };
 
-function SelectStocks({ value, allStock, ...props }) {
+function SelectStocks({ value, allStock, StockRoles = null, ...props }) {
   const [StocksList, setStocksList] = useState([]);
   const {
     posHasRight,
@@ -62,9 +62,11 @@ function SelectStocks({ value, allStock, ...props }) {
     <Select
       placeholder="Chọn cơ cở"
       classNamePrefix="select"
-      options={StocksList}
+      options={StockRoles || StocksList}
       className="select-control"
-      value={StocksList.filter((item) => Number(value) === Number(item.value))}
+      value={(StockRoles || StocksList).filter(
+        (item) => Number(value) === Number(item.value)
+      )}
       {...props}
     />
   );

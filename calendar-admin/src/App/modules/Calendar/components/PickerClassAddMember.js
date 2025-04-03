@@ -122,7 +122,6 @@ function PickerClassAddMember({ children, initialValue, ProdIDs, DateFrom }) {
                   errors,
                   touched,
                   values,
-                  handleChange,
                   handleBlur,
                   setFieldValue,
                 } = formikProps;

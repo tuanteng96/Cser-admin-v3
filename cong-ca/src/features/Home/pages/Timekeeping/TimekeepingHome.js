@@ -365,7 +365,7 @@ function TimekeepingHome(props) {
               <NavLink
                 to={`/bang-cham-cong/${rowData.UserID}?CrDate=${moment(
                   CrDate
-                ).format('DD/MM/YYYY')}`}
+                ).format('DD/MM/YYYY')}&StockID=${rowData.StockID}`}
                 className="font-semibold text-black text-name text-decoration-none text-[12px] md:text-[15px] text-capitalize d-block pr-15px"
               >
                 <div>{rowData.FullName}</div>

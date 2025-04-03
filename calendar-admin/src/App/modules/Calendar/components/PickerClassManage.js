@@ -1,23 +1,15 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
-import {
-  useInfiniteQuery,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import CalendarCrud from "../_redux/CalendarCrud";
 import Table, { AutoResizer } from "react-base-table";
 import { components } from "react-select";
 import moment from "moment";
-import { Form, Formik } from "formik";
 import Swal from "sweetalert2";
 import SelectStaffsService from "../../../../components/Select/SelectStaffsService/SelectStaffsService";
-import SelectMember from "../../../../components/Select/SelectMember/SelectMember";
 import clsx from "clsx";
-import { Button, OverlayTrigger, Popover } from "react-bootstrap";
+import { OverlayTrigger, Popover } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import { useRoles } from "../../../../hooks/useRoles";
 import PickerClassAddMember from "./PickerClassAddMember";
@@ -502,7 +494,7 @@ function PickerClassManage({ children }) {
                   {
                     ID: rowData?.Os?.ID,
                     Desc: "",
-                    UserID: 0
+                    UserID: 0,
                   },
                 ],
               },
