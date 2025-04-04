@@ -50,11 +50,13 @@ function PickerClassAddMember({ children, initialValue, ProdIDs, DateFrom }) {
     let newLists = [...initialValue.Member.Lists];
     newLists.push({
       Member: {
+        MemberID: values?.Member?.value,
         FullName: values?.Member?.label,
         ID: values?.Member?.value,
         Phone: values?.Member?.phone,
       },
       Os: {
+        OsID: values?.Service?.value,
         ID: values?.Service?.value,
         Title: values?.Service?.label,
       },

@@ -8,6 +8,7 @@ import Table, { AutoResizer } from "react-base-table";
 import moment from "moment";
 import clsx from "clsx";
 import PickerClassReportFilter from "./PickerClassReportFilter";
+import { useRoles } from "../../../../hooks/useRoles";
 
 let formatArray = {
   useInfiniteQuery: (page, key = "data") => {
@@ -23,6 +24,8 @@ let formatArray = {
 };
 
 function PickerCalendarMemberReport({ children }) {
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
+
   const { AuthCrStockID } = useSelector(({ Auth, JsonConfig }) => ({
     AuthCrStockID: Auth.CrStockID,
   }));
@@ -64,6 +67,9 @@ function PickerCalendarMemberReport({ children }) {
     queryFn: async ({ pageParam = 1 }) => {
       let data = await CalendarCrud.getCalendarClassMembers({
         ...filters,
+        StockID: filters?.StockID
+          ? [filters?.StockID]
+          : adminTools_byStock?.StockRoles?.map((x) => x.value),
         ClassIDs: filters.ClassIDs ? [filters.ClassIDs?.value] : [],
         TeachIDs: filters.TeachIDs ? [filters.TeachIDs?.value] : [],
         DateStart: null,

@@ -37,7 +37,7 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
     queryKey: ["CalendarClass", filters],
     queryFn: async () => {
       let data = await CalendarCrud.getCalendarClass({
-        StockID: AuthCrStockID,
+        StockID: [AuthCrStockID],
         To: null,
         From: null,
         Pi: 1,
@@ -95,6 +95,30 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                 Day: Date,
                 Class: clss.Title,
               });
+
+              if (Date === moment().format("YYYY-MM-DD")) {
+                let newObjDate = {
+                  start: moment()
+                    .set({
+                      hour: "00",
+                      minute: "00",
+                      second: "00",
+                    })
+                    .toDate(),
+                  end: moment()
+                    .set({
+                      hour: "23",
+                      minute: "59",
+                      second: "59",
+                    })
+                    .toDate(),
+                  display: "background",
+                  className: ["fc-event-active", "fc-event-active-day"],
+                  resourceIds: [clss.ID + "-" + day.Index],
+                };
+
+                Events.push(newObjDate);
+              }
 
               for (let item of day.Items) {
                 let newObj = {
@@ -222,10 +246,7 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                 enableReinitialize
               >
                 {(formikProps) => {
-                  const {
-                    values,
-                    setFieldValue,
-                  } = formikProps;
+                  const { values, setFieldValue } = formikProps;
 
                   return (
                     <Form className="flex gap-3">
@@ -379,6 +400,12 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                         field: "Day",
                         headerContent: "",
                         width: "40%",
+                        cellClassNames: ({ fieldValue }) => {
+                          return (
+                            fieldValue === moment().format("YYYY-MM-DD") &&
+                            "bg-[#fffdf4]"
+                          );
+                        },
                         cellContent: function(arg) {
                           let { fieldValue, groupValue } = arg;
                           return (
@@ -403,6 +430,12 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                         field: "Class",
                         headerContent: "Lớp học",
                         width: "60%",
+                        cellClassNames: ({ resource }) => {
+                          return (
+                            resource?._resource?.extendedProps?.Day === moment().format("YYYY-MM-DD") &&
+                            "bg-[#fffdf4]"
+                          );
+                        },
                       },
                     ]}
                     views={{
@@ -414,8 +447,8 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                         resourceAreaWidth: "350px",
                         slotMinWidth: 100,
                         stickyHeaderDates: true,
-                        // slotMinTime: TimeOpen,
-                        // slotMaxTime: TimeClose,
+                        slotMinTime: TimeOpen,
+                        slotMaxTime: TimeClose,
                         //buttonText: "Phòng",
                         //resourceAreaHeaderContent: () => "Lớp học / Giờ",
                         slotLabelContent: ({ date, text }) => {

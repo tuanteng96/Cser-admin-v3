@@ -32,6 +32,15 @@ const getStaffs = ({ StockID, key = "", All }) => {
     }`
   );
 };
+
+const getStaffsFull= ({ StockID, key = "", All }) => {
+  return axiosClient.get(
+    `${GET_MEMBERS_STAFF_URL}?cmd=user&roles=&crstockid=${StockID}&q=${key}${
+      All ? "&all=1" : ""
+    }`
+  );
+};
+
 const getRootServices = ({ MemberID, StockID, Key }) => {
   return axiosClient.get(
     `${GET_ROOT_SERVICES_URL}?cmd=getroot&memberid=${MemberID}&ps=15&pi=1&key=${Key}&stockid=${StockID}`
@@ -195,6 +204,7 @@ const CalendarCrud = {
   CalendarClassMembersAddEdit,
   CalendarClassMembersDelete,
   getOsMemberCalendar,
-  CalendarClassMembersUpdateOs
+  CalendarClassMembersUpdateOs,
+  getStaffsFull
 };
 export default CalendarCrud;

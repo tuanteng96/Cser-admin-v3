@@ -7,12 +7,12 @@ import Table, { AutoResizer } from "react-base-table";
 import { components } from "react-select";
 import moment from "moment";
 import Swal from "sweetalert2";
-import SelectStaffsService from "../../../../components/Select/SelectStaffsService/SelectStaffsService";
 import clsx from "clsx";
 import { OverlayTrigger, Popover } from "react-bootstrap";
 import { v4 as uuidv4 } from "uuid";
 import { useRoles } from "../../../../hooks/useRoles";
 import PickerClassAddMember from "./PickerClassAddMember";
+import SelectStaffs from "../../../../components/Select/SelectStaffs/SelectStaffs";
 
 const Control = ({ children, ...props }) => {
   // @ts-ignore
@@ -42,7 +42,7 @@ let Status = [
   },
 ];
 
-function PickerClassManage({ children }) {
+function PickerClassManage({ children, TimeOpen, TimeClose }) {
   const queryClient = useQueryClient();
 
   const { AuthCrStockID } = useSelector(({ Auth, JsonConfig }) => ({
@@ -725,10 +725,10 @@ function PickerClassManage({ children }) {
                 <div className="flex items-center gap-4">
                   <div className="font-medium">HLV :</div>
                   <div className="w-[320px]">
-                    <SelectStaffsService
+                    <SelectStaffs
                       isDisabled={initialValue.Member?.Status}
                       isClearable={false}
-                      StockID={AuthCrStockID}
+                      //StockID={AuthCrStockID}
                       classIcon="fas fa-user"
                       menuPlacement="bottom"
                       className="select-control select-control-md"

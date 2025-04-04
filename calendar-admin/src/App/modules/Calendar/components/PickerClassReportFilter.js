@@ -2,7 +2,6 @@ import { Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { createPortal } from "react-dom";
-import SelectStaffsService from "../../../../components/Select/SelectStaffsService/SelectStaffsService";
 import SelectStocks from "../../../../components/Select/SelectStocks/SelectStocks";
 import DatePicker from "react-datepicker";
 import vi from "date-fns/locale/vi";
@@ -10,6 +9,7 @@ import Select from "react-select";
 import { useRoles } from "../../../../hooks/useRoles";
 import SelectOsClass from "../../../../components/Select/SelectOsClass/SelectOsClass";
 import clsx from "clsx";
+import SelectStaffs from "../../../../components/Select/SelectStaffs/SelectStaffs";
 
 let Status = [
   { label: "Đã hoàn thành", value: "1" },
@@ -127,7 +127,7 @@ function PickerClassReportFilter({ children, filters, onChange }) {
                         <div className="mb-px text-gray-700">Cơ sở</div>
                         <div>
                           <SelectStocks
-                            StockRoles={adminTools_byStock?.StockRoles || []}
+                            StockRoles={adminTools_byStock?.StockRolesAll || []}
                             isClearable
                             className={`select-control select-control-md`}
                             classNamePrefix="select"
@@ -175,9 +175,9 @@ function PickerClassReportFilter({ children, filters, onChange }) {
                           Huấn luyện viên
                         </div>
                         <div>
-                          <SelectStaffsService
+                          <SelectStaffs
                             isClearable
-                            StockID={values.StockID}
+                            //StockID={values.StockID}
                             classIcon="fas fa-user"
                             menuPlacement="bottom"
                             className="select-control select-control-md"

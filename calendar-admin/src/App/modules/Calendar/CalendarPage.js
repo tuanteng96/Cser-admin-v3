@@ -1333,7 +1333,10 @@ function CalendarPage(props) {
               <div className="flex">
                 <PickerCareSchedule>
                   {(CareSchedule) => (
-                    <PickerCalendarClass>
+                    <PickerCalendarClass
+                      TimeOpen={TimeOpen}
+                      TimeClose={TimeClose}
+                    >
                       {(CalendarClass) => (
                         <PickerControlBookOnline>
                           {(ControlBookOnline) => (
