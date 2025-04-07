@@ -153,6 +153,38 @@ function MonthlyPayroll(props) {
           )
       },
       {
+        width: width > 767 ? 250 : 120,
+        title: 'Đi muộn việc cá nhân',
+        key: 'TrackValue.SO_LAN_DI_MUON_CN',
+        cellRenderer: ({ rowData }) =>
+          rowData?.TrackValue?.SO_LAN_DI_MUON_CN || 0,
+        sortable: false
+      },
+      {
+        width: width > 767 ? 250 : 120,
+        title: 'Đi sớm việc công ty',
+        key: 'TrackValue.SO_LAN_DI_SOM_CTY',
+        cellRenderer: ({ rowData }) =>
+          rowData?.TrackValue?.SO_LAN_DI_SOM_CTY || 0,
+        sortable: false
+      },
+      {
+        width: width > 767 ? 250 : 120,
+        title: 'Về muộn việc công ty',
+        key: 'TrackValue.SO_LAN_VE_MUON_CTY',
+        cellRenderer: ({ rowData }) =>
+          rowData?.TrackValue?.SO_LAN_VE_MUON_CTY || 0,
+        sortable: false
+      },
+      {
+        width: width > 767 ? 250 : 120,
+        title: 'Về sớm việc cá nhân',
+        key: 'TrackValue.SO_LAN_VE_SOM_CN',
+        cellRenderer: ({ rowData }) =>
+          rowData?.TrackValue?.SO_LAN_VE_SOM_CN || 0,
+        sortable: false
+      },
+      {
         width: width > 767 ? 250 : 180,
         title: 'Tổng phạt (Đi muộn, về sớm)',
         key: 'DI_MUON+VE_SOM',
@@ -230,6 +262,10 @@ function MonthlyPayroll(props) {
                 'HỌ TÊN NHÂN VIÊN',
                 'SỐ CÔNG',
                 'PHỤ CẤP NGÀY',
+                'ĐI MUỘN VIỆC CÁ NHÂN',
+                'ĐI SỚM VIỆC CÔNG TY',
+                'VỀ MUỘN VIỆC CÔNG TY',
+                'VỀ SỚM VIỆC CÁ NHÂN',
                 'TỔNG LƯƠNG CHẤM CÔNG',
                 'TỔNG PHẠT (ĐI SỚM / VỀ MUỘN)',
                 'TỔNG TĂNG CA, THÊM GIỜ',
@@ -246,6 +282,10 @@ function MonthlyPayroll(props) {
                     item?.TrackValue?.WorkQty,
                     (item?.TrackValue?.WorkQtyAllowance || 0) *
                       (item?.TrackValue?.Config?.Values?.TRO_CAP_NGAY || 0),
+                      item?.TrackValue?.SO_LAN_DI_MUON_CN,
+                      item?.TrackValue?.SO_LAN_DI_SOM_CTY,
+                      item?.TrackValue?.SO_LAN_VE_MUON_CTY,
+                      item?.TrackValue?.SO_LAN_VE_SOM_CN,
                     item?.TrackValue?.WorkQty * item?.NGAY_LUONG_CO_BAN,
                     item?.TrackValue.DI_MUON + item?.TrackValue.VE_SOM > 0
                       ? `-${item?.TrackValue.DI_MUON + item?.TrackValue.VE_SOM}`
@@ -331,9 +371,9 @@ function MonthlyPayroll(props) {
               for (let i = 0; i <= TotalRow; i++) {
                 workbook.getActiveSheet().setFormatter(i + 3, 3, '#,#')
                 workbook.getActiveSheet().setFormatter(i + 3, 4, '#,#')
-                workbook.getActiveSheet().setFormatter(i + 3, 5, '#,#')
-                workbook.getActiveSheet().setFormatter(i + 3, 6, '#,#')
-                workbook.getActiveSheet().setFormatter(i + 3, 7, '#,#')
+                workbook.getActiveSheet().setFormatter(i + 3, 9, '#,#')
+                workbook.getActiveSheet().setFormatter(i + 3, 10, '#,#')
+                workbook.getActiveSheet().setFormatter(i + 3, 11, '#,#')
               }
 
               window.top?.toastr?.remove()
