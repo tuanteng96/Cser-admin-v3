@@ -94,6 +94,7 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                 //Day: day.Title.charAt(0).toUpperCase() + day.Title.slice(1),
                 Day: Date,
                 Class: clss.Title,
+                Index: clss.Order
               });
 
               if (Date === moment().format("YYYY-MM-DD")) {
@@ -224,7 +225,7 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
   });
 
   const onHide = () => setVisible(false);
-
+  
   return (
     <>
       {children({
@@ -380,6 +381,7 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
               >
                 {({ open }) => (
                   <FullCalendar
+                    resourceOrder={"-Index"}
                     viewClassNames="fc-setting-book-online"
                     firstDay={1}
                     handleWindowResize={true}
@@ -432,8 +434,8 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                         width: "60%",
                         cellClassNames: ({ resource }) => {
                           return (
-                            resource?._resource?.extendedProps?.Day === moment().format("YYYY-MM-DD") &&
-                            "bg-[#fffdf4]"
+                            resource?._resource?.extendedProps?.Day ===
+                              moment().format("YYYY-MM-DD") && "bg-[#fffdf4]"
                           );
                         },
                       },

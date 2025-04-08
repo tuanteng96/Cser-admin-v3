@@ -59,6 +59,7 @@ function PickerClassAddEdit({ children, rowData }) {
     ProdIDs: "",
     Minutes: "",
     TimeSlot: defaultWeekdays,
+    Order: "",
   });
 
   useEffect(() => {
@@ -95,6 +96,7 @@ function PickerClassAddEdit({ children, rowData }) {
                 : [],
             }))
           : defaultWeekdays,
+        Order: rowData?.Order,
       });
     } else {
       setInitialValues({
@@ -107,9 +109,10 @@ function PickerClassAddEdit({ children, rowData }) {
         ProdIDs: "",
         Minutes: "",
         TimeSlot: ListClassRooms?.data || defaultWeekdays,
+        Order: "",
       });
     }
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
@@ -170,6 +173,7 @@ function PickerClassAddEdit({ children, rowData }) {
       CreateDate: values?.CreateDate
         ? moment(values?.CreateDate).format("YYYY-MM-DD HH:mm")
         : "",
+      Order: values?.Order ? Number(values?.Order) : 0,
     };
     addEditMutation.mutate(
       { arr: [newValues] },
@@ -464,6 +468,25 @@ function PickerClassAddEdit({ children, rowData }) {
                               ))}
                             </div>
                           )}
+                        />
+                      </div>
+                      <div className="mb-3.5 last:mb-0">
+                        <div className="mb-px text-gray-700">Vị trí</div>
+                        <NumericFormat
+                          allowLeadingZeros={true}
+                          name="Order"
+                          value={values.Order}
+                          className={clsx(
+                            "form-control !text-[14px] !rounded-[4px]",
+                            errors?.Order &&
+                              touched?.Order &&
+                              "is-invalid solid-invalid"
+                          )}
+                          placeholder="Nhập vị trí"
+                          onValueChange={(val) =>
+                            setFieldValue("Order", val.value)
+                          }
+                          autoComplete="off"
                         />
                       </div>
                     </Modal.Body>
