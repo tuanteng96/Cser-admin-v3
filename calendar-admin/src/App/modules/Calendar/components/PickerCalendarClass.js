@@ -381,7 +381,7 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
               >
                 {({ open }) => (
                   <FullCalendar
-                    resourceOrder={"-Index"}
+                    resourceOrder={"Index"}
                     viewClassNames="fc-setting-book-online"
                     firstDay={1}
                     handleWindowResize={true}
