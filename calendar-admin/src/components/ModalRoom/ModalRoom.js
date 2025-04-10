@@ -117,7 +117,7 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
               ],
             }));
           }
-          
+
           setInitialValues((prevState) => ({
             ...prevState,
             RoomStocks: newValues,
@@ -252,17 +252,17 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                                                   <i className="pr-0 fal fa-plus font-size-xs"></i>
                                                 </button>
                                                 <button
-                                                  disabled={
-                                                    values.RoomStocks[i]
-                                                      .ListRooms.length === 1
-                                                  }
+                                                  // disabled={
+                                                  //   values.RoomStocks[i]
+                                                  //     .ListRooms.length === 1
+                                                  // }
                                                   type="button"
                                                   className="btn btn-light-danger btn-sm ml-5px"
-                                                  onClick={() =>
+                                                  onClick={() => {
                                                     ListRoomsHelpers.remove(
                                                       index
-                                                    )
-                                                  }
+                                                    );
+                                                  }}
                                                 >
                                                   <i className="pr-0 far fa-trash-alt font-size-xs"></i>
                                                 </button>
@@ -329,23 +329,23 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                                                                   <i className="pr-0 fal fa-plus font-size-xs"></i>
                                                                 </button>
                                                                 <button
-                                                                  disabled={
-                                                                    values
-                                                                      .RoomStocks[
-                                                                      i
-                                                                    ].ListRooms[
-                                                                      index
-                                                                    ].Children
-                                                                      .length ===
-                                                                    1
-                                                                  }
+                                                                  // disabled={
+                                                                  //   values
+                                                                  //     .RoomStocks[
+                                                                  //     i
+                                                                  //   ].ListRooms[
+                                                                  //     index
+                                                                  //   ].Children
+                                                                  //     .length ===
+                                                                  //   1
+                                                                  // }
                                                                   type="button"
                                                                   className="btn btn-light-danger btn-sm ml-5px"
-                                                                  onClick={() =>
+                                                                  onClick={() => {
                                                                     ChildrenHelpers.remove(
                                                                       idx
-                                                                    )
-                                                                  }
+                                                                    );
+                                                                  }}
                                                                 >
                                                                   <i className="pr-0 far fa-trash-alt font-size-xs"></i>
                                                                 </button>
@@ -353,6 +353,38 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                                                             </div>
                                                           )
                                                         )}
+
+                                                      {((!values.RoomStocks[i]
+                                                        .ListRooms[index]
+                                                        .Children &&
+                                                        values.RoomStocks[i]
+                                                          .ListRooms[index]
+                                                          .Children) ||
+                                                        (values.RoomStocks[i]
+                                                          .ListRooms[index]
+                                                          .Children &&
+                                                          values.RoomStocks[i]
+                                                            .ListRooms[index]
+                                                            .Children.length ===
+                                                            0)) && (
+                                                        <div>
+                                                          <button
+                                                            className="text-white bg-success rounded-[3px] text-[13px] py-2 px-3"
+                                                            type="button"
+                                                            onClick={() =>
+                                                              ChildrenHelpers.push(
+                                                                {
+                                                                  ID: uuidv4(),
+                                                                  label:
+                                                                    "",
+                                                                }
+                                                              )
+                                                            }
+                                                          >
+                                                            Thêm mới bàn
+                                                          </button>
+                                                        </div>
+                                                      )}
                                                     </>
                                                   )}
                                                 />
@@ -360,6 +392,30 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                                             </div>
                                           </div>
                                         )
+                                      )}
+                                      {(!values.RoomStocks[i].ListRooms ||
+                                        values.RoomStocks[i].ListRooms
+                                          .length === 0) && (
+                                        <div>
+                                          <button
+                                            type="button"
+                                            className="btn btn-light-success btn-sm"
+                                            onClick={() =>
+                                              ListRoomsHelpers.push({
+                                                ID: uuidv4(),
+                                                label: "",
+                                                Children: [
+                                                  {
+                                                    ID: uuidv4(),
+                                                    label: "",
+                                                  },
+                                                ],
+                                              })
+                                            }
+                                          >
+                                            Thêm mới phòng
+                                          </button>
+                                        </div>
                                       )}
                                     </div>
                                   </>
