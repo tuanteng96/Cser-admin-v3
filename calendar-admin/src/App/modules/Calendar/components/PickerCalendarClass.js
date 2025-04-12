@@ -94,7 +94,7 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                 //Day: day.Title.charAt(0).toUpperCase() + day.Title.slice(1),
                 Day: Date,
                 Class: clss.Title,
-                Index: clss.Order
+                Index: clss.Order,
               });
 
               if (Date === moment().format("YYYY-MM-DD")) {
@@ -224,8 +224,41 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
     },
   });
 
+  const recheckMutation = useMutation({
+    mutationFn: async (body) => {
+      let { Items } = await CalendarCrud.getCalendarClassMembers({
+        ClassIDs: [],
+        TeachIDs: [],
+        StockID: [AuthCrStockID],
+        DateStart: null,
+        DateEnd: null,
+        BeginFrom: moment(body.CrDate)
+          .clone()
+          .startOf("week")
+          .set({
+            hour: "00",
+            minute: "00",
+            second: "00",
+          })
+          .format("YYYY-MM-DD HH:mm:ss"),
+        BeginTo: moment(body.CrDate)
+          .clone()
+          .endOf("week")
+          .set({
+            hour: "23",
+            minute: "59",
+            second: "59",
+          })
+          .format("YYYY-MM-DD HH:mm:ss"),
+        Pi: 1,
+        Ps: 1000,
+      });
+      return Items || [];
+    },
+  });
+
   const onHide = () => setVisible(false);
-  
+
   return (
     <>
       {children({
@@ -484,10 +517,38 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                       }
                       return <>Xem thêm + {num}</>;
                     }}
-                    eventClick={({ event }) => {
+                    eventClick={async ({ event }) => {
+                      // window.top?.loading &&
+                      //   window.top.loading("Đang kiểm tra");
+
                       let { extendedProps } = event._def;
+                      // let rs = await recheckMutation.mutateAsync(filters);
+                      // window.top?.toastr && window.top.toastr.clear();
+
+                      // let index = rs?.findIndex((x) => {
+                      //   return (
+                      //     extendedProps?.Class?.ID === x?.Class?.ID &&
+                      //     moment(extendedProps?.DateFrom)
+                      //       .set({
+                      //         hour: moment(extendedProps.TimeFrom, "HH:mm").get(
+                      //           "hour"
+                      //         ),
+                      //         minute: moment(
+                      //           extendedProps.TimeFrom,
+                      //           "HH:mm"
+                      //         ).get("minute"),
+                      //         second: moment(
+                      //           extendedProps.TimeFrom,
+                      //           "HH:mm"
+                      //         ).get("second"),
+                      //       })
+                      //       .format("DD-MM-YYYY HH:mm") ===
+                      //       moment(x.TimeBegin).format("DD-MM-YYYY HH:mm")
+                      //   );
+                      // });
+
                       if (extendedProps?.ClassInfo) {
-                        open(extendedProps);
+                        open({ ...extendedProps });
                       } else {
                         Swal.fire({
                           icon: "warning",
@@ -504,53 +565,96 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                           showLoaderOnConfirm: true,
                           preConfirm: () => {
                             return new Promise(async (resolve, reject) => {
-                              let newObj = {
-                                ID: 0,
-                                StockID: extendedProps?.Class?.StockID,
-                                TimeBegin: extendedProps?.DateFrom
-                                  ? moment(extendedProps?.DateFrom)
-                                      .set({
-                                        hour: moment(
-                                          extendedProps?.TimeFrom,
-                                          "HH:mm"
-                                        ).get("hour"),
-                                        minute: moment(
-                                          extendedProps?.TimeFrom,
-                                          "HH:mm"
-                                        ).get("minute"),
-                                        second: moment(
-                                          extendedProps?.TimeFrom,
-                                          "HH:mm"
-                                        ).get("second"),
-                                      })
-                                      .format("YYYY-MM-DD HH:mm:ss")
-                                  : null,
-                                OrderServiceClassID: extendedProps?.Class?.ID,
-                                TeacherID: "",
-                                Member: {
-                                  Lists: [],
-                                  Status: "",
-                                },
-                                MemberID: 0,
-                                Desc: "",
-                              };
-                              let { Inserted } = await addMutation.mutateAsync({
-                                arr: [newObj],
+                              let rs = await recheckMutation.mutateAsync(
+                                filters
+                              );
+                              let index = rs?.findIndex((x) => {
+                                return (
+                                  extendedProps?.Class?.ID === x?.Class?.ID &&
+                                  moment(extendedProps?.DateFrom)
+                                    .set({
+                                      hour: moment(
+                                        extendedProps.TimeFrom,
+                                        "HH:mm"
+                                      ).get("hour"),
+                                      minute: moment(
+                                        extendedProps.TimeFrom,
+                                        "HH:mm"
+                                      ).get("minute"),
+                                      second: moment(
+                                        extendedProps.TimeFrom,
+                                        "HH:mm"
+                                      ).get("second"),
+                                    })
+                                    .format("DD-MM-YYYY HH:mm") ===
+                                    moment(x.TimeBegin).format(
+                                      "DD-MM-YYYY HH:mm"
+                                    )
+                                );
                               });
 
-                              resolve(
-                                Inserted && Inserted.length > 0
-                                  ? Inserted[0]
-                                  : null
-                              );
+                              let ClassInfo = null;
+
+                              if (index > -1) {
+                                ClassInfo = rs[index];
+                              } else {
+                                let newObj = {
+                                  ID: 0,
+                                  StockID: extendedProps?.Class?.StockID,
+                                  TimeBegin: extendedProps?.DateFrom
+                                    ? moment(extendedProps?.DateFrom)
+                                        .set({
+                                          hour: moment(
+                                            extendedProps?.TimeFrom,
+                                            "HH:mm"
+                                          ).get("hour"),
+                                          minute: moment(
+                                            extendedProps?.TimeFrom,
+                                            "HH:mm"
+                                          ).get("minute"),
+                                          second: moment(
+                                            extendedProps?.TimeFrom,
+                                            "HH:mm"
+                                          ).get("second"),
+                                        })
+                                        .format("YYYY-MM-DD HH:mm:ss")
+                                    : null,
+                                  OrderServiceClassID: extendedProps?.Class?.ID,
+                                  TeacherID: "",
+                                  Member: {
+                                    Lists: [],
+                                    Status: "",
+                                  },
+                                  MemberID: 0,
+                                  Desc: "",
+                                };
+                                let {
+                                  Inserted,
+                                } = await addMutation.mutateAsync({
+                                  arr: [newObj],
+                                });
+                                ClassInfo =
+                                  Inserted && Inserted.length > 0
+                                    ? Inserted[0]
+                                    : null;
+                              }
+                              resolve({
+                                data: ClassInfo,
+                                refetch:
+                                  (extendedProps?.ClassInfo && index === -1) ||
+                                  (!extendedProps?.ClassInfo && index > -1),
+                              });
                             });
                           },
                           allowOutsideClick: () => !Swal.isLoading(),
                         }).then((result) => {
                           if (result.isConfirmed) {
                             let newExtendedProps = { ...extendedProps };
-                            if (result.value) {
+                            if (result?.value?.data) {
                               newExtendedProps["ClassInfo"] = result.value;
+                            }
+                            if (result?.value?.refetch) {
+                              refetch();
                             }
                             open(newExtendedProps);
                           }

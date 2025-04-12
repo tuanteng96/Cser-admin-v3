@@ -1778,8 +1778,9 @@ function CalendarPage(props) {
                   return <>Xem thêm + {num}</>;
                 }}
                 eventClick={({ event, el }) => {
-                  if (isTelesales) return;
+                  
                   const { _def, extendedProps } = event;
+                  if (_def.extendedProps.os && isTelesales) return;
                   if (extendedProps?.noEvent) return;
 
                   if (_def.extendedProps.os) {
@@ -2009,6 +2010,7 @@ function CalendarPage(props) {
               }))
             : []
         }
+        isTelesales={isTelesales}
       />
       <ModalCalendarLock
         show={isModalLock}

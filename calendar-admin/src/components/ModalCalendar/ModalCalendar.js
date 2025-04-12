@@ -107,6 +107,7 @@ function ModalCalendar({
   initialValue,
   onDelete,
   TagsList,
+  isTelesales
 }) {
   const { AuthCrStockID, TimeOpen, TimeClose } = useSelector(
     ({ Auth, JsonConfig }) => ({
@@ -774,7 +775,7 @@ function ModalCalendar({
                     </div>
                   )}
                 </Modal.Body>
-                {initialValues.Status !== "CHUA_XAC_NHAN" && (
+                {!isTelesales && initialValues.Status !== "CHUA_XAC_NHAN" && (
                   <Modal.Footer className="justify-content-between">
                     <div className="d-flex w-100">
                       <div className="flex-1">
