@@ -122,6 +122,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
             : null,
           Member: {
             ...data?.Member,
+            IsOverTime: data?.Member?.IsOverTime || false,
             Lists: data?.Member?.Lists
               ? data?.Member?.Lists.map((x) => ({
                   ...x,
@@ -153,6 +154,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
           TeacherID: "",
           Member: {
             Lists: [],
+            IsOverTime: false,
           },
           MemberID: 0,
           Desc: "",
@@ -605,6 +607,27 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
     });
   };
 
+  const onUpdateOverTime = (ck) => {
+    let newValues = {
+      arr: [
+        {
+          ...initialValue,
+          Member: {
+            ...initialValue,
+            IsOverTime: ck,
+          },
+        },
+      ],
+    };
+    addMutation.mutate(newValues, {
+      onSuccess: () => {
+        window?.top?.toastr?.success("Cập nhập thành công.", "", {
+          timeOut: 200,
+        });
+      },
+    });
+  };
+
   const onUpdateStatus = () => {
     Swal.fire({
       icon: "warning",
@@ -756,6 +779,30 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                       }
                       menuPortalTarget={document.body}
                     />
+                  </div>
+                  <div></div>
+                  <div className="d-flex align-items-center justify-content-between">
+                    <label className="checkbox checkbox-lg">
+                      <input
+                        type="checkbox"
+                        name="IsOverTime"
+                        checked={initialValue?.Member?.IsOverTime}
+                        onChange={(e) => {
+                          setInitialValue((prevState) => ({
+                            ...prevState,
+                            Member: {
+                              ...prevState,
+                              IsOverTime: e.target.checked,
+                            },
+                          }));
+                          onUpdateOverTime(e.target.checked);
+                        }}
+                      />
+                      <span />
+                      <b className="pl-2 font-normal text-[#222] text-[14px]">
+                        Ngoài giờ
+                      </b>
+                    </label>
                   </div>
                 </div>
                 <div className="flex gap-3">

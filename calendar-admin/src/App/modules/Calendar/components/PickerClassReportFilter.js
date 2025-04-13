@@ -27,6 +27,7 @@ function PickerClassReportFilter({ children, filters, onChange }) {
     BeginFrom: new Date(),
     BeginTo: new Date(),
     Status: "",
+    IsOverTime: false,
   });
 
   useEffect(() => {
@@ -38,9 +39,10 @@ function PickerClassReportFilter({ children, filters, onChange }) {
         BeginFrom: filters.BeginFrom,
         BeginTo: filters.BeginTo,
         Status: filters.Status,
+        IsOverTime: filters.IsOverTime,
       });
     }
-    
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
@@ -228,6 +230,22 @@ function PickerClassReportFilter({ children, filters, onChange }) {
                             }}
                           />
                         </div>
+                      </div>
+                      <div className="mb-3.5 last:mb-0">
+                        <label className="checkbox">
+                          <input
+                            type="checkbox"
+                            name="IsOverTime"
+                            checked={values.IsOverTime}
+                            onChange={(e) => {
+                              setFieldValue("IsOverTime", e.target.checked);
+                            }}
+                          />
+                          <span />
+                          <b className="pl-2 font-normal text-gray-700 text-[14px]">
+                            Ngoài giờ
+                          </b>
+                        </label>
                       </div>
                     </Modal.Body>
                     <Modal.Footer>
