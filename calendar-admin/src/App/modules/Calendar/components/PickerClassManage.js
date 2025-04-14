@@ -613,7 +613,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
         {
           ...initialValue,
           Member: {
-            ...initialValue,
+            ...initialValue.Member,
             IsOverTime: ck,
           },
         },
@@ -791,12 +791,13 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                           setInitialValue((prevState) => ({
                             ...prevState,
                             Member: {
-                              ...prevState,
+                              ...prevState.Member,
                               IsOverTime: e.target.checked,
                             },
                           }));
                           onUpdateOverTime(e.target.checked);
                         }}
+                        disabled={initialValue.Member?.Status}
                       />
                       <span />
                       <b className="pl-2 font-normal text-[#222] text-[14px]">

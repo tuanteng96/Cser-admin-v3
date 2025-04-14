@@ -16,6 +16,11 @@ let Status = [
   { label: "Chưa hoàn thành", value: "0" },
 ];
 
+let WorkingTime = [
+  { label: "Trong giờ", value: "1" },
+  { label: "Ngoài giờ", value: "0" },
+];
+
 function PickerClassReportFilter({ children, filters, onChange }) {
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
@@ -27,7 +32,7 @@ function PickerClassReportFilter({ children, filters, onChange }) {
     BeginFrom: new Date(),
     BeginTo: new Date(),
     Status: "",
-    IsOverTime: false,
+    WorkingTime: null,
   });
 
   useEffect(() => {
@@ -39,7 +44,7 @@ function PickerClassReportFilter({ children, filters, onChange }) {
         BeginFrom: filters.BeginFrom,
         BeginTo: filters.BeginTo,
         Status: filters.Status,
-        IsOverTime: filters.IsOverTime,
+        WorkingTime: filters.WorkingTime,
       });
     }
 
@@ -232,20 +237,28 @@ function PickerClassReportFilter({ children, filters, onChange }) {
                         </div>
                       </div>
                       <div className="mb-3.5 last:mb-0">
-                        <label className="checkbox">
-                          <input
-                            type="checkbox"
-                            name="IsOverTime"
-                            checked={values.IsOverTime}
-                            onChange={(e) => {
-                              setFieldValue("IsOverTime", e.target.checked);
+                        <div className="mb-px text-gray-700">Loại giờ làm việc</div>
+                        <div>
+                          <Select
+                            isClearable
+                            classNamePrefix="select"
+                            className="select-control select-control-md"
+                            options={WorkingTime}
+                            placeholder="Chọn loại"
+                            value={values.WorkingTime}
+                            onChange={(value) => setFieldValue("WorkingTime", value)}
+                            blurInputOnSelect={true}
+                            noOptionsMessage={() => "Không có dữ liệu."}
+                            menuPortalTarget={document.body}
+                            menuPosition="fixed"
+                            styles={{
+                              menuPortal: (base) => ({
+                                ...base,
+                                zIndex: 9999,
+                              }),
                             }}
                           />
-                          <span />
-                          <b className="pl-2 font-normal text-gray-700 text-[14px]">
-                            Ngoài giờ
-                          </b>
-                        </label>
+                        </div>
                       </div>
                     </Modal.Body>
                     <Modal.Footer>

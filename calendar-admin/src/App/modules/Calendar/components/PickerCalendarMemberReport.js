@@ -89,6 +89,7 @@ function PickerCalendarMemberReport({ children }) {
           })
           .format("YYYY-MM-DD HH:mm:ss"),
         Status: filters?.Status ? filters?.Status?.value : "",
+        WorkingTime: filters?.WorkingTime ? filters?.WorkingTime?.value : "",
         Pi: pageParam,
         Ps: 30,
       });
@@ -176,6 +177,15 @@ function PickerCalendarMemberReport({ children }) {
           </div>
         ),
         width: 200,
+        sortable: false,
+      },
+      {
+        key: "IsOverTime",
+        title: "Loại giờ làm việc",
+        dataKey: "IsOverTime",
+        cellRenderer: ({ rowData }) =>
+          rowData?.Member?.IsOverTime && "Ngoài giờ",
+        width: 250,
         sortable: false,
       },
     ],
