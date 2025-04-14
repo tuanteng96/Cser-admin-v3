@@ -520,7 +520,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                         UserID === 1) ||
                                       (!window.top?.GlobalConfig?.Admin
                                         ?.thuong_ds_nang_cao &&
-                                        adminTools_byStock?.hasRigh) ? (
+                                        adminTools_byStock?.hasRight) ? (
                                         <>
                                           <PickerDate
                                             onRefresh={onRefresh}
