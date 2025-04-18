@@ -66,7 +66,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
 
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
-  const { isLoading, isFetching, refetch } = useQuery({
+  const { isLoading, isFetching, refetch, data: dataOs } = useQuery({
     queryKey: ["CalendarClassMembers", { initialValues, visible }],
     queryFn: async () => {
       let { Items } = await CalendarCrud.getCalendarClassMembers({
@@ -332,7 +332,12 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                 }
               >
                 <button
-                  disabled={initialValue.Member?.Status}
+                  disabled={
+                    initialValue.Member?.Status ||
+                    moment().isSameOrBefore(
+                      moment(initialValue?.TimeBegin, "YYYY-MM-DD HH:mm")
+                    )
+                  }
                   type="button"
                   className="disabled:opacity-50 w-[130px] h-[32px] text-[13px] bg-primary px-4 rounded-[4px] text-white cursor-pointer flex items-center justify-center"
                 >
@@ -628,11 +633,12 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
 
   const onUpdateOverTime = (ck) => {
     let obj = { ...initialValue };
-
+    
     let newValues = {
       arr: [
         {
           ...obj,
+          TeacherID: obj?.TeacherID?.value || null,
           Member: {
             ...obj.Member,
             IsOverTime: ck,
