@@ -88,7 +88,6 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
             minute: moment(initialValues?.TimeFrom, "HH:mm").get("minute"),
             second: moment(initialValues?.TimeFrom, "HH:mm").get("second"),
           })
-          .add(initialValues?.Class?.Minutes, "minutes")
           .format("YYYY-MM-DD HH:mm:ss"),
         Pi: 1,
         Ps: 20,
@@ -591,6 +590,26 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
         {
           ...initialValue,
           TeacherID: teacher?.value || "",
+          Member: {
+            ...initialValue.Member,
+            HistoryCoachs: [
+              ...(initialValue?.Member?.HistoryCoachs || []),
+              {
+                CreateDate: moment().format("YYYY-MM-DD HH:mm"),
+                Staff: {
+                  StaffID: window?.top?.Info?.User?.ID,
+                  ID: window?.top?.Info?.User?.ID,
+                  FullName: window?.top?.Info?.User?.FullName,
+                },
+                Coach: teacher
+                  ? {
+                      ID: teacher?.value,
+                      FullName: teacher?.label,
+                    }
+                  : null,
+              },
+            ],
+          },
         },
       ],
     };
@@ -608,12 +627,14 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
   };
 
   const onUpdateOverTime = (ck) => {
+    let obj = { ...initialValue };
+
     let newValues = {
       arr: [
         {
-          ...initialValue,
+          ...obj,
           Member: {
-            ...initialValue.Member,
+            ...obj.Member,
             IsOverTime: ck,
           },
         },
