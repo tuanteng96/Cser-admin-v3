@@ -373,9 +373,14 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
   });
 
   const updateOsStatusMutation = useMutation({
-    mutationFn: async ({ data, update }) => {
+    mutationFn: async ({ data, update, addPoint, deletePoint }) => {
       let rs = await CalendarCrud.CalendarClassMembersAddEdit(data);
       await CalendarCrud.CalendarClassMembersUpdateOs(update);
+
+      if (addPoint) await CalendarCrud.addEditPointOsMember(addPoint);
+
+      if (deletePoint) await CalendarCrud.deletePointOsMember(deletePoint);
+
       await refetch();
       await queryClient.invalidateQueries({ queryKey: ["CalendarClass"] });
       return rs;
@@ -524,6 +529,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
   };
 
   const onAttendance = async ({ rowIndex, Status, rowData }) => {
+    let CrStatus = rowData.Status;
     Swal.fire({
       icon: "warning",
       title: `Xác nhận  ${Status.label}?`,
@@ -564,12 +570,42 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
             newObj["UserID"] = 0;
           }
 
+          let addPoints = null;
+          let deletePoints = null;
+
+          if (window?.top?.GlobalConfig?.Admin?.lop_hoc_diem) {
+            if (Status?.value === "DIEM_DANH_DEN") {
+              addPoints = {
+                MemberID: rowData?.Member?.ID,
+                Title: "Tích điểm khi đi tập",
+                Desc: `Đi tập lớp ${dataOs?.Class?.Title} lúc ${moment(
+                  initialValue?.TimeBegin
+                ).format("HH:mm DD/MM/YYYY")}.`,
+                CreateDate: moment().format("YYYY-MM-DD HH:mm"),
+                Point: window?.top?.GlobalConfig?.Admin?.lop_hoc_diem,
+                StockID: initialValue?.StockID,
+                OrderServiceID: rowData?.Os?.ID,
+              };
+            } else if (CrStatus === "DIEM_DANH_DEN") {
+              deletePoints = {
+                MemberID: rowData?.Member?.ID,
+                OrderServiceID: rowData?.Os?.ID,
+              };
+            }
+          }
+
           updateOsStatusMutation.mutate(
             {
               data: newValues,
               update: {
                 arr: [newObj],
               },
+              addPoint: addPoints
+                ? {
+                    edit: [addPoints],
+                  }
+                : null,
+              deletePoint: deletePoints,
             },
             {
               onSuccess: () => {
@@ -633,7 +669,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
 
   const onUpdateOverTime = (ck) => {
     let obj = { ...initialValue };
-    
+
     let newValues = {
       arr: [
         {

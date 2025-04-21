@@ -14,6 +14,7 @@ import SelectStaffsService from "../../../components/Select/SelectStaffsService/
 import { Dropdown } from "react-bootstrap";
 import { useQuery } from "react-query";
 import "../../../_assets/sass/pages/_booking.scss";
+import SelectServiceBed from "../../../components/Select/SelectServiceBed/SelectServiceBed";
 moment.locale("vi");
 
 const StatusArr = [
@@ -66,6 +67,7 @@ const initialDefault = {
     label: "1 khách",
     value: 1,
   },
+  TreatmentJson: "",
 };
 function BookingPage() {
   const [initialValues, setInitialValues] = useState(initialDefault);
@@ -135,9 +137,10 @@ function BookingPage() {
         AtHome: Book.AtHome,
         AmountPeople,
         TagSetting,
+        TreatmentJson: Book?.TreatmentJson
+          ? JSON.parse(Book?.TreatmentJson)
+          : "",
       }));
-
-      
     } else {
       setInitialValues((prevState) => ({
         ...prevState,
@@ -209,6 +212,9 @@ function BookingPage() {
               : "",
           BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
           Desc,
+          TreatmentJson: values?.TreatmentJson
+            ? JSON.stringify(values?.TreatmentJson)
+            : "",
         },
       ],
     };
@@ -286,6 +292,9 @@ function BookingPage() {
           BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
           Status: "KHACH_DEN",
           Desc,
+          TreatmentJson: values?.TreatmentJson
+            ? JSON.stringify(values?.TreatmentJson)
+            : "",
         },
       ],
     };
@@ -353,6 +362,9 @@ function BookingPage() {
               : "",
           BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
           Status: "TU_CHOI",
+          TreatmentJson: values?.TreatmentJson
+            ? JSON.stringify(values?.TreatmentJson)
+            : "",
         },
       ],
     };
@@ -619,6 +631,26 @@ function BookingPage() {
                         ? "Không có nhân viên"
                         : "Không tìm thấy nhân viên"
                     }
+                  />
+                  <SelectServiceBed
+                    StockID={values.StockID}
+                    classWrap="mt-2"
+                    className={`select-control ${
+                      errors.TreatmentJson && touched.TreatmentJson
+                        ? "is-invalid solid-invalid"
+                        : ""
+                    }`}
+                    classNamePrefix="select"
+                    isClearable
+                    isSearchable
+                    noOptionsMessage={({ inputValue }) =>
+                      !inputValue ? "Không có giường" : "Không tìm thấy giường"
+                    }
+                    value={values.TreatmentJson}
+                    onChange={(option) =>
+                      setFieldValue("TreatmentJson", option)
+                    }
+                    placeholder="Chọn giường"
                   />
                   {window?.top?.GlobalConfig?.APP?.SL_khach && (
                     <Select

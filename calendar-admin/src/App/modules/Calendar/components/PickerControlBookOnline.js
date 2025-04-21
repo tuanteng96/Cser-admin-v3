@@ -619,6 +619,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                         Object.keys(extendedProps).length > 0
                       ) {
                         if (view.type !== "listWeek") {
+                          console.log(extendedProps)
                           italicEl.innerHTML = `<div class="fc-title">
                                             
                                           <div class="d-flex justify-content-between"><div><span class="fullname">${
@@ -635,7 +636,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                             "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
                             ?.MemberCurrent?.MobilePhone ||
                             "Chưa xác định"} - ${
-                            extendedProps.ID
+                            extendedProps.ID || extendedProps?.os?.ID
                           }</span></div><span class="${!extendedProps?.isBook &&
                             "d-none"}">${extendedProps?.BookCount?.Done ||
                             0}/${extendedProps?.BookCount?.Total ||

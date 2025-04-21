@@ -17,6 +17,7 @@ import SelectStocks from "../Select/SelectStocks/SelectStocks";
 import { toast } from "react-toastify";
 import { NumericFormat } from "react-number-format";
 import clsx from "clsx";
+import SelectServiceBed from "../Select/SelectServiceBed/SelectServiceBed";
 moment.locale("vi");
 
 ModalCalendar.propTypes = {
@@ -96,6 +97,7 @@ const initialDefault = {
   TagSetting: "",
   FullName: "",
   Phone: "",
+  TreatmentJson: "",
 };
 
 function ModalCalendar({
@@ -107,7 +109,7 @@ function ModalCalendar({
   initialValue,
   onDelete,
   TagsList,
-  isTelesales
+  isTelesales,
 }) {
   const { AuthCrStockID, TimeOpen, TimeClose } = useSelector(
     ({ Auth, JsonConfig }) => ({
@@ -193,6 +195,9 @@ function ModalCalendar({
           TeleTags: initialValue?.Member?.TeleTags || "",
           AmountPeople,
           TagSetting,
+          TreatmentJson: initialValue?.TreatmentJson
+            ? JSON.parse(initialValue?.TreatmentJson)
+            : "",
         }));
       } else {
         setInitialValues((prevState) => ({
@@ -674,6 +679,28 @@ function ModalCalendar({
                           ? "Không có nhân viên"
                           : "Không tìm thấy nhân viên"
                       }
+                    />
+                    <SelectServiceBed
+                      StockID={values.StockID}
+                      classWrap="mt-2"
+                      className={`select-control ${
+                        errors.TreatmentJson && touched.TreatmentJson
+                          ? "is-invalid solid-invalid"
+                          : ""
+                      }`}
+                      classNamePrefix="select"
+                      isClearable
+                      isSearchable
+                      noOptionsMessage={({ inputValue }) =>
+                        !inputValue
+                          ? "Không có giường"
+                          : "Không tìm thấy giường"
+                      }
+                      value={values.TreatmentJson}
+                      onChange={(option) =>
+                        setFieldValue("TreatmentJson", option)
+                      }
+                      placeholder="Chọn giường"
                     />
                     {window?.top?.GlobalConfig?.APP?.SL_khach && (
                       <Select

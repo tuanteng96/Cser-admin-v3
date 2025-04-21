@@ -45,7 +45,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
             {
-              ID: 11451,
+              ID: 11542,
               Title: "Cser Hồ Chí Minh",
               KeySEO: "",
               ParentID: 778,
@@ -59,7 +59,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
             {
-              ID: 11451,
+              ID: 11542,
               Title: "Cser Hồ Chí Minh",
               KeySEO: "",
               ParentID: 778,
@@ -97,7 +97,7 @@ function AuthInit({ isConfig, children }) {
                   ParentID: 778,
                 },
                 {
-                  ID: 11451,
+                  ID: 11542,
                   Title: "Cser Hồ Chí Minh",
                   KeySEO: "",
                   ParentID: 778,
@@ -115,7 +115,7 @@ function AuthInit({ isConfig, children }) {
                   ParentID: 778,
                 },
                 {
-                  ID: 11451,
+                  ID: 11542,
                   Title: "Cser Hồ Chí Minh",
                   KeySEO: "",
                   ParentID: 778,
@@ -166,6 +166,7 @@ function AuthInit({ isConfig, children }) {
             SL_khach: true,
           },
           Admin: {
+            lop_hoc_diem: 10,
             kpiFinish: "Khách đến làm dịch vụ",
             kpiCancel: "Khách hủy",
             kpiCancelFinish: "Khách không đến",

@@ -16,6 +16,7 @@ import Swal from "sweetalert2";
 import PickerClassManage from "./PickerClassManage";
 import PickerCalendarMemberReport from "./PickerCalendarMemberReport";
 import PickerCalendarUserRequest from "./PickerCalendarUserRequest";
+import PickerCalendarStudentReport from "./PickerCalendarStudentReport";
 
 function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
   const { AuthCrStockID } = useSelector(({ Auth }) => ({
@@ -394,6 +395,17 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
                           </button>
                         )}
                       </PickerCalendarUserRequest>
+                      <PickerCalendarStudentReport>
+                        {({ open }) => (
+                          <button
+                            onClick={open}
+                            type="button"
+                            className="rounded-[4px] px-4 text-[#3F4254] bg-[#D1D3E0]"
+                          >
+                            Xem theo học viên
+                          </button>
+                        )}
+                      </PickerCalendarStudentReport>
                       <PickerCalendarMemberReport>
                         {({ open }) => (
                           <button

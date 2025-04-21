@@ -175,6 +175,14 @@ const getOsMemberCalendar = (data) => {
   return axiosClient.post(`/api/v3/OS25@Min`, JSON.stringify(data));
 };
 
+const addEditPointOsMember = (data) => {
+  return axiosClient.post(`/api/v3/MemberPoint27@Edit`, JSON.stringify(data));
+};
+
+const deletePointOsMember = (data) => {
+  return axiosClient.post(`/api/v3/MemberPoint27@Deletes`, JSON.stringify(data));
+};
+
 const CalendarCrud = {
   getMembers,
   getStaffs,
@@ -205,6 +213,8 @@ const CalendarCrud = {
   CalendarClassMembersDelete,
   getOsMemberCalendar,
   CalendarClassMembersUpdateOs,
-  getStaffsFull
+  getStaffsFull,
+  addEditPointOsMember,
+  deletePointOsMember
 };
 export default CalendarCrud;

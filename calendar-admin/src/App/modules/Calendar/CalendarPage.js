@@ -583,6 +583,9 @@ function CalendarPage(props) {
       //     ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
       //     : values.Desc,
       IsAnonymous: values.MemberID?.PassersBy || false,
+      TreatmentJson: values?.TreatmentJson
+        ? JSON.stringify(values?.TreatmentJson)
+        : "",
     };
     if (values?.MemberID?.isCreate) {
       objBooking.FullName = values.MemberID?.text;
@@ -709,6 +712,9 @@ function CalendarPage(props) {
       BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
       Status: "KHACH_DEN",
       Desc,
+      TreatmentJson: values?.TreatmentJson
+        ? JSON.stringify(values?.TreatmentJson)
+        : "",
       // Desc:
       //   window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
       //     ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
@@ -829,6 +835,9 @@ function CalendarPage(props) {
               : "",
           BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
           Status: "TU_CHOI",
+          TreatmentJson: values?.TreatmentJson
+            ? JSON.stringify(values?.TreatmentJson)
+            : "",
         },
       ],
     };
@@ -1070,42 +1079,51 @@ function CalendarPage(props) {
         }
       }
 
-      const dataBooks =
+      let dataBooks =
         data.books && Array.isArray(data.books)
           ? data.books
-              .map((item) => ({
-                ...item,
-                start: item.BookDate,
-                end: moment(item.BookDate)
-                  .add(item.RootMinutes ?? 60, "minutes")
-                  .toDate(),
-                title: item.RootTitles,
-                className: `fc-event-solid-${getStatusClss(item.Status, item)}`,
-                resourceIds:
-                  topCalendar?.type?.value === "resourceTimelineDay"
-                    ? [-10]
-                    : item.UserServices &&
-                      Array.isArray(item.UserServices) &&
-                      item.UserServices.length > 0
-                    ? item.UserServices.map((item) => item.ID)
-                    : [0],
-                MemberCurrent: {
-                  FullName:
-                    item?.IsAnonymous ||
-                    item.Member?.MobilePhone === "0000000000"
-                      ? item?.FullName
-                      : item?.Member?.FullName,
-                  MobilePhone:
-                    item?.IsAnonymous ||
-                    item.Member?.MobilePhone === "0000000000"
-                      ? item?.Phone
-                      : item?.Member?.MobilePhone,
-                },
-                Star: checkStar(item),
-                isBook: true,
-              }))
+              .map((item) => {
+                let TreatmentJson = item?.TreatmentJson
+                  ? JSON.parse(item?.TreatmentJson)
+                  : "";
+                return {
+                  ...item,
+                  start: item.BookDate,
+                  end: moment(item.BookDate)
+                    .add(item.RootMinutes ?? 60, "minutes")
+                    .toDate(),
+                  title: item.RootTitles,
+                  className: `fc-event-solid-${getStatusClss(
+                    item.Status,
+                    item
+                  )}`,
+                  resourceIds:
+                    topCalendar?.type?.value === "resourceTimelineDay"
+                      ? [TreatmentJson?.ID || 0]
+                      : item.UserServices &&
+                        Array.isArray(item.UserServices) &&
+                        item.UserServices.length > 0
+                      ? item.UserServices.map((item) => item.ID)
+                      : [0],
+                  MemberCurrent: {
+                    FullName:
+                      item?.IsAnonymous ||
+                      item.Member?.MobilePhone === "0000000000"
+                        ? item?.FullName
+                        : item?.Member?.FullName,
+                    MobilePhone:
+                      item?.IsAnonymous ||
+                      item.Member?.MobilePhone === "0000000000"
+                        ? item?.Phone
+                        : item?.Member?.MobilePhone,
+                  },
+                  Star: checkStar(item),
+                  isBook: true,
+                };
+              })
               .filter((item) => item.Status !== "TU_CHOI")
           : [];
+
       let dataBooksAuto =
         data.osList && Array.isArray(data.osList)
           ? data.osList.map((item) => ({
@@ -1136,6 +1154,15 @@ function CalendarPage(props) {
                   : [0],
             }))
           : [];
+
+      if (topCalendar?.type?.value === "resourceTimelineDay") {
+        dataBooks = dataBooks.filter(
+          (x) =>
+            dataBooksAuto.findIndex((o) => o?.Member?.ID === x?.Member?.ID) ===
+            -1
+        );
+      }
+
       return [...dataBooks, ...dataBooksAuto, ...dataOffline];
     },
     enabled: Boolean(filters && filters.From),
@@ -1714,7 +1741,7 @@ function CalendarPage(props) {
                     now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
                     scrollTime: moment(new Date()).format("HH:mm"),
                     resourceAreaWidth: width > 768 ? "220px" : "150px",
-                    slotMinWidth: 50,
+                    slotMinWidth: 90,
                     stickyHeaderDates: true,
                     slotMinTime: TimeOpen,
                     slotMaxTime: TimeClose,
@@ -1778,7 +1805,6 @@ function CalendarPage(props) {
                   return <>Xem thêm + {num}</>;
                 }}
                 eventClick={({ event, el }) => {
-                  
                   const { _def, extendedProps } = event;
                   if (_def.extendedProps.os && isTelesales) return;
                   if (extendedProps?.noEvent) return;
