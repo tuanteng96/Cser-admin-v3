@@ -15,16 +15,18 @@ function TimekeepingMethod(props) {
     StockRights: auth?.Info?.rightsSum?.cong_ca?.stocks || [],
     IsAllStock: auth?.Info?.rightsSum?.cong_ca?.IsAllStock || false
   }))
-  
+
   const { isLoading, refetch } = useQuery({
     queryKey: ['ListStocks', StockRights],
     queryFn: async () => {
       const { data } = await worksheetApi.getStocks()
-      
+
       return data?.data?.all
         ? data?.data?.all
-            .filter(x => IsAllStock ? true : x.ParentID !== 0)
-            .filter(x => x.ID === 778 ? IsAllStock : StockRights.some(o => o.ID === x.ID))
+            .filter(x => (IsAllStock ? true : x.ParentID !== 0))
+            .filter(x =>
+              x.ID === 778 ? IsAllStock : StockRights.some(o => o.ID === x.ID)
+            )
         : []
     },
     onSuccess: data => {
@@ -208,6 +210,9 @@ function TimekeepingMethod(props) {
                                     ID Wifi
                                   </div>
                                   <input
+                                    style={{
+                                      fontFamily: 'Roboto'
+                                    }}
                                     className="form-control"
                                     type="text"
                                     name={`updated[${index}].WifiID`}
