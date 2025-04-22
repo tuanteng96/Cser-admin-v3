@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import scrollGridPlugin from "@fullcalendar/scrollgrid";
@@ -58,6 +58,8 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
       SettingBookOnlineMinutes: JsonConfig?.Admin?.SettingBookOnlineMinutes,
     })
   );
+
+  const calendarRef = useRef("");
 
   const [visible, setVisible] = useState(false);
   const [filters, setFilters] = useState({
@@ -342,6 +344,12 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
     },
     enabled: visible,
     keepPreviousData: true,
+    onSuccess: () => {
+      if (calendarRef.current) {
+        const calendarApi = calendarRef.current.getApi();
+        calendarApi.gotoDate(filters.CrDate);
+      }
+    },
   });
 
   const onHide = () => setVisible(false);
@@ -452,7 +460,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                     viewClassNames="fc-setting-book-online"
                     firstDay={1}
                     handleWindowResize={true}
-                    //ref={calendarRef}
+                    ref={calendarRef}
                     themeSystem="unthemed"
                     //locale={viLocales}
                     initialDate={new Date()}
@@ -619,7 +627,6 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                         Object.keys(extendedProps).length > 0
                       ) {
                         if (view.type !== "listWeek") {
-                          console.log(extendedProps)
                           italicEl.innerHTML = `<div class="fc-title">
                                             
                                           <div class="d-flex justify-content-between"><div><span class="fullname">${
@@ -635,9 +642,9 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                           } ${extendedProps?.MemberCurrent?.FullName ||
                             "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
                             ?.MemberCurrent?.MobilePhone ||
-                            "Chưa xác định"} - ${
-                            extendedProps.ID || extendedProps?.os?.ID
-                          }</span></div><span class="${!extendedProps?.isBook &&
+                            "Chưa xác định"} - ${extendedProps.ID ||
+                            extendedProps?.os
+                              ?.ID}</span></div><span class="${!extendedProps?.isBook &&
                             "d-none"}">${extendedProps?.BookCount?.Done ||
                             0}/${extendedProps?.BookCount?.Total ||
                             0}</span></div>
@@ -704,7 +711,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                 )}
               </PickerAddEditBookOnline>
 
-              {isLoading && (
+              {(isLoading || isFetching) && (
                 <div className="absolute top-0 left-0 z-50 flex items-center justify-center w-full h-full">
                   <div role="status">
                     <svg
