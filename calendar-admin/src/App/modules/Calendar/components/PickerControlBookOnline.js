@@ -610,7 +610,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                       const { event, view } = arg;
                       const { extendedProps } = event._def;
                       let italicEl = document.createElement("div");
-                      italicEl.classList.add("fc-content");
+                      italicEl.classList.add("fc-content", "min-h-[95px]");
 
                       let AmountPeople = 1;
                       if (extendedProps.Desc) {
