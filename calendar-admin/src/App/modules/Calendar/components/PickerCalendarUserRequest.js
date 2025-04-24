@@ -428,6 +428,17 @@ function PickerCalendarUserRequest({ children }) {
             icon: "error",
           });
         } else {
+          if (result.value?.Updated && result.value?.Updated.length > 0) {
+            window?.top?.noti27?.LOP_HOC_DUYET_YEU_HLV &&
+              window?.top?.noti27?.LOP_HOC_DUYET_YEU_HLV({
+                Class: { ...rowData?.Class },
+                RefUserIds: [result.value?.Updated[0].TeacherID],
+                Members: result.value?.Updated[0]?.Member?.Lists
+                  ? result.value?.Updated[0]?.Member?.Lists.map((x) => x.Member)
+                  : [],
+              });
+          }
+
           window?.top?.toastr?.success("Xác nhận thành công.", "", {
             timeOut: 600,
           });
@@ -437,6 +448,7 @@ function PickerCalendarUserRequest({ children }) {
   };
 
   const onDelete = (rowData) => {
+    console.log(rowData);
     Swal.fire({
       icon: "warning",
       title: "Xác nhận huỷ lịch ?",
@@ -474,6 +486,14 @@ function PickerCalendarUserRequest({ children }) {
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
+        window?.top?.noti27?.LOP_HOC_HUY_YEU_CAU_HLV &&
+          window?.top?.noti27?.LOP_HOC_HUY_YEU_CAU_HLV({
+            Class: { ...rowData?.Class },
+            RefUserIds: [],
+            MemberIds: rowData?.Member?.Lists
+              ? rowData?.Member?.Lists.map((x) => x.Member)
+              : [],
+          });
         window?.top?.toastr?.success("Xác nhận thành công.", "", {
           timeOut: 600,
         });

@@ -455,6 +455,14 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
           window?.top?.toastr?.success("Huỷ lớp thành công.", "", {
             timeOut: 200,
           });
+          window.top?.noti27?.LOP_HOC_XOA_LOP &&
+            window.top?.noti27?.LOP_HOC_XOA_LOP({
+              Class: { ...initialValues?.Class },
+              RefUserIds: initialValue?.TeacherID
+                ? [initialValue?.TeacherID?.value]
+                : [],
+              Members: [],
+            });
           onHide();
         }
       });
@@ -656,6 +664,23 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
     };
     addMutation.mutate(newValues, {
       onSuccess: () => {
+        if (teacher) {
+          window?.top?.noti27?.LOP_HOC_GIAO_CA &&
+            window?.top?.noti27?.LOP_HOC_GIAO_CA({
+              Class: { ...initialValues.Class },
+              RefUserIds: [teacher?.value],
+              Members: initialValue?.Member?.Lists
+                ? initialValue?.Member?.Lists.map((x) => x.Member)
+                : [],
+            });
+        } else {
+          window?.top?.noti27?.LOP_HOC_HUY_CA &&
+            window?.top?.noti27?.LOP_HOC_HUY_CA({
+              Class: { ...initialValues.Class },
+              RefUserIds: [],
+              Members: [],
+            });
+        }
         window?.top?.toastr?.success(
           "Cập nhập huấn luyện viên thành công.",
           "",
@@ -813,7 +838,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                   <div className="w-[320px]">
                     <SelectStaffs
                       isDisabled={initialValue.Member?.Status}
-                      isClearable={false}
+                      isClearable={true}
                       //StockID={AuthCrStockID}
                       classIcon="fas fa-user"
                       menuPlacement="bottom"
@@ -826,9 +851,9 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                       onChange={(option) => {
                         setInitialValue((prevState) => ({
                           ...prevState,
-                          TeacherID: option,
+                          TeacherID: option || null,
                         }));
-                        onUpdateTeacher(option);
+                        onUpdateTeacher(option || null);
                       }}
                       placeholder="Chọn huấn luyện viên"
                       components={{

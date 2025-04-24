@@ -65,7 +65,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
           ],
-          CrStockID: 11541, //8975
+          CrStockID: 11542, //8975
           rightsSum: {
             pos: {
               hasRight: true,

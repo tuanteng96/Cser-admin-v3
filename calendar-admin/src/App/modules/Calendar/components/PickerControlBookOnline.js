@@ -77,6 +77,13 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
+  useEffect(() => {
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.gotoDate(filters.CrDate);
+    }
+  }, [filters.CrDate, calendarRef]);
+
   const { data, isLoading, isFetching, refetch } = useQuery({
     queryKey: ["SettingControlOnline", filters],
     queryFn: async () => {
@@ -344,12 +351,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
     },
     enabled: visible,
     keepPreviousData: true,
-    onSuccess: () => {
-      if (calendarRef.current) {
-        const calendarApi = calendarRef.current.getApi();
-        calendarApi.gotoDate(filters.CrDate);
-      }
-    },
+    onSuccess: () => {},
   });
 
   const onHide = () => setVisible(false);
@@ -610,7 +612,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                       const { event, view } = arg;
                       const { extendedProps } = event._def;
                       let italicEl = document.createElement("div");
-                      italicEl.classList.add("fc-content", "min-h-[95px]");
+                      italicEl.classList.add("fc-content");
 
                       let AmountPeople = 1;
                       if (extendedProps.Desc) {
