@@ -396,6 +396,8 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
   });
 
   const onCancelClass = () => {
+    console.log(initialValue);
+    console.log(initialValues);
     if (
       initialValue?.Member?.Lists &&
       initialValue?.Member?.Lists.length > 0 &&
@@ -455,13 +457,25 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
           window?.top?.toastr?.success("Huỷ lớp thành công.", "", {
             timeOut: 200,
           });
-          window.top?.noti27?.LOP_HOC_XOA_LOP &&
-            window.top?.noti27?.LOP_HOC_XOA_LOP({
-              Class: { ...initialValues?.Class },
+          window?.top?.noti27?.LOP_HOC &&
+            window?.top?.noti27?.LOP_HOC({
+              type: "Xóa lớp",
+              Class: {
+                ...initialValues?.Class,
+                TimeBegin: initialValue.TimeBegin,
+              },
               RefUserIds: initialValue?.TeacherID
-                ? [initialValue?.TeacherID?.value]
+                ? [
+                    {
+                      ID: initialValue?.TeacherID?.value,
+                      FullName: initialValue?.TeacherID?.label,
+                    },
+                  ]
                 : [],
-              Members: [],
+              MemberIds: initialValue?.Member?.Lists
+                ? initialValue?.Member?.Lists.map((x) => x.Member)
+                : [],
+              Stock: initialValues?.Class?.Stock,
             });
           onHide();
         }
@@ -665,20 +679,46 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
     addMutation.mutate(newValues, {
       onSuccess: () => {
         if (teacher) {
-          window?.top?.noti27?.LOP_HOC_GIAO_CA &&
-            window?.top?.noti27?.LOP_HOC_GIAO_CA({
-              Class: { ...initialValues.Class },
-              RefUserIds: [teacher?.value],
-              Members: initialValue?.Member?.Lists
+          window?.top?.noti27?.LOP_HOC &&
+            window?.top?.noti27?.LOP_HOC({
+              type: "add HLV vào lớp",
+              Class: {
+                ...initialValues?.Class,
+                TimeBegin: initialValue.TimeBegin,
+              },
+              RefUserIds: initialValue?.TeacherID
+                ? [
+                    {
+                      ID: initialValue?.TeacherID?.value,
+                      FullName: initialValue?.TeacherID?.label,
+                    },
+                  ]
+                : [],
+              MemberIds: initialValue?.Member?.Lists
                 ? initialValue?.Member?.Lists.map((x) => x.Member)
                 : [],
+              Stock: initialValues?.Class?.Stock,
             });
         } else {
-          window?.top?.noti27?.LOP_HOC_HUY_CA &&
-            window?.top?.noti27?.LOP_HOC_HUY_CA({
-              Class: { ...initialValues.Class },
-              RefUserIds: [],
-              Members: [],
+          window?.top?.noti27?.LOP_HOC &&
+            window?.top?.noti27?.LOP_HOC({
+              type: "Hủy HLV khỏi lớp",
+              Class: {
+                ...initialValues?.Class,
+                TimeBegin: initialValue.TimeBegin,
+              },
+              RefUserIds: initialValue?.TeacherID
+                ? [
+                    {
+                      ID: initialValue?.TeacherID?.value,
+                      FullName: initialValue?.TeacherID?.label,
+                    },
+                  ]
+                : [],
+              MemberIds: initialValue?.Member?.Lists
+                ? initialValue?.Member?.Lists.map((x) => x.Member)
+                : [],
+              Stock: initialValues?.Class?.Stock,
             });
         }
         window?.top?.toastr?.success(
