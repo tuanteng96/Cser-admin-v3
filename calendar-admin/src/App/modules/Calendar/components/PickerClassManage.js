@@ -66,7 +66,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
 
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
-  const { isLoading, isFetching, refetch, data: dataOs } = useQuery({
+  const { isLoading, isFetching, refetch } = useQuery({
     queryKey: ["CalendarClassMembers", { initialValues, visible }],
     queryFn: async () => {
       let { Items } = await CalendarCrud.getCalendarClassMembers({
@@ -363,6 +363,35 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
     [initialValue]
   );
 
+  const checkClassMutation = useMutation({
+    mutationFn: async (body) => {
+      let { Items } = await CalendarCrud.getCalendarClassMembers({
+        ClassIDs: [initialValues?.Class?.ID],
+        TeachIDs: [],
+        StockID: [initialValues?.Class?.StockID],
+        DateStart: null,
+        DateEnd: null,
+        BeginFrom: moment(initialValues?.DateFrom)
+          .set({
+            hour: moment(initialValues?.TimeFrom, "HH:mm").get("hour"),
+            minute: moment(initialValues?.TimeFrom, "HH:mm").get("minute"),
+            second: moment(initialValues?.TimeFrom, "HH:mm").get("second"),
+          })
+          .format("YYYY-MM-DD HH:mm:ss"),
+        BeginTo: moment(initialValues?.DateFrom)
+          .set({
+            hour: moment(initialValues?.TimeFrom, "HH:mm").get("hour"),
+            minute: moment(initialValues?.TimeFrom, "HH:mm").get("minute"),
+            second: moment(initialValues?.TimeFrom, "HH:mm").get("second"),
+          })
+          .format("YYYY-MM-DD HH:mm:ss"),
+        Pi: 1,
+        Ps: 20,
+      });
+      return Items && Items.length > 0 ? Items[0] : null;
+    },
+  });
+
   const addMutation = useMutation({
     mutationFn: async (body) => {
       let rs = await CalendarCrud.CalendarClassMembersAddEdit(body);
@@ -443,39 +472,61 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
         showLoaderOnConfirm: true,
         preConfirm: () => {
           return new Promise(async (resolve, reject) => {
-            await deleteMutation.mutateAsync({
-              delete: [initialValue?.ID],
-            });
-            resolve();
+            let CrClass = await checkClassMutation.mutateAsync();
+
+            if (!CrClass) {
+              await queryClient.invalidateQueries({
+                queryKey: ["CalendarClass"],
+              });
+              resolve({
+                status: 400,
+                error: "Lớp không tồn tại hoặc đã bị xoá.",
+              });
+            } else {
+              await deleteMutation.mutateAsync({
+                delete: [CrClass?.ID],
+              });
+              resolve({ CrClass });
+            }
           });
         },
         allowOutsideClick: () => !Swal.isLoading(),
       }).then((result) => {
         if (result.isConfirmed) {
-          window?.top?.toastr?.success("Huỷ lớp thành công.", "", {
-            timeOut: 200,
-          });
-          window?.top?.noti27?.LOP_HOC &&
-            window?.top?.noti27?.LOP_HOC({
-              type: "Xóa lớp",
-              Class: {
-                ...initialValues?.Class,
-                TimeBegin: initialValue.TimeBegin,
-              },
-              RefUserIds: initialValue?.TeacherID
-                ? [
-                    {
-                      ID: initialValue?.TeacherID?.value,
-                      FullName: initialValue?.TeacherID?.label,
-                    },
-                  ]
-                : [],
-              MemberIds: initialValue?.Member?.Lists
-                ? initialValue?.Member?.Lists.map((x) => x.Member)
-                : [],
-              Stock: initialValues?.Class?.Stock,
+          if (result?.value?.status === 400) {
+            window?.top?.toastr?.error(result?.value?.error, "", {
+              timeOut: 600,
             });
-          onHide();
+            if (result?.value?.error === "Lớp không tồn tại hoặc đã bị xoá.") {
+              onHide();
+            }
+          } else {
+            let { CrClass } = result?.value;
+            window?.top?.toastr?.success("Huỷ lớp thành công.", "", {
+              timeOut: 200,
+            });
+            window?.top?.noti27?.LOP_HOC &&
+              window?.top?.noti27?.LOP_HOC({
+                type: "Xóa lớp",
+                Class: {
+                  ...CrClass?.Class,
+                  TimeBegin: CrClass.TimeBegin,
+                },
+                RefUserIds: CrClass?.TeacherID
+                  ? [
+                      {
+                        ID: CrClass?.TeacherID?.ID,
+                        FullName: CrClass?.TeacherID?.FullName,
+                      },
+                    ]
+                  : [],
+                MemberIds: CrClass?.Member?.Lists
+                  ? CrClass?.Member?.Lists.map((x) => x.Member)
+                  : [],
+                Stock: CrClass?.Class?.Stock,
+              });
+            onHide();
+          }
         }
       });
     }
@@ -499,57 +550,77 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
       showLoaderOnConfirm: true,
       preConfirm: () => {
         return new Promise(async (resolve, reject) => {
-          let newLists = [...(initialValue?.Member?.Lists || [])];
-          newLists = newLists.filter(
-            (x) => x?.Member?.ID !== rowData?.Member?.ID
-          );
+          let CrClass = await checkClassMutation.mutateAsync();
 
-          let newValues = {
-            arr: [
+          if (!CrClass) {
+            await queryClient.invalidateQueries({
+              queryKey: ["CalendarClass"],
+            });
+            resolve({
+              status: 400,
+              error: "Lớp không tồn tại hoặc đã bị xoá.",
+            });
+          } else {
+            let newLists = [...(CrClass?.Member?.Lists || [])];
+            newLists = newLists.filter(
+              (x) => x?.Member?.ID !== rowData?.Member?.ID
+            );
+
+            let newValues = {
+              arr: [
+                {
+                  ...initialValue,
+                  TeacherID: CrClass?.TeacherID || null,
+                  Member: {
+                    ...CrClass.Member,
+                    Lists: newLists,
+                  },
+                },
+              ],
+            };
+
+            updateOsStatusMutation.mutate(
               {
-                ...initialValue,
-                TeacherID: initialValue?.TeacherID?.value || null,
-                Member: {
-                  ...initialValue.Member,
-                  Lists: newLists,
+                data: newValues,
+                update: {
+                  arr: [
+                    {
+                      ID: rowData?.Os?.ID,
+                      Desc: "",
+                      UserID: 0,
+                    },
+                  ],
                 },
               },
-            ],
-          };
-
-          updateOsStatusMutation.mutate(
-            {
-              data: newValues,
-              update: {
-                arr: [
-                  {
-                    ID: rowData?.Os?.ID,
-                    Desc: "",
-                    UserID: 0,
-                  },
-                ],
-              },
-            },
-            {
-              onSuccess: () => {
-                resolve();
-              },
-            }
-          );
+              {
+                onSuccess: () => {
+                  resolve();
+                },
+              }
+            );
+          }
         });
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
-        window?.top?.toastr?.success("Huỷ lịch thành công.", "", {
-          timeOut: 200,
-        });
+        if (result?.value?.status === 400) {
+          window?.top?.toastr?.error(result?.value?.error, "", {
+            timeOut: 600,
+          });
+          if (result?.value?.error === "Lớp không tồn tại hoặc đã bị xoá.") {
+            onHide();
+          }
+        } else {
+          window?.top?.toastr?.success("Huỷ lịch thành công.", "", {
+            timeOut: 600,
+          });
+        }
       }
     });
   };
 
   const onAttendance = async ({ rowIndex, Status, rowData }) => {
-    let CrStatus = rowData.Status;
     Swal.fire({
       icon: "warning",
       title: `Xác nhận  ${Status.label}?`,
@@ -565,191 +636,243 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
       showLoaderOnConfirm: true,
       preConfirm: () => {
         return new Promise(async (resolve, reject) => {
-          let newLists = [...initialValue.Member.Lists];
-          newLists[rowIndex]["Status"] = Status.value;
-          let newValues = {
-            arr: [
-              {
-                ...initialValue,
-                TeacherID: initialValue?.TeacherID?.value || null,
-                Member: {
-                  ...initialValue.Member,
-                  Lists: newLists,
+          let CrClass = await checkClassMutation.mutateAsync();
+          if (!CrClass) {
+            await queryClient.invalidateQueries({
+              queryKey: ["CalendarClass"],
+            });
+            resolve({
+              status: 400,
+              error: "Lớp không tồn tại hoặc đã bị xoá.",
+            });
+          } else {
+            let index = CrClass?.Member?.Lists?.findIndex(
+              (x) => x.Member.ID === rowData.Member.ID
+            );
+            if (index > -1) {
+              let CrStatus = CrClass?.Member?.Lists[index].Status;
+              let newLists = [...CrClass?.Member.Lists];
+
+              newLists[index]["Status"] = Status.value;
+              let newValues = {
+                arr: [
+                  {
+                    ...initialValue,
+                    TeacherID: CrClass?.TeacherID,
+                    Member: {
+                      ...CrClass.Member,
+                      Lists: newLists,
+                    },
+                  },
+                ],
+              };
+
+              let newObj = {
+                ID: rowData?.Os?.ID,
+                BookDate: Status.value
+                  ? moment().format("YYYY-MM-DD HH:mm")
+                  : null,
+                Status: !Status.value ? "" : "done",
+              };
+
+              if (!Status.value) {
+                newObj["UserID"] = 0;
+              }
+
+              let addPoints = null;
+              let deletePoints = null;
+
+              if (window?.top?.GlobalConfig?.Admin?.lop_hoc_diem) {
+                if (Status?.value === "DIEM_DANH_DEN") {
+                  addPoints = {
+                    MemberID: rowData?.Member?.ID,
+                    Title: "Tích điểm khi đi tập",
+                    Desc: `Đi tập lớp ${CrClass?.Class?.Title} lúc ${moment(
+                      CrClass?.TimeBegin
+                    ).format("HH:mm DD/MM/YYYY")}.`,
+                    CreateDate: moment().format("YYYY-MM-DD HH:mm"),
+                    Point: window?.top?.GlobalConfig?.Admin?.lop_hoc_diem,
+                    StockID: CrClass?.StockID,
+                    OrderServiceID: rowData?.Os?.ID,
+                  };
+                } else if (CrStatus === "DIEM_DANH_DEN") {
+                  deletePoints = {
+                    MemberID: rowData?.Member?.ID,
+                    OrderServiceID: rowData?.Os?.ID,
+                  };
+                }
+              }
+
+              updateOsStatusMutation.mutate(
+                {
+                  data: newValues,
+                  update: {
+                    arr: [newObj],
+                  },
+                  addPoint: addPoints
+                    ? {
+                        edit: [addPoints],
+                      }
+                    : null,
+                  deletePoint: deletePoints,
                 },
-              },
-            ],
-          };
-
-          let newObj = {
-            ID: rowData?.Os?.ID,
-            BookDate: Status.value ? moment().format("YYYY-MM-DD HH:mm") : null,
-            Status: !Status.value ? "" : "done",
-          };
-
-          if (!Status.value) {
-            newObj["UserID"] = 0;
-          }
-
-          let addPoints = null;
-          let deletePoints = null;
-
-          if (window?.top?.GlobalConfig?.Admin?.lop_hoc_diem) {
-            if (Status?.value === "DIEM_DANH_DEN") {
-              addPoints = {
-                MemberID: rowData?.Member?.ID,
-                Title: "Tích điểm khi đi tập",
-                Desc: `Đi tập lớp ${dataOs?.Class?.Title} lúc ${moment(
-                  initialValue?.TimeBegin
-                ).format("HH:mm DD/MM/YYYY")}.`,
-                CreateDate: moment().format("YYYY-MM-DD HH:mm"),
-                Point: window?.top?.GlobalConfig?.Admin?.lop_hoc_diem,
-                StockID: initialValue?.StockID,
-                OrderServiceID: rowData?.Os?.ID,
-              };
-            } else if (CrStatus === "DIEM_DANH_DEN") {
-              deletePoints = {
-                MemberID: rowData?.Member?.ID,
-                OrderServiceID: rowData?.Os?.ID,
-              };
+                {
+                  onSuccess: () => {
+                    resolve();
+                  },
+                }
+              );
+            } else {
+              await refetch();
+              resolve({
+                status: 400,
+                error: "Học viên không tồn tại trong lớp này.",
+              });
             }
           }
-
-          updateOsStatusMutation.mutate(
-            {
-              data: newValues,
-              update: {
-                arr: [newObj],
-              },
-              addPoint: addPoints
-                ? {
-                    edit: [addPoints],
-                  }
-                : null,
-              deletePoint: deletePoints,
-            },
-            {
-              onSuccess: () => {
-                resolve();
-              },
-            }
-          );
         });
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
-        window?.top?.toastr?.success("Cập nhập thành công.", "", {
-          timeOut: 200,
-        });
+        if (result?.value?.status === 400) {
+          window?.top?.toastr?.error(result?.value?.error, "", {
+            timeOut: 600,
+          });
+          if (result?.value?.error === "Lớp không tồn tại hoặc đã bị xoá.") {
+            onHide();
+          }
+        } else {
+          window?.top?.toastr?.success("Cập nhật thành công.", "", {
+            timeOut: 600,
+          });
+        }
       }
     });
   };
 
-  const onUpdateTeacher = (teacher) => {
-    let newValues = {
-      arr: [
-        {
-          ...initialValue,
-          TeacherID: teacher?.value || "",
-          Member: {
-            ...initialValue.Member,
-            HistoryCoachs: [
-              ...(initialValue?.Member?.HistoryCoachs || []),
-              {
-                CreateDate: moment().format("YYYY-MM-DD HH:mm"),
-                Staff: {
-                  StaffID: window?.top?.Info?.User?.ID,
-                  ID: window?.top?.Info?.User?.ID,
-                  FullName: window?.top?.Info?.User?.FullName,
-                },
-                Coach: teacher
-                  ? {
-                      ID: teacher?.value,
-                      FullName: teacher?.label,
-                    }
-                  : null,
-              },
-            ],
-          },
-        },
-      ],
-    };
-    addMutation.mutate(newValues, {
-      onSuccess: () => {
-        if (teacher) {
-          window?.top?.noti27?.LOP_HOC &&
-            window?.top?.noti27?.LOP_HOC({
-              type: "add HLV vào lớp",
-              Class: {
-                ...initialValues?.Class,
-                TimeBegin: initialValue.TimeBegin,
-              },
-              RefUserIds: [
+  const onUpdateTeacher = async (teacher) => {
+    let CrClass = await checkClassMutation.mutateAsync();
+
+    if (!CrClass) {
+      await queryClient.invalidateQueries({
+        queryKey: ["CalendarClass"],
+      });
+      onHide();
+    } else {
+      let newValues = {
+        arr: [
+          {
+            ...initialValue,
+            TeacherID: teacher?.value || "",
+            Member: {
+              ...CrClass.Member,
+              HistoryCoachs: [
+                ...(CrClass?.Member?.HistoryCoachs || []),
                 {
-                  ID: teacher?.value,
-                  FullName: teacher?.label,
+                  CreateDate: moment().format("YYYY-MM-DD HH:mm"),
+                  Staff: {
+                    StaffID: window?.top?.Info?.User?.ID,
+                    ID: window?.top?.Info?.User?.ID,
+                    FullName: window?.top?.Info?.User?.FullName,
+                  },
+                  Coach: teacher
+                    ? {
+                        ID: teacher?.value,
+                        FullName: teacher?.label,
+                      }
+                    : null,
                 },
               ],
-              MemberIds: initialValue?.Member?.Lists
-                ? initialValue?.Member?.Lists.map((x) => x.Member)
-                : [],
-              Stock: initialValues?.Class?.Stock,
-            });
-        } else {
-          window?.top?.noti27?.LOP_HOC &&
-            window?.top?.noti27?.LOP_HOC({
-              type: "Hủy HLV khỏi lớp",
-              Class: {
-                ...initialValues?.Class,
-                TimeBegin: initialValue.TimeBegin,
-              },
-              RefUserIds: initialValue?.TeacherID
-                ? [
-                    {
-                      ID: initialValue?.TeacherID?.value,
-                      FullName: initialValue?.TeacherID?.label,
-                    },
-                  ]
-                : [],
-              MemberIds: initialValue?.Member?.Lists
-                ? initialValue?.Member?.Lists.map((x) => x.Member)
-                : [],
-              Stock: initialValues?.Class?.Stock,
-            });
-        }
-        window?.top?.toastr?.success(
-          "Cập nhập huấn luyện viên thành công.",
-          "",
-          {
-            timeOut: 200,
+            },
+          },
+        ],
+      };
+      addMutation.mutate(newValues, {
+        onSuccess: () => {
+          if (teacher) {
+            window?.top?.noti27?.LOP_HOC &&
+              window?.top?.noti27?.LOP_HOC({
+                type: "add HLV vào lớp",
+                Class: {
+                  ...CrClass?.Class,
+                  TimeBegin: CrClass.TimeBegin,
+                },
+                RefUserIds: [
+                  {
+                    ID: teacher?.value,
+                    FullName: teacher?.label,
+                  },
+                ],
+                MemberIds: CrClass?.Member?.Lists
+                  ? CrClass?.Member?.Lists.map((x) => x.Member)
+                  : [],
+                Stock: CrClass?.Class?.Stock,
+              });
+          } else {
+            window?.top?.noti27?.LOP_HOC &&
+              window?.top?.noti27?.LOP_HOC({
+                type: "Hủy HLV khỏi lớp",
+                Class: {
+                  ...CrClass?.Class,
+                  TimeBegin: CrClass.TimeBegin,
+                },
+                RefUserIds: CrClass?.TeacherID
+                  ? [
+                      {
+                        ID: CrClass?.Teacher?.ID,
+                        FullName: CrClass?.Teacher?.FullName,
+                      },
+                    ]
+                  : [],
+                MemberIds: CrClass?.Member?.Lists
+                  ? CrClass?.Member?.Lists.map((x) => x.Member)
+                  : [],
+                Stock: CrClass?.Class?.Stock,
+              });
           }
-        );
-      },
-    });
+          window?.top?.toastr?.success(
+            "Cập nhập huấn luyện viên thành công.",
+            "",
+            {
+              timeOut: 200,
+            }
+          );
+        },
+      });
+    }
   };
 
-  const onUpdateOverTime = (ck) => {
-    let obj = { ...initialValue };
+  const onUpdateOverTime = async (ck) => {
+    let CrClass = await checkClassMutation.mutateAsync();
+    if (!CrClass) {
+      await queryClient.invalidateQueries({
+        queryKey: ["CalendarClass"],
+      });
+      onHide();
+    } else {
+      let obj = { ...initialValue };
 
-    let newValues = {
-      arr: [
-        {
-          ...obj,
-          TeacherID: obj?.TeacherID?.value || null,
-          Member: {
-            ...obj.Member,
-            IsOverTime: ck,
+      let newValues = {
+        arr: [
+          {
+            ...obj,
+            TeacherID: CrClass?.TeacherID,
+            Member: {
+              ...CrClass.Member,
+              IsOverTime: ck,
+            },
           },
+        ],
+      };
+      addMutation.mutate(newValues, {
+        onSuccess: () => {
+          window?.top?.toastr?.success("Cập nhập thành công.", "", {
+            timeOut: 200,
+          });
         },
-      ],
-    };
-    addMutation.mutate(newValues, {
-      onSuccess: () => {
-        window?.top?.toastr?.success("Cập nhập thành công.", "", {
-          timeOut: 200,
-        });
-      },
-    });
+      });
+    }
   };
 
   const onUpdateStatus = () => {
@@ -772,28 +895,48 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
       showLoaderOnConfirm: true,
       preConfirm: () => {
         return new Promise(async (resolve, reject) => {
-          let newValues = {
-            arr: [
-              {
-                ...initialValue,
-                TeacherID: initialValue?.TeacherID?.value || null,
-                Member: {
-                  ...initialValue.Member,
-                  Status: initialValue.Member?.Status ? "" : "1",
+          let CrClass = await checkClassMutation.mutateAsync();
+          if (!CrClass) {
+            await queryClient.invalidateQueries({
+              queryKey: ["CalendarClass"],
+            });
+            resolve({
+              status: 400,
+              error: "Lớp không tồn tại hoặc đã bị xoá.",
+            });
+          } else {
+            let newValues = {
+              arr: [
+                {
+                  ...initialValue,
+                  TeacherID: CrClass?.TeacherID,
+                  Member: {
+                    ...CrClass.Member,
+                    Status: CrClass.Member?.Status ? "" : "1",
+                  },
                 },
-              },
-            ],
-          };
-          await addMutation.mutateAsync(newValues);
-          resolve();
+              ],
+            };
+            await addMutation.mutateAsync(newValues);
+            resolve();
+          }
         });
       },
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
-        window?.top?.toastr?.success("Cập nhập thành công.", "", {
-          timeOut: 200,
-        });
+        if (result?.value?.status === 400) {
+          window?.top?.toastr?.error(result?.value?.error, "", {
+            timeOut: 600,
+          });
+          if (result?.value?.error === "Lớp không tồn tại hoặc đã bị xoá.") {
+            onHide();
+          }
+        } else {
+          window?.top?.toastr?.success("Cập nhật thành công.", "", {
+            timeOut: 600,
+          });
+        }
       }
     });
   };
@@ -932,9 +1075,12 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                 </div>
                 <div className="flex gap-3">
                   <PickerClassAddMember
+                    initial={initialValues}
                     initialValue={initialValue}
                     ProdIDs={initialValues?.Class?.ProdIDs}
                     DateFrom={initialValues?.DateFrom}
+                    onClose={onHide}
+                    refetch={refetch}
                   >
                     {({ open }) => (
                       <button
@@ -1075,7 +1221,8 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                   )}
                 </AutoResizer>
               </div>
-              {(addMutation.isLoading ||
+              {(checkClassMutation.isLoading ||
+                addMutation.isLoading ||
                 updateOsStatusMutation.isLoading ||
                 isLoading ||
                 isFetching ||

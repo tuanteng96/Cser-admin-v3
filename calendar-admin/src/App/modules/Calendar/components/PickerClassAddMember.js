@@ -8,13 +8,22 @@ import { useMutation, useQueryClient } from "react-query";
 import CalendarCrud from "../_redux/CalendarCrud";
 import SelectMember from "../../../../components/Select/SelectMember/SelectMember";
 import SelectOsMember from "../../../../components/Select/SelectOsMember/SelectOsMember";
+import moment from "moment";
 
 const AddEditSchema = Yup.object().shape({
   Member: Yup.object().required("Vui lòng chọ học viên."),
   Service: Yup.object().required("Vui lòng chọn thẻ liệu trình."),
 });
 
-function PickerClassAddMember({ children, initialValue, ProdIDs, DateFrom }) {
+function PickerClassAddMember({
+  children,
+  initialValue,
+  initial,
+  ProdIDs,
+  DateFrom,
+  onClose,
+  refetch,
+}) {
   const queryClient = useQueryClient();
 
   const [visible, setVisible] = useState(false);
@@ -46,57 +55,107 @@ function PickerClassAddMember({ children, initialValue, ProdIDs, DateFrom }) {
     },
   });
 
-  const onSubmit = (values, { resetForm }) => {
-    let newLists = [...initialValue.Member.Lists];
-    newLists.push({
-      Member: {
-        MemberID: values?.Member?.value,
-        FullName: values?.Member?.label,
-        ID: values?.Member?.value,
-        Phone: values?.Member?.phone,
-      },
-      Os: {
-        OsID: values?.Service?.value,
-        ID: values?.Service?.value,
-        Title: values?.Service?.label,
-      },
-      Status: "",
-    });
-    let newValues = {
-      arr: [
-        {
-          ...initialValue,
-          TeacherID: initialValue?.TeacherID?.value || null,
+  const checkClassMutation = useMutation({
+    mutationFn: async (body) => {
+      let { Items } = await CalendarCrud.getCalendarClassMembers({
+        ClassIDs: [initial?.Class?.ID],
+        TeachIDs: [],
+        StockID: [initial?.Class?.StockID],
+        DateStart: null,
+        DateEnd: null,
+        BeginFrom: moment(initial?.DateFrom)
+          .set({
+            hour: moment(initial?.TimeFrom, "HH:mm").get("hour"),
+            minute: moment(initial?.TimeFrom, "HH:mm").get("minute"),
+            second: moment(initial?.TimeFrom, "HH:mm").get("second"),
+          })
+          .format("YYYY-MM-DD HH:mm:ss"),
+        BeginTo: moment(initial?.DateFrom)
+          .set({
+            hour: moment(initial?.TimeFrom, "HH:mm").get("hour"),
+            minute: moment(initial?.TimeFrom, "HH:mm").get("minute"),
+            second: moment(initial?.TimeFrom, "HH:mm").get("second"),
+          })
+          .format("YYYY-MM-DD HH:mm:ss"),
+        Pi: 1,
+        Ps: 20,
+      });
+      return Items && Items.length > 0 ? Items[0] : null;
+    },
+  });
+
+  const onSubmit = async (values, { resetForm, setFieldError }) => {
+    let CrClass = await checkClassMutation.mutateAsync();
+    if (!CrClass) {
+      await queryClient.invalidateQueries({
+        queryKey: ["CalendarClass"],
+      });
+      window?.top?.toastr?.error("Lớp không tồn tại hoặc đã bị xoá.", "", {
+        timeOut: 600,
+      });
+      onHide();
+      onClose();
+    } else {
+      let newLists = [...CrClass.Member.Lists];
+      let index = newLists.findIndex(
+        (x) => x?.Member?.ID === values?.Member?.value
+      );
+      if (index > -1) {
+        await refetch();
+        setFieldError("Member", "Học viên đã thuộc lớp.");
+      } else {
+        let newLists = [...CrClass.Member.Lists];
+        newLists.push({
           Member: {
-            ...initialValue.Member,
-            Lists: newLists,
+            MemberID: values?.Member?.value,
+            FullName: values?.Member?.label,
+            ID: values?.Member?.value,
+            Phone: values?.Member?.phone,
           },
-        },
-      ],
-    };
-    addEditMutation.mutate(
-      {
-        data: newValues,
-        update: {
+          Os: {
+            OsID: values?.Service?.value,
+            ID: values?.Service?.value,
+            Title: values?.Service?.label,
+          },
+          Status: "",
+        });
+        let newValues = {
           arr: [
             {
-              ID: values?.Service?.value,
-              Desc: "(Đã xếp lớp)",
-              UserID: 0
+              ...initialValue,
+              TeacherID: CrClass.TeacherID,
+              Member: {
+                ...CrClass.Member,
+                Lists: newLists,
+              },
             },
           ],
-        },
-      },
-      {
-        onSuccess: () => {
-          resetForm();
-          onHide();
-          window?.top?.toastr?.success("Thêm vào lớp thành công.", "", {
-            timeOut: 200,
-          });
-        },
+        };
+        addEditMutation.mutate(
+          {
+            data: newValues,
+            update: {
+              arr: [
+                {
+                  ID: values?.Service?.value,
+                  Desc: "(Đã xếp lớp)",
+                  UserID: 0,
+                },
+              ],
+            },
+          },
+          {
+            onSuccess: () => {
+              resetForm();
+              onHide();
+              window?.top?.toastr?.success("Thêm vào lớp thành công.", "", {
+                timeOut: 200,
+              });
+            },
+          }
+        );
       }
-    );
+    }
   };
 
   return (
