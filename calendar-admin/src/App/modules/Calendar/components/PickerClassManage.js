@@ -396,8 +396,6 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
   });
 
   const onCancelClass = () => {
-    console.log(initialValue);
-    console.log(initialValues);
     if (
       initialValue?.Member?.Lists &&
       initialValue?.Member?.Lists.length > 0 &&
@@ -686,14 +684,12 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                 ...initialValues?.Class,
                 TimeBegin: initialValue.TimeBegin,
               },
-              RefUserIds: initialValue?.TeacherID
-                ? [
-                    {
-                      ID: initialValue?.TeacherID?.value,
-                      FullName: initialValue?.TeacherID?.label,
-                    },
-                  ]
-                : [],
+              RefUserIds: [
+                {
+                  ID: teacher?.value,
+                  FullName: teacher?.label,
+                },
+              ],
               MemberIds: initialValue?.Member?.Lists
                 ? initialValue?.Member?.Lists.map((x) => x.Member)
                 : [],

@@ -454,7 +454,6 @@ function PickerCalendarUserRequest({ children }) {
   };
 
   const onDelete = (rowData) => {
-    console.log(rowData);
     Swal.fire({
       icon: "warning",
       title: "Xác nhận huỷ lịch ?",
