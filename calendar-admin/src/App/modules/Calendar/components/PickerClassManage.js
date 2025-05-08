@@ -66,7 +66,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
 
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
-  const { isLoading, isFetching, refetch } = useQuery({
+  const { isLoading, isFetching, refetch, data } = useQuery({
     queryKey: ["CalendarClassMembers", { initialValues, visible }],
     queryFn: async () => {
       let { Items } = await CalendarCrud.getCalendarClassMembers({
@@ -1011,9 +1011,98 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                   </div>
                 </div>
               </div>
+
               <div className="flex justify-between px-4 pt-4">
                 <div className="flex items-center gap-4">
-                  <div className="font-medium">HLV :</div>
+                  <div className="flex font-medium">
+                    {data?.Member?.HistoryCoachs &&
+                      data?.Member?.HistoryCoachs.length > 0 && (
+                        <OverlayTrigger
+                          trigger="click"
+                          placement="right"
+                          rootClose
+                          overlay={
+                            <Popover
+                              className="py-0 border-0"
+                              id="popover-basic"
+                            >
+                              <div>
+                                <div className="px-4 py-3 font-medium bg-gray-100 border-b text-[14px]">
+                                  Lịch sử thay đổi
+                                </div>
+                                <div>
+                                  {data?.Member?.HistoryCoachs &&
+                                    data?.Member?.HistoryCoachs.length > 0 && (
+                                      <>
+                                        {data?.Member?.HistoryCoachs.sort(
+                                          (a, b) =>
+                                            moment(
+                                              b.CreateDate,
+                                              "YYYY-MM-DD HH:mm"
+                                            ).valueOf() -
+                                            moment(
+                                              a.CreateDate,
+                                              "YYYY-MM-DD HH:mm"
+                                            ).valueOf()
+                                        ).map((x, i) => (
+                                          <div
+                                            className="border-b border-dashed last:border-0 text-[13px] px-4 py-2.5"
+                                            key={i}
+                                          >
+                                            <div>
+                                              Ngày
+                                              <span className="pl-1">
+                                                {moment(
+                                                  x.CreateDate,
+                                                  "YYYY-MM-DD HH:mm"
+                                                ).format("DD-MM-YYYY HH:mm")}
+                                              </span>
+                                            </div>
+                                            <div>
+                                              {x?.Coach ? (
+                                                <>
+                                                  Thay đổi huấn luyện viên thành{" "}
+                                                  {x?.Coach?.FullName}
+                                                </>
+                                              ) : (
+                                                <>
+                                                  Huỷ huấn luyện viên khỏi lớp.
+                                                </>
+                                              )}
+                                            </div>
+                                            <div>
+                                              Thực hiện bởi {x?.Staff?.FullName}
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </>
+                                    )}
+                                </div>
+                              </div>
+                            </Popover>
+                          }
+                        >
+                          <div className="mr-1.5 text-warning">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="1.5"
+                              stroke="currentColor"
+                              className="w-5"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"
+                              />
+                            </svg>
+                          </div>
+                        </OverlayTrigger>
+                      )}
+
+                    <span className="leading-[26px]">HLV :</span>
+                  </div>
                   <div className="w-[320px]">
                     <SelectStaffs
                       isDisabled={initialValue.Member?.Status}
