@@ -670,7 +670,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
               let newObj = {
                 ID: rowData?.Os?.ID,
                 BookDate: Status.value
-                  ? moment().format("YYYY-MM-DD HH:mm")
+                  ? moment(initialValue?.TimeBegin).format("YYYY-MM-DD HH:mm")
                   : null,
                 Status: !Status.value ? "" : "done",
               };
