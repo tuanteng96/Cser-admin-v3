@@ -146,6 +146,7 @@ function CalendarPage(props) {
     Stocks,
     SettingBookOnline,
     lop_hoc_pt,
+    GlobalConfig,
   } = useSelector(({ Auth, JsonConfig }) => ({
     AuthCrStockID: Auth.CrStockID,
     StocksList: Auth?.Stocks.filter((x) => x.ParentID !== 0),
@@ -154,6 +155,7 @@ function CalendarPage(props) {
     isRooms: JsonConfig?.Admin?.isRooms,
     SettingBookOnline: JsonConfig?.Admin?.SettingBookOnline,
     lop_hoc_pt: JsonConfig?.Admin?.lop_hoc_pt,
+    GlobalConfig: JsonConfig,
     StockRights: Auth?.StockRights || [],
     Stocks: Auth?.Stocks
       ? Auth?.Stocks.filter((x) => x.ParentID !== 0).map((o) => ({
@@ -164,6 +166,39 @@ function CalendarPage(props) {
       : [],
   }));
 
+  let optionsCalendar = [
+    {
+      value: "dayGridMonth",
+      label: "Theo Tháng",
+      hidden: false,
+    },
+    {
+      value: "timeGridWeek",
+      label: "Theo Tuần",
+      hidden: false,
+    },
+    {
+      value: "timeGridDay",
+      label: "Theo Ngày",
+      hidden: false,
+    },
+    {
+      value: "listWeek",
+      label: "Danh sách",
+      hidden: false,
+    },
+    {
+      value: "resourceTimeGridDay",
+      label: "Nhân viên",
+      hidden: false,
+    },
+    {
+      value: "resourceTimelineDay",
+      label: "Buồng / Phòng",
+      hidden: !isRooms,
+    },
+  ];
+
   const [TimeOpen, setTimeOpen] = useState(GTimeOpen);
   const [TimeClose, setTimeClose] = useState(GTimeClose);
 
@@ -173,16 +208,15 @@ function CalendarPage(props) {
     isBtnDelete: false,
   });
   const [isFilter, setIsFilter] = useState(false);
+
   const [filters, setFilters] = useState({
     Status: [
       "XAC_NHAN",
       "XAC_NHAN_TU_DONG",
       "CHUA_XAC_NHAN",
-      ...(!window?.top?.GlobalConfig?.Admin?.isAdminBooks
-        ? ["DANG_THUC_HIEN"]
-        : []),
-      ...(window?.top?.GlobalConfig?.Admin?.PosStatus
-        ? [...window?.top?.GlobalConfig?.Admin?.PosStatus]
+      ...(!GlobalConfig?.Admin?.isAdminBooks ? ["DANG_THUC_HIEN"] : []),
+      ...(GlobalConfig?.Admin?.PosStatus
+        ? [...GlobalConfig?.Admin?.PosStatus]
         : []),
       // "THUC_HIEN_XONG",
     ],
@@ -190,10 +224,14 @@ function CalendarPage(props) {
     Tags: "",
   });
   const [topCalendar, setTopCalendar] = useState({
-    type: {
-      value: "resourceTimeGridDay",
-      label: "Nhân viên",
-    },
+    type: GlobalConfig?.Admin?.PosActiveCalendar
+      ? optionsCalendar.filter(
+          (x) => x.value === GlobalConfig?.Admin?.PosActiveCalendar
+        )[0]
+      : {
+          value: "resourceTimeGridDay",
+          label: "Nhân viên",
+        },
     day: moment().toDate(),
   });
 
@@ -1223,7 +1261,7 @@ function CalendarPage(props) {
   //   calendarApi.prev()
   //   calendarApi.changeView("dayGridDay");
   // }
-
+  
   return (
     <div className={`ezs-calendar`}>
       <div className="px-0 container-fluid h-100">
@@ -1233,7 +1271,7 @@ function CalendarPage(props) {
             onOpenModal={onOpenModal}
             onSubmit={getFiltersBooking}
             //initialView={initialView}
-            initialView={topCalendar.view}
+            //initialView={topCalendar.view}
             loading={ListCalendars.isLoading}
             onOpenFilter={onOpenFilter}
             onHideFilter={onHideFilter}
@@ -1369,36 +1407,7 @@ function CalendarPage(props) {
                           {(ControlBookOnline) => (
                             <Select
                               options={[
-                                {
-                                  value: "dayGridMonth",
-                                  label: "Theo Tháng",
-                                  hidden: false,
-                                },
-                                {
-                                  value: "timeGridWeek",
-                                  label: "Theo Tuần",
-                                  hidden: false,
-                                },
-                                {
-                                  value: "timeGridDay",
-                                  label: "Theo Ngày",
-                                  hidden: false,
-                                },
-                                {
-                                  value: "listWeek",
-                                  label: "Danh sách",
-                                  hidden: false,
-                                },
-                                {
-                                  value: "resourceTimeGridDay",
-                                  label: "Nhân viên",
-                                  hidden: false,
-                                },
-                                {
-                                  value: "resourceTimelineDay",
-                                  label: "Buồng / Phòng",
-                                  hidden: !isRooms,
-                                },
+                                ...optionsCalendar,
                                 {
                                   value: "PickerCalendarClass",
                                   label: "Bảng lịch lớp học",

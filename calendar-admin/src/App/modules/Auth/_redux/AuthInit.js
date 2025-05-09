@@ -166,6 +166,7 @@ function AuthInit({ isConfig, children }) {
             SL_khach: true,
           },
           Admin: {
+            PosActiveCalendar: "",
             lop_hoc_diem: 10,
             kpiFinish: "Khách đến làm dịch vụ",
             kpiCancel: "Khách hủy",
