@@ -176,7 +176,7 @@ function AuthInit({ isConfig, children }) {
             isAdminBooks: false,
             SettingBookOnline: true,
             SettingBookOnlineMinutes: 0,
-            lop_hoc_pt: true,
+            lop_hoc_pt: true
           },
         };
       }

@@ -260,8 +260,14 @@ function CalendarPage(props) {
           ? [
               ...new Set([
                 ...prevState.Status,
-                ...(!window?.top?.GlobalConfig?.Admin?.isAdminBooks
-                  ? ["THUC_HIEN_XONG"]
+                "XAC_NHAN",
+                "XAC_NHAN_TU_DONG",
+                "CHUA_XAC_NHAN",
+                ...(!GlobalConfig?.Admin?.isAdminBooks
+                  ? ["DANG_THUC_HIEN"]
+                  : []),
+                ...(GlobalConfig?.Admin?.PosStatus
+                  ? [...GlobalConfig?.Admin?.PosStatus]
                   : []),
               ]),
             ]
@@ -1261,7 +1267,7 @@ function CalendarPage(props) {
   //   calendarApi.prev()
   //   calendarApi.changeView("dayGridDay");
   // }
-  
+
   return (
     <div className={`ezs-calendar`}>
       <div className="px-0 container-fluid h-100">
