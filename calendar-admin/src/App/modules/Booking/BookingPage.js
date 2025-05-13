@@ -489,6 +489,7 @@ function BookingPage() {
                     Thời gian / Cơ sở
                   </label>
                   <DatePicker
+                    minDate={new Date()}
                     minTime={
                       new Date(
                         new Date().setHours(
