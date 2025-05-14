@@ -136,6 +136,7 @@ function ModalCalendar({
 
   useEffect(() => {
     if (show) {
+      
       if (initialValue.ID) {
         let newDesc = initialValue.Desc;
         let AmountPeople = {
@@ -197,6 +198,9 @@ function ModalCalendar({
           TagSetting,
           TreatmentJson: initialValue?.TreatmentJson
             ? JSON.parse(initialValue?.TreatmentJson)
+            : "",
+          History: initialValue?.HistoryJSON
+            ? JSON.parse(initialValue?.HistoryJSON)
             : "",
         }));
       } else {
@@ -906,7 +910,7 @@ function ModalCalendar({
                                             "KHACH_KHONG_DEN") ||
                                           btnLoading.isBtnDelete) && (
                                           <div
-                                            class="spinner-border"
+                                            className="spinner-border"
                                             role="status"
                                           ></div>
                                         )}

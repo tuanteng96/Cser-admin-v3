@@ -69,6 +69,7 @@ const initialDefault = {
   },
   TreatmentJson: "",
 };
+
 function BookingPage() {
   const [initialValues, setInitialValues] = useState(initialDefault);
   const [btnLoading, setBtnLoading] = useState({
@@ -140,6 +141,7 @@ function BookingPage() {
         TreatmentJson: Book?.TreatmentJson
           ? JSON.parse(Book?.TreatmentJson)
           : "",
+        History: Book?.HistoryJSON ? JSON.parse(Book?.HistoryJSON) : "",
       }));
     } else {
       setInitialValues((prevState) => ({
@@ -196,27 +198,63 @@ function BookingPage() {
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
 
+    let objBooking = {
+      ...values,
+      MemberID: values.MemberID.value,
+      RootIdS:
+        values.RootIdS && values.RootIdS.length > 0
+          ? values.RootIdS.map((item) => item.value).toString()
+          : "",
+      Roots: values.RootIdS,
+      UserServiceIDs:
+        values.UserServiceIDs && values.UserServiceIDs.length > 0
+          ? values.UserServiceIDs.map((item) => item.value).toString()
+          : "",
+      BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+      Desc,
+      TreatmentJson: values?.TreatmentJson
+        ? JSON.stringify(values?.TreatmentJson)
+        : "",
+    };
+
+    let History = {
+      ...(values?.History || {}),
+      Edit: values?.History?.Edit
+        ? [
+            ...values?.History?.Edit,
+            {
+              CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+              Staff: {
+                ID: window?.top?.Info?.User?.ID,
+                FullName: window?.top?.Info?.User?.FullName,
+              },
+              Booking: {
+                ...objBooking,
+                Members: values.MemberID,
+                UserServices: values.UserServiceIDs,
+              },
+            },
+          ]
+        : [
+            {
+              CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+              Staff: {
+                ID: window?.top?.Info?.User?.ID,
+                FullName: window?.top?.Info?.User?.FullName,
+              },
+              Booking: {
+                ...objBooking,
+                Members: values.MemberID,
+                UserServices: values.UserServiceIDs,
+              },
+            },
+          ],
+    };
+
+    objBooking.History = History;
+
     const dataPost = {
-      booking: [
-        {
-          ...values,
-          MemberID: values.MemberID.value,
-          RootIdS:
-            values.RootIdS && values.RootIdS.length > 0
-              ? values.RootIdS.map((item) => item.value).toString()
-              : "",
-          Roots: values.RootIdS,
-          UserServiceIDs:
-            values.UserServiceIDs && values.UserServiceIDs.length > 0
-              ? values.UserServiceIDs.map((item) => item.value).toString()
-              : "",
-          BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-          Desc,
-          TreatmentJson: values?.TreatmentJson
-            ? JSON.stringify(values?.TreatmentJson)
-            : "",
-        },
-      ],
+      booking: [objBooking],
     };
 
     try {
@@ -278,25 +316,61 @@ function BookingPage() {
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
 
+    let objBooking = {
+      ...values,
+      MemberID: values.MemberID.value,
+      RootIdS: values.RootIdS.map((item) => item.value).toString(),
+      Roots: values.RootIdS,
+      UserServiceIDs:
+        values.UserServiceIDs && values.UserServiceIDs.length > 0
+          ? values.UserServiceIDs.map((item) => item.value).toString()
+          : "",
+      BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+      Status: "KHACH_DEN",
+      Desc,
+      TreatmentJson: values?.TreatmentJson
+        ? JSON.stringify(values?.TreatmentJson)
+        : "",
+    };
+
+    let History = {
+      ...(values?.History || {}),
+      Edit: values?.History?.Edit
+        ? [
+            ...values?.History?.Edit,
+            {
+              CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+              Staff: {
+                ID: window?.top?.Info?.User?.ID,
+                FullName: window?.top?.Info?.User?.FullName,
+              },
+              Booking: {
+                ...objBooking,
+                Members: values.MemberID,
+                UserServices: values.UserServiceIDs,
+              },
+            },
+          ]
+        : [
+            {
+              CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+              Staff: {
+                ID: window?.top?.Info?.User?.ID,
+                FullName: window?.top?.Info?.User?.FullName,
+              },
+              Booking: {
+                ...objBooking,
+                Members: values.MemberID,
+                UserServices: values.UserServiceIDs,
+              },
+            },
+          ],
+    };
+
+    objBooking.History = History;
+
     const dataPost = {
-      booking: [
-        {
-          ...values,
-          MemberID: values.MemberID.value,
-          RootIdS: values.RootIdS.map((item) => item.value).toString(),
-          Roots: values.RootIdS,
-          UserServiceIDs:
-            values.UserServiceIDs && values.UserServiceIDs.length > 0
-              ? values.UserServiceIDs.map((item) => item.value).toString()
-              : "",
-          BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-          Status: "KHACH_DEN",
-          Desc,
-          TreatmentJson: values?.TreatmentJson
-            ? JSON.stringify(values?.TreatmentJson)
-            : "",
-        },
-      ],
+      booking: [objBooking],
     };
 
     var bodyFormCheckIn = new FormData();
@@ -349,24 +423,60 @@ function BookingPage() {
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
 
+    let objBooking = {
+      ...values,
+      MemberID: values.MemberID.value,
+      RootIdS: values.RootIdS.map((item) => item.value).toString(),
+      Roots: values.RootIdS,
+      UserServiceIDs:
+        values.UserServiceIDs && values.UserServiceIDs.length > 0
+          ? values.UserServiceIDs.map((item) => item.value).toString()
+          : "",
+      BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+      Status: "TU_CHOI",
+      TreatmentJson: values?.TreatmentJson
+        ? JSON.stringify(values?.TreatmentJson)
+        : "",
+    };
+
+    let History = {
+      ...(values?.History || {}),
+      Edit: values?.History?.Edit
+        ? [
+            ...values?.History?.Edit,
+            {
+              CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+              Staff: {
+                ID: window?.top?.Info?.User?.ID,
+                FullName: window?.top?.Info?.User?.FullName,
+              },
+              Booking: {
+                ...objBooking,
+                Members: values.MemberID,
+                UserServices: values.UserServiceIDs,
+              },
+            },
+          ]
+        : [
+            {
+              CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+              Staff: {
+                ID: window?.top?.Info?.User?.ID,
+                FullName: window?.top?.Info?.User?.FullName,
+              },
+              Booking: {
+                ...objBooking,
+                Members: values.MemberID,
+                UserServices: values.UserServiceIDs,
+              },
+            },
+          ],
+    };
+
+    objBooking.History = History;
+
     const dataPost = {
-      booking: [
-        {
-          ...values,
-          MemberID: values.MemberID.value,
-          RootIdS: values.RootIdS.map((item) => item.value).toString(),
-          Roots: values.RootIdS,
-          UserServiceIDs:
-            values.UserServiceIDs && values.UserServiceIDs.length > 0
-              ? values.UserServiceIDs.map((item) => item.value).toString()
-              : "",
-          BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
-          Status: "TU_CHOI",
-          TreatmentJson: values?.TreatmentJson
-            ? JSON.stringify(values?.TreatmentJson)
-            : "",
-        },
-      ],
+      booking: [objBooking],
     };
 
     try {

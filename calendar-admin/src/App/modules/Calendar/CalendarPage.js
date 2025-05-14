@@ -584,6 +584,7 @@ function CalendarPage(props) {
   };
 
   const onSubmitBooking = async (values) => {
+    
     setBtnLoading((prevState) => ({
       ...prevState,
       isBtnBooking: true,
@@ -665,10 +666,45 @@ function CalendarPage(props) {
         if (newMember?.member) Members = { ...newMember?.member };
       }
 
+      let History = {
+        ...(values?.History || {}),
+        Edit: values?.History?.Edit
+          ? [
+              ...values?.History?.Edit,
+              {
+                CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+                Staff: {
+                  ID: window?.top?.Info?.User?.ID,
+                  FullName: window?.top?.Info?.User?.FullName,
+                },
+                Booking: {
+                  ...objBooking,
+                  Members,
+                  UserServices: values.UserServiceIDs,
+                },
+              },
+            ]
+          : [
+              {
+                CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+                Staff: {
+                  ID: window?.top?.Info?.User?.ID,
+                  FullName: window?.top?.Info?.User?.FullName,
+                },
+                Booking: {
+                  ...objBooking,
+                  Members,
+                  UserServices: values.UserServiceIDs,
+                },
+              },
+            ],
+      };
+
+      objBooking.History = History;
+
       const dataPost = {
         booking: [objBooking],
       };
-
       await CalendarCrud.postBooking(dataPost, {
         CurrentStockID,
         u_id_z4aDf2,
@@ -764,6 +800,7 @@ function CalendarPage(props) {
       //     ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
       //     : values.Desc,
     };
+
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
 
@@ -807,9 +844,46 @@ function CalendarPage(props) {
       bodyFormCheckIn.append("desc", "");
       await CalendarCrud.checkinMember(bodyFormCheckIn);
 
+      let History = {
+        ...(values?.History || {}),
+        Edit: values?.History?.Edit
+          ? [
+              ...values?.History?.Edit,
+              {
+                CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+                Staff: {
+                  ID: window?.top?.Info?.User?.ID,
+                  FullName: window?.top?.Info?.User?.FullName,
+                },
+                Booking: {
+                  ...objBooking,
+                  Members,
+                  UserServices: values.UserServiceIDs,
+                },
+              },
+            ]
+          : [
+              {
+                CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+                Staff: {
+                  ID: window?.top?.Info?.User?.ID,
+                  FullName: window?.top?.Info?.User?.FullName,
+                },
+                Booking: {
+                  ...objBooking,
+                  Members,
+                  UserServices: values.UserServiceIDs,
+                },
+              },
+            ],
+      };
+
+      objBooking.History = History;
+
       const dataPost = {
         booking: [objBooking],
       };
+
       await CalendarCrud.postBooking(dataPost, {
         CurrentStockID,
         u_id_z4aDf2,
@@ -882,10 +956,38 @@ function CalendarPage(props) {
           TreatmentJson: values?.TreatmentJson
             ? JSON.stringify(values?.TreatmentJson)
             : "",
+          History: {
+            ...(values?.History || {}),
+            Edit: values?.History?.Edit
+              ? [
+                  ...values?.History?.Edit,
+                  {
+                    CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+                    Staff: {
+                      ID: window?.top?.Info?.User?.ID,
+                      FullName: window?.top?.Info?.User?.FullName,
+                    },
+                    Booking: {
+                      ...values,
+                    },
+                  },
+                ]
+              : [
+                  {
+                    CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+                    Staff: {
+                      ID: window?.top?.Info?.User?.ID,
+                      FullName: window?.top?.Info?.User?.FullName,
+                    },
+                    Booking: {
+                      ...values,
+                    },
+                  },
+                ],
+          },
         },
       ],
     };
-
     try {
       await CalendarCrud.postBooking(dataPost, {
         CurrentStockID,
