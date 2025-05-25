@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { FieldArray, Form, Formik } from 'formik'
 import React, { useState } from 'react'
 import { useMutation, useQuery } from 'react-query'
@@ -137,7 +138,7 @@ function TimekeepingMethod(props) {
                   <FieldArray
                     name="updated"
                     render={arrayHelpers => (
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                      <div className="grid grid-cols-1 gap-4">
                         {values.updated &&
                           values.updated.length > 0 &&
                           values.updated.map((item, index) => (
@@ -151,79 +152,96 @@ function TimekeepingMethod(props) {
                                   borderBottom: '1px solid #ebedf3'
                                 }}
                               >
-                                {item.Title}
+                                {item.Title === 'Quản lý cơ sở'
+                                  ? 'Cơ sở tổng ( Công ty )'
+                                  : item.Title}
                               </div>
-                              <div className="p-4">
-                                <div className="mb-3">
-                                  <div className="text-[13px] text-muted mb-px">
-                                    Latitude
+                              <div
+                                className={clsx(
+                                  'p-4 grid',
+                                  !window.top?.GlobalConfig?.Admin
+                                    ?.an_cai_dai_dinh_vi
+                                    ? 'md:grid-cols-2 grid-cols-1 gap-4'
+                                    : 'grid-cols-1'
+                                )}
+                              >
+                                {!window.top?.GlobalConfig?.Admin
+                                  ?.an_cai_dai_dinh_vi && (
+                                  <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                      <div className="text-[13px] text-muted mb-px">
+                                        Latitude
+                                      </div>
+                                      <input
+                                        className="form-control"
+                                        type="text"
+                                        name={`updated[${index}].Lat`}
+                                        onChange={e =>
+                                          setFieldValue(
+                                            `updated[${index}].Lat`,
+                                            e.target.value
+                                          )
+                                        }
+                                        value={item.Lat}
+                                      />
+                                    </div>
+                                    <div>
+                                      <div className="text-[13px] text-muted mb-px">
+                                        Longitude
+                                      </div>
+                                      <input
+                                        className="form-control"
+                                        type="text"
+                                        name={`updated[${index}].Lng`}
+                                        onChange={e =>
+                                          setFieldValue(
+                                            `updated[${index}].Lng`,
+                                            e.target.value
+                                          )
+                                        }
+                                        value={item.Lng}
+                                      />
+                                    </div>
                                   </div>
-                                  <input
-                                    className="form-control"
-                                    type="text"
-                                    name={`updated[${index}].Lat`}
-                                    onChange={e =>
-                                      setFieldValue(
-                                        `updated[${index}].Lat`,
-                                        e.target.value
-                                      )
-                                    }
-                                    value={item.Lat}
-                                  />
-                                </div>
-                                <div className="mb-3">
-                                  <div className="text-[13px] text-muted mb-px">
-                                    Longitude
+                                )}
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div>
+                                    <div className="text-[13px] text-muted mb-px">
+                                      Tên Wifi
+                                    </div>
+                                    <input
+                                      className="form-control"
+                                      type="text"
+                                      name={`updated[${index}].WifiName`}
+                                      onChange={e =>
+                                        setFieldValue(
+                                          `updated[${index}].WifiName`,
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item.WifiName}
+                                    />
                                   </div>
-                                  <input
-                                    className="form-control"
-                                    type="text"
-                                    name={`updated[${index}].Lng`}
-                                    onChange={e =>
-                                      setFieldValue(
-                                        `updated[${index}].Lng`,
-                                        e.target.value
-                                      )
-                                    }
-                                    value={item.Lng}
-                                  />
-                                </div>
-                                <div className="mb-3">
-                                  <div className="text-[13px] text-muted mb-px">
-                                    Tên Wifi
+                                  <div>
+                                    <div className="text-[13px] text-muted mb-px">
+                                      ID Wifi
+                                    </div>
+                                    <input
+                                      style={{
+                                        fontFamily: 'Roboto'
+                                      }}
+                                      className="form-control"
+                                      type="text"
+                                      name={`updated[${index}].WifiID`}
+                                      onChange={e =>
+                                        setFieldValue(
+                                          `updated[${index}].WifiID`,
+                                          e.target.value
+                                        )
+                                      }
+                                      value={item.WifiID}
+                                    />
                                   </div>
-                                  <input
-                                    className="form-control"
-                                    type="text"
-                                    name={`updated[${index}].WifiName`}
-                                    onChange={e =>
-                                      setFieldValue(
-                                        `updated[${index}].WifiName`,
-                                        e.target.value
-                                      )
-                                    }
-                                    value={item.WifiName}
-                                  />
-                                </div>
-                                <div>
-                                  <div className="text-[13px] text-muted mb-px">
-                                    ID Wifi
-                                  </div>
-                                  <input
-                                    style={{
-                                      fontFamily: 'Roboto'
-                                    }}
-                                    className="form-control"
-                                    type="text"
-                                    name={`updated[${index}].WifiID`}
-                                    onChange={e =>
-                                      setFieldValue(
-                                        `updated[${index}].WifiID`,
-                                        e.target.value
-                                      )
-                                    }
-                                    value={item.WifiID}
-                                  />
                                 </div>
                               </div>
                             </div>

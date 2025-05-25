@@ -21,3 +21,11 @@
   './vendors/plugins/sweetalert2', './vendors/plugins/ant';
 // 5: Layout
 @import './layout/init';
+
+.tooltip .tooltip-inner {
+      max-width: 250px;
+}
+
+body .bs-tooltip-bottom .tooltip-arrow::before {
+  border-bottom-color: #fff;
+}

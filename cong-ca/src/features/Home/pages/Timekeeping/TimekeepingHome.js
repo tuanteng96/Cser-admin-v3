@@ -1383,7 +1383,10 @@ function TimekeepingHome(props) {
                               navigate('/bang-cham-cong/phuong-thuc-cham-cong')
                             }
                           >
-                            Định vị - Wifi
+                            {!window.top?.GlobalConfig?.Admin
+                              ?.an_cai_dai_dinh_vi
+                              ? 'Định vị - Wifi'
+                              : 'Wifi chấm công'}
                           </Dropdown.Item>
                           <Dropdown.Divider
                             style={{
@@ -1475,7 +1478,10 @@ function TimekeepingHome(props) {
                               navigate('/bang-cham-cong/phuong-thuc-cham-cong')
                             }
                           >
-                            Định vị - Wifi
+                            {!window.top?.GlobalConfig?.Admin
+                              ?.an_cai_dai_dinh_vi
+                              ? 'Định vị - Wifi'
+                              : 'Wifi chấm công'}
                           </Dropdown.Item>
                         </Dropdown.Menu>
                       </Dropdown>

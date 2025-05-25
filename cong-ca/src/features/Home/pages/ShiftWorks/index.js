@@ -84,7 +84,7 @@ function ShiftWorks(props) {
       {
         name: 'calamviecconfig',
         data: values.CONG_CA.map(x => {
-          let obj = {...x}
+          let obj = { ...x }
           delete obj.isNew
           if (obj.flexible) {
             return {
@@ -542,10 +542,18 @@ function ShiftWorks(props) {
                                             </div>
                                           )
                                         )}
-                                        <div className='mt-5 d-flex justify-content-end'>
+                                        <div className="mt-5 d-flex justify-content-end">
                                           <button
-                                            type="submit"
-                                            className="btn fw-500 btn-primary"
+                                            type="button"
+                                            className="btn fw-500 btn-success"
+                                            onClick={() =>
+                                              OptionHelpers.push({
+                                                Title: '',
+                                                TimeFrom: '06:00',
+                                                TimeTo: '18:00',
+                                                Value: 1
+                                              })
+                                            }
                                             disabled={
                                               saveConfigMutation.isLoading
                                             }
@@ -569,9 +577,7 @@ function ShiftWorks(props) {
                                                 />
                                               </svg>
                                             )}
-                                            {item.isNew
-                                              ? 'Thêm mới'
-                                              : 'Lưu thay đổi'}
+                                            Tạo mới ca làm việc
                                           </button>
                                         </div>
                                       </div>
@@ -792,7 +798,7 @@ function ShiftWorks(props) {
                                             </div>
                                           )
                                         )}
-                                        <div className='mt-5 d-flex justify-content-end'>
+                                        {/* <div className="mt-5 d-flex justify-content-end">
                                           <button
                                             type="submit"
                                             className="btn fw-500 btn-primary"
@@ -821,9 +827,9 @@ function ShiftWorks(props) {
                                             )}
                                             {item.isNew
                                               ? 'Thêm mới'
-                                              : 'Lưu thay đổi'}
+                                              : 'Lưu thay đổi 1'}
                                           </button>
-                                        </div>
+                                        </div> */}
                                       </div>
                                     )}
                                   />
