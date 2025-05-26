@@ -809,6 +809,28 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
                   : [],
                 Stock: CrClass?.Class?.Stock,
               });
+            if (initialValue?.TeacherID) {
+              window?.top?.noti27?.LOP_HOC &&
+                window?.top?.noti27?.LOP_HOC({
+                  type: "Hủy HLV khỏi lớp",
+                  Class: {
+                    ...CrClass?.Class,
+                    TimeBegin: CrClass.TimeBegin,
+                  },
+                  RefUserIds: CrClass?.TeacherID
+                    ? [
+                        {
+                          ID: initialValue?.TeacherID?.value,
+                          FullName: initialValue?.TeacherID?.label,
+                        },
+                      ]
+                    : [],
+                  MemberIds: CrClass?.Member?.Lists
+                    ? CrClass?.Member?.Lists.map((x) => x.Member)
+                    : [],
+                  Stock: CrClass?.Class?.Stock,
+                });
+            }
           } else {
             window?.top?.noti27?.LOP_HOC &&
               window?.top?.noti27?.LOP_HOC({

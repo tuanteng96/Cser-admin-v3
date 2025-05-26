@@ -36,7 +36,7 @@ let initialValueOption = {
   ]
 }
 
-function PickerImages({ children }) {
+function PickerImages({ children, Src }) {
   const [visible, setVisible] = useState(false)
   const onHide = () => setVisible(false)
   return (
@@ -66,11 +66,10 @@ function PickerImages({ children }) {
                     <figure className="h-full">
                       <img
                         onClick={e => e.stopPropagation()}
-                        className="h-full mfp-img"
+                        className="!h-full mfp-img"
                         alt=""
                         src={AssetsHelpers.toAbsoluteUrl(
-                          '/_assets/huong-dan.png?' +
-                            new Date().getTime()
+                          Src + '?' + new Date().getTime()
                         )}
                         //style={{ maxHeight: '90%' }}
                       />
@@ -149,7 +148,11 @@ function PayOffPage(props) {
         obj.Type = arr[0].Method
       }
       for (let key of arr) {
-        obj.Options.push(key)
+        let newKey = { ...key }
+        if (key.Method === 'MOI_PHUT') {
+          newKey.Value = newKey.Value * -1
+        }
+        obj.Options.push(newKey)
       }
     } else {
       obj = {
@@ -180,6 +183,7 @@ function PayOffPage(props) {
     for (const obj in values) {
       newValues[obj] = values[obj].Options.map(x => ({
         ...x,
+        Value: values[obj].Type === 'MOI_PHUT' ? x.Value * -1 : x.Value,
         Method: values[obj].Type
       })).filter(
         x => x.Value !== '' && x.FromMinute !== '' && x.ToMinute !== ''
@@ -320,6 +324,7 @@ function PayOffPage(props) {
           VE_SOM: initialValueOption,
           VE_MUON: initialValueOption
         }
+        
     result = {
       DI_SOM:
         Array.isArray(result?.DI_SOM) && result?.DI_SOM.length > 0
@@ -335,9 +340,10 @@ function PayOffPage(props) {
           : initialValueOption,
       VE_MUON:
         Array.isArray(result?.VE_MUON) && result?.VE_MUON.length > 0
-          ? mapOptions(result?.VE_SOM)
+          ? mapOptions(result?.VE_MUON)
           : initialValueOption
     }
+    
     if (
       JSON.stringify({
         ...result[active],
@@ -349,7 +355,10 @@ function PayOffPage(props) {
         ...values[active],
         Options: values[active].Options.filter(
           x => x.Value !== '' && x.FromMinute !== '' && x.ToMinute !== ''
-        )
+        ).map(x => ({
+          ...x,
+          //Value: x.Value > 0 && x.Method === 'MOI_PHUT' ? x.Value * -1 : x.Value
+        }))
       })
     ) {
       setActive(key)
@@ -371,6 +380,7 @@ function PayOffPage(props) {
           for (const obj in values) {
             newValues[obj] = values[obj].Options.map(x => ({
               ...x,
+              Value: values[obj].Type === 'MOI_PHUT' ? x.Value * -1 : x.Value,
               Method: values[obj].Type
             })).filter(
               x => x.Value !== '' && x.FromMinute !== '' && x.ToMinute !== ''
@@ -572,27 +582,57 @@ function PayOffPage(props) {
                                 <div>
                                   {values[item]?.Type === 'MOI_PHUT' ? (
                                     <div className="p-[16px]">
-                                      <div className="flex gap-3">
-                                        <NumericFormat
-                                          name="Value"
-                                          value={values[item].Options[0].Value}
-                                          className="form-control max-w-[500px] w-full"
-                                          type="text"
-                                          placeholder="Nhập giá trị"
-                                          onValueChange={val =>
-                                            setFieldValue(
-                                              `${item}.Options[0].Value`,
-                                              val.floatValue
-                                                ? val.floatValue
-                                                : val.value
-                                            )
-                                          }
-                                          autoComplete="off"
-                                          allowLeadingZeros
-                                          thousandSeparator={true}
-                                          //allowNegative={false}
-                                        />
-                                        {/* <div className="bg-[#f2f2f2] flex rounded p-1">
+                                      <div className="grid grid-cols-2 gap-4 max-w-[900px] w-full">
+                                        <div className="flex items-center gap-3">
+                                          <div className='capitalize'>{getByNameVi(item)} từ phút thứ</div>
+                                          <div className="relative flex-1">
+                                            <NumericFormat
+                                              name="FromMinute"
+                                              value={
+                                                values[item].Options[0]
+                                                  .FromMinute
+                                              }
+                                              className="form-control"
+                                              placeholder="Nhập số phút"
+                                              onValueChange={val =>
+                                                setFieldValue(
+                                                  `${item}.Options[0].FromMinute`,
+                                                  val.floatValue
+                                                    ? val.floatValue
+                                                    : val.value
+                                                )
+                                              }
+                                              autoComplete="off"
+                                            />
+                                            <div className="absolute top-0 right-0 flex items-center justify-center w-16 h-full pointer-events-none text-muted">
+                                              Phút
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                          <div>Giá trị {getUnit(item)} trên mỗi phút</div>
+                                          <NumericFormat
+                                            name="Value"
+                                            value={
+                                              values[item].Options[0].Value
+                                            }
+                                            className="flex-1 w-full form-control"
+                                            type="text"
+                                            placeholder="Nhập giá trị"
+                                            onValueChange={val =>
+                                              setFieldValue(
+                                                `${item}.Options[0].Value`,
+                                                val.floatValue
+                                                  ? val.floatValue
+                                                  : val.value
+                                              )
+                                            }
+                                            autoComplete="off"
+                                            allowLeadingZeros
+                                            thousandSeparator={true}
+                                            //allowNegative={false}
+                                          />
+                                          {/* <div className="bg-[#f2f2f2] flex rounded p-1">
                                           <div className="flex items-center justify-center h-full">
                                             VNĐ
                                           </div>
@@ -600,6 +640,7 @@ function PayOffPage(props) {
                                             CÔNG
                                           </div>
                                         </div> */}
+                                        </div>
                                       </div>
                                     </div>
                                   ) : (
@@ -737,14 +778,14 @@ function PayOffPage(props) {
                                                 colSpan={5}
                                               >
                                                 <div className="flex justify-end gap-2.5">
-                                                  <PickerImages>
+                                                  <PickerImages Src={`/huong-dan-${item}.png`}>
                                                     {({ open }) => (
                                                       <button
                                                         onClick={open}
                                                         type="button"
                                                         className="px-3 py-2 text-[13px] text-white border-0 rounded outline-none bg-[#7e7e7e] hover:opacity-80 transition-all"
                                                       >
-                                                        Cài đặt nâng cao
+                                                        Cách nhập giá trị
                                                       </button>
                                                     )}
                                                   </PickerImages>
