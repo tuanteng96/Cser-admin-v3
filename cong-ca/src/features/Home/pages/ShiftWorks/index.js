@@ -218,12 +218,8 @@ function ShiftWorks(props) {
                             }}
                           >
                             {({ open }) => (
-                              <button
-                                type="button"
-                                className="btn fw-500 btn-success"
-                                onClick={open}
-                              >
-                                Thêm mới
+                              <button className='mt-1 bg-white border-0 text-success' type="button" onClick={open}>
+                                <i className="far fa-plus text-[17px]"></i>
                               </button>
                             )}
                           </PickerAddShift>
