@@ -251,7 +251,7 @@ function CalendarPage(props) {
   const [btnLoadingLock, setBtnLoadingLock] = useState(false);
   const calendarRef = useRef("");
   const { isTelesales } = useContext(AppContext);
-
+  
   useEffect(() => {
     if (topCalendar?.type?.value === "resourceTimeGridDay") {
       setFilters((prevState) => ({
@@ -1060,7 +1060,7 @@ function CalendarPage(props) {
   };
 
   const ListCalendars = useQuery({
-    queryKey: ["ListCalendars", { ListLock, filters }],
+    queryKey: ["ListCalendars", { ListLock, filters, View: topCalendar?.type?.value }],
     queryFn: async () => {
       const newFilters = {
         ...filters,
@@ -1224,7 +1224,7 @@ function CalendarPage(props) {
           }
         }
       }
-
+      
       let dataBooks =
         data.books && Array.isArray(data.books)
           ? data.books
@@ -1232,6 +1232,7 @@ function CalendarPage(props) {
                 let TreatmentJson = item?.TreatmentJson
                   ? JSON.parse(item?.TreatmentJson)
                   : "";
+                  
                 return {
                   ...item,
                   start: item.BookDate,
@@ -2137,6 +2138,7 @@ function CalendarPage(props) {
           </div>
         </div>
       </div>
+      
       <ModalCalendar
         show={isModal}
         onHide={onHideModal}
