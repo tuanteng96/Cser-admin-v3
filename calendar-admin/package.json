@@ -40,6 +40,7 @@
         "react-scroll-sync": "^0.11.0",
         "react-select": "^5.2.1",
         "react-select-async-paginate": "^0.6.1",
+        "react-texty": "^0.6.0",
         "react-tiny-popover": "^8.1.6",
         "react-toastify": "^7.0.4",
         "react-topbar-progress-indicator": "^4.1.1",

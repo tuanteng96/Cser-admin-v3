@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { useInfiniteQuery } from "react-query";
 import CalendarCrud from "../_redux/CalendarCrud";
 import Table, { AutoResizer } from "react-base-table";
-
+import Text from "react-texty";
 import moment from "moment";
 import vi from "date-fns/locale/vi";
 import SelectMember from "../../../../components/Select/SelectMember/SelectMember";
@@ -62,13 +62,14 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
   } = useInfiniteQuery({
     queryKey: ["CareSchedule", { filters }],
     queryFn: async ({ pageParam = 1 }) => {
+      console.log(filters)
       let data = await CalendarCrud.getCareSchedule({
         StockID: [AuthCrStockID],
         DateStart: moment(filters.DateStart).format("YYYY-MM-DD"),
         DateEnd: moment(filters.DateEnd).format("YYYY-MM-DD"),
         Pi: pageParam,
         Ps: 20,
-        MemberIDs: filters.MemberIDs?.value ? [filters?.MemberIDs?.value] : [],
+        MemberIDs: filters.MemberIDs && filters.MemberIDs.length > 0 ? filters?.MemberIDs.map(x => x.value) : [],
       });
       return data;
     },
@@ -128,6 +129,11 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
         dataKey: "OrderTitle",
         width: 300,
         sortable: false,
+        cellRenderer: ({ rowData }) => (
+          <Text className="flex-1" tooltipMaxWidth={280}>
+            {rowData.OrderTitle}
+          </Text>
+        ),
       },
       {
         key: "SendDate",
@@ -152,6 +158,9 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
         dataKey: "Content",
         width: 350,
         sortable: false,
+        cellRenderer: ({ rowData }) => (
+          <Text tooltipMaxWidth={280}>{rowData.Content}</Text>
+        ),
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -178,10 +187,7 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
                 }}
               >
                 {(formikProps) => {
-                  const {
-                    values,
-                    setFieldValue,
-                  } = formikProps;
+                  const { values, setFieldValue } = formikProps;
 
                   return (
                     <Form className="flex gap-3">
@@ -347,7 +353,8 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
                     //overlayRenderer={this.renderOverlay}
                     //emptyRenderer={this.renderEmpty}
                     ignoreFunctionInColumnCompare={false}
-                    estimatedRowHeight={60}
+                    //estimatedRowHeight={100}
+                    rowHeight={100}
                     emptyRenderer={() =>
                       !isLoading && !isFetching ? (
                         <div className="flex items-center justify-center w-full h-full">
