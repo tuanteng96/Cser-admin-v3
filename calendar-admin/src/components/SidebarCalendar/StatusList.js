@@ -10,7 +10,7 @@ const StatusArr = [
   },
   {
     value: "XAC_NHAN_TU_DONG",
-    label: "Đã xác nhận (Tự động)",
+    label: "Đặt lịch tự động",
     color: "#17C653",
     bg: "#E4FFED",
   },

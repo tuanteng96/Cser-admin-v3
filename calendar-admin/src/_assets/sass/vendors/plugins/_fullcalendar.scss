@@ -468,6 +468,24 @@
                 .fc-list-event-time {
                     padding-top: 18px !important;
                 }
+                &.fc-event-solid-primary1 {
+                    --fc-event-border-color: #17C653
+                }
+                &.fc-event-solid-primary {
+                    --fc-event-border-color: #3599ff
+                }
+                &.fc-event-solid-warning {
+                    --fc-event-border-color: #ffa800
+                }
+                &.fc-event-solid-info {
+                    --fc-event-border-color: #8951fc
+                }
+                &.fc-event-solid-success {
+                    --fc-event-border-color: #1dc5bd
+                }
+                &.fc-event-solid-secondary {
+                    --fc-event-border-color: #92929e
+                }
             }
             .fc-list-event-dot {
                 border: 7px solid var(--fc-event-border-color, #3788d8);

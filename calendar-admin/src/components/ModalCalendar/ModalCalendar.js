@@ -136,7 +136,6 @@ function ModalCalendar({
 
   useEffect(() => {
     if (show) {
-      
       if (initialValue.ID) {
         let newDesc = initialValue.Desc;
         let AmountPeople = {
@@ -275,6 +274,11 @@ function ModalCalendar({
 
   const getTitleModal = (Status, formikProps) => {
     const { setFieldValue } = formikProps;
+    let isAuto =
+      initialValue?.Desc &&
+      initialValue?.Desc?.toUpperCase().indexOf("TỰ ĐỘNG ĐẶT LỊCH") > -1;
+      console.log(isAuto)
+      console.log(Status)
     if (!Status) {
       return "Đặt lịch dịch vụ";
     }
@@ -285,7 +289,7 @@ function ModalCalendar({
       <Dropdown>
         <Dropdown.Toggle
           className={`bg-transparent p-0 border-0 modal-dropdown-title ${
-            Status === "XAC_NHAN" ? "text-primary" : ""
+            Status === "XAC_NHAN" ? (isAuto ? "text-primary1" : "text-primary") : ""
           } ${
             Status === "KHACH_KHONG_DEN" || Status === "TU_CHOI"
               ? "text-danger"
@@ -294,7 +298,7 @@ function ModalCalendar({
           id="dropdown-custom-1"
         >
           <span>
-            {Status === "XAC_NHAN" ? "Đã xác nhận" : ""}
+            {Status === "XAC_NHAN" ? (isAuto ?  "Đặt lịch tự động" : "Đã xác nhận") : ""}
             {Status === "KHACH_KHONG_DEN" ? "Khách không đến" : ""}
             {Status === "KHACH_DEN" ? "Khách có đến" : ""}
             {Status === "TU_CHOI" ? "Khách hủy lịch" : ""}
@@ -307,7 +311,8 @@ function ModalCalendar({
             active={Status === "XAC_NHAN"}
             onClick={() => setFieldValue("Status", "XAC_NHAN", false)}
           >
-            Đã xác nhận
+            {isAuto ? "Đặt lịch tự động" : "Đã xác nhận"}
+            
           </Dropdown.Item>
           <Dropdown.Item
             className="font-weight-bold"
