@@ -298,7 +298,7 @@ function ModalCalendar({
           id="dropdown-custom-1"
         >
           <span>
-            {Status === "XAC_NHAN" ? (isAuto ?  "Đặt lịch tự động" : "Đã xác nhận") : ""}
+            {Status === "XAC_NHAN" ? (isAuto ?  "Đặt lịch dự kiến" : "Đã xác nhận") : ""}
             {Status === "KHACH_KHONG_DEN" ? "Khách không đến" : ""}
             {Status === "KHACH_DEN" ? "Khách có đến" : ""}
             {Status === "TU_CHOI" ? "Khách hủy lịch" : ""}
@@ -311,7 +311,7 @@ function ModalCalendar({
             active={Status === "XAC_NHAN"}
             onClick={() => setFieldValue("Status", "XAC_NHAN", false)}
           >
-            {isAuto ? "Đặt lịch tự động" : "Đã xác nhận"}
+            {isAuto ? "Đặt lịch dự kiến" : "Đã xác nhận"}
             
           </Dropdown.Item>
           <Dropdown.Item

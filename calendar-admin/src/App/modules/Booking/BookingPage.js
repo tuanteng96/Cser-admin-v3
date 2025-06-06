@@ -580,14 +580,38 @@ function BookingPage() {
                       isSearchable={false}
                       //menuIsOpen={true}
                       name="Status"
-                      value={StatusArr.filter(
-                        (item) => item.value === values.Status
-                      )}
+                      value={StatusArr.map((x) => {
+                        let obj = { ...x };
+                        if (
+                          values.Desc &&
+                          values.Desc.toUpperCase().indexOf(
+                            "TỰ ĐỘNG ĐẶT LỊCH"
+                          ) > -1
+                        ) {
+                          if (obj.value === "XAC_NHAN") {
+                            obj.label = "Đặt lịch dự kiến";
+                          }
+                        }
+                        return obj;
+                      }).filter((item) => item.value === values.Status)}
                       onChange={(option) =>
                         setFieldValue("Status", option ? option.value : "")
                       }
                       onBlur={handleBlur}
-                      options={StatusArr}
+                      options={StatusArr.map((x) => {
+                        let obj = { ...x };
+                        if (
+                          values.Desc &&
+                          values.Desc.toUpperCase().indexOf(
+                            "TỰ ĐỘNG ĐẶT LỊCH"
+                          ) > -1
+                        ) {
+                          if (obj.value === "XAC_NHAN") {
+                            obj.label = "Đặt lịch dự kiến";
+                          }
+                        }
+                        return obj;
+                      })}
                       placeholder="Chọn trạng thái"
                       menuPosition="fixed"
                     />
