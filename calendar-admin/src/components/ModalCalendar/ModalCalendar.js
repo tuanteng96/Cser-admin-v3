@@ -369,7 +369,7 @@ function ModalCalendar({
     };
     CalendarCrud.editTagsMember(newData).then((res) => {
       setLoading(false);
-      toast.success("Cập nhập thành công !", {
+      toast.success("Cập nhật thành công !", {
         position: toast.POSITION.TOP_RIGHT,
         autoClose: 1500,
       });
@@ -891,7 +891,7 @@ function ModalCalendar({
                                     values.Status !== "KHACH_DEN"
                                   }
                                 >
-                                  Cập nhập
+                                  Cập nhật
                                 </button>
                                 {initialValue.Status !== "KHACH_DEN" && (
                                   <>

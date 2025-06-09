@@ -273,7 +273,7 @@ function BookingPage() {
           mid: values.MemberID.value,
         });
       window.top.toastr.success(
-        values?.ID ? "Cập nhập thành công." : "Đặt lịch thành công.",
+        values?.ID ? "Cập nhật thành công." : "Đặt lịch thành công.",
         "",
         { timeOut: 2000 }
       );
@@ -396,7 +396,7 @@ function BookingPage() {
           mid: values.MemberID.value,
         });
       window.top.toastr.success(
-        values?.ID ? "Cập nhập thành công." : "Đặt lịch thành công.",
+        values?.ID ? "Cập nhật thành công." : "Đặt lịch thành công.",
         "",
         { timeOut: 2000 }
       );
@@ -934,7 +934,7 @@ function BookingPage() {
                                 values.Status !== "KHACH_DEN"
                               }
                             >
-                              Cập nhập
+                              Cập nhật
                             </button>
                             {initialValues.Status !== "KHACH_DEN" && (
                               <>

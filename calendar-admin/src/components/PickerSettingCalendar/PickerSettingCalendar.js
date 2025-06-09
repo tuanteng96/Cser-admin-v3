@@ -63,7 +63,7 @@ function PickerSettingCalendar({ children, SettingCalendar }) {
           queryClient
             .invalidateQueries({ queryKey: ["SettingCalendar"] })
             .then(() => {
-              toast.success("Cập nhập thành công.");
+              toast.success("Cập nhật thành công.");
             });
         },
       }
@@ -265,7 +265,7 @@ function PickerSettingCalendar({ children, SettingCalendar }) {
                     } w-auto my-0 mr-0 h-auto`}
                     disabled={updateMutation.isLoading}
                   >
-                    Cập nhập
+                    Cập nhật
                   </button>
                 </Modal.Footer>
               </Form>

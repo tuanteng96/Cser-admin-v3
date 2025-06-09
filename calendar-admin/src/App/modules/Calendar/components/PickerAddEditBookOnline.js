@@ -122,7 +122,7 @@ function PickerAddEditBookOnline({
         onHide();
         resetForm();
         window?.top?.toastr &&
-          window.top.toastr.success("Cập nhập thành công.", "", {
+          window.top.toastr.success("Cập nhật thành công.", "", {
             timeOut: 500,
           });
       },

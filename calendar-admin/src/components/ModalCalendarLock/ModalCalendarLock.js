@@ -300,7 +300,7 @@ function ModalCalendarLock({
                   } w-auto my-0 mr-0 h-auto`}
                   disabled={btnLoadingLock || isLoading}
                 >
-                  Cập nhập khóa lịch
+                  Cập nhật khóa lịch
                 </button>
               </Modal.Footer>
             </Form>

@@ -94,7 +94,7 @@ function ModalProcessingBook({ children }) {
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
-        window?.top?.toastr?.success("Cập nhập thành công.", "", {
+        window?.top?.toastr?.success("Cập nhật thành công.", "", {
           timeOut: 200,
         });
       }
@@ -104,7 +104,7 @@ function ModalProcessingBook({ children }) {
   const updateOsAll = () => {
     Swal.fire({
       icon: "warning",
-      title: `Cập nhập tất cả dịch vụ.`,
+      title: `Cập nhật tất cả dịch vụ.`,
       confirmButtonText: "Xác nhận",
       customClass: {
         confirmButton: "btn btn-success",
@@ -128,7 +128,7 @@ function ModalProcessingBook({ children }) {
       allowOutsideClick: () => !Swal.isLoading(),
     }).then((result) => {
       if (result.isConfirmed) {
-        window?.top?.toastr?.success("Cập nhập thành công.", "", {
+        window?.top?.toastr?.success("Cập nhật thành công.", "", {
           timeOut: 200,
         });
       }
@@ -315,7 +315,7 @@ function ModalProcessingBook({ children }) {
                 className="relative flex items-center !h-10 px-3.5 text-[13px] font-light text-white transition !rounded !shadow-lg focus:outline-none focus:shadow-none bg-primary mr-2"
                 onClick={updateOsAll}
               >
-                Cập nhập tất cả
+                Cập nhật tất cả
               </button>
             )}
             <button

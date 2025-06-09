@@ -854,7 +854,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
               });
           }
           window?.top?.toastr?.success(
-            "Cập nhập huấn luyện viên thành công.",
+            "Cập nhật huấn luyện viên thành công.",
             "",
             {
               timeOut: 200,
@@ -889,7 +889,7 @@ function PickerClassManage({ children, TimeOpen, TimeClose }) {
       };
       addMutation.mutate(newValues, {
         onSuccess: () => {
-          window?.top?.toastr?.success("Cập nhập thành công.", "", {
+          window?.top?.toastr?.success("Cập nhật thành công.", "", {
             timeOut: 200,
           });
         },

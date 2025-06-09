@@ -580,7 +580,7 @@ function CalendarPage(props) {
     if (!Status) {
       return "Thêm mới lịch thành công !";
     }
-    return "Cập nhập lịch thành công !";
+    return "Cập nhật lịch thành công !";
   };
 
   const onSubmitBooking = async (values) => {

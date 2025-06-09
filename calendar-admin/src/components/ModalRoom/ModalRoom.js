@@ -149,7 +149,7 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
         queryClient.invalidateQueries({ queryKey: ["ListRooms"] }).then(() => {
           getListRooms();
           onHide();
-          toast.success("Cập nhập phòng thành công.");
+          toast.success("Cập nhật phòng thành công.");
         });
       },
     });
@@ -446,7 +446,7 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                   } w-auto my-0 mr-0 h-auto`}
                   disabled={updateMutation.isLoading}
                 >
-                  Cập nhập
+                  Cập nhật
                 </button>
               </Modal.Footer>
             </Form>
