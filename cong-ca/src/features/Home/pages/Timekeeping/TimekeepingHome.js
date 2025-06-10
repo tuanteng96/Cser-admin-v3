@@ -224,8 +224,10 @@ function TimekeepingHome(props) {
                                     }
                                   : '',
                                 Desc: date?.WorkTrack?.Info?.Desc || '',
-                                CountWork: date?.WorkTrack?.Info?.CheckOut
-                                  ?.WorkToday
+                                CountWork: date?.WorkTrack?.Info?.WorkToday
+                                  ?.hiddenTime
+                                  ? 0
+                                  : date?.WorkTrack?.Info?.CheckOut?.WorkToday
                                   ? date?.WorkTrack?.Info?.CheckOut?.WorkToday
                                       ?.Value
                                   : date?.WorkTrack?.Info?.WorkToday?.Value ||

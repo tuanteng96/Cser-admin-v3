@@ -367,10 +367,14 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     })
     let dataDayOff = newData.filter(x => !x.WorkTrack.CheckIn)
     let dataT7 = newData.filter(
-      x => !x.WorkTrack.CheckIn && moment(x.Date, 'YYYY-MM-DD').format('ddd') === 'T7'
+      x =>
+        !x.WorkTrack.CheckIn &&
+        moment(x.Date, 'YYYY-MM-DD').format('ddd') === 'T7'
     )
     let dataCN = newData.filter(
-      x => !x.WorkTrack.CheckIn && moment(x.Date, 'YYYY-MM-DD').format('ddd') === 'CN'
+      x =>
+        !x.WorkTrack.CheckIn &&
+        moment(x.Date, 'YYYY-MM-DD').format('ddd') === 'CN'
     )
     return `Số ngày nghỉ: ${dataDayOff.length} ngày (${dataT7.length} Thứ 7 & ${dataCN.length} CN)`
   }
@@ -863,7 +867,10 @@ function TimekeepingMember(props) {
         sortable: false,
         headerClassName: () => 'justify-center',
         className: () => 'justify-center font-semibold',
-        cellRenderer: ({ rowData }) => rowData.WorkTrack.Info.CountWork
+        cellRenderer: ({ rowData }) =>
+          rowData?.WorkTrack?.Info?.WorkToday?.hiddenTime
+            ? 0
+            : rowData.WorkTrack.Info.CountWork
       },
       {
         width: 200,
@@ -956,6 +963,10 @@ function TimekeepingMember(props) {
                   }
                   Rows.push(rowObj)
 
+                  let CountWork = obj?.WorkTrack?.Info?.WorkToday?.hiddenTime
+                  ? 0
+                  : obj?.WorkTrack?.Info?.CountWork || 0
+
                   Response.push([
                     moment(obj.Date).format('DD-MM-YYYY'),
                     obj?.WorkTrack?.CheckIn
@@ -970,7 +981,7 @@ function TimekeepingMember(props) {
                     obj?.WorkTrack?.Info?.TimekeepingTypeValue || 0,
                     obj?.WorkTrack?.Info?.Type?.label || '',
                     obj?.WorkTrack?.Info?.Desc || '',
-                    obj?.WorkTrack?.Info?.CountWork || '',
+                    Number(CountWork),
                     obj?.WorkTrack?.Info?.CountWorkTime || '',
                     Number(obj?.WorkTrack?.Info?.CountWork) >
                     (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
@@ -980,7 +991,7 @@ function TimekeepingMember(props) {
                   ])
                 }
                 indexStart += 1
-
+                
                 Response.push([
                   moment(obj.Date).format('DD-MM-YYYY'),
                   obj?.WorkTrack?.CheckOut
@@ -991,11 +1002,11 @@ function TimekeepingMember(props) {
                       ? 'Khác điểm ' + obj?.WorkTrack?.StockTitle
                       : 'Đúng điểm'
                     : '',
-                  obj?.WorkTrack?.Info?.CheckOut?.TimekeepingType?.label || '',
+                  obj?.WorkTrack?.Info?.WorkToday?.hiddenTime ? "Theo giờ" : (obj?.WorkTrack?.Info?.CheckOut?.TimekeepingType?.label || ''),
                   obj?.WorkTrack?.Info?.CheckOut?.TimekeepingTypeValue || 0,
                   obj?.WorkTrack?.Info?.CheckOut?.Type?.label || '',
                   obj?.WorkTrack?.Info?.CheckOut?.Desc || '',
-                  obj?.WorkTrack?.Info?.CountWork || '',
+                  0,
                   obj?.WorkTrack?.Info?.CountWorkTime || '',
                   Number(obj?.WorkTrack?.Info?.CountWork) >
                   (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
