@@ -7,8 +7,7 @@ import resourceTimelinePlugin from "@fullcalendar/resource-timeline";
 import listPlugin from "@fullcalendar/list";
 import resourceTimeGridPlugin from "@fullcalendar/resource-timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import ModalCalendar from "../../../components/ModalCalendar/ModalCalendar";
-import SidebarCalendar from "../../../components/SidebarCalendar/SidebarCalendar";
+import SidebarMassageCalendar from "../../../components/SidebarCalendar/SidebarMassageCalendar";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
@@ -34,8 +33,11 @@ import {
   PickerCareSchedule,
   PickerClass,
   PickerControlBookOnline,
+  PickerOfflineSchedule,
   PickerSettingBookOnline,
 } from "./components";
+import { toAbsoluteUrl, toAbsoluteUser } from "../../../helpers/AssetsHelpers";
+import ModalMassageCalendar from "../../../components/ModalCalendar/ModalMassageCalendar";
 
 moment.locale("vi");
 
@@ -136,7 +138,7 @@ const getStatusClss = (Status, item) => {
   }
 };
 
-function CalendarPage(props) {
+function CalendarMassagePage(props) {
   const {
     AuthCrStockID,
     GTimeOpen,
@@ -170,31 +172,31 @@ function CalendarPage(props) {
     {
       value: "dayGridMonth",
       label: "Theo Tháng",
-      hidden: false,
+      hidden: true,
     },
     {
       value: "timeGridWeek",
       label: "Theo Tuần",
-      hidden: false,
+      hidden: true,
     },
     {
       value: "timeGridDay",
       label: "Theo Ngày",
-      hidden: false,
+      hidden: true,
     },
     {
       value: "listWeek",
       label: "Danh sách",
-      hidden: false,
+      hidden: true,
     },
     {
       value: "resourceTimeGridDay",
-      label: "Nhân viên",
+      label: "Xem theo nhân viên",
       hidden: false,
     },
     {
       value: "resourceTimelineDay",
-      label: "Buồng / Phòng",
+      label: "Xem theo Phòng",
       hidden: !isRooms,
     },
   ];
@@ -206,8 +208,10 @@ function CalendarPage(props) {
   const [btnLoading, setBtnLoading] = useState({
     isBtnBooking: false,
     isBtnDelete: false,
+    isBtnFinish: false,
   });
   const [isFilter, setIsFilter] = useState(false);
+  const [isSidebar, setIsSidebar] = useState(false);
 
   const [filters, setFilters] = useState({
     Status: [
@@ -230,7 +234,7 @@ function CalendarPage(props) {
         )[0]
       : {
           value: "resourceTimeGridDay",
-          label: "Nhân viên",
+          label: "Xem theo nhân viên",
         },
     day: moment().toDate(),
   });
@@ -251,7 +255,7 @@ function CalendarPage(props) {
   const [btnLoadingLock, setBtnLoadingLock] = useState(false);
   const calendarRef = useRef("");
   const { isTelesales } = useContext(AppContext);
-  
+
   useEffect(() => {
     if (topCalendar?.type?.value === "resourceTimeGridDay") {
       setFilters((prevState) => ({
@@ -328,9 +332,17 @@ function CalendarPage(props) {
       });
       const newData =
         Array.isArray(data) && data.length > 0
-          ? data.map((item) => ({ ...item, id: item.id, title: item.text, order: item?.source?.Order || 0 }))
+          ? data.map((item) => ({
+              ...item,
+              id: item.id,
+              title: item.text,
+              order: item?.source?.Order || 0,
+            }))
           : [];
-      setStaffFull([{ id: 0, title: "Chưa chọn nhân viên", order: 0 }, ...newData]);
+      setStaffFull([
+        ...newData,
+        { id: 0, title: "Chưa chọn", photo: null, order: 100000 },
+      ]);
     }
 
     getStaffFull();
@@ -396,13 +408,15 @@ function CalendarPage(props) {
       let { data } = await CalendarCrud.getConfigName(`room`);
       let rs = [
         {
-          RoomTitle: "Room Trống",
+          RoomTitle: "0Phòng Trống",
           id: 0,
-          title: "Chưa chọn Room",
+          title: "Chưa chọn phòng",
+          order: 10000,
         },
       ];
       if (data && data.length > 0) {
         const result = JSON.parse(data[0].Value);
+
         let indexStock = result.findIndex((x) => x.StockID === AuthCrStockID);
         if (indexStock > -1 && result[indexStock]) {
           if (
@@ -411,12 +425,13 @@ function CalendarPage(props) {
           ) {
             for (let Room of result[indexStock].ListRooms) {
               if (Room.Children && Room.Children.length > 0) {
-                for (let cls of Room.Children) {
+                for (let [i, cls] of Room.Children.entries()) {
                   rs.push({
                     ...cls,
-                    RoomTitle: Room.label,
+                    RoomTitle: '1' + Room.label,
                     title: cls.label,
                     id: cls.ID,
+                    order: i + 1,
                   });
                 }
               }
@@ -424,6 +439,7 @@ function CalendarPage(props) {
           }
         }
       }
+
       return rs || [];
     },
   });
@@ -584,7 +600,6 @@ function CalendarPage(props) {
   };
 
   const onSubmitBooking = async (values) => {
-    
     setBtnLoading((prevState) => ({
       ...prevState,
       isBtnBooking: true,
@@ -611,7 +626,7 @@ function CalendarPage(props) {
 
     const objBooking = {
       ...values,
-      MemberID: values.MemberID.value,
+      MemberID: values?.MemberID?.value || "",
       RootIdS: values.RootIdS
         ? values.RootIdS.map((item) => item.value).toString()
         : "",
@@ -623,15 +638,12 @@ function CalendarPage(props) {
       BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
       Status: values.Status ? values.Status : "XAC_NHAN",
       Desc,
-      // Desc:
-      //   window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
-      //     ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
-      //     : values.Desc,
       IsAnonymous: values.MemberID?.PassersBy || false,
       TreatmentJson: values?.TreatmentJson
         ? JSON.stringify(values?.TreatmentJson)
         : "",
     };
+
     if (values?.MemberID?.isCreate) {
       objBooking.FullName = values.MemberID?.text;
       objBooking.Phone = values.MemberID?.suffix;
@@ -664,6 +676,19 @@ function CalendarPage(props) {
         }
         objBooking.MemberID = newMember?.member?.ID || 0;
         if (newMember?.member) Members = { ...newMember?.member };
+      } else if (!objBooking.MemberID) {
+        let NextMember = await CalendarCrud.getNextMember();
+        if (NextMember?.Member) {
+          objBooking.MemberID = NextMember?.Member?.ID || 0;
+          if (NextMember?.Member) Members = { ...NextMember?.Member };
+        } else {
+          toast.error("Xảy ra lỗi khi tạo khách hàng.");
+          setBtnLoading((prevState) => ({
+            ...prevState,
+            isBtnBooking: false,
+          }));
+          return;
+        }
       }
 
       let History = {
@@ -763,7 +788,7 @@ function CalendarPage(props) {
   const onFinish = async (values) => {
     setBtnLoading((prevState) => ({
       ...prevState,
-      isBtnBooking: true,
+      isBtnFinish: true,
     }));
     let Desc = "";
     if (window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople) {
@@ -826,7 +851,7 @@ function CalendarPage(props) {
             });
             setBtnLoading((prevState) => ({
               ...prevState,
-              isBtnBooking: false,
+              isBtnFinish: false,
             }));
             return;
           }
@@ -842,8 +867,17 @@ function CalendarPage(props) {
       bodyFormCheckIn.append("cmd", "checkin");
       bodyFormCheckIn.append("mid", objBooking.MemberID);
       bodyFormCheckIn.append("desc", "");
-      await CalendarCrud.checkinMember(bodyFormCheckIn);
+      let rsCheckIn = await CalendarCrud.checkinMember(bodyFormCheckIn);
+      if (rsCheckIn?.mc?.ID && values.RootIdS && values.RootIdS.length > 0) {
+        var bodyFormOrder = new FormData();
+        bodyFormOrder.append("CheckInID", rsCheckIn?.mc?.ID);
+        bodyFormOrder.append(
+          "arr",
+          JSON.stringify(values.RootIdS.map((x) => ({ id: x.value, qty: 1 })))
+        );
 
+        await CalendarCrud.addOrderCheckIn(bodyFormOrder);
+      }
       let History = {
         ...(values?.History || {}),
         Edit: values?.History?.Edit
@@ -921,14 +955,14 @@ function CalendarPage(props) {
         });
         setBtnLoading((prevState) => ({
           ...prevState,
-          isBtnBooking: false,
+          isBtnFinish: false,
         }));
         onHideModal();
       });
     } catch (error) {
       setBtnLoading((prevState) => ({
         ...prevState,
-        isBtnBooking: false,
+        isBtnFinish: false,
       }));
     }
   };
@@ -1060,7 +1094,10 @@ function CalendarPage(props) {
   };
 
   const ListCalendars = useQuery({
-    queryKey: ["ListCalendars", { ListLock, filters, View: topCalendar?.type?.value }],
+    queryKey: [
+      "ListCalendarsMassage",
+      { ListLock, filters, View: topCalendar?.type?.value },
+    ],
     queryFn: async () => {
       const newFilters = {
         ...filters,
@@ -1224,7 +1261,7 @@ function CalendarPage(props) {
           }
         }
       }
-      
+
       let dataBooks =
         data.books && Array.isArray(data.books)
           ? data.books
@@ -1232,7 +1269,7 @@ function CalendarPage(props) {
                 let TreatmentJson = item?.TreatmentJson
                   ? JSON.parse(item?.TreatmentJson)
                   : "";
-                  
+
                 return {
                   ...item,
                   start: item.BookDate,
@@ -1359,7 +1396,7 @@ function CalendarPage(props) {
     return rs
       .map(
         (x) =>
-          `<div class="w-5px" style="background: ${x.color}; flex-grow: 1;"></div>`
+          `<div class="w-[32px] h-[32px] border-2 border-white rounded-full dark:border-gray-800" style="background: ${x.color};"></div>`
       )
       .join("");
   };
@@ -1375,32 +1412,47 @@ function CalendarPage(props) {
     <div className={`ezs-calendar`}>
       <div className="px-0 container-fluid h-100">
         <div className="d-flex flex-column flex-xl-row h-100">
-          <SidebarCalendar
-            filters={filters}
-            onOpenModal={onOpenModal}
-            onSubmit={getFiltersBooking}
-            //initialView={initialView}
-            //initialView={topCalendar.view}
-            loading={ListCalendars.isLoading}
-            onOpenFilter={onOpenFilter}
-            onHideFilter={onHideFilter}
-            isFilter={isFilter}
-            headerTitle={headerTitle}
-            onOpenModalLock={onOpenModalLock}
-            onOpenModalRoom={onOpenModalRoom}
-            isRooms={isRooms}
-            TagsList={
-              SettingCalendar?.data?.Tags
-                ? SettingCalendar?.data?.Tags.split(",").map((x) => ({
-                    label: x,
-                    value: x,
-                  }))
-                : []
-            }
-          />
-          <div className="flex flex-col ezs-calendar__content">
+          {isSidebar && (
+            <SidebarMassageCalendar
+              filters={filters}
+              onOpenModal={onOpenModal}
+              onSubmit={getFiltersBooking}
+              //initialView={initialView}
+              //initialView={topCalendar.view}
+              loading={ListCalendars.isLoading}
+              onOpenFilter={onOpenFilter}
+              onHideFilter={onHideFilter}
+              isFilter={isFilter}
+              headerTitle={headerTitle}
+              onOpenModalLock={onOpenModalLock}
+              onOpenModalRoom={onOpenModalRoom}
+              isRooms={isRooms}
+              TagsList={
+                SettingCalendar?.data?.Tags
+                  ? SettingCalendar?.data?.Tags.split(",").map((x) => ({
+                      label: x,
+                      value: x,
+                    }))
+                  : []
+              }
+            />
+          )}
+
+          <div
+            className={clsx(
+              "flex flex-col ezs-calendar__content",
+              !isSidebar && "!w-full"
+            )}
+          >
             <div className="flex justify-between mb-4">
               <div className="flex flex-1 mr-2 md:mr-0">
+                <button
+                  className="mr-[8px] rounded-[4px] w-[42px] flex items-center justify-center"
+                  type="button"
+                  onClick={() => setIsSidebar(!isSidebar)}
+                >
+                  <i className="fa-regular fa-magnifying-glass text-[15px] mt-1 text-gray-700" />
+                </button>
                 <button
                   type="button"
                   className={clsx(
@@ -1505,70 +1557,49 @@ function CalendarPage(props) {
               </div>
 
               <div className="flex">
-                <PickerCareSchedule>
-                  {(CareSchedule) => (
-                    <PickerCalendarClass
-                      TimeOpen={TimeOpen}
-                      TimeClose={TimeClose}
-                    >
-                      {(CalendarClass) => (
-                        <PickerControlBookOnline>
-                          {(ControlBookOnline) => (
-                            <Select
-                              options={[
-                                ...optionsCalendar,
-                                {
-                                  value: "PickerCalendarClass",
-                                  label: "Bảng lịch lớp học",
-                                  hidden: !lop_hoc_pt,
-                                },
-                                {
-                                  value: "PickerControlBookOnline",
-                                  label: "Kiểm soát đặt lịch Online",
-                                  hidden: !SettingBookOnline,
-                                },
-                                {
-                                  value: "PickerCareSchedule",
-                                  label: "Lịch chăm sóc",
-                                },
-                              ].filter((x) => !x.hidden)}
-                              value={topCalendar.type}
-                              onChange={(val) => {
-                                if (val?.value === "PickerCalendarClass") {
-                                  CalendarClass.open();
-                                } else if (
-                                  val?.value === "PickerControlBookOnline"
-                                ) {
-                                  ControlBookOnline.open();
-                                } else if (
-                                  val?.value === "PickerCareSchedule"
-                                ) {
-                                  CareSchedule.open();
-                                } else {
-                                  setTopCalendar((prevState) => ({
-                                    ...prevState,
-                                    type: val,
-                                  }));
-                                }
-                              }}
-                              menuPosition="fixed"
-                              styles={{
-                                menuPortal: (base) => ({
-                                  ...base,
-                                  zIndex: 9999,
-                                }),
-                              }}
-                              menuPortalTarget={document.body}
-                              isClearable={false}
-                              className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
-                              classNamePrefix="select"
-                            />
-                          )}
-                        </PickerControlBookOnline>
-                      )}
-                    </PickerCalendarClass>
+                <PickerOfflineSchedule>
+                  {(OfflineSchedule) => (
+                    <Select
+                      options={[
+                        ...optionsCalendar,
+                        {
+                          value: "PickerOfflineSchedule",
+                          label: "Lịch nghỉ",
+                        },
+                      ].filter((x) => !x.hidden)}
+                      value={topCalendar.type}
+                      onChange={(val) => {
+                        if (val?.value === "PickerOfflineSchedule") {
+                          OfflineSchedule.open();
+                        } else {
+                          setTopCalendar((prevState) => ({
+                            ...prevState,
+                            type: val,
+                          }));
+                        }
+                      }}
+                      menuPosition="fixed"
+                      styles={{
+                        menuPortal: (base) => ({
+                          ...base,
+                          zIndex: 9999,
+                        }),
+                      }}
+                      menuPortalTarget={document.body}
+                      isClearable={false}
+                      className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
+                      classNamePrefix="select"
+                    />
                   )}
-                </PickerCareSchedule>
+                </PickerOfflineSchedule>
+
+                {/* <button
+                  type="button"
+                  className="transition-all ml-[8px] bg-[#ede7fe] hover:!bg-[#8561f9] w-[42px] h-[40px] rounded-[4px] flex items-center justify-center text-[#8561f9] hover:text-white"
+                  onClick={onOpenModalRoom}
+                >
+                  <i className="fa-light fa-gear pr-0 text-[1.3rem] mt-1 text-current"></i>
+                </button> */}
 
                 <Dropdown className="w-auto ml-[8px]">
                   <Dropdown.Toggle className="!bg-[#ede7fe] hover:!bg-[#8561f9] !border-0 h-[40px] px-10px w-100 hide-icon-after no-after group">
@@ -1585,73 +1616,26 @@ function CalendarPage(props) {
                         )}
                       </PickerSettingCalendar>
                     }
-
-                    {!isTelesales && (
-                      <Dropdown.Item href="#" onClick={onOpenModalLock}>
-                        Cài đặt khóa lịch
-                      </Dropdown.Item>
-                    )}
-                    {!isTelesales && isRooms && (
-                      <Dropdown.Item href="#" onClick={onOpenModalRoom}>
-                        Cài đặt phòng
-                      </Dropdown.Item>
-                    )}
-                    {SettingBookOnline && (
-                      <PickerSettingBookOnline
-                        TimeOpen={TimeOpen}
-                        TimeClose={TimeClose}
-                      >
-                        {({ open }) => (
-                          <Dropdown.Item href="#" onClick={open}>
-                            Cài đặt đặt lịch Online
-                          </Dropdown.Item>
-                        )}
-                      </PickerSettingBookOnline>
-                    )}
-                    {lop_hoc_pt && (
-                      <PickerClass TimeOpen={TimeOpen} TimeClose={TimeClose}>
-                        {({ open }) => (
-                          <Dropdown.Item href="#" onClick={open}>
-                            Cài đặt lớp học
-                          </Dropdown.Item>
-                        )}
-                      </PickerClass>
-                    )}
-
-                    {/* <div className="w-100 h-[1px] bg-gray-300 my-2.5"></div>
-                    {lop_hoc_pt && (
-                      <PickerCalendarClass
-                        TimeOpen={TimeOpen}
-                        TimeClose={TimeClose}
-                      >
-                        {({ open }) => (
-                          <Dropdown.Item href="#" onClick={open}>
-                            Bảng lịch lớp học
-                          </Dropdown.Item>
-                        )}
-                      </PickerCalendarClass>
-                    )}
-                    {SettingBookOnline && (
-                      <PickerControlBookOnline>
-                        {({ open }) => (
-                          <Dropdown.Item href="#" onClick={open}>
-                            Kiểm soát đặt lịch Online
-                          </Dropdown.Item>
-                        )}
-                      </PickerControlBookOnline>
-                    )}
-                    <PickerCareSchedule>
-                      {({ open }) => (
-                        <Dropdown.Item href="#" onClick={open}>
-                          Lịch chăm sóc
-                        </Dropdown.Item>
-                      )}
-                    </PickerCareSchedule> */}
+                    <Dropdown.Item href="#" onClick={onOpenModalRoom}>
+                      Cài đặt phòng
+                    </Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
+
+                <button
+                  className="btn btn-primary btn-sm h-[40px] px-15px ml-[8px]"
+                  type="button"
+                  onClick={onOpenModal}
+                >
+                  {width > 1200 ? (
+                    "Tạo đặt lịch mới"
+                  ) : (
+                    <i className="fal fa-plus !pr-0"></i>
+                  )}
+                </button>
               </div>
             </div>
-            <div className={clsx("grow position-relative")}>
+            <div className={clsx("grow position-relative fc-massage")}>
               {ListCalendars.isLoading && (
                 <div className="absolute top-0 left-0 z-50 flex items-center justify-center w-full h-full">
                   <div role="status">
@@ -1675,7 +1659,6 @@ function CalendarPage(props) {
                   </div>
                 </div>
               )}
-
               <FullCalendar
                 firstDay={1}
                 handleWindowResize={true}
@@ -1780,7 +1763,7 @@ function CalendarPage(props) {
                     slotMaxTime: TimeClose,
                   },
                   resourceTimeGridDay: {
-                    dayMinWidth: width > 768 ? 300 : 200,
+                    dayMinWidth: 130,
                     allDaySlot: false,
                     type: "resourceTimeline",
                     nowIndicator: true,
@@ -1794,33 +1777,62 @@ function CalendarPage(props) {
                     resourceAreaHeaderContent: () => "Nhân viên",
                     resourceLabelContent: ({ resource }) => {
                       return (
-                        <div className="d-flex align-items-center flex-column">
-                          {/* <div
-                            className="p-1 border border-primary"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              borderRadius: "100%",
-                            }}
-                          >
-                            <div
-                              className="w-100 h-100 d-flex align-items-center justify-content-center text-uppercase text-primary"
-                              style={{
-                                borderRadius: "100%",
-                                background: "#e1f0ff",
-                                fontSize: "13px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {getLastFirst(resource._resource.title)}
+                        <div className="flex flex-col items-center">
+                          <div className="p-1 border rounded-full w-14 h-14 font-inter border-primary">
+                            <div className="cursor-pointer aspect-square">
+                              <img
+                                className="object-cover object-top w-full h-full rounded-full"
+                                src={toAbsoluteUser(
+                                  resource?._resource?.extendedProps?.photo,
+                                  "/"
+                                )}
+                                alt={resource._resource.title}
+                                onError={(e) => {
+                                  if (
+                                    e.target.src !==
+                                    toAbsoluteUrl("/assets/images/blank.png")
+                                  ) {
+                                    e.target.src = toAbsoluteUrl(
+                                      "/assets/images/blank.png"
+                                    );
+                                  }
+                                }}
+                                onClick={() => {
+                                  window.top?.$?.magnificPopup &&
+                                    window.top?.$?.magnificPopup.open({
+                                      items: {
+                                        src: toAbsoluteUser(
+                                          resource?._resource?.extendedProps
+                                            ?.photo,
+                                          "/"
+                                        ),
+                                      },
+                                      type: "image",
+                                    });
+                                }}
+                              />
                             </div>
-                          </div> */}
-                          <div className="capitalize title-staff">
+
+                            {/* <div className="flex items-center justify-center w-full h-full rounded-full bg-[#e2f0ff] text-primary">
+                              T
+                            </div> */}
+                          </div>
+                          <div className="mt-2 capitalize title-staff">
                             {resource._resource.title}
                           </div>
                         </div>
                       );
                     },
+                    // resourceLabelContent: ({ resource }) => {
+                    //   return (
+                    //     <div className="d-flex align-items-center flex-column">
+
+                    //       <div className="capitalize title-staff">
+                    //         {resource._resource.title}
+                    //       </div>
+                    //     </div>
+                    //   );
+                    // },
                     slotLabelContent: ({ date, text }) => {
                       return (
                         <>
@@ -1859,7 +1871,7 @@ function CalendarPage(props) {
                     now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
                     scrollTime: moment(new Date()).format("HH:mm"),
                     resourceAreaWidth: width > 768 ? "220px" : "150px",
-                    slotMinWidth: 90,
+                    slotMinWidth: 80,
                     stickyHeaderDates: true,
                     slotMinTime: TimeOpen,
                     slotMaxTime: TimeClose,
@@ -1899,9 +1911,12 @@ function CalendarPage(props) {
                 }
                 resourceOrder={
                   topCalendar?.type?.value === "resourceTimelineDay"
-                    ? "title"
-                    : "order,id"
+                    ? "-RoomTitle"
+                    : "order"
                 }
+                resourceGroupLabelContent={(arg) => {
+                  return { html: `${arg.groupValue.slice(1)}` };
+                }}
                 events={ListCalendars?.data || []}
                 // headerToolbar={{
                 //   left: "prev,next today",
@@ -1979,8 +1994,7 @@ function CalendarPage(props) {
                   const { extendedProps } = event._def;
                   let italicEl = document.createElement("div");
                   italicEl.classList.add("fc-content");
-
-                  let AmountPeople = 1;
+                  let AmountPeople = 0;
                   if (extendedProps.Desc) {
                     let descSplit = extendedProps.Desc.split("\n");
                     for (let i of descSplit) {
@@ -1994,38 +2008,47 @@ function CalendarPage(props) {
                     typeof extendedProps !== "object" ||
                     Object.keys(extendedProps).length > 0
                   ) {
+                    let Room = extendedProps?.TreatmentJson
+                      ? JSON.parse(extendedProps?.TreatmentJson)
+                      : null;
+
                     if (view.type !== "listWeek") {
-                      italicEl.innerHTML = `<div class="fc-title">
-                      <div class="position-absolute h-100 top-0 left-0 d-flex flex-column">
-                        ${renderColor(extendedProps)}
-                      </div>
-                    <div class="d-flex justify-content-between"><div><span class="fullname">${
-                      AmountPeople > 1 ? `[${AmountPeople}]` : ``
-                    } ${
-                        extendedProps?.AtHome
-                          ? `<i class="fas fa-home text-white font-size-xs"></i>`
+                      italicEl.innerHTML = `<div class="fc-title${
+                        topCalendar?.type?.value === "resourceTimelineDay"
+                          ? " flex justify-between"
                           : ""
-                      } ${
-                        extendedProps?.Star ? `(${extendedProps.Star})` : ""
-                      } ${extendedProps?.MemberCurrent?.FullName ||
-                        "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
-                        ?.MemberCurrent?.MobilePhone ||
-                        "Chưa xác định"}</span></div><span class="${!extendedProps?.isBook &&
-                        "d-none"}">${extendedProps?.BookCount?.Done ||
-                        0}/${extendedProps?.BookCount?.Total || 0}</span></div>
-                    <div class="d-flex">
-                      <div class="w-35px">${moment(
-                        extendedProps?.BookDate
-                      ).format("HH:mm")} </div>
-                      <div class="flex-1 text-truncate pl-5px"> - ${
-                        extendedProps?.RootTitles
-                          ? extendedProps?.RootMinutes ??
-                            extendedProps?.os?.RootMinutes ??
-                            60
-                          : 30
-                      }p - ${extendedProps?.RootTitles ||
-                        "Không xác định"}</div>
-                    </div>
+                      }">
+                      <div class="${
+                        topCalendar?.type?.value === "resourceTimelineDay"
+                          ? ""
+                          : " mb-3"
+                      }">
+                        <div>#${extendedProps.ID || extendedProps?.os?.ID}</div>
+                        <div class="flex">
+                          <div>${moment(extendedProps.BookDate).format(
+                            "HH:mm"
+                          )}</div>
+                          <div class="px-1">-</div>
+                          <div>${moment(extendedProps.BookDate)
+                            .add(
+                              extendedProps?.RootMinutes ??
+                                extendedProps?.os?.RootMinutes ??
+                                60,
+                              "minutes"
+                            )
+                            .format("HH:mm")}</div>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between${
+                        topCalendar?.type?.value === "resourceTimelineDay"
+                          ? " gap-2.5"
+                          : ""
+                      }">
+                        <div class="w-[32px] h-[32px] border-2 border-white rounded-full bg-[#e1f0ff] text-primary flex items-center justify-center font-medium">
+                            ${Room?.label || "No"}
+                        </div>
+                        <div class="flex -space-x-4 rtl:space-x-reverse${renderColor(extendedProps) === "" ? " hidden" : ""}">${renderColor(extendedProps)}</div>
+                      </div>
                   </div>`;
                     } else {
                       italicEl.innerHTML = `<div class="fc-title">
@@ -2138,8 +2161,8 @@ function CalendarPage(props) {
           </div>
         </div>
       </div>
-      
-      <ModalCalendar
+
+      <ModalMassageCalendar
         show={isModal}
         onHide={onHideModal}
         onSubmit={onSubmitBooking}
@@ -2177,4 +2200,4 @@ function CalendarPage(props) {
   );
 }
 
-export default CalendarPage;
+export default CalendarMassagePage;

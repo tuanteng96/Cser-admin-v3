@@ -20,12 +20,12 @@ import clsx from "clsx";
 import SelectServiceBed from "../Select/SelectServiceBed/SelectServiceBed";
 moment.locale("vi");
 
-ModalCalendar.propTypes = {
+ModalMassageCalendar.propTypes = {
   show: PropTypes.bool,
   onHide: PropTypes.func,
   onSubmit: PropTypes.func,
 };
-ModalCalendar.defaultProps = {
+ModalMassageCalendar.defaultProps = {
   show: false,
   onHide: null,
   onSubmit: null,
@@ -100,7 +100,7 @@ const initialDefault = {
   TreatmentJson: "",
 };
 
-function ModalCalendar({
+function ModalMassageCalendar({
   show,
   onHide,
   onSubmit,
@@ -287,7 +287,11 @@ function ModalCalendar({
       <Dropdown>
         <Dropdown.Toggle
           className={`bg-transparent p-0 border-0 modal-dropdown-title ${
-            Status === "XAC_NHAN" ? (isAuto ? "text-primary1" : "text-primary") : ""
+            Status === "XAC_NHAN"
+              ? isAuto
+                ? "text-primary1"
+                : "text-primary"
+              : ""
           } ${
             Status === "KHACH_KHONG_DEN" || Status === "TU_CHOI"
               ? "text-danger"
@@ -296,7 +300,11 @@ function ModalCalendar({
           id="dropdown-custom-1"
         >
           <span>
-            {Status === "XAC_NHAN" ? (isAuto ?  "Đặt lịch dự kiến" : "Đã xác nhận") : ""}
+            {Status === "XAC_NHAN"
+              ? isAuto
+                ? "Đặt lịch dự kiến"
+                : "Đã xác nhận"
+              : ""}
             {Status === "KHACH_KHONG_DEN" ? "Khách không đến" : ""}
             {Status === "KHACH_DEN" ? "Khách có đến" : ""}
             {Status === "TU_CHOI" ? "Khách hủy lịch" : ""}
@@ -310,7 +318,6 @@ function ModalCalendar({
             onClick={() => setFieldValue("Status", "XAC_NHAN", false)}
           >
             {isAuto ? "Đặt lịch dự kiến" : "Đã xác nhận"}
-            
           </Dropdown.Item>
           <Dropdown.Item
             className="font-weight-bold"
@@ -343,9 +350,9 @@ function ModalCalendar({
 
   const CalendarSchema = Yup.object().shape({
     BookDate: Yup.string().required("Vui lòng chọn ngày đặt lịch."),
-    MemberID: Yup.object()
-      .nullable()
-      .required("Vui lòng chọn khách hàng"),
+    // MemberID: Yup.object()
+    //   .nullable()
+    //   .required("Vui lòng chọn khách hàng"),
     // RootIdS: Yup.array()
     //   .required("Vui lòng chọn dịch vụ.")
     //   .nullable(),
@@ -707,7 +714,7 @@ function ModalCalendar({
                       onChange={(option) =>
                         setFieldValue("TreatmentJson", option)
                       }
-                      placeholder="Chọn giường"
+                      placeholder="Chọn phòng"
                     />
                     {window?.top?.GlobalConfig?.APP?.SL_khach && (
                       <Select
@@ -944,18 +951,15 @@ function ModalCalendar({
                                         </Dropdown.Item>
                                       </Dropdown.Menu>
                                     </Dropdown>
+                                    
                                     <button
                                       type="button"
                                       className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
-                                        btnLoading.isBtnBooking &&
-                                        values.Status === "KHACH_DEN"
+                                        btnLoading.isBtnFinish
                                           ? "spinner spinner-white spinner-right"
                                           : ""
                                       } w-auto my-0 mr-0 h-auto`}
-                                      disabled={
-                                        btnLoading.isBtnBooking &&
-                                        values.Status === "KHACH_DEN"
-                                      }
+                                      disabled={btnLoading.isBtnFinish}
                                       onClick={() => onFinish(values)}
                                     >
                                       {initialValue?.ID && initialValue?.AtHome
@@ -1018,4 +1022,4 @@ function ModalCalendar({
   );
 }
 
-export default ModalCalendar;
+export default ModalMassageCalendar;

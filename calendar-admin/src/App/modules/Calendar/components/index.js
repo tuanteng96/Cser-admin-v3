@@ -11,8 +11,10 @@ import PickerClassManage from "./PickerClassManage";
 import PickerClassReportFilter from "./PickerClassReportFilter";
 import PickerClassStudentFilter from "./PickerClassStudentFilter";
 import PickerControlBookOnline from "./PickerControlBookOnline";
+import PickerOfflineSchedule from "./PickerOfflineSchedule";
 import PickerSettingBookOnline from "./PickerSettingBookOnline";
 import PickerUserRequestFilter from "./PickerUserRequestFilter";
+import PickerTakeBreak from "./PickerTakeBreak"
 
 export {
   PickerSettingBookOnline,
@@ -30,4 +32,6 @@ export {
   PickerUserRequestFilter,
   PickerCalendarStudentReport,
   PickerClassStudentFilter,
+  PickerOfflineSchedule,
+  PickerTakeBreak
 };

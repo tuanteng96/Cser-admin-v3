@@ -8,6 +8,7 @@ import { SplashScreenProvider } from "./layout/_core/SplashScreen";
 import * as _redux from "./redux/index";
 import axiosClient from "./redux/axioClient";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { BrowserRouter } from "react-router-dom";
 
 const { PUBLIC_URL } = process.env;
 
@@ -24,9 +25,11 @@ const queryClient = new QueryClient({
 ReactDOM.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <SplashScreenProvider>
-        <App store={store} basename={PUBLIC_URL} />
-      </SplashScreenProvider>
+      <BrowserRouter>
+        <SplashScreenProvider>
+          <App store={store} basename={PUBLIC_URL} />
+        </SplashScreenProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   </React.StrictMode>,
   document.getElementById("root")

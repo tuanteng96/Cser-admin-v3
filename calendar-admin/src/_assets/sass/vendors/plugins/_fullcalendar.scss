@@ -6,6 +6,10 @@
     height: 40px!important;
 }
 
+.fc-massage .fc .fc-timegrid-slot {
+    height: 30px !important;
+}
+
 @mixin fullcalendar-base() {
     $cell-space-x: 0.5rem;
     $cell-space-y: 0.5rem;
@@ -857,6 +861,14 @@
         cursor: grab;
         cursor: -moz-grab;
         cursor: -webkit-grab;
+    }
+    .fc-massage {
+        .fc .fc-resource-timeline .fc-scrollgrid-liquid > tbody .fc-scrollgrid-section > td:first-child .fc-datagrid-cell-frame {
+            height: 65px !important;
+        }
+        .fc .fc-resource-timeline .fc-timeline-body > .fc-scrollgrid-sync-table tr td .fc-timeline-lane-frame {
+            height: 65px !important;
+        }
     }
     @include media-breakpoint-down(lg) {
         .fc {

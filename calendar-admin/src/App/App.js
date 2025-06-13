@@ -4,8 +4,12 @@ import { ToastContainer } from "react-toastify";
 import AuthInit from "./modules/Auth/_redux/AuthInit";
 import TopBarProgress from "react-topbar-progress-indicator";
 import { createPortal } from "react-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 
 const BookingPage = lazy(() => import("./modules/Booking/BookingPage"));
+const CalendarMassagePage = lazy(() =>
+  import("./modules/Calendar/CalendarMassagePage")
+);
 const CalendarPage = lazy(() => import("./modules/Calendar/CalendarPage"));
 const CheckInPage = lazy(() => import("./modules/Checkin/CheckInPage"));
 
@@ -58,21 +62,54 @@ function App({ store, basename }) {
         }}
       >
         <AuthInit>
-          {!NameCurrent && (
-            <SuspensedView>
-              <CalendarPage />
-            </SuspensedView>
-          )}
-          {NameCurrent === "POPUP" && (
-            <SuspensedView>
-              <BookingPage />
-            </SuspensedView>
-          )}
-          {NameCurrent === "CHECKIN" && (
-            <SuspensedView>
-              <CheckInPage />
-            </SuspensedView>
-          )}
+          <Routes>
+            <Route path="/">
+              {!NameCurrent && (
+                <>
+                  <Route
+                    index
+                    element={
+                      <SuspensedView>
+                        <CalendarPage />
+                      </SuspensedView>
+                    }
+                  />
+                  <Route
+                    path="massage"
+                    element={
+                      <SuspensedView>
+                        <CalendarMassagePage />
+                      </SuspensedView>
+                    }
+                  ></Route>
+                </>
+              )}
+              {NameCurrent === "POPUP" && (
+                <Route
+                  index
+                  element={
+                    <SuspensedView>
+                      <BookingPage />
+                    </SuspensedView>
+                  }
+                />
+              )}
+              {NameCurrent === "CHECKIN" && (
+                <Route
+                  index
+                  element={
+                    <SuspensedView>
+                      <CheckInPage />
+                    </SuspensedView>
+                  }
+                />
+              )}
+            </Route>
+            <Route
+              path="/admin/bookadmin/index.html"
+              element={<Navigate to="/" replace />}
+            />
+          </Routes>
         </AuthInit>
       </AppContext.Provider>
       {createPortal(<ToastContainer />, document.body)}

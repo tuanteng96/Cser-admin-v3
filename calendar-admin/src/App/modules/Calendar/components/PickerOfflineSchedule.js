@@ -2,169 +2,242 @@ import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
-import { useInfiniteQuery } from "react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "react-query";
 import CalendarCrud from "../_redux/CalendarCrud";
 import Table, { AutoResizer } from "react-base-table";
-import Text from "react-texty";
 import moment from "moment";
 import vi from "date-fns/locale/vi";
-import SelectMember from "../../../../components/Select/SelectMember/SelectMember";
 import { Form, Formik } from "formik";
+import PickerTakeBreak from "./PickerTakeBreak";
+import Swal from "sweetalert2";
 
-let formatArray = {
-  useInfiniteQuery: (page, key = "data") => {
-    let newPages = [];
-    if (!page || !page[0]) return newPages;
-    for (let items of page) {
-      for (let x of items[key]) {
-        newPages.push(x);
-      }
-    }
-    return newPages;
-  },
-};
-
-function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
+function PickerOfflineSchedule({ children }) {
   const { AuthCrStockID } = useSelector(({ Auth, JsonConfig }) => ({
     AuthCrStockID: Auth.CrStockID,
   }));
 
   const [visible, setVisible] = useState(false);
   const [filters, setFilters] = useState({
-    MemberIDs: [],
+    Key: "",
     StockID: [AuthCrStockID],
-    DateStart: new Date(),
-    DateEnd: new Date(),
-    Pi: 1,
-    Ps: 15,
+    CrDate: new Date(),
   });
+
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (visible) {
       setFilters({
-        MemberIDs: "",
+        Key: "",
         StockID: [AuthCrStockID],
-        DateStart: new Date(),
-        DateEnd: new Date(),
-        Pi: 1,
-        Ps: 20,
+        CrDate: new Date(),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-    refetch,
-    fetchNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["CareSchedule", { filters }],
-    queryFn: async ({ pageParam = 1 }) => {
-      let data = await CalendarCrud.getCareSchedule({
-        StockID: [AuthCrStockID],
-        DateStart: moment(filters.DateStart).format("YYYY-MM-DD"),
-        DateEnd: moment(filters.DateEnd).format("YYYY-MM-DD"),
-        Pi: pageParam,
-        Ps: 20,
-        MemberIDs: filters.MemberIDs && filters.MemberIDs.length > 0 ? filters?.MemberIDs.map(x => x.value) : [],
+  const { data, isLoading, isFetching, refetch } = useQuery({
+    queryKey: ["OfflineSchedule", { filters }],
+    queryFn: async () => {
+      let { data } = await CalendarCrud.getListStaffs({
+        StockID: AuthCrStockID,
+        Key: filters.Key,
       });
-      return data;
+      let { list } = await CalendarCrud.getListStaffsOffline({
+        StockID: AuthCrStockID,
+        data: {
+          pi: 1,
+          ps: 5000,
+          filter: {
+            From: filters.CrDate
+              ? moment(filters.CrDate).format("YYYY-MM-DD")
+              : null,
+            StockID: AuthCrStockID,
+            To: filters.CrDate
+              ? moment(filters.CrDate).format("YYYY-MM-DD")
+              : null,
+            UserIDs: "",
+          },
+        },
+      });
+      let newData = data ? [...data] : [];
+      if (list && list.length > 0) {
+        for (let item of list) {
+          let index = newData.findIndex((x) => item?.User?.ID === x.id);
+          if (index > -1) {
+            newData[index]["Offline"] = item;
+          }
+        }
+      }
+
+      return newData;
     },
-    getNextPageParam: (lastPage, pages) =>
-      lastPage.Pi === lastPage.PCount ? undefined : lastPage.Pi + 1,
     keepPreviousData: true,
     enabled: visible,
   });
-
-  const Lists = formatArray.useInfiniteQuery(data?.pages, "Items");
 
   const onHide = () => setVisible(false);
 
   const columns = useMemo(
     () => [
       {
-        key: "CreateDate",
-        title: "Ngày làm dịch vụ",
-        dataKey: "CreateDate",
-        width: 200,
-        cellRenderer: ({ rowData }) => (
-          <div>{moment(rowData.CreateDate).format("HH:mm DD-MM-YYYY")}</div>
-        ),
-        sortable: false,
-      },
-      {
-        key: "StockTitle",
-        title: "Cơ sở",
-        dataKey: "StockTitle",
-        width: 250,
-        sortable: false,
-      },
-      {
-        key: "MemberID",
-        title: "ID KH",
-        dataKey: "MemberID",
-        width: 100,
-        sortable: false,
-      },
-      {
-        key: "FullName",
-        title: "Khách hàng",
-        dataKey: "FullName",
-        width: 250,
-        sortable: false,
-      },
-      {
-        key: "MobilePhone",
-        title: "Số điện thoại",
-        dataKey: "MobilePhone",
-        width: 180,
-        sortable: false,
-      },
-      {
-        key: "OrderTitle",
-        title: "Dịch vụ",
-        dataKey: "OrderTitle",
-        width: 300,
-        sortable: false,
-        cellRenderer: ({ rowData }) => (
-          <Text className="flex-1" tooltipMaxWidth={280}>
-            {rowData.OrderTitle}
-          </Text>
-        ),
-      },
-      {
-        key: "SendDate",
-        title: "Ngày chăm sóc",
-        dataKey: "SendDate",
-        width: 200,
-        cellRenderer: ({ rowData }) => (
-          <div>{moment(rowData.SendDate).format("DD-MM-YYYY")}</div>
-        ),
-        sortable: false,
-      },
-      {
-        key: "Title",
-        title: "Tiêu đề gửi",
-        dataKey: "Title",
-        width: 280,
-        sortable: false,
-      },
-      {
-        key: "Content",
-        title: "Nội dung gửi",
-        dataKey: "Content",
+        key: "text",
+        title: "Họ tên nhân viên",
+        dataKey: "text",
         width: 350,
         sortable: false,
+      },
+      {
+        key: "TimeFrom",
+        title: "Xin nghỉ từ",
+        dataKey: "TimeFrom",
         cellRenderer: ({ rowData }) => (
-          <Text tooltipMaxWidth={280}>{rowData.Content}</Text>
+          <>
+            {rowData?.Offline ? (
+              <>{moment(rowData?.Offline?.From).format("HH:mm DD-MM-YYYY")}</>
+            ) : (
+              <></>
+            )}
+          </>
         ),
+        width: 250,
+        sortable: false,
+      },
+      {
+        key: "TimeTo",
+        title: "Xin nghỉ đến",
+        dataKey: "TimeTo",
+        cellRenderer: ({ rowData }) => (
+          <>
+            {rowData?.Offline ? (
+              <>{moment(rowData?.Offline?.To).format("HH:mm DD-MM-YYYY")}</>
+            ) : (
+              <></>
+            )}
+          </>
+        ),
+        width: 250,
+        sortable: false,
+      },
+      {
+        key: "Offline.Desc",
+        title: "Lý do",
+        dataKey: "Offline.Desc",
+        width: 350,
+        sortable: false,
+      },
+      {
+        key: "Action",
+        title: "#",
+        dataKey: "Action",
+        width: 210,
+        sortable: false,
+        cellRenderer: ({ rowData }) => (
+          <div className="flex justify-center w-full gap-2">
+            {rowData?.Offline ? (
+              <>
+                <PickerTakeBreak
+                  AuthCrStockID={AuthCrStockID}
+                  UserID={{ label: rowData?.text, value: rowData?.id }}
+                  item={rowData?.Offline}
+                >
+                  {({ open }) => (
+                    <button
+                      onClick={open}
+                      className="text-white rounded-[3px] bg-primary text-[13px] h-[35px] px-4"
+                      type="button"
+                    >
+                      Chỉnh sửa
+                    </button>
+                  )}
+                </PickerTakeBreak>
+
+                <button
+                  onClick={() => onDelete(rowData.Offline)}
+                  className="text-white rounded-[3px] bg-danger text-[13px] h-[35px] px-4"
+                  type="button"
+                >
+                  Huỷ
+                </button>
+              </>
+            ) : (
+              <PickerTakeBreak
+                AuthCrStockID={AuthCrStockID}
+                UserID={{ label: rowData?.text, value: rowData?.id }}
+              >
+                {({ open }) => (
+                  <button
+                    className="text-white rounded-[3px] bg-success text-[13px] h-[35px] px-4"
+                    type="button"
+                    onClick={open}
+                  >
+                    Xin nghỉ
+                  </button>
+                )}
+              </PickerTakeBreak>
+            )}
+          </div>
+        ),
+        frozen: "right",
+        headerClassName: "justify-center",
       },
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
+
+  const deleteMutation = useMutation({
+    mutationFn: async (body) => {
+      let rs = await CalendarCrud.editWorkOff(body);
+      await queryClient.invalidateQueries({ queryKey: ["OfflineSchedule"] });
+      await queryClient.invalidateQueries({
+        queryKey: ["ListCalendarsMassage"],
+      });
+      return rs;
+    },
+  });
+
+  const onDelete = ({ ID }) => {
+    Swal.fire({
+      title: "Xóa lịch nghỉ này",
+      text: "Bạn đang muốn thực hiện xóa lịch nghỉ này ?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Thực hiện",
+      cancelButtonText: "Hủy",
+      showLoaderOnConfirm: true,
+      preConfirm: (login) =>
+        new Promise((resolve, reject) => {
+          deleteMutation.mutate(
+            { delete: [ID] },
+            {
+              onSettled: () => {
+                refetch().then(() => resolve());
+              },
+            }
+          );
+        }),
+    }).then((result) => {
+      if (result.isConfirmed) {
+        window.top.toastr &&
+          window.top.toastr.success("Xóa thành công", {
+            timeOut: 1500,
+          });
+      }
+    });
+  };
+
+  const rowClassName = ({ rowData }) => {
+    if (rowData.Offline) {
+      return "bg-danger-o-10";
+    }
+  };
 
   return (
     <>
@@ -175,7 +248,7 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
         createPortal(
           <div className="fixed top-0 left-0 z-[1003] bg-white !h-full w-full flex flex-col">
             <div className="flex items-center justify-between px-4 py-3.5 border-b">
-              <div className="text-xl font-medium">Lịch chăm sóc</div>
+              <div className="text-xl font-medium">Quản lý lịch nghỉ</div>
               <Formik
                 initialValues={filters}
                 onSubmit={async (values) => {
@@ -190,53 +263,26 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
 
                   return (
                     <Form className="flex gap-3">
-                      <div>
-                        <SelectMember
-                          menuPlacement="bottom"
-                          isMulti
-                          className="select-control select-control-md w-[300px]"
-                          classNamePrefix="select"
-                          name="MemberIDs"
-                          value={values.MemberIDs}
-                          onChange={(option) =>
-                            setFieldValue("MemberIDs", option, false)
-                          }
-                          isClearable
-                          isSearchable
-                          placeholder="Chọn khách hàng"
-                          noOptionsMessage={({ inputValue }) =>
-                            !inputValue
-                              ? "Nhập thông tin khách hàng cần tìm ?"
-                              : "Không tìm thấy khách hàng"
-                          }
-                          menuPortalTarget={document.body}
-                          //defaultOptions={false}
+                      <div className="w-[300px]">
+                        <input
+                          placeholder="Nhập tên nhân viên ..."
+                          className="!h-11 form-control !rounded-[4px] !text-[15px]"
+                          type="text"
+                          value={values.Key}
+                          onChange={(e) => setFieldValue("Key", e.target.value)}
                         />
                       </div>
                       <div className="w-[150px]">
                         <DatePicker
                           locale={vi}
                           selected={
-                            values.DateStart ? new Date(values.DateStart) : null
+                            values.CrDate ? new Date(values.CrDate) : null
                           }
-                          onChange={(date) => setFieldValue("DateStart", date)}
+                          onChange={(date) => setFieldValue("CrDate", date)}
                           className="!h-11 form-control !rounded-[4px] !text-[15px]"
                           shouldCloseOnSelect={true}
                           dateFormat="dd/MM/yyyy"
-                          placeholderText="Chọn từ ngày"
-                        />
-                      </div>
-                      <div className="w-[150px]">
-                        <DatePicker
-                          locale={vi}
-                          selected={
-                            values.DateEnd ? new Date(values.DateEnd) : null
-                          }
-                          onChange={(date) => setFieldValue("DateEnd", date)}
-                          className="!h-11 form-control !rounded-[4px] !text-[15px]"
-                          shouldCloseOnSelect={true}
-                          dateFormat="dd/MM/yyyy"
-                          placeholderText="Chọn đến ngày"
+                          placeholderText="Chọn ngày"
                         />
                       </div>
                       <button
@@ -340,20 +386,21 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
               <AutoResizer>
                 {({ width, height }) => (
                   <Table
+                    key="id"
                     fixed
                     width={width}
                     height={height}
                     columns={columns}
-                    data={Lists}
+                    data={data}
                     disabled={isLoading}
                     loadingMore={isFetching}
-                    onEndReachedThreshold={300}
-                    onEndReached={fetchNextPage}
+                    // onEndReachedThreshold={300}
+                    // onEndReached={fetchNextPage}
                     //overlayRenderer={this.renderOverlay}
                     //emptyRenderer={this.renderEmpty}
                     ignoreFunctionInColumnCompare={false}
                     //estimatedRowHeight={100}
-                    rowHeight={100}
+                    rowHeight={80}
                     emptyRenderer={() =>
                       !isLoading && !isFetching ? (
                         <div className="flex items-center justify-center w-full h-full">
@@ -385,6 +432,7 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
                         </>
                       )
                     }
+                    rowClassName={rowClassName}
                   />
                 )}
               </AutoResizer>
@@ -396,4 +444,4 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
   );
 }
 
-export default PickerCareSchedule;
+export default PickerOfflineSchedule;

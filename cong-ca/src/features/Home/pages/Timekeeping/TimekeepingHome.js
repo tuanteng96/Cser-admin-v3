@@ -192,6 +192,7 @@ function TimekeepingHome(props) {
       }
 
       const { data } = await worksheetApi.getAllWorkSheet(newObj)
+
       return data?.list
         ? {
             list: data.list.map(item => ({
@@ -1153,7 +1154,10 @@ function TimekeepingHome(props) {
         UserID: UserID,
         CreateDate: moment(Date).format('YYYY-MM-DD'),
         Info: {
-          CheckOut: {}
+          ...(WorkTrack?.Info || {}),
+          CheckOut: {
+            ...(WorkTrack?.Info?.CheckOut || {})
+          }
         },
         StockID: filters.StockID?.value
       }
@@ -1217,6 +1221,7 @@ function TimekeepingHome(props) {
         WorkTrack?.Info?.CheckOut?.WorkToday?.Value === WorkTrack.Info.CountWork
       ) {
         obj.Info.CheckOut.WorkToday = {
+          ...(WorkTrack?.Info?.CheckOut?.WorkToday || {}),
           Value: WorkTrack.Info.CountWork
         }
       } else if (
@@ -1226,11 +1231,13 @@ function TimekeepingHome(props) {
         obj.Info.WorkToday = WorkTrack.Info.WorkToday
       } else {
         obj.Info.WorkToday = {
+          ...(WorkTrack.Info.WorkToday || {}),
           Value: WorkTrack.Info.CountWork
         }
       }
       newValues.edit.push(obj)
     }
+    
     saveTimeKeepMutation.mutate(newValues, {
       onSuccess: () => {
         refetch().then(
@@ -1298,6 +1305,7 @@ function TimekeepingHome(props) {
         {formikProps => {
           // errors, touched, handleChange, handleBlur
           const { values } = formikProps
+
           return (
             <Form className="h-100" autoComplete="off">
               <div className="card h-100 timekeeping !overflow-x-hidden">

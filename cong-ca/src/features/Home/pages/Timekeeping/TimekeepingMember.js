@@ -964,8 +964,8 @@ function TimekeepingMember(props) {
                   Rows.push(rowObj)
 
                   let CountWork = obj?.WorkTrack?.Info?.WorkToday?.hiddenTime
-                  ? 0
-                  : obj?.WorkTrack?.Info?.CountWork || 0
+                    ? 0
+                    : obj?.WorkTrack?.Info?.CountWork || 0
 
                   Response.push([
                     moment(obj.Date).format('DD-MM-YYYY'),
@@ -977,7 +977,9 @@ function TimekeepingMember(props) {
                         ? 'Khác điểm ' + obj?.WorkTrack?.StockTitle
                         : 'Đúng điểm'
                       : '',
-                    obj?.WorkTrack?.Info?.TimekeepingType?.label || '',
+                    obj?.WorkTrack?.Info?.WorkToday?.hiddenTime
+                      ? 'Theo giờ'
+                      : obj?.WorkTrack?.Info?.TimekeepingType?.label || '',
                     obj?.WorkTrack?.Info?.TimekeepingTypeValue || 0,
                     obj?.WorkTrack?.Info?.Type?.label || '',
                     obj?.WorkTrack?.Info?.Desc || '',
@@ -991,7 +993,7 @@ function TimekeepingMember(props) {
                   ])
                 }
                 indexStart += 1
-                
+
                 Response.push([
                   moment(obj.Date).format('DD-MM-YYYY'),
                   obj?.WorkTrack?.CheckOut
@@ -1002,7 +1004,7 @@ function TimekeepingMember(props) {
                       ? 'Khác điểm ' + obj?.WorkTrack?.StockTitle
                       : 'Đúng điểm'
                     : '',
-                  obj?.WorkTrack?.Info?.WorkToday?.hiddenTime ? "Theo giờ" : (obj?.WorkTrack?.Info?.CheckOut?.TimekeepingType?.label || ''),
+                  obj?.WorkTrack?.Info?.CheckOut?.TimekeepingType?.label || '',
                   obj?.WorkTrack?.Info?.CheckOut?.TimekeepingTypeValue || 0,
                   obj?.WorkTrack?.Info?.CheckOut?.Type?.label || '',
                   obj?.WorkTrack?.Info?.CheckOut?.Desc || '',

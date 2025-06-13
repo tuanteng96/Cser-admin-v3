@@ -11,6 +11,19 @@ const getListStaff = (stockid) => {
   );
 };
 
+const getListStaffs = ({ StockID, Key }) => {
+  return axiosClient.get(
+    `/api/gl/select2?cmd=user&q=${Key}&crstockid=${StockID}&byStockID=1`
+  );
+};
+
+const getListStaffsOffline = ({ StockID, data }) => {
+  return axiosClient.post(
+    `/api/v3/userwork23@workoffList?stockid=${StockID}`,
+    JSON.stringify(data)
+  );
+};
+
 const getMembers = (key, CurrentStockID, member = "") => {
   return axiosClient.get(
     `${GET_MEMBERS_STAFF_URL}?cmd=member&q=${key}&CurrentStockID=${
@@ -29,11 +42,11 @@ const getStaffs = ({ StockID, key = "", All }) => {
   return axiosClient.get(
     `${GET_MEMBERS_STAFF_URL}?cmd=user&roles=DV&crstockid=${StockID}&q=${key}${
       All ? "&all=1" : ""
-    }`
+    }&includeSource=1`
   );
 };
 
-const getStaffsFull= ({ StockID, key = "", All }) => {
+const getStaffsFull = ({ StockID, key = "", All }) => {
   return axiosClient.get(
     `${GET_MEMBERS_STAFF_URL}?cmd=user&roles=&crstockid=${StockID}&q=${key}${
       All ? "&all=1" : ""
@@ -168,7 +181,10 @@ const CalendarClassMembersUpdateOs = (data) => {
 };
 
 const CalendarClassMembersDelete = (data) => {
-  return axiosClient.post(`/api/v3/OSC@ClassMemberDelete`, JSON.stringify(data));
+  return axiosClient.post(
+    `/api/v3/OSC@ClassMemberDelete`,
+    JSON.stringify(data)
+  );
 };
 
 const getOsMemberCalendar = (data) => {
@@ -180,8 +196,22 @@ const addEditPointOsMember = (data) => {
 };
 
 const deletePointOsMember = (data) => {
-  return axiosClient.post(`/api/v3/MemberPoint27@Deletes`, JSON.stringify(data));
+  return axiosClient.post(
+    `/api/v3/MemberPoint27@Deletes`,
+    JSON.stringify(data)
+  );
 };
+
+const editWorkOff = (data) => {
+  return axiosClient.post("/api/v3/userwork23@workoffEdit", JSON.stringify(data));
+};
+
+const getNextMember = () => {
+  return axiosClient.post("/api/v3/member27@NextMember");
+}
+
+const addOrderCheckIn = (data) =>
+  axiosClient.post(`/api/v3/common?cmd=OrderCheckIn`, data);
 
 const CalendarCrud = {
   getMembers,
@@ -215,6 +245,11 @@ const CalendarCrud = {
   CalendarClassMembersUpdateOs,
   getStaffsFull,
   addEditPointOsMember,
-  deletePointOsMember
+  deletePointOsMember,
+  getListStaffs,
+  getListStaffsOffline,
+  editWorkOff,
+  getNextMember,
+  addOrderCheckIn
 };
 export default CalendarCrud;
