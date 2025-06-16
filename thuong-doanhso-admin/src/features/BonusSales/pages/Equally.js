@@ -85,14 +85,27 @@ function Equally({ OrderInfo, onSubmit, loading }) {
         OrderInfo && OrderInfo.oiItems && OrderInfo.oiItems.length > 0
           ? OrderInfo.oiItems.map((item) => ({
               Product: item,
+              // Hoa_Hong: ToAdd.map((user) => {
+              //   let newItem = { ...item };
+              //   if (
+              //     item?.ToPay === 0 &&
+              //     (item?.prodBonus?.BonusSale > 100 ||
+              //       item?.prodBonus?.BonusSale2 > 100)
+              //   ) {
+              //     newItem.ToPay = 1;
+              //     newItem.gia_tri_thanh_toan_thuc_te = 1;
+              //   }
+              //   let obj = {
+              //     Product: item,
+              //     Staff: user,
+              //     Value: getValueHH({ user, item: newItem, Type }),
+              //   };
+              //   return obj;
+              // }),
               Hoa_Hong: ToAdd.map((user) => ({
                 Product: item,
                 Staff: user,
                 Value: getValueHH({ user, item, Type }),
-                // Value:
-                //   item.gia_tri_thanh_toan > 0
-                //     ? getValueHH({ user, item, Type })
-                //     : null,
               })),
               Doanh_So: ToAdd.map((user) => {
                 return {

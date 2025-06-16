@@ -86,10 +86,6 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                 Product: item,
                 Staff: user,
                 Value: getValueHH({ user, item, Type }),
-                // Value:
-                //   item.gia_tri_thanh_toan > 0
-                //     ? getValueHH({ user, item, Type })
-                //     : null,
               })),
               Doanh_So: ToAdd.map((user) => ({
                 Product: item,
