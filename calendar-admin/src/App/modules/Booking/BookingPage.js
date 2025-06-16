@@ -658,6 +658,7 @@ function BookingPage() {
                     placeholderText="Chọn thời gian"
                     timeInputLabel="Thời gian"
                     showTimeSelect
+                    timeIntervals={15}
                   />
                   <SelectStocks
                     className={`select-control mt-2 ${

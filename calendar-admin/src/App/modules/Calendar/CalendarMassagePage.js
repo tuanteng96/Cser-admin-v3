@@ -17,7 +17,7 @@ import { useWindowSize } from "../../../hooks/useWindowSize";
 import { AppContext } from "../../App";
 import ModalCalendarLock from "../../../components/ModalCalendarLock/ModalCalendarLock";
 import scrollGridPlugin from "@fullcalendar/scrollgrid";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import Swal from "sweetalert2";
 import Select from "react-select";
 
@@ -33,6 +33,7 @@ import {
   PickerCareSchedule,
   PickerClass,
   PickerControlBookOnline,
+  PickerCurrentCalendar,
   PickerOfflineSchedule,
   PickerSettingBookOnline,
 } from "./components";
@@ -139,6 +140,7 @@ const getStatusClss = (Status, item) => {
 };
 
 function CalendarMassagePage(props) {
+  const queryClient = useQueryClient();
   const {
     AuthCrStockID,
     GTimeOpen,
@@ -428,7 +430,7 @@ function CalendarMassagePage(props) {
                 for (let [i, cls] of Room.Children.entries()) {
                   rs.push({
                     ...cls,
-                    RoomTitle: '1' + Room.label,
+                    RoomTitle: "1" + Room.label,
                     title: cls.label,
                     id: cls.ID,
                     order: i + 1,
@@ -675,12 +677,33 @@ function CalendarMassagePage(props) {
           return;
         }
         objBooking.MemberID = newMember?.member?.ID || 0;
+
         if (newMember?.member) Members = { ...newMember?.member };
       } else if (!objBooking.MemberID) {
         let NextMember = await CalendarCrud.getNextMember();
         if (NextMember?.Member) {
           objBooking.MemberID = NextMember?.Member?.ID || 0;
-          if (NextMember?.Member) Members = { ...NextMember?.Member };
+
+          let FullName = NextMember?.Member?.FullName || "";
+
+          if (values?.TreatmentJson?.label && !values.ID) {
+            let memberUpdate = {
+              ...NextMember?.Member,
+              Birth: NextMember?.Member?.BirthDate
+                ? moment(NextMember?.Member.BirthDate, "YYYY-MM-DD").format(
+                    "DD/MM/YYYY"
+                  )
+                : "",
+              FullName:
+                NextMember?.Member?.ID + " - " + values?.TreatmentJson?.label,
+            };
+
+            let rsMUpdate = await CalendarCrud.addEditMember({
+              member: memberUpdate,
+            });
+            FullName = rsMUpdate?.Member?.FullName;
+          }
+          if (NextMember?.Member) Members = { ...NextMember?.Member, FullName };
         } else {
           toast.error("Xảy ra lỗi khi tạo khách hàng.");
           setBtnLoading((prevState) => ({
@@ -688,6 +711,38 @@ function CalendarMassagePage(props) {
             isBtnBooking: false,
           }));
           return;
+        }
+      }
+
+      if (
+        values?.ID &&
+        (values?.Status === "XAC_NHAN" || values?.Status === "KHACH_DEN")
+      ) {
+        let CrMember = await CalendarCrud.clientsId({
+          pi: 1,
+          ps: 1,
+          Key: "#" + objBooking.MemberID,
+        });
+        if (CrMember?.data && CrMember.data.length > 0) {
+          let CrMemberItem = CrMember?.data[0];
+          let memberUpdate = {
+            ...CrMemberItem,
+            Birth: CrMemberItem?.BirthDate
+              ? moment(CrMemberItem.BirthDate, "YYYY-MM-DD").format(
+                  "DD/MM/YYYY"
+                )
+              : "",
+            FullName: values?.TreatmentJson?.label
+              ? CrMemberItem?.FullName.split(" - ")[0] +
+                " - " +
+                values?.TreatmentJson?.label
+              : CrMemberItem?.FullName.split(" - ")[0],
+          };
+
+          let rsMUpdate = await CalendarCrud.addEditMember({
+            member: memberUpdate,
+          });
+          Members = { ...CrMemberItem, FullName: rsMUpdate?.Member?.FullName };
         }
       }
 
@@ -764,7 +819,9 @@ function CalendarMassagePage(props) {
           booking: objBooking,
           action: "ADD_EDIT",
         });
-
+      await queryClient.invalidateQueries({
+        queryKey: ["ListCurrentCalendars"],
+      });
       ListCalendars.refetch().then(() => {
         toast.success(getTextToast(values.Status), {
           position: toast.POSITION.TOP_RIGHT,
@@ -781,6 +838,260 @@ function CalendarMassagePage(props) {
       setBtnLoading((prevState) => ({
         ...prevState,
         isBtnBooking: false,
+      }));
+    }
+  };
+
+  const onGuestsArrive = async (values) => {
+    setBtnLoading((prevState) => ({
+      ...prevState,
+      isBtnGuestsArrive: true,
+    }));
+    let Desc = "";
+    if (window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Số lượng khách: ${values.AmountPeople.value}`;
+    }
+    if (values.TagSetting && values.TagSetting.length > 0) {
+      Desc =
+        (Desc ? Desc + "\n" : "") +
+        `Tags: ${values.TagSetting.map((x) => x.value).toString()}`;
+    }
+    Desc =
+      (Desc ? Desc + "\n" : "") +
+      `Ghi chú: ${values.Desc ? values.Desc.replace(/\n\r?/g, "</br>") : ""}`;
+
+    const objBooking = {
+      ...values,
+      MemberID: values?.MemberID?.value || "",
+      RootIdS: values.RootIdS.map((item) => item.value).toString(),
+      Roots: values.RootIdS,
+      UserServiceIDs:
+        values.UserServiceIDs && values.UserServiceIDs.length > 0
+          ? values.UserServiceIDs.map((item) => item.value).toString()
+          : "",
+      BookDate: moment(values.BookDate).format("YYYY-MM-DD HH:mm"),
+      Status: "KHACH_DEN",
+      Desc,
+      TreatmentJson: values?.TreatmentJson
+        ? JSON.stringify(values?.TreatmentJson)
+        : "",
+      // Desc:
+      //   window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
+      //     ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
+      //     : values.Desc,
+    };
+
+    const CurrentStockID = Cookies.get("StockID");
+    const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
+
+    let Members = {
+      ...values.MemberID,
+    };
+
+    try {
+      if (values?.IsMemberCurrent?.IsAnonymous) {
+        if (!values?.IsMemberCurrent?.MemberPhone) {
+          const objCreate = {
+            member: {
+              MobilePhone: values?.IsMemberCurrent?.MemberCreate?.Phone,
+              FullName: values?.IsMemberCurrent?.MemberCreate?.FullName,
+              EmptyPhone: true,
+            },
+          };
+          const newMember = await CalendarCrud.createMember(objCreate);
+          if (newMember.error) {
+            toast.error(newMember.error, {
+              position: toast.POSITION.TOP_RIGHT,
+              autoClose: 1500,
+            });
+            setBtnLoading((prevState) => ({
+              ...prevState,
+              isBtnGuestsArrive: false,
+            }));
+            return;
+          }
+          objBooking.MemberID = newMember?.member?.ID;
+          Members = { ...newMember?.member };
+        } else {
+          objBooking.MemberID = values?.IsMemberCurrent?.MemberPhone.ID;
+          Members = { ...values?.IsMemberCurrent?.MemberPhone };
+        }
+      } else if (!objBooking.MemberID) {
+        let NextMember = await CalendarCrud.getNextMember();
+        if (NextMember?.Member) {
+          objBooking.MemberID = NextMember?.Member?.ID || 0;
+
+          let FullName = NextMember?.Member?.FullName || "";
+
+          if (values?.TreatmentJson?.label && !values.ID) {
+            let memberUpdate = {
+              ...NextMember?.Member,
+              Birth: NextMember?.Member?.BirthDate
+                ? moment(NextMember?.Member.BirthDate, "YYYY-MM-DD").format(
+                    "DD/MM/YYYY"
+                  )
+                : "",
+              FullName:
+                NextMember?.Member?.ID + " - " + values?.TreatmentJson?.label,
+            };
+
+            let rsMUpdate = await CalendarCrud.addEditMember({
+              member: memberUpdate,
+            });
+            FullName = rsMUpdate?.Member?.FullName;
+          }
+          if (NextMember?.Member) Members = { ...NextMember?.Member, FullName };
+        } else {
+          toast.error("Xảy ra lỗi khi tạo khách hàng.");
+          setBtnLoading((prevState) => ({
+            ...prevState,
+            isBtnGuestsArrive: false,
+          }));
+          return;
+        }
+      }
+
+      var bodyFormCheckIn = new FormData();
+      bodyFormCheckIn.append("cmd", "checkin");
+      bodyFormCheckIn.append("mid", objBooking.MemberID);
+      bodyFormCheckIn.append("desc", "");
+      let rsCheckIn = await CalendarCrud.checkinMember(bodyFormCheckIn);
+      if (rsCheckIn?.mc?.ID && values.RootIdS && values.RootIdS.length > 0) {
+        var bodyFormOrder = new FormData();
+        bodyFormOrder.append("CheckInID", rsCheckIn?.mc?.ID);
+        bodyFormOrder.append(
+          "arr",
+          JSON.stringify(values.RootIdS.map((x) => ({ id: x.value, qty: 1 })))
+        );
+
+        await CalendarCrud.addOrderCheckIn(bodyFormOrder);
+      }
+      let History = {
+        ...(values?.History || {}),
+        Edit: values?.History?.Edit
+          ? [
+              ...values?.History?.Edit,
+              {
+                CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+                Staff: {
+                  ID: window?.top?.Info?.User?.ID,
+                  FullName: window?.top?.Info?.User?.FullName,
+                },
+                Booking: {
+                  ...objBooking,
+                  Members,
+                  UserServices: values.UserServiceIDs,
+                },
+              },
+            ]
+          : [
+              {
+                CreateDate: moment().format("HH:mm DD-MM-YYYY"),
+                Staff: {
+                  ID: window?.top?.Info?.User?.ID,
+                  FullName: window?.top?.Info?.User?.FullName,
+                },
+                Booking: {
+                  ...objBooking,
+                  Members,
+                  UserServices: values.UserServiceIDs,
+                },
+              },
+            ],
+      };
+
+      objBooking.History = History;
+
+      if (
+        values?.ID &&
+        (values?.Status === "XAC_NHAN" || values?.Status === "KHACH_DEN")
+      ) {
+        let CrMember = await CalendarCrud.clientsId({
+          pi: 1,
+          ps: 1,
+          Key: "#" + objBooking.MemberID,
+        });
+        if (CrMember?.data && CrMember.data.length > 0) {
+          let CrMemberItem = CrMember?.data[0];
+          let memberUpdate = {
+            ...CrMemberItem,
+            Birth: CrMemberItem?.BirthDate
+              ? moment(CrMemberItem.BirthDate, "YYYY-MM-DD").format(
+                  "DD/MM/YYYY"
+                )
+              : "",
+            FullName: values?.TreatmentJson?.label
+              ? CrMemberItem?.FullName.split(" - ")[0] +
+                " - " +
+                values?.TreatmentJson?.label
+              : CrMemberItem?.FullName.split(" - ")[0],
+          };
+
+          let rsMUpdate = await CalendarCrud.addEditMember({
+            member: memberUpdate,
+          });
+          Members = {
+            ...CrMemberItem,
+            FullName: rsMUpdate?.Member?.FullName,
+          };
+        }
+      }
+
+      const dataPost = {
+        booking: [objBooking],
+      };
+
+      await CalendarCrud.postBooking(dataPost, {
+        CurrentStockID,
+        u_id_z4aDf2,
+      });
+
+      if (window?.top?.GlobalConfig?.Admin?.kpiFinish && values?.CreateBy) {
+        let newData = {
+          update: [
+            {
+              BookId: values?.ID,
+              Status: window?.top?.GlobalConfig?.Admin?.kpiFinish,
+              Insert: true,
+            },
+          ],
+        };
+        await CalendarCrud.editTagsMember(newData);
+      }
+
+      window.top.bodyEvent &&
+        window.top.bodyEvent("ui_changed", {
+          name: "cld_thuc_hien_lich",
+          mid: objBooking.MemberID || 0,
+        });
+      window?.top?.OnMemberBook &&
+        window?.top?.OnMemberBook({
+          Member: Members,
+          booking: objBooking,
+          action: "ADD_EDIT",
+        });
+      await queryClient.invalidateQueries({
+        queryKey: ["ListCurrentCalendars"],
+      });
+      ListCalendars.refetch().then(() => {
+        window.top.location.href = `/admin/?mdl=store&act=sell#mp:${objBooking.MemberID}`;
+        toast.success(getTextToast(values.Status), {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1500,
+        });
+        setBtnLoading((prevState) => ({
+          ...prevState,
+          isBtnGuestsArrive: false,
+        }));
+        onHideModal();
+      });
+    } catch (error) {
+      console.log(error);
+      setBtnLoading((prevState) => ({
+        ...prevState,
+        isBtnGuestsArrive: false,
       }));
     }
   };
@@ -834,7 +1145,7 @@ function CalendarMassagePage(props) {
     };
 
     try {
-      if (values.IsMemberCurrent.IsAnonymous) {
+      if (values?.IsMemberCurrent?.IsAnonymous) {
         if (!values?.IsMemberCurrent?.MemberPhone) {
           const objCreate = {
             member: {
@@ -914,6 +1225,38 @@ function CalendarMassagePage(props) {
 
       objBooking.History = History;
 
+      if (
+        values?.ID &&
+        (values?.Status === "XAC_NHAN" || values?.Status === "KHACH_DEN")
+      ) {
+        let CrMember = await CalendarCrud.clientsId({
+          pi: 1,
+          ps: 1,
+          Key: "#" + objBooking.MemberID,
+        });
+        if (CrMember?.data && CrMember.data.length > 0) {
+          let CrMemberItem = CrMember?.data[0];
+          let memberUpdate = {
+            ...CrMemberItem,
+            Birth: CrMemberItem?.BirthDate
+              ? moment(CrMemberItem.BirthDate, "YYYY-MM-DD").format(
+                  "DD/MM/YYYY"
+                )
+              : "",
+            FullName: values?.TreatmentJson?.label
+              ? CrMemberItem?.FullName.split(" - ")[0] +
+                " - " +
+                values?.TreatmentJson?.label
+              : CrMemberItem?.FullName.split(" - ")[0],
+          };
+
+          let rsMUpdate = await CalendarCrud.addEditMember({
+            member: memberUpdate,
+          });
+          Members = { ...CrMemberItem, FullName: rsMUpdate?.Member?.FullName };
+        }
+      }
+
       const dataPost = {
         booking: [objBooking],
       };
@@ -947,6 +1290,9 @@ function CalendarMassagePage(props) {
           booking: objBooking,
           action: "ADD_EDIT",
         });
+      await queryClient.invalidateQueries({
+        queryKey: ["ListCurrentCalendars"],
+      });
       ListCalendars.refetch().then(() => {
         window.top.location.href = `/admin/?mdl=store&act=sell#mp:${objBooking.MemberID}`;
         toast.success(getTextToast(values.Status), {
@@ -1061,6 +1407,9 @@ function CalendarMassagePage(props) {
           },
           action: "DELETE",
         });
+      await queryClient.invalidateQueries({
+        queryKey: ["ListCurrentCalendars"],
+      });
       ListCalendars.refetch().then(() => {
         toast.success("Hủy lịch thành công !", {
           position: toast.POSITION.TOP_RIGHT,
@@ -1274,7 +1623,7 @@ function CalendarMassagePage(props) {
                   ...item,
                   start: item.BookDate,
                   end: moment(item.BookDate)
-                    .add(item.RootMinutes ?? 60, "minutes")
+                    .add(item.RootMinutes ?? 90, "minutes")
                     .toDate(),
                   title: item.RootTitles,
                   className: `fc-event-solid-${getStatusClss(
@@ -1320,7 +1669,7 @@ function CalendarMassagePage(props) {
               },
               start: item.os.BookDate,
               end: moment(item.os.BookDate)
-                .add(item.os.RootMinutes ?? 60, "minutes")
+                .add(item.os.RootMinutes ?? 90, "minutes")
                 .toDate(),
               BookDate: item.os.BookDate,
               title: item.os.Title,
@@ -1557,41 +1906,54 @@ function CalendarMassagePage(props) {
               </div>
 
               <div className="flex">
-                <PickerOfflineSchedule>
-                  {(OfflineSchedule) => (
-                    <Select
-                      options={[
-                        ...optionsCalendar,
-                        {
-                          value: "PickerOfflineSchedule",
-                          label: "Lịch nghỉ",
-                        },
-                      ].filter((x) => !x.hidden)}
-                      value={topCalendar.type}
-                      onChange={(val) => {
-                        if (val?.value === "PickerOfflineSchedule") {
-                          OfflineSchedule.open();
-                        } else {
-                          setTopCalendar((prevState) => ({
-                            ...prevState,
-                            type: val,
-                          }));
-                        }
-                      }}
-                      menuPosition="fixed"
-                      styles={{
-                        menuPortal: (base) => ({
-                          ...base,
-                          zIndex: 9999,
-                        }),
-                      }}
-                      menuPortalTarget={document.body}
-                      isClearable={false}
-                      className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
-                      classNamePrefix="select"
-                    />
+                <PickerCurrentCalendar
+                  setInitialValue={setInitialValue}
+                  onOpenModal={onOpenModal}
+                >
+                  {(CurrentCalendar) => (
+                    <PickerOfflineSchedule>
+                      {(OfflineSchedule) => (
+                        <Select
+                          options={[
+                            ...optionsCalendar,
+                            {
+                              value: "PickerCurrentCalendar",
+                              label: "Lịch hiện tại",
+                            },
+                            {
+                              value: "PickerOfflineSchedule",
+                              label: "Lịch nghỉ",
+                            },
+                          ].filter((x) => !x.hidden)}
+                          value={topCalendar.type}
+                          onChange={(val) => {
+                            if (val?.value === "PickerCurrentCalendar") {
+                              CurrentCalendar.open();
+                            } else if (val?.value === "PickerOfflineSchedule") {
+                              OfflineSchedule.open();
+                            } else {
+                              setTopCalendar((prevState) => ({
+                                ...prevState,
+                                type: val,
+                              }));
+                            }
+                          }}
+                          menuPosition="fixed"
+                          styles={{
+                            menuPortal: (base) => ({
+                              ...base,
+                              zIndex: 9999,
+                            }),
+                          }}
+                          menuPortalTarget={document.body}
+                          isClearable={false}
+                          className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
+                          classNamePrefix="select"
+                        />
+                      )}
+                    </PickerOfflineSchedule>
                   )}
-                </PickerOfflineSchedule>
+                </PickerCurrentCalendar>
 
                 {/* <button
                   type="button"
@@ -1798,17 +2160,55 @@ function CalendarMassagePage(props) {
                                   }
                                 }}
                                 onClick={() => {
-                                  window.top?.$?.magnificPopup &&
-                                    window.top?.$?.magnificPopup.open({
-                                      items: {
+                                  let Photos = [
+                                    {
+                                      src: toAbsoluteUser(
+                                        resource?._resource?.extendedProps
+                                          ?.photo,
+                                        "/"
+                                      ),
+                                    },
+                                  ];
+                                  let newPhotoJSON = resource?._resource
+                                    ?.extendedProps?.source?.PhotoJSON
+                                    ? JSON.parse(
+                                        resource?._resource?.extendedProps
+                                          ?.source?.PhotoJSON
+                                      )
+                                    : null;
+                                  if (newPhotoJSON) {
+                                    Photos = [
+                                      ...Photos,
+                                      ...newPhotoJSON.map((x) => ({
                                         src: toAbsoluteUser(
-                                          resource?._resource?.extendedProps
-                                            ?.photo,
-                                          "/"
+                                          x,
+                                          "/Upload/image/"
                                         ),
-                                      },
-                                      type: "image",
-                                    });
+                                      })),
+                                    ];
+                                  }
+                                  if (Photos && Photos.length > 1) {
+                                    window.top?.$?.magnificPopup &&
+                                      window.top?.$?.magnificPopup.open({
+                                        items: Photos,
+                                        gallery: {
+                                          enabled: true,
+                                        },
+                                        type: "image",
+                                      });
+                                  } else {
+                                    window.top?.$?.magnificPopup &&
+                                      window.top?.$?.magnificPopup.open({
+                                        items: {
+                                          src: toAbsoluteUser(
+                                            resource?._resource?.extendedProps
+                                              ?.photo,
+                                            "/"
+                                          ),
+                                        },
+                                        type: "image",
+                                      });
+                                  }
                                 }}
                               />
                             </div>
@@ -2011,7 +2411,6 @@ function CalendarMassagePage(props) {
                     let Room = extendedProps?.TreatmentJson
                       ? JSON.parse(extendedProps?.TreatmentJson)
                       : null;
-
                     if (view.type !== "listWeek") {
                       italicEl.innerHTML = `<div class="fc-title${
                         topCalendar?.type?.value === "resourceTimelineDay"
@@ -2021,9 +2420,9 @@ function CalendarMassagePage(props) {
                       <div class="${
                         topCalendar?.type?.value === "resourceTimelineDay"
                           ? ""
-                          : " mb-3"
+                          : " mb-px"
                       }">
-                        <div>#${extendedProps.ID || extendedProps?.os?.ID}</div>
+                        <div>${extendedProps?.Member?.FullName || ""}</div>
                         <div class="flex">
                           <div>${moment(extendedProps.BookDate).format(
                             "HH:mm"
@@ -2044,10 +2443,9 @@ function CalendarMassagePage(props) {
                           ? " gap-2.5"
                           : ""
                       }">
-                        <div class="w-[32px] h-[32px] border-2 border-white rounded-full bg-[#e1f0ff] text-primary flex items-center justify-center font-medium">
-                            ${Room?.label || "No"}
-                        </div>
-                        <div class="flex -space-x-4 rtl:space-x-reverse${renderColor(extendedProps) === "" ? " hidden" : ""}">${renderColor(extendedProps)}</div>
+                        <div class="flex -space-x-4 rtl:space-x-reverse${
+                          renderColor(extendedProps) === "" ? " hidden" : ""
+                        }">${renderColor(extendedProps)}</div>
                       </div>
                   </div>`;
                     } else {
@@ -2168,6 +2566,7 @@ function CalendarMassagePage(props) {
         onSubmit={onSubmitBooking}
         onFinish={onFinish}
         onDelete={onDeleteBooking}
+        onGuestsArrive={onGuestsArrive}
         btnLoading={btnLoading}
         initialValue={initialValue}
         TagsList={

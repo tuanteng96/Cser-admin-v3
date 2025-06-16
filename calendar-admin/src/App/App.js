@@ -70,7 +70,11 @@ function App({ store, basename }) {
                     index
                     element={
                       <SuspensedView>
-                        <CalendarPage />
+                        {window?.top?.GlobalConfig?.Admin?.TU_DONG_TIP ? (
+                          <CalendarMassagePage />
+                        ) : (
+                          <CalendarPage />
+                        )}
                       </SuspensedView>
                     }
                   />

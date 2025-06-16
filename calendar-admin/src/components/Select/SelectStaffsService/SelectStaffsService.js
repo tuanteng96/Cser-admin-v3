@@ -98,7 +98,10 @@ function SelectStaffsService({
       }
     }
     setLoading(false);
-    setListOption(newData);
+    setListOption(newData.map((item) => ({
+      ...item, 
+      options: item?.options ? item?.options.sort((a,b) => a?.source?.Order - b?.source?.Order) : []
+    })));
   };
 
   return (

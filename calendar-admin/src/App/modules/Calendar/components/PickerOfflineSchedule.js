@@ -73,8 +73,7 @@ function PickerOfflineSchedule({ children }) {
           }
         }
       }
-
-      return newData;
+      return newData.sort((a,b) => a?.source?.Order - b?.source?.Order);
     },
     keepPreviousData: true,
     enabled: visible,

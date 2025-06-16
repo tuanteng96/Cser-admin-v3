@@ -13,7 +13,7 @@ const getListStaff = (stockid) => {
 
 const getListStaffs = ({ StockID, Key }) => {
   return axiosClient.get(
-    `/api/gl/select2?cmd=user&q=${Key}&crstockid=${StockID}&byStockID=1`
+    `/api/gl/select2?cmd=user&q=${Key}&crstockid=${StockID}&byStockID=1&includeSource=1`
   );
 };
 
@@ -203,15 +203,34 @@ const deletePointOsMember = (data) => {
 };
 
 const editWorkOff = (data) => {
-  return axiosClient.post("/api/v3/userwork23@workoffEdit", JSON.stringify(data));
+  return axiosClient.post(
+    "/api/v3/userwork23@workoffEdit",
+    JSON.stringify(data)
+  );
 };
 
 const getNextMember = () => {
   return axiosClient.post("/api/v3/member27@NextMember");
-}
+};
 
 const addOrderCheckIn = (data) =>
   axiosClient.post(`/api/v3/common?cmd=OrderCheckIn`, data);
+
+const addEditMember = (data) => {
+  return axiosClient.post(`/api/v3/member23@AddMember`, JSON.stringify(data));
+};
+
+const clientsId = ({ Key = "", pi = 1, ps = 15 }) =>
+  axiosClient.get(
+    `/services/preview.aspx?cmd=search_member&key=${encodeURIComponent(
+      Key
+    )}&typeSearch=sell&pi=${pi}&ps=${ps}&isAdmin=true`
+    // {
+    //   headers: {
+    //     Authorization: `Bearer ${Token}`,
+    //   },
+    // }
+  );
 
 const CalendarCrud = {
   getMembers,
@@ -250,6 +269,8 @@ const CalendarCrud = {
   getListStaffsOffline,
   editWorkOff,
   getNextMember,
-  addOrderCheckIn
+  addOrderCheckIn,
+  addEditMember,
+  clientsId
 };
 export default CalendarCrud;

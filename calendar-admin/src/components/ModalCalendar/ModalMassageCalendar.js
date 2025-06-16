@@ -105,6 +105,7 @@ function ModalMassageCalendar({
   onHide,
   onSubmit,
   onFinish,
+  onGuestsArrive,
   btnLoading,
   initialValue,
   onDelete,
@@ -208,6 +209,7 @@ function ModalMassageCalendar({
           StockID: AuthCrStockID,
           BookDate: initialValue?.BookDate ? initialValue.BookDate : new Date(),
           UserServiceIDs: initialValue?.UserServiceIDs || [],
+          TreatmentJson: initialValue?.TreatmentJson || null
         }));
       }
     } else {
@@ -577,6 +579,7 @@ function ModalMassageCalendar({
                       timeInputLabel="Thời gian"
                       showTimeSelect
                       timeFormat="HH:mm"
+                      timeIntervals={15}
                     />
                     <SelectStocks
                       className={`select-control mt-2 ${
@@ -821,10 +824,10 @@ function ModalMassageCalendar({
                     <div className="d-flex w-100">
                       <div className="flex-1">
                         {!values?.ID && (
-                          <div className="d-flex w-100">
+                          <div className="gap-2 d-flex w-100">
                             <button
                               type="button"
-                              className="mr-2 btn btn-sm btn-secondary"
+                              className="btn btn-sm btn-secondary"
                               onClick={onHide}
                             >
                               Hủy
@@ -839,6 +842,18 @@ function ModalMassageCalendar({
                               disabled={btnLoading.isBtnBooking}
                             >
                               Đặt lịch ngay
+                            </button>
+                            <button
+                              onClick={() => onGuestsArrive(values)}
+                              type="button"
+                              className={`btn btn-sm btn-success flex-1 ${
+                                btnLoading.isBtnGuestsArrive
+                                  ? "spinner spinner-white spinner-right"
+                                  : ""
+                              } w-auto my-0 mr-0 h-auto`}
+                              disabled={btnLoading.isBtnGuestsArrive}
+                            >
+                              Khách đến
                             </button>
                           </div>
                         )}

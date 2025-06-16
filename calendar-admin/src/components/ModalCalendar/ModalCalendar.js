@@ -570,6 +570,7 @@ function ModalCalendar({
                       timeInputLabel="Thời gian"
                       showTimeSelect
                       timeFormat="HH:mm"
+                      timeIntervals={15}
                     />
                     <SelectStocks
                       className={`select-control mt-2 ${
