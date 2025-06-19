@@ -1,6 +1,5 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { useSelector } from "react-redux";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import CalendarCrud from "../_redux/CalendarCrud";
 import Table, { AutoResizer } from "react-base-table";
@@ -42,12 +41,8 @@ let Status = [
   },
 ];
 
-function PickerClassManage({ children, TimeOpen, TimeClose }) {
+function PickerClassManage({ children }) {
   const queryClient = useQueryClient();
-
-  const { AuthCrStockID } = useSelector(({ Auth, JsonConfig }) => ({
-    AuthCrStockID: Auth.CrStockID,
-  }));
 
   let [initialValues, setInitialValues] = useState(null);
   let [initialValue, setInitialValue] = useState({

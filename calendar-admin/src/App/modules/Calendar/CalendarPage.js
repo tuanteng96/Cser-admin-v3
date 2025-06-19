@@ -223,6 +223,7 @@ function CalendarPage(props) {
     StockID: AuthCrStockID,
     Tags: "",
   });
+
   const [topCalendar, setTopCalendar] = useState({
     type: GlobalConfig?.Admin?.PosActiveCalendar
       ? optionsCalendar.filter(
@@ -251,7 +252,7 @@ function CalendarPage(props) {
   const [btnLoadingLock, setBtnLoadingLock] = useState(false);
   const calendarRef = useRef("");
   const { isTelesales } = useContext(AppContext);
-  
+
   useEffect(() => {
     if (topCalendar?.type?.value === "resourceTimeGridDay") {
       setFilters((prevState) => ({
@@ -281,6 +282,7 @@ function CalendarPage(props) {
           : prevState.Status,
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topCalendar?.type]);
 
   useEffect(() => {
@@ -328,9 +330,17 @@ function CalendarPage(props) {
       });
       const newData =
         Array.isArray(data) && data.length > 0
-          ? data.map((item) => ({ ...item, id: item.id, title: item.text, order: item?.source?.Order || 0 }))
+          ? data.map((item) => ({
+              ...item,
+              id: item.id,
+              title: item.text,
+              order: item?.source?.Order || 0,
+            }))
           : [];
-      setStaffFull([{ id: 0, title: "Chưa chọn nhân viên", order: 0 }, ...newData]);
+      setStaffFull([
+        { id: 0, title: "Chưa chọn nhân viên", order: 0 },
+        ...newData,
+      ]);
     }
 
     getStaffFull();
@@ -584,7 +594,6 @@ function CalendarPage(props) {
   };
 
   const onSubmitBooking = async (values) => {
-    
     setBtnLoading((prevState) => ({
       ...prevState,
       isBtnBooking: true,
@@ -1060,7 +1069,10 @@ function CalendarPage(props) {
   };
 
   const ListCalendars = useQuery({
-    queryKey: ["ListCalendars", { ListLock, filters, View: topCalendar?.type?.value }],
+    queryKey: [
+      "ListCalendars",
+      { ListLock, filters, View: topCalendar?.type?.value },
+    ],
     queryFn: async () => {
       const newFilters = {
         ...filters,
@@ -1224,7 +1236,7 @@ function CalendarPage(props) {
           }
         }
       }
-      
+
       let dataBooks =
         data.books && Array.isArray(data.books)
           ? data.books
@@ -1232,7 +1244,7 @@ function CalendarPage(props) {
                 let TreatmentJson = item?.TreatmentJson
                   ? JSON.parse(item?.TreatmentJson)
                   : "";
-                  
+
                 return {
                   ...item,
                   start: item.BookDate,
@@ -2138,7 +2150,7 @@ function CalendarPage(props) {
           </div>
         </div>
       </div>
-      
+
       <ModalCalendar
         show={isModal}
         onHide={onHideModal}

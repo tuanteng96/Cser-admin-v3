@@ -23,15 +23,13 @@ const queryClient = new QueryClient({
 });
 
 ReactDOM.render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <SplashScreenProvider>
-          <App store={store} basename={PUBLIC_URL} />
-        </SplashScreenProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
-  </React.StrictMode>,
+  <QueryClientProvider client={queryClient}>
+    <BrowserRouter>
+      <SplashScreenProvider>
+        <App store={store} basename={PUBLIC_URL} />
+      </SplashScreenProvider>
+    </BrowserRouter>
+  </QueryClientProvider>,
   document.getElementById("root")
 );
 

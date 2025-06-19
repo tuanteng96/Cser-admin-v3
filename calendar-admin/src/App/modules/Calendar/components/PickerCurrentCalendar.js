@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import CalendarCrud from "../_redux/CalendarCrud";
 import moment from "moment";
 import vi from "date-fns/locale/vi";
@@ -45,12 +45,10 @@ function PickerCurrentCalendar({ children, setInitialValue, onOpenModal }) {
     })
   );
 
-  const queryClient = useQueryClient();
-
   const [visible, setVisible] = useState(false);
 
-  const [TimeOpen, setTimeOpen] = useState(GTimeOpen);
-  const [TimeClose, setTimeClose] = useState(GTimeClose);
+  const [TimeOpen] = useState(GTimeOpen);
+  const [TimeClose] = useState(GTimeClose);
 
   let [CrDate, setCrDate] = useState(new Date());
 
@@ -62,7 +60,7 @@ function PickerCurrentCalendar({ children, setInitialValue, onOpenModal }) {
     }
   }, [visible]);
 
-  const [filters, setFilters] = useState({
+  const [filters] = useState({
     Status: ["XAC_NHAN", "DANG_THUC_HIEN"],
     MemberID: "",
     From: moment().format("YYYY-MM-DD"),
@@ -75,7 +73,7 @@ function PickerCurrentCalendar({ children, setInitialValue, onOpenModal }) {
     Tags: "",
   });
 
-  const { data, isFetching, isLoading, refetch } = useQuery({
+  const { data, isFetching, isLoading } = useQuery({
     queryKey: ["ListCurrentCalendars", { visible, filters, CrDate }],
     queryFn: async () => {
       const newFilters = {
@@ -444,12 +442,6 @@ function PickerCurrentCalendar({ children, setInitialValue, onOpenModal }) {
     } else {
       return "bg-[#fffde0]";
     }
-  };
-
-  const onRefresh = async (callback) => {
-    await refetch();
-    await queryClient.invalidateQueries({ queryKey: ["ListCalendarsMassage"] });
-    callback && callback();
   };
 
   return (

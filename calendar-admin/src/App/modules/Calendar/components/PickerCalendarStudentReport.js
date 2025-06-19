@@ -7,9 +7,7 @@ import Table, { AutoResizer } from "react-base-table";
 
 import moment from "moment";
 import clsx from "clsx";
-import PickerClassReportFilter from "./PickerClassReportFilter";
 import { useRoles } from "../../../../hooks/useRoles";
-import ExcelHepers from "../../../../helpers/ExcelHepers";
 import PickerClassStudentFilter from "./PickerClassStudentFilter";
 
 let formatArray = {
@@ -33,7 +31,6 @@ function PickerCalendarStudentReport({ children }) {
   }));
 
   const [visible, setVisible] = useState(false);
-  const [isExport, setIsExport] = useState(false);
 
   const [filters, setFilters] = useState({
     MemberIDs: null,

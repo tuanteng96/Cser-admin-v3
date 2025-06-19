@@ -28,17 +28,10 @@ import clsx from "clsx";
 import DateTimePicker from "../../../shared/DateTimePicker/DateTimePicker";
 import { Dropdown } from "react-bootstrap";
 import PickerSettingCalendar from "../../../components/PickerSettingCalendar/PickerSettingCalendar";
-import {
-  PickerCalendarClass,
-  PickerCareSchedule,
-  PickerClass,
-  PickerControlBookOnline,
-  PickerCurrentCalendar,
-  PickerOfflineSchedule,
-  PickerSettingBookOnline,
-} from "./components";
+import { PickerOfflineSchedule, PickerReportMassage } from "./components";
 import { toAbsoluteUrl, toAbsoluteUser } from "../../../helpers/AssetsHelpers";
 import ModalMassageCalendar from "../../../components/ModalCalendar/ModalMassageCalendar";
+import MassageResourceCurrentDay from "./components/MassageResourceCurrentDay";
 
 moment.locale("vi");
 
@@ -148,14 +141,13 @@ function CalendarMassagePage(props) {
     StocksList,
     isRooms,
     Stocks,
-    SettingBookOnline,
-    lop_hoc_pt,
     GlobalConfig,
+    checkout_time,
   } = useSelector(({ Auth, JsonConfig }) => ({
     AuthCrStockID: Auth.CrStockID,
     StocksList: Auth?.Stocks.filter((x) => x.ParentID !== 0),
     GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
-    GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
+    GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:59",
     isRooms: JsonConfig?.Admin?.isRooms,
     SettingBookOnline: JsonConfig?.Admin?.SettingBookOnline,
     lop_hoc_pt: JsonConfig?.Admin?.lop_hoc_pt,
@@ -168,6 +160,7 @@ function CalendarMassagePage(props) {
           label: o.Title,
         }))
       : [],
+    checkout_time: Boolean(JsonConfig?.Admin?.checkout_time),
   }));
 
   let optionsCalendar = [
@@ -198,8 +191,13 @@ function CalendarMassagePage(props) {
     },
     {
       value: "resourceTimelineDay",
-      label: "Xem theo Phòng",
+      label: "Xem theo phòng",
       hidden: !isRooms,
+    },
+    {
+      value: "resourceCurrentDay",
+      label: "Xem lịch hiện tại",
+      hidden: false,
     },
   ];
 
@@ -235,8 +233,8 @@ function CalendarMassagePage(props) {
           (x) => x.value === GlobalConfig?.Admin?.PosActiveCalendar
         )[0]
       : {
-          value: "resourceTimeGridDay",
-          label: "Xem theo nhân viên",
+          value: "resourceCurrentDay", //resourceTimeGridDay
+          label: "Xem lịch hiện tại", //
         },
     day: moment().toDate(),
   });
@@ -257,6 +255,13 @@ function CalendarMassagePage(props) {
   const [btnLoadingLock, setBtnLoadingLock] = useState(false);
   const calendarRef = useRef("");
   const { isTelesales } = useContext(AppContext);
+
+  useEffect(() => {
+    if (width < 1200) setIsSidebar(true);
+    else {
+      setIsSidebar(false);
+    }
+  }, [width]);
 
   useEffect(() => {
     if (topCalendar?.type?.value === "resourceTimeGridDay") {
@@ -287,10 +292,14 @@ function CalendarMassagePage(props) {
           : prevState.Status,
       }));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topCalendar?.type]);
 
   useEffect(() => {
-    if (calendarRef?.current?.getApi()) {
+    if (
+      calendarRef?.current?.getApi &&
+      topCalendar?.type?.value !== "resourceCurrentDay"
+    ) {
       let calendarApi = calendarRef.current.getApi();
       calendarApi.changeView(topCalendar?.type?.value);
     }
@@ -318,12 +327,25 @@ function CalendarMassagePage(props) {
         params.From = params.From.format("YYYY-MM-DD");
         params.To = params.To.add(6, "day").format("YYYY-MM-DD");
         break;
+      case "resourceCurrentDay":
+        params.From = moment().format("YYYY-MM-DD");
+        params.To = moment()
+          .add(6, "day")
+          .format("YYYY-MM-DD");
+        break;
       default:
         params.From = params.From.format("YYYY-MM-DD");
         params.To = params.To.format("YYYY-MM-DD");
     }
-    setFilters((prevState) => ({ ...prevState, ...params }));
-  }, [topCalendar]);
+    setFilters((prevState) => ({
+      ...prevState,
+      ...params,
+      day:
+        topCalendar?.type?.value === "resourceCurrentDay"
+          ? moment().toDate()
+          : prevState.day,
+    }));
+  }, [topCalendar?.type, topCalendar?.day]);
 
   //Get Staff Full
   useEffect(() => {
@@ -352,7 +374,7 @@ function CalendarMassagePage(props) {
   }, [topCalendar?.type]);
 
   useEffect(() => {
-    if (calendarRef?.current?.getApi()) {
+    if (calendarRef?.current?.getApi) {
       let calendarApi = calendarRef.current.getApi();
       setHeaderTitle(calendarApi.currentDataManager.data?.viewTitle);
     }
@@ -1469,7 +1491,10 @@ function CalendarMassagePage(props) {
         StatusAtHome: filters?.StatusAtHome ? filters?.StatusAtHome.value : "",
         Tags: filters?.Tags ? filters?.Tags.map((x) => x.value).toString() : "",
       };
-      let data = await CalendarCrud.getBooking(newFilters);
+      let data = await CalendarCrud.getBooking({
+        ...newFilters,
+        IsMassage: checkout_time,
+      });
       let dataOffline = [];
 
       if (topCalendar?.type?.value === "resourceTimeGridDay") {
@@ -1698,7 +1723,9 @@ function CalendarMassagePage(props) {
 
       return [...dataBooks, ...dataBooksAuto, ...dataOffline];
     },
-    enabled: Boolean(filters && filters.From),
+    enabled:
+      Boolean(filters && filters.From) &&
+      topCalendar?.type?.value !== "resourceCurrentDay",
   });
 
   const onRefresh = (callback) =>
@@ -1750,13 +1777,6 @@ function CalendarMassagePage(props) {
       .join("");
   };
 
-  // const someMethod = () => {
-  //   let calendarApi = calendarRef.current.getApi()
-  //   console.log(calendarApi)
-  //   calendarApi.prev()
-  //   calendarApi.changeView("dayGridDay");
-  // }
-
   return (
     <div className={`ezs-calendar`}>
       <div className="px-0 container-fluid h-100">
@@ -1796,7 +1816,7 @@ function CalendarMassagePage(props) {
             <div className="flex justify-between mb-4">
               <div className="flex flex-1 mr-2 md:mr-0">
                 <button
-                  className="mr-[8px] rounded-[4px] w-[42px] flex items-center justify-center"
+                  className="mr-[8px] rounded-[4px] w-[42px] items-center justify-center hidden xl:flex"
                   type="button"
                   onClick={() => setIsSidebar(!isSidebar)}
                 >
@@ -1835,11 +1855,12 @@ function CalendarMassagePage(props) {
                     showMonthYearPicker={
                       topCalendar?.type?.value === "dayGridMonth"
                     }
+                    disabled={topCalendar?.type?.value === "resourceCurrentDay"}
                   />
                   <div className="absolute top-0 right-0 hidden h-full md:block">
                     <button
                       type="button"
-                      className="bg-transparent w-[25px] h-full group"
+                      className="bg-transparent w-[25px] h-full group disabled:opacity-60"
                       onClick={() => {
                         if (topCalendar?.type?.value === "dayGridMonth") {
                           setTopCalendar((prevState) => ({
@@ -1866,12 +1887,15 @@ function CalendarMassagePage(props) {
                           }));
                         }
                       }}
+                      disabled={
+                        topCalendar?.type?.value === "resourceCurrentDay"
+                      }
                     >
                       <i className="fa-regular fa-chevron-left text-[15px] group-hover:!text-primary"></i>
                     </button>
                     <button
                       type="button"
-                      className="bg-transparent w-[25px] h-full group"
+                      className="bg-transparent w-[25px] h-full group disabled:opacity-60"
                       onClick={() => {
                         if (topCalendar?.type?.value === "dayGridMonth") {
                           setTopCalendar((prevState) => ({
@@ -1898,6 +1922,9 @@ function CalendarMassagePage(props) {
                           }));
                         }
                       }}
+                      disabled={
+                        topCalendar?.type?.value === "resourceCurrentDay"
+                      }
                     >
                       <i className="fa-regular fa-chevron-right text-[15px] group-hover:!text-primary"></i>
                     </button>
@@ -1906,31 +1933,28 @@ function CalendarMassagePage(props) {
               </div>
 
               <div className="flex">
-                <PickerCurrentCalendar
-                  setInitialValue={setInitialValue}
-                  onOpenModal={onOpenModal}
-                >
-                  {(CurrentCalendar) => (
+                <PickerReportMassage>
+                  {(Report) => (
                     <PickerOfflineSchedule>
                       {(OfflineSchedule) => (
                         <Select
                           options={[
                             ...optionsCalendar,
                             {
-                              value: "PickerCurrentCalendar",
-                              label: "Lịch hiện tại",
-                            },
-                            {
                               value: "PickerOfflineSchedule",
                               label: "Lịch nghỉ",
+                            },
+                            {
+                              value: "PickerReportMassage",
+                              label: "Thống kê",
                             },
                           ].filter((x) => !x.hidden)}
                           value={topCalendar.type}
                           onChange={(val) => {
-                            if (val?.value === "PickerCurrentCalendar") {
-                              CurrentCalendar.open();
-                            } else if (val?.value === "PickerOfflineSchedule") {
+                            if (val?.value === "PickerOfflineSchedule") {
                               OfflineSchedule.open();
+                            } else if (val?.value === "PickerReportMassage") {
+                              Report?.open();
                             } else {
                               setTopCalendar((prevState) => ({
                                 ...prevState,
@@ -1953,15 +1977,33 @@ function CalendarMassagePage(props) {
                       )}
                     </PickerOfflineSchedule>
                   )}
-                </PickerCurrentCalendar>
-
-                {/* <button
-                  type="button"
-                  className="transition-all ml-[8px] bg-[#ede7fe] hover:!bg-[#8561f9] w-[42px] h-[40px] rounded-[4px] flex items-center justify-center text-[#8561f9] hover:text-white"
-                  onClick={onOpenModalRoom}
-                >
-                  <i className="fa-light fa-gear pr-0 text-[1.3rem] mt-1 text-current"></i>
-                </button> */}
+                </PickerReportMassage>
+                {topCalendar?.type?.value === "resourceCurrentDay" && (
+                  <button
+                    type="button"
+                    className="rounded-[4px] w-11 ml-2 text-primary"
+                    onClick={() => {
+                      queryClient.invalidateQueries({
+                        queryKey: ["ListCurrentCalendars"],
+                      });
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      strokeWidth="1.5"
+                      stroke="currentColor"
+                      className="w-6"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                      />
+                    </svg>
+                  </button>
+                )}
 
                 <Dropdown className="w-auto ml-[8px]">
                   <Dropdown.Toggle className="!bg-[#ede7fe] hover:!bg-[#8561f9] !border-0 h-[40px] px-10px w-100 hide-icon-after no-after group">
@@ -1985,7 +2027,7 @@ function CalendarMassagePage(props) {
                 </Dropdown>
 
                 <button
-                  className="btn btn-primary btn-sm h-[40px] px-15px ml-[8px]"
+                  className="btn btn-primary btn-sm h-[40px] px-15px ml-[8px] !hidden xl:!block"
                   type="button"
                   onClick={onOpenModal}
                 >
@@ -1997,426 +2039,432 @@ function CalendarMassagePage(props) {
                 </button>
               </div>
             </div>
-            <div className={clsx("grow position-relative fc-massage")}>
-              {ListCalendars.isLoading && (
-                <div className="absolute top-0 left-0 z-50 flex items-center justify-center w-full h-full">
-                  <div role="status">
-                    <svg
-                      aria-hidden="true"
-                      className="w-8 h-8 text-gray-500 animate-spin fill-blue-600"
-                      viewBox="0 0 100 101"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                        fill="currentColor"
-                      />
-                      <path
-                        d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                        fill="currentFill"
-                      />
-                    </svg>
-                    <span className="sr-only">Loading...</span>
-                  </div>
-                </div>
-              )}
-              <FullCalendar
-                firstDay={1}
-                handleWindowResize={true}
-                ref={calendarRef}
-                themeSystem="unthemed"
-                locale={viLocales}
-                initialDate={topCalendar.day}
-                initialView={topCalendar?.type?.value} //timeGridDay
-                schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-                aspectRatio="3"
-                editable={false}
-                navLinks={true}
-                allDaySlot={false}
-                views={{
-                  dayGridMonth: {
-                    dayMaxEvents: 2,
-                    dateClick: ({ date }) => {
-                      if (isTelesales) return;
-                      setInitialValue({ ...initialValue, BookDate: date });
-                      onOpenModal();
-                    },
-                    slotMinTime: TimeOpen,
-                    slotMaxTime: TimeClose,
-                  },
-                  timeGridWeek: {
-                    eventMaxStack: 2,
-                    duration: { days: width > 991 ? 7 : 3 },
-                    slotLabelContent: ({ date, text }) => {
-                      return (
-                        <>
-                          <span className="font-size-min gird-time font-number">
-                            {text} {moment(date).format("A")}
-                          </span>
-                          <span className="font-size-min font-number w-55px d-block"></span>
-                        </>
-                      );
-                    },
-                    dayHeaderContent: ({ date, isToday, ...arg }) => {
-                      return (
-                        <div className="font-number">
-                          <div
-                            className={`date-mm ${isToday && "text-primary"}`}
-                          >
-                            {moment(date).format("ddd")}
-                          </div>
-                          <div
-                            className={`w-40px h-40px d-flex align-items-center justify-content-center rounded-circle date-dd ${isToday &&
-                              "bg-primary text-white"}`}
-                          >
-                            {moment(date).format("DD")}
-                          </div>
-                        </div>
-                      );
-                    },
-                    nowIndicator: true,
-                    now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
-                    scrollTime: moment(new Date()).format("HH:mm"),
-                    dateClick: ({ date }) => {
-                      if (isTelesales) return;
-                      setInitialValue({ ...initialValue, BookDate: date });
-                      onOpenModal();
-                    },
-                    slotMinTime: TimeOpen,
-                    slotMaxTime: TimeClose,
-                  },
-                  timeGridDay: {
-                    eventMaxStack: 8,
-                    slotLabelContent: ({ date, text }) => {
-                      return (
-                        <>
-                          <span className="font-size-min gird-time font-number">
-                            {text} {moment(date).format("A")}
-                          </span>
-                          <span className="font-size-min font-number w-55px d-block"></span>
-                        </>
-                      );
-                    },
-                    dayHeaderContent: ({ date, isToday, ...arg }) => {
-                      return (
-                        <div className="font-number">
-                          <div className={`date-mm text-center`}>
-                            {moment(date).format("ddd")}
-                          </div>
-                          <div
-                            className={`w-40px h-40px d-flex align-items-center justify-content-center rounded-circle date-dd`}
-                          >
-                            {moment(date).format("DD")}
-                          </div>
-                        </div>
-                      );
-                    },
-                    nowIndicator: true,
-                    now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
-                    scrollTime: moment(new Date()).format("HH:mm"),
-                    slotMinWidth: "50",
-                    dateClick: ({ date }) => {
-                      if (isTelesales) return;
-                      setInitialValue({ ...initialValue, BookDate: date });
-                      onOpenModal();
-                    },
-                    slotMinTime: TimeOpen,
-                    slotMaxTime: TimeClose,
-                  },
-                  resourceTimeGridDay: {
-                    dayMinWidth: 130,
-                    allDaySlot: false,
-                    type: "resourceTimeline",
-                    nowIndicator: true,
-                    now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
-                    scrollTime: moment(new Date()).format("HH:mm"),
-                    resourceAreaWidth: width > 768 ? "300px" : "200px",
-                    stickyHeaderDates: true,
-                    slotMinTime: TimeOpen,
-                    slotMaxTime: TimeClose,
-                    buttonText: "Nhân viên",
-                    resourceAreaHeaderContent: () => "Nhân viên",
-                    resourceLabelContent: ({ resource }) => {
-                      return (
-                        <div className="flex flex-col items-center">
-                          <div className="p-1 border rounded-full w-14 h-14 font-inter border-primary">
-                            <div className="cursor-pointer aspect-square">
-                              <img
-                                className="object-cover object-top w-full h-full rounded-full"
-                                src={toAbsoluteUser(
-                                  resource?._resource?.extendedProps?.photo,
-                                  "/"
-                                )}
-                                alt={resource._resource.title}
-                                onError={(e) => {
-                                  if (
-                                    e.target.src !==
-                                    toAbsoluteUrl("/assets/images/blank.png")
-                                  ) {
-                                    e.target.src = toAbsoluteUrl(
-                                      "/assets/images/blank.png"
-                                    );
-                                  }
-                                }}
-                                onClick={() => {
-                                  let Photos = [
-                                    {
-                                      src: toAbsoluteUser(
-                                        resource?._resource?.extendedProps
-                                          ?.photo,
-                                        "/"
-                                      ),
-                                    },
-                                  ];
-                                  let newPhotoJSON = resource?._resource
-                                    ?.extendedProps?.source?.PhotoJSON
-                                    ? JSON.parse(
-                                        resource?._resource?.extendedProps
-                                          ?.source?.PhotoJSON
-                                      )
-                                    : null;
-                                  if (newPhotoJSON) {
-                                    Photos = [
-                                      ...Photos,
-                                      ...newPhotoJSON.map((x) => ({
-                                        src: toAbsoluteUser(
-                                          x,
-                                          "/Upload/image/"
-                                        ),
-                                      })),
-                                    ];
-                                  }
-                                  if (Photos && Photos.length > 1) {
-                                    window.top?.$?.magnificPopup &&
-                                      window.top?.$?.magnificPopup.open({
-                                        items: Photos,
-                                        gallery: {
-                                          enabled: true,
-                                        },
-                                        type: "image",
-                                      });
-                                  } else {
-                                    window.top?.$?.magnificPopup &&
-                                      window.top?.$?.magnificPopup.open({
-                                        items: {
-                                          src: toAbsoluteUser(
-                                            resource?._resource?.extendedProps
-                                              ?.photo,
-                                            "/"
-                                          ),
-                                        },
-                                        type: "image",
-                                      });
-                                  }
-                                }}
-                              />
-                            </div>
 
-                            {/* <div className="flex items-center justify-center w-full h-full rounded-full bg-[#e2f0ff] text-primary">
+            {topCalendar?.type?.value !== "resourceCurrentDay" && (
+              <div className={clsx("grow position-relative fc-massage")}>
+                {ListCalendars.isLoading && (
+                  <div className="absolute top-0 left-0 z-50 flex items-center justify-center w-full h-full">
+                    <div role="status">
+                      <svg
+                        aria-hidden="true"
+                        className="w-8 h-8 text-gray-500 animate-spin fill-blue-600"
+                        viewBox="0 0 100 101"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                          fill="currentFill"
+                        />
+                      </svg>
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  </div>
+                )}
+                <FullCalendar
+                  firstDay={1}
+                  handleWindowResize={true}
+                  ref={calendarRef}
+                  themeSystem="unthemed"
+                  locale={viLocales}
+                  initialDate={topCalendar.day}
+                  initialView={
+                    topCalendar?.type?.value === "resourceCurrentDay"
+                      ? "resourceTimeGridDay"
+                      : topCalendar?.type?.value
+                  } //timeGridDay
+                  schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+                  aspectRatio="3"
+                  editable={false}
+                  navLinks={true}
+                  allDaySlot={false}
+                  views={{
+                    dayGridMonth: {
+                      dayMaxEvents: 2,
+                      dateClick: ({ date }) => {
+                        if (isTelesales) return;
+                        setInitialValue({ ...initialValue, BookDate: date });
+                        onOpenModal();
+                      },
+                      slotMinTime: TimeOpen,
+                      slotMaxTime: TimeClose,
+                    },
+                    timeGridWeek: {
+                      eventMaxStack: 2,
+                      duration: { days: width > 991 ? 7 : 3 },
+                      slotLabelContent: ({ date, text }) => {
+                        return (
+                          <>
+                            <span className="font-size-min gird-time font-number">
+                              {text} {moment(date).format("A")}
+                            </span>
+                            <span className="font-size-min font-number w-55px d-block"></span>
+                          </>
+                        );
+                      },
+                      dayHeaderContent: ({ date, isToday, ...arg }) => {
+                        return (
+                          <div className="font-number">
+                            <div
+                              className={`date-mm ${isToday && "text-primary"}`}
+                            >
+                              {moment(date).format("ddd")}
+                            </div>
+                            <div
+                              className={`w-40px h-40px d-flex align-items-center justify-content-center rounded-circle date-dd ${isToday &&
+                                "bg-primary text-white"}`}
+                            >
+                              {moment(date).format("DD")}
+                            </div>
+                          </div>
+                        );
+                      },
+                      nowIndicator: true,
+                      now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                      scrollTime: moment(new Date()).format("HH:mm"),
+                      dateClick: ({ date }) => {
+                        if (isTelesales) return;
+                        setInitialValue({ ...initialValue, BookDate: date });
+                        onOpenModal();
+                      },
+                      slotMinTime: TimeOpen,
+                      slotMaxTime: TimeClose,
+                    },
+                    timeGridDay: {
+                      eventMaxStack: 8,
+                      slotLabelContent: ({ date, text }) => {
+                        return (
+                          <>
+                            <span className="font-size-min gird-time font-number">
+                              {text} {moment(date).format("A")}
+                            </span>
+                            <span className="font-size-min font-number w-55px d-block"></span>
+                          </>
+                        );
+                      },
+                      dayHeaderContent: ({ date, isToday, ...arg }) => {
+                        return (
+                          <div className="font-number">
+                            <div className={`date-mm text-center`}>
+                              {moment(date).format("ddd")}
+                            </div>
+                            <div
+                              className={`w-40px h-40px d-flex align-items-center justify-content-center rounded-circle date-dd`}
+                            >
+                              {moment(date).format("DD")}
+                            </div>
+                          </div>
+                        );
+                      },
+                      nowIndicator: true,
+                      now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                      scrollTime: moment(new Date()).format("HH:mm"),
+                      slotMinWidth: "50",
+                      dateClick: ({ date }) => {
+                        if (isTelesales) return;
+                        setInitialValue({ ...initialValue, BookDate: date });
+                        onOpenModal();
+                      },
+                      slotMinTime: TimeOpen,
+                      slotMaxTime: TimeClose,
+                    },
+                    resourceTimeGridDay: {
+                      dayMinWidth: 130,
+                      allDaySlot: false,
+                      type: "resourceTimeline",
+                      nowIndicator: true,
+                      now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                      scrollTime: moment(new Date()).format("HH:mm"),
+                      resourceAreaWidth: width > 768 ? "300px" : "200px",
+                      stickyHeaderDates: true,
+                      slotMinTime: TimeOpen,
+                      slotMaxTime: TimeClose,
+                      buttonText: "Nhân viên",
+                      resourceAreaHeaderContent: () => "Nhân viên",
+                      resourceLabelContent: ({ resource }) => {
+                        return (
+                          <div className="flex flex-col items-center">
+                            <div className="p-1 border rounded-full w-14 h-14 font-inter border-primary">
+                              <div className="cursor-pointer aspect-square">
+                                <img
+                                  className="object-cover object-top w-full h-full rounded-full"
+                                  src={toAbsoluteUser(
+                                    resource?._resource?.extendedProps?.photo,
+                                    "/"
+                                  )}
+                                  alt={resource._resource.title}
+                                  onError={(e) => {
+                                    if (
+                                      e.target.src !==
+                                      toAbsoluteUrl("/assets/images/blank.png")
+                                    ) {
+                                      e.target.src = toAbsoluteUrl(
+                                        "/assets/images/blank.png"
+                                      );
+                                    }
+                                  }}
+                                  onClick={() => {
+                                    let Photos = [
+                                      {
+                                        src: toAbsoluteUser(
+                                          resource?._resource?.extendedProps
+                                            ?.photo,
+                                          "/"
+                                        ),
+                                      },
+                                    ];
+                                    let newPhotoJSON = resource?._resource
+                                      ?.extendedProps?.source?.PhotoJSON
+                                      ? JSON.parse(
+                                          resource?._resource?.extendedProps
+                                            ?.source?.PhotoJSON
+                                        )
+                                      : null;
+                                    if (newPhotoJSON) {
+                                      Photos = [
+                                        ...Photos,
+                                        ...newPhotoJSON.map((x) => ({
+                                          src: toAbsoluteUser(
+                                            x,
+                                            "/Upload/image/"
+                                          ),
+                                        })),
+                                      ];
+                                    }
+                                    if (Photos && Photos.length > 1) {
+                                      window.top?.$?.magnificPopup &&
+                                        window.top?.$?.magnificPopup.open({
+                                          items: Photos,
+                                          gallery: {
+                                            enabled: true,
+                                          },
+                                          type: "image",
+                                        });
+                                    } else {
+                                      window.top?.$?.magnificPopup &&
+                                        window.top?.$?.magnificPopup.open({
+                                          items: {
+                                            src: toAbsoluteUser(
+                                              resource?._resource?.extendedProps
+                                                ?.photo,
+                                              "/"
+                                            ),
+                                          },
+                                          type: "image",
+                                        });
+                                    }
+                                  }}
+                                />
+                              </div>
+
+                              {/* <div className="flex items-center justify-center w-full h-full rounded-full bg-[#e2f0ff] text-primary">
                               T
                             </div> */}
+                            </div>
+                            <div className="mt-2 capitalize title-staff">
+                              {resource._resource.title}
+                            </div>
                           </div>
-                          <div className="mt-2 capitalize title-staff">
-                            {resource._resource.title}
-                          </div>
-                        </div>
-                      );
-                    },
-                    // resourceLabelContent: ({ resource }) => {
-                    //   return (
-                    //     <div className="d-flex align-items-center flex-column">
-
-                    //       <div className="capitalize title-staff">
-                    //         {resource._resource.title}
-                    //       </div>
-                    //     </div>
-                    //   );
-                    // },
-                    slotLabelContent: ({ date, text }) => {
-                      return (
-                        <>
-                          <span className="font-size-min gird-time font-number">
-                            {text} {moment(date).format("A")}
-                          </span>
-                          <span className="font-size-min font-number w-55px d-block"></span>
-                        </>
-                      );
-                    },
-                    dateClick: ({ resource, jsEvent, date }) => {
-                      if (
-                        isTelesales ||
-                        jsEvent.target.classList.contains("fc-no-event")
-                      )
-                        return;
-                      setInitialValue({
-                        ...initialValue,
-                        BookDate: date,
-                        UserServiceIDs:
-                          Number(resource._resource?.id) > 0
-                            ? [
-                                {
-                                  value: resource._resource.id,
-                                  label: resource._resource.title,
-                                },
-                              ]
-                            : [],
-                      });
-                      onOpenModal();
-                    },
-                  },
-                  resourceTimelineDay: {
-                    type: "resourceTimelineDay",
-                    nowIndicator: true,
-                    now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
-                    scrollTime: moment(new Date()).format("HH:mm"),
-                    resourceAreaWidth: width > 768 ? "220px" : "150px",
-                    slotMinWidth: 80,
-                    stickyHeaderDates: true,
-                    slotMinTime: TimeOpen,
-                    slotMaxTime: TimeClose,
-                    buttonText: "Phòng",
-                    resourceAreaHeaderContent: () => "Phòng",
-                    slotLabelContent: ({ date, text }) => {
-                      return (
-                        <>
-                          <span className="gird-time font-number text-primary">
-                            {moment(date).format("HH:mm")}
-                          </span>
-                          <span className="font-size-min font-number w-55px d-block"></span>
-                        </>
-                      );
-                    },
-                  },
-                  listWeek: {
-                    type: "listWeek",
-                    scrollTime: moment(new Date()).format("HH:mm"),
-                    now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
-                  },
-                }}
-                plugins={[
-                  dayGridPlugin,
-                  interactionPlugin,
-                  timeGridPlugin,
-                  listPlugin,
-                  resourceTimeGridPlugin,
-                  resourceTimelinePlugin,
-                  scrollGridPlugin,
-                ]}
-                resourceGroupField="RoomTitle"
-                resources={
-                  topCalendar?.type?.value === "resourceTimelineDay"
-                    ? ListRooms.data
-                    : StaffFull
-                }
-                resourceOrder={
-                  topCalendar?.type?.value === "resourceTimelineDay"
-                    ? "-RoomTitle"
-                    : "order"
-                }
-                resourceGroupLabelContent={(arg) => {
-                  return { html: `${arg.groupValue.slice(1)}` };
-                }}
-                events={ListCalendars?.data || []}
-                // headerToolbar={{
-                //   left: "prev,next today",
-                //   center: "title",
-                //   right: isRooms
-                //     ? "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay,resourceTimelineDay"
-                //     : "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay", //resourceTimeGridDay
-                // }}
-                headerToolbar={false}
-                //selectable={true}
-                selectMirror={true}
-                moreLinkContent={({ num, view }) => {
-                  if (
-                    view.type === "timeGridWeek" ||
-                    view.type === "timeGridDay"
-                  ) {
-                    return <>+ {num}</>;
-                  }
-                  return <>Xem thêm + {num}</>;
-                }}
-                eventClick={({ event, el }) => {
-                  const { _def, extendedProps } = event;
-                  if (_def.extendedProps.os && isTelesales) return;
-                  if (extendedProps?.noEvent) return;
-
-                  if (_def.extendedProps.os) {
-                    if (
-                      topCalendar?.type?.value === "resourceTimelineDay" &&
-                      _def.extendedProps.os?.Status === "done" &&
-                      _def.extendedProps.os?.RoomStatus !== "done"
-                    ) {
-                      let { ID, RoomID } = _def.extendedProps.os;
-                      Swal.fire({
-                        title: "Bàn đã dọn dẹp xong ?",
-                        text:
-                          "Xác nhận bàn đã dọn dẹp. Có thể tiếp nhận khách hàng !",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: "Xác nhận",
-                        cancelButtonText: "Huỷ",
-                        showLoaderOnConfirm: true,
-                        preConfirm: () =>
-                          new Promise((resolve, reject) => {
-                            CalendarCrud.updateRoom({
-                              rooms: [
-                                {
-                                  ID: ID,
-                                  RoomID: RoomID,
-                                  RoomStatus: "done",
-                                },
-                              ],
-                            }).then(() => onRefresh(() => resolve()));
-                          }),
-                        allowOutsideClick: () => !Swal.isLoading(),
-                      }).then((result) => {
-                        if (result.isConfirmed)
-                          toast.success("Xác nhận thành công.");
-                      });
-                    } else {
-                      window?.top?.BANGLICH_BUOI &&
-                        window?.top?.BANGLICH_BUOI(
-                          _def.extendedProps,
-                          onRefresh
                         );
-                    }
-                    return;
+                      },
+                      // resourceLabelContent: ({ resource }) => {
+                      //   return (
+                      //     <div className="d-flex align-items-center flex-column">
+
+                      //       <div className="capitalize title-staff">
+                      //         {resource._resource.title}
+                      //       </div>
+                      //     </div>
+                      //   );
+                      // },
+                      slotLabelContent: ({ date, text }) => {
+                        return (
+                          <>
+                            <span className="font-size-min gird-time font-number">
+                              {text} {moment(date).format("A")}
+                            </span>
+                            <span className="font-size-min font-number w-55px d-block"></span>
+                          </>
+                        );
+                      },
+                      dateClick: ({ resource, jsEvent, date }) => {
+                        if (
+                          isTelesales ||
+                          jsEvent.target.classList.contains("fc-no-event")
+                        )
+                          return;
+                        setInitialValue({
+                          ...initialValue,
+                          BookDate: date,
+                          UserServiceIDs:
+                            Number(resource._resource?.id) > 0
+                              ? [
+                                  {
+                                    value: resource._resource.id,
+                                    label: resource._resource.title,
+                                  },
+                                ]
+                              : [],
+                        });
+                        onOpenModal();
+                      },
+                    },
+                    resourceTimelineDay: {
+                      type: "resourceTimelineDay",
+                      nowIndicator: true,
+                      now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                      scrollTime: moment(new Date()).format("HH:mm"),
+                      resourceAreaWidth: width > 768 ? "220px" : "150px",
+                      slotMinWidth: 80,
+                      stickyHeaderDates: true,
+                      slotMinTime: TimeOpen,
+                      slotMaxTime: TimeClose,
+                      buttonText: "Phòng",
+                      resourceAreaHeaderContent: () => "Phòng",
+                      slotLabelContent: ({ date, text }) => {
+                        return (
+                          <>
+                            <span className="gird-time font-number text-primary">
+                              {moment(date).format("HH:mm")}
+                            </span>
+                            <span className="font-size-min font-number w-55px d-block"></span>
+                          </>
+                        );
+                      },
+                    },
+                    listWeek: {
+                      type: "listWeek",
+                      scrollTime: moment(new Date()).format("HH:mm"),
+                      now: moment(new Date()).format("YYYY-MM-DD HH:mm"),
+                    },
+                  }}
+                  plugins={[
+                    dayGridPlugin,
+                    interactionPlugin,
+                    timeGridPlugin,
+                    listPlugin,
+                    resourceTimeGridPlugin,
+                    resourceTimelinePlugin,
+                    scrollGridPlugin,
+                  ]}
+                  resourceGroupField="RoomTitle"
+                  resources={
+                    topCalendar?.type?.value === "resourceTimelineDay"
+                      ? ListRooms.data
+                      : StaffFull
                   }
-                  setInitialValue(_def.extendedProps);
-                  onOpenModal();
-                }}
-                eventContent={(arg) => {
-                  const { event, view } = arg;
-                  const { extendedProps } = event._def;
-                  let italicEl = document.createElement("div");
-                  italicEl.classList.add("fc-content");
-                  let AmountPeople = 0;
-                  if (extendedProps.Desc) {
-                    let descSplit = extendedProps.Desc.split("\n");
-                    for (let i of descSplit) {
-                      if (i.includes("Số lượng khách:")) {
-                        let SL = Number(i.match(/\d+/)[0]);
-                        AmountPeople = Number(SL);
+                  resourceOrder={
+                    topCalendar?.type?.value === "resourceTimelineDay"
+                      ? "-RoomTitle"
+                      : "order"
+                  }
+                  resourceGroupLabelContent={(arg) => {
+                    return { html: `${arg.groupValue.slice(1)}` };
+                  }}
+                  events={ListCalendars?.data || []}
+                  // headerToolbar={{
+                  //   left: "prev,next today",
+                  //   center: "title",
+                  //   right: isRooms
+                  //     ? "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay,resourceTimelineDay"
+                  //     : "dayGridMonth,timeGridWeek,timeGridDay,listWeek,resourceTimeGridDay", //resourceTimeGridDay
+                  // }}
+                  headerToolbar={false}
+                  //selectable={true}
+                  selectMirror={true}
+                  moreLinkContent={({ num, view }) => {
+                    if (
+                      view.type === "timeGridWeek" ||
+                      view.type === "timeGridDay"
+                    ) {
+                      return <>+ {num}</>;
+                    }
+                    return <>Xem thêm + {num}</>;
+                  }}
+                  eventClick={({ event, el }) => {
+                    const { _def, extendedProps } = event;
+                    if (_def.extendedProps.os && isTelesales) return;
+                    if (extendedProps?.noEvent) return;
+
+                    if (_def.extendedProps.os) {
+                      if (
+                        topCalendar?.type?.value === "resourceTimelineDay" &&
+                        _def.extendedProps.os?.Status === "done" &&
+                        _def.extendedProps.os?.RoomStatus !== "done"
+                      ) {
+                        let { ID, RoomID } = _def.extendedProps.os;
+                        Swal.fire({
+                          title: "Bàn đã dọn dẹp xong ?",
+                          text:
+                            "Xác nhận bàn đã dọn dẹp. Có thể tiếp nhận khách hàng !",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#3085d6",
+                          cancelButtonColor: "#d33",
+                          confirmButtonText: "Xác nhận",
+                          cancelButtonText: "Huỷ",
+                          showLoaderOnConfirm: true,
+                          preConfirm: () =>
+                            new Promise((resolve, reject) => {
+                              CalendarCrud.updateRoom({
+                                rooms: [
+                                  {
+                                    ID: ID,
+                                    RoomID: RoomID,
+                                    RoomStatus: "done",
+                                  },
+                                ],
+                              }).then(() => onRefresh(() => resolve()));
+                            }),
+                          allowOutsideClick: () => !Swal.isLoading(),
+                        }).then((result) => {
+                          if (result.isConfirmed)
+                            toast.success("Xác nhận thành công.");
+                        });
+                      } else {
+                        window?.top?.BANGLICH_BUOI &&
+                          window?.top?.BANGLICH_BUOI(
+                            _def.extendedProps,
+                            onRefresh
+                          );
                       }
+                      return;
                     }
-                  }
-                  if (
-                    typeof extendedProps !== "object" ||
-                    Object.keys(extendedProps).length > 0
-                  ) {
-                    let Room = extendedProps?.TreatmentJson
-                      ? JSON.parse(extendedProps?.TreatmentJson)
-                      : null;
-                    if (view.type !== "listWeek") {
-                      italicEl.innerHTML = `<div class="fc-title${
-                        topCalendar?.type?.value === "resourceTimelineDay"
-                          ? " flex justify-between"
-                          : ""
-                      }">
+                    setInitialValue(_def.extendedProps);
+                    onOpenModal();
+                  }}
+                  eventContent={(arg) => {
+                    const { event, view } = arg;
+                    const { extendedProps } = event._def;
+                    let italicEl = document.createElement("div");
+                    italicEl.classList.add("fc-content");
+                    // let AmountPeople = 0;
+                    // if (extendedProps.Desc) {
+                    //   let descSplit = extendedProps.Desc.split("\n");
+                    //   for (let i of descSplit) {
+                    //     if (i.includes("Số lượng khách:")) {
+                    //       let SL = Number(i.match(/\d+/)[0]);
+                    //       AmountPeople = Number(SL);
+                    //     }
+                    //   }
+                    // }
+                    if (
+                      typeof extendedProps !== "object" ||
+                      Object.keys(extendedProps).length > 0
+                    ) {
+                      // let Room = extendedProps?.TreatmentJson
+                      //   ? JSON.parse(extendedProps?.TreatmentJson)
+                      //   : null;
+                      if (view.type !== "listWeek") {
+                        italicEl.innerHTML = `<div class="fc-title${
+                          topCalendar?.type?.value === "resourceTimelineDay"
+                            ? " flex justify-between"
+                            : ""
+                        }">
                       <div class="${
                         topCalendar?.type?.value === "resourceTimelineDay"
                           ? ""
@@ -2448,114 +2496,123 @@ function CalendarMassagePage(props) {
                         }">${renderColor(extendedProps)}</div>
                       </div>
                   </div>`;
-                    } else {
-                      italicEl.innerHTML = `<div class="fc-title">
+                      } else {
+                        italicEl.innerHTML = `<div class="fc-title">
                     <div><span class="fullname">${
                       extendedProps?.AtHome
                         ? `<i class="fas fa-home font-size-xs"></i>`
                         : ""
                     } ${
-                        extendedProps?.Star ? `(${extendedProps.Star})` : ""
-                      } ${extendedProps?.MemberCurrent.FullName ||
-                        "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
-                        ?.MemberCurrent?.MobilePhone ||
-                        "Chưa xác định"}</span><span> - ${
-                        extendedProps?.RootTitles
-                          ? extendedProps?.RootMinutes ??
-                            extendedProps?.os?.RootMinutes ??
-                            60
-                          : 30
-                      }p - ${extendedProps?.RootTitles ||
-                        "Không xác định"}</span> <span class="${!extendedProps?.isBook &&
-                        "d-none"}">- ${extendedProps?.BookCount?.Done ||
-                        0}/${extendedProps?.BookCount?.Total || 0}</span></div>
+                          extendedProps?.Star ? `(${extendedProps.Star})` : ""
+                        } ${extendedProps?.MemberCurrent.FullName ||
+                          "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
+                          ?.MemberCurrent?.MobilePhone ||
+                          "Chưa xác định"}</span><span> - ${
+                          extendedProps?.RootTitles
+                            ? extendedProps?.RootMinutes ??
+                              extendedProps?.os?.RootMinutes ??
+                              60
+                            : 30
+                        }p - ${extendedProps?.RootTitles ||
+                          "Không xác định"}</span> <span class="${!extendedProps?.isBook &&
+                          "d-none"}">- ${extendedProps?.BookCount?.Done ||
+                          0}/${extendedProps?.BookCount?.Total ||
+                          0}</span></div>
                   </div>`;
-                    }
-                  } else {
-                    italicEl.innerHTML = `<div class="fc-title">
+                      }
+                    } else {
+                      italicEl.innerHTML = `<div class="fc-title">
                     Không có lịch
                   </div>`;
-                  }
-                  let arrayOfDomNodes = [italicEl];
-                  return {
-                    domNodes: arrayOfDomNodes,
-                  };
-                }}
-                dayHeaderDidMount={(arg) => {
-                  const { view, el, isToday, date } = arg;
-                  if (view.type === "listWeek") {
-                    el.querySelector(".fc-list-day-text").innerHTML = `
+                    }
+                    let arrayOfDomNodes = [italicEl];
+                    return {
+                      domNodes: arrayOfDomNodes,
+                    };
+                  }}
+                  dayHeaderDidMount={(arg) => {
+                    const { view, el, isToday, date } = arg;
+                    if (view.type === "listWeek") {
+                      el.querySelector(".fc-list-day-text").innerHTML = `
                     <div class="d-flex align-items-center">
                       <span class="font-number text-date ${isToday &&
                         "bg-primary text-white"}">${moment(date).format(
-                      "DD"
-                    )}</span>
+                        "DD"
+                      )}</span>
                       <span class="font-number text-date-full pl-2">THG ${moment(
                         date
                       ).format("MM")}, ${moment(date).format("ddd")}</span>
                     </div>
                   `;
-                    el.querySelector(".fc-list-day-side-text").innerHTML = "";
-                  }
-                }}
-                eventDidMount={(arg) => {
-                  const { view } = arg;
+                      el.querySelector(".fc-list-day-side-text").innerHTML = "";
+                    }
+                  }}
+                  eventDidMount={(arg) => {
+                    const { view } = arg;
 
-                  if (view.type === "listWeek") {
-                    let today = document.querySelector(".fc-day-today");
-                    let elScroll =
-                      today?.parentElement?.parentElement?.parentElement;
-                    if (elScroll) elScroll.scroll(0, today.offsetTop);
-                  }
-                }}
-                datesSet={({ view, start, end, ...arg }) => {
-                  //let calendarElm = document.querySelectorAll(".fc-view-harness");
-                  // const newFilters = {
-                  //   ...filters,
-                  //   StockID: AuthCrStockID,
-                  // };
+                    if (view.type === "listWeek") {
+                      let today = document.querySelector(".fc-day-today");
+                      let elScroll =
+                        today?.parentElement?.parentElement?.parentElement;
+                      if (elScroll) elScroll.scroll(0, today.offsetTop);
+                    }
+                  }}
+                  datesSet={({ view, start, end, ...arg }) => {
+                    //let calendarElm = document.querySelectorAll(".fc-view-harness");
+                    // const newFilters = {
+                    //   ...filters,
+                    //   StockID: AuthCrStockID,
+                    // };
 
-                  // if (view.type === "dayGridMonth") {
-                  //   const monthCurrent = moment(end).subtract(1, "month");
-                  //   const startOfMonth = moment(monthCurrent)
-                  //     .startOf("month")
-                  //     .format("YYYY-MM-DD");
-                  //   const endOfMonth = moment(monthCurrent)
-                  //     .endOf("month")
-                  //     .format("YYYY-MM-DD");
-                  //   newFilters.From = startOfMonth;
-                  //   newFilters.To = endOfMonth;
-                  // }
-                  // if (
-                  //   view.type === "timeGridWeek" ||
-                  //   view.type === "listWeek"
-                  // ) {
-                  //   newFilters.From = moment(start).format("YYYY-MM-DD");
-                  //   newFilters.To = moment(end)
-                  //     .subtract(1, "days")
-                  //     .format("YYYY-MM-DD");
-                  // }
-                  // if (view.type === "timeGridDay") {
-                  //   newFilters.From = moment(start).format("YYYY-MM-DD");
-                  //   newFilters.To = moment(start).format("YYYY-MM-DD");
-                  // }
-                  // if (view.type === "resourceTimeGridDay") {
-                  //   newFilters.From = moment(start).format("YYYY-MM-DD");
-                  //   newFilters.To = moment(start).format("YYYY-MM-DD");
-                  // }
-                  // setFilters(newFilters);
-                  if (calendarRef?.current) {
-                    let calendarApi = calendarRef.current.getApi();
-                    setHeaderTitle(
-                      calendarApi.currentDataManager.data?.viewTitle
-                    );
+                    // if (view.type === "dayGridMonth") {
+                    //   const monthCurrent = moment(end).subtract(1, "month");
+                    //   const startOfMonth = moment(monthCurrent)
+                    //     .startOf("month")
+                    //     .format("YYYY-MM-DD");
+                    //   const endOfMonth = moment(monthCurrent)
+                    //     .endOf("month")
+                    //     .format("YYYY-MM-DD");
+                    //   newFilters.From = startOfMonth;
+                    //   newFilters.To = endOfMonth;
+                    // }
+                    // if (
+                    //   view.type === "timeGridWeek" ||
+                    //   view.type === "listWeek"
+                    // ) {
+                    //   newFilters.From = moment(start).format("YYYY-MM-DD");
+                    //   newFilters.To = moment(end)
+                    //     .subtract(1, "days")
+                    //     .format("YYYY-MM-DD");
+                    // }
+                    // if (view.type === "timeGridDay") {
+                    //   newFilters.From = moment(start).format("YYYY-MM-DD");
+                    //   newFilters.To = moment(start).format("YYYY-MM-DD");
+                    // }
+                    // if (view.type === "resourceTimeGridDay") {
+                    //   newFilters.From = moment(start).format("YYYY-MM-DD");
+                    //   newFilters.To = moment(start).format("YYYY-MM-DD");
+                    // }
+                    // setFilters(newFilters);
+                    if (calendarRef?.current) {
+                      let calendarApi = calendarRef.current.getApi();
+                      setHeaderTitle(
+                        calendarApi.currentDataManager.data?.viewTitle
+                      );
+                    }
+                  }}
+                  noEventsContent={() =>
+                    ListCalendars.isLoading ? <></> : "Không có dữ liệu"
                   }
-                }}
-                noEventsContent={() =>
-                  ListCalendars.isLoading ? <></> : "Không có dữ liệu"
-                }
+                />
+              </div>
+            )}
+
+            {topCalendar?.type?.value === "resourceCurrentDay" && (
+              <MassageResourceCurrentDay
+                setInitialValue={(val) => setInitialValue(val)}
+                onOpenModal={onOpenModal}
               />
-            </div>
+            )}
           </div>
         </div>
       </div>
