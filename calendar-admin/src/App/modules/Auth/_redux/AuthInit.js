@@ -155,7 +155,7 @@ function AuthInit({ isConfig, children }) {
             ],
           },
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjAxNDciLCJuYmYiOjE3NDk4MDU0ODMsImV4cCI6MTgzNjIwNTQ4MywiaWF0IjoxNzQ5ODA1NDgzfQ.AUyP04Y42DhZJ6YK4cAcVVOx7dDeU5CfwYC2C83Eqec",
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjAxNzMiLCJuYmYiOjE3NTAyNjM4NTAsImV4cCI6MTgzNjY2Mzg1MCwiaWF0IjoxNzUwMjYzODUwfQ.NEAo555e6I6ULzPdTshNGjRc80taaCM1NlML003kf4g',
         };
         window.GlobalConfig = {
           APP: {
@@ -166,6 +166,7 @@ function AuthInit({ isConfig, children }) {
             SL_khach: true,
           },
           Admin: {
+            TextToSpeech: "zalo",
             PosActiveCalendar: "",
             lop_hoc_diem: 10,
             kpiFinish: "Khách đến làm dịch vụ",

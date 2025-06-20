@@ -94,10 +94,12 @@ const getBooking = ({
   StatusBook,
   StatusAtHome,
   Tags = "",
-  IsMassage = false
+  IsMassage = false,
 }) => {
   return axiosClient.get(
-    `/api/v3/mbookadmin?cmd=getbooks&memberid=${MemberID}&from=${From}&to=${To}&stockid=${StockID}&status=${Status}&UserServiceIDs=${UserServiceIDs}&StatusMember=${StatusMember}&StatusBook=${StatusBook}&StatusAtHome=${StatusAtHome}&Tags=${Tags}${IsMassage ? '&ismassage=true': ''}` //&simulate=1
+    `/api/v3/mbookadmin?cmd=getbooks&memberid=${MemberID}&from=${From}&to=${To}&stockid=${StockID}&status=${Status}&UserServiceIDs=${UserServiceIDs}&StatusMember=${StatusMember}&StatusBook=${StatusBook}&StatusAtHome=${StatusAtHome}&Tags=${Tags}${
+      IsMassage ? "&ismassage=true" : ""
+    }` //&simulate=1
   );
 };
 
@@ -234,16 +236,32 @@ const clientsId = ({ Key = "", pi = 1, ps = 15 }) =>
   );
 
 const getReportOverallSales = (data) => {
-  return axiosClient.post(`/api/v3/r23/ban-hang/doanh-so-tong-quan`, JSON.stringify(data));
+  return axiosClient.post(
+    `/api/v3/r23/ban-hang/doanh-so-tong-quan`,
+    JSON.stringify(data)
+  );
 };
 
 const getReportSellOut = (data) => {
-  return axiosClient.post(`/api/v3/r23/ban-hang/doanh-so-chi-tiet`, JSON.stringify(data));
+  return axiosClient.post(
+    `/api/v3/r23/ban-hang/doanh-so-chi-tiet`,
+    JSON.stringify(data)
+  );
 };
 
 const getReportService = (data) => {
-  return axiosClient.post(`/api/v3/r23/dich-vu/danh-sach`, JSON.stringify(data));
+  return axiosClient.post(
+    `/api/v3/r23/dich-vu/danh-sach`,
+    JSON.stringify(data)
+  );
 };
+
+const getOsTimeisUp = () => {
+  return axiosClient.get("/api/v3/OrderService25@TimeisUp");
+};
+
+const urlAction = (body) =>
+  axiosClient.post(`/api/v3/UrlAction@invoke`, JSON.stringify(body));
 
 const CalendarCrud = {
   getMembers,
@@ -287,6 +305,8 @@ const CalendarCrud = {
   clientsId,
   getReportOverallSales,
   getReportSellOut,
-  getReportService
+  getReportService,
+  getOsTimeisUp,
+  urlAction
 };
 export default CalendarCrud;

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import moment from "moment";
 import CalendarCrud from "../_redux/CalendarCrud";
 import clsx from "clsx";
@@ -9,17 +9,20 @@ import {
   toAbsoluteUser,
 } from "../../../../helpers/AssetsHelpers";
 
-window.MassageResourceIndex = 0;
-
 function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
-  const { AuthCrStockID, GTimeOpen, GTimeClose, checkout_time } = useSelector(
-    ({ Auth, JsonConfig }) => ({
-      AuthCrStockID: Auth.CrStockID,
-      GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
-      GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
-      checkout_time: Boolean(JsonConfig?.Admin?.checkout_time),
-    })
-  );
+  const {
+    AuthCrStockID,
+    GTimeOpen,
+    GTimeClose,
+    checkout_time,
+    TextToSpeech,
+  } = useSelector(({ Auth, JsonConfig }) => ({
+    AuthCrStockID: Auth.CrStockID,
+    GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
+    GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
+    checkout_time: Boolean(JsonConfig?.Admin?.checkout_time),
+    TextToSpeech: JsonConfig?.Admin?.TextToSpeech,
+  }));
 
   const [filters] = useState({
     Status: ["XAC_NHAN", "DANG_THUC_HIEN"],
@@ -33,6 +36,7 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
     StatusAtHome: "",
     Tags: "",
   });
+  const [enabled, setEnabled] = useState(false);
 
   const [TimeOpen] = useState(GTimeOpen);
   const [TimeClose] = useState(GTimeClose);
@@ -455,21 +459,12 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
     keepPreviousData: true,
   });
 
-  // const { data: answers } = useQuery(
-  //   ["fetchData"],
-  //   () => {
-  //     window.MassageResourceIndex = window.MassageResourceIndex + 1;
-  //     return window.MassageResourceIndex;
-  //   },
-  //   {
-  //     onSuccess: (rs) => {
-  //       console.log(rs);
-  //     },
-  //     refetchInterval: (data) => {
-  //       return data ? 1000 : false;
-  //     },
-  //   }
-  // );
+  const textSpeechMutation = useMutation({
+    mutationFn: async (body) => {
+      let data = await CalendarCrud.urlAction(body);
+      return data;
+    },
+  });
 
   const getClassWrap = (item) => {
     if (item?.Offlines && item.Offlines.length > 0) {
