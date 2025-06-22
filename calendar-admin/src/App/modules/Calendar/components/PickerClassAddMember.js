@@ -30,6 +30,7 @@ function PickerClassAddMember({
   let [initialValues, setInitialValues] = useState({
     Member: null,
     Service: null,
+    IsAllService: false
   });
 
   useEffect(() => {
@@ -185,6 +186,7 @@ function PickerClassAddMember({
                   values,
                   handleBlur,
                   setFieldValue,
+                  handleChange
                 } = formikProps;
 
                 return (
@@ -235,10 +237,28 @@ function PickerClassAddMember({
                         </div>
                       </div>
                       <div className="mb-3.5 last:mb-0">
-                        <div className="mb-px text-gray-700">
-                          Thẻ liệu trình
+                        <div className="flex items-center justify-between">
+                          <div className="mb-px text-gray-700">
+                            Thẻ liệu trình
+                          </div>
+                          <label className="inline-flex items-center cursor-pointer">
+                            <input
+                              name="IsAllService"
+                              type="checkbox"
+                              className="sr-only peer"
+                              checked={values.IsAllService}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                            />
+                            <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:!bg-primary dark:peer-checked:bg-blue-600" />
+                            <span className="text-[13px] text-gray-700 ms-2 dark:text-gray-300">
+                              Tất cả thẻ
+                            </span>
+                          </label>
                         </div>
+
                         <SelectOsMember
+                          IsAllService={values.IsAllService}
                           callback={(val) => {
                             setFieldValue("Service", val);
                           }}

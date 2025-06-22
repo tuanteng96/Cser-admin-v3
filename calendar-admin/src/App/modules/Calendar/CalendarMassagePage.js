@@ -468,6 +468,8 @@ function CalendarMassagePage(props) {
     },
   });
 
+  window.top.OsRooms = ListRooms?.data || []
+
   const SettingCalendar = useQuery({
     queryKey: ["SettingCalendar", AuthCrStockID],
     queryFn: async () => {

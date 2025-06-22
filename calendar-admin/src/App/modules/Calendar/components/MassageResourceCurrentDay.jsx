@@ -36,7 +36,6 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
     StatusAtHome: "",
     Tags: "",
   });
-  const [enabled, setEnabled] = useState(false);
 
   const [TimeOpen] = useState(GTimeOpen);
   const [TimeClose] = useState(GTimeClose);
@@ -465,6 +464,72 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
       return data;
     },
   });
+
+  // const { data: OsTimeisUp } = useQuery({
+  //   queryKey: ["OsTimeisUp"],
+  //   queryFn: async () => {
+  //     let rs = await CalendarCrud.getOsTimeisUp();
+  //     return rs;
+  //   },
+  //   onSuccess: async (rs) => {
+  //     console.log(rs);
+  //     let src = "";
+  //     let text = "";
+  //     // if (TextToSpeech.toUpperCase() === "GOOGLE") {
+  //     //   let rsSrcGoogle = await textSpeechMutation.mutateAsync({
+  //     //     url: "https://texttospeech.googleapis.com/v1/text:synthesize",
+  //     //     headers: {},
+  //     //     param: {
+  //     //       key: "{KEY_API_TEXT_TO_SPEECH}",
+  //     //     },
+  //     //     method: "POST", //"GET",
+  //     //     include: "ENV",
+  //     //     body: {
+  //     //       audioConfig: {
+  //     //         audioEncoding: "LINEAR16",
+  //     //         effectsProfileId: ["small-bluetooth-speaker-class-device"],
+  //     //         pitch: 0,
+  //     //         speakingRate: 1,
+  //     //       },
+  //     //       input: {
+  //     //         text: text,
+  //     //       },
+  //     //       voice: {
+  //     //         languageCode: "vi-VN",
+  //     //         name: "vi-VN-Wavenet-D",
+  //     //       },
+  //     //     },
+  //     //     resultType: "json",
+  //     //   });
+  //     // }
+  //     // if (TextToSpeech.toUpperCase() === "ZALO") {
+  //     //   let rsSrcZalo = await textSpeechMutation.mutate({
+  //     //     url: "https://api.zalo.ai/v1/tts/synthesize",
+  //     //     headers: {
+  //     //       "Content-Type": "application/x-www-form-urlencoded",
+  //     //       apikey: "[KEY_API_TEXT_TO_SPEECH_ZALO]",
+  //     //     },
+  //     //     method: "POST", //"GET",
+  //     //     include: "ENV",
+  //     //     body: {
+  //     //       speaker_id: "4",
+  //     //       speed: "1",
+  //     //       input: text,
+  //     //     },
+  //     //     resultType: "json",
+  //     //   });
+  //     // }
+  //     // if(audio) {
+  //     //   audio?.pause()
+  //     // }
+  //     // audio = new Audio("https://cserbeauty.com/Admin/BookAdmin/mp3-demo.mp3");
+  //     // audio.play();
+  //   },
+  //   refetchInterval: (data) => {
+  //     return data ? 5000 : false;
+  //   },
+  //   //enabled: enabled,
+  // });
 
   const getClassWrap = (item) => {
     if (item?.Offlines && item.Offlines.length > 0) {

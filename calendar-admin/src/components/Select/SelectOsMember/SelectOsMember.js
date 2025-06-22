@@ -10,14 +10,15 @@ function SelectOsMember({
   isDisabled,
   DateFrom,
   callback,
+  IsAllService = false,
   ...props
 }) {
   const { isLoading, data } = useQuery({
-    queryKey: ["CalendarClassMembers", { Member }],
+    queryKey: ["CalendarClassMembers", { Member, IsAllService }],
     queryFn: async () => {
       const { lst } = await CalendarCrud.getOsMemberCalendar({
         MemberIDs: Member?.value ? [Member?.value] : [],
-        ProdIDs: ProdIDs ? ProdIDs.split(",") : [],
+        ProdIDs: !IsAllService && ProdIDs ? ProdIDs.split(",") : [],
         Date: DateFrom ? moment(DateFrom).format("YYYY-MM-DD") : null,
       });
       return lst
