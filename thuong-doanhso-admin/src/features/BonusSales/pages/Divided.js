@@ -33,6 +33,22 @@ function Divided({ OrderInfo, onSubmit, loading }) {
   }, [OrderInfo]);
 
   const getValueHH = ({ item, user }) => {
+    if (typeof item.initialRose === "object") {
+      if (
+        item?.prodBonus?.BonusSaleLevels &&
+        item?.prodBonus?.BonusSaleLevels.some((x) => x.Salary)
+      ) {
+        let { BonusSaleLevels } = item?.prodBonus;
+        let index = BonusSaleLevels.findIndex((x) => x.Level === user.level);
+        let Salary = 0;
+        if (index > -1) {
+          Salary = BonusSaleLevels[index].Salary;
+        }
+        return Salary * item.Qty;
+      }
+      return item.prodBonus.BonusSale * item.Qty;
+    }
+
     if (
       item?.prodBonus?.BonusSaleLevels &&
       item?.prodBonus?.BonusSaleLevels.some((x) => x.Salary)
@@ -266,7 +282,9 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       onBlur={handleBlur}
                                       disabled={
                                         (window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao && UserID !== 1) || isHiddenPrice
+                                          ?.thuong_ds_nang_cao &&
+                                          UserID !== 1) ||
+                                        isHiddenPrice
                                       }
                                     />
                                   </div>
@@ -312,7 +330,9 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       onBlur={handleBlur}
                                       disabled={
                                         (window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao && UserID !== 1) || isHiddenPrice
+                                          ?.thuong_ds_nang_cao &&
+                                          UserID !== 1) ||
+                                        isHiddenPrice
                                       }
                                     />
                                   </div>

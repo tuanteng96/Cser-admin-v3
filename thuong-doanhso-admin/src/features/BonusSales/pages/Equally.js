@@ -19,6 +19,27 @@ function Equally({ OrderInfo, onSubmit, loading }) {
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
   const getValueHH = ({ user, item, Type }) => {
+    if (typeof item.initialRose === "object") {
+      if (
+        item?.prodBonus?.BonusSaleLevels &&
+        item?.prodBonus?.BonusSaleLevels.some((x) => x.Salary) &&
+        Type.value !== "KY_THUAT_VIEN"
+      ) {
+        
+        let { BonusSaleLevels } = item?.prodBonus;
+        let index = BonusSaleLevels.findIndex((x) => x.Level === user.level);
+        let Salary = 0;
+        if (index > -1) {
+          Salary = BonusSaleLevels[index].Salary;
+        }
+        return Salary * item.Qty;
+      }
+      if (Type.value !== "KY_THUAT_VIEN") {
+        return item.prodBonus.BonusSale2 * item.Qty
+      };
+      return item.prodBonus.BonusSale * item.Qty;
+    }
+
     if (
       item?.prodBonus?.BonusSaleLevels &&
       item?.prodBonus?.BonusSaleLevels.some((x) => x.Salary) &&

@@ -114,12 +114,19 @@ const BonusSales = () => {
         const newData = {
           ...data,
           nhan_vien: newStaff,
-          oiItems: data.oiItems.map((item) => ({
-            ...item,
-            label: item.ProdTitle,
-            value: item.ID,
-          })),
+          oiItems: data.oiItems.map((item) => {
+            let obj = {
+              ...item,
+              label: item.ProdTitle,
+              value: item.ID,
+            };
+            if(item.gia_tri_thanh_toan === "NaN") {
+              obj.initialRose = item.prodBonus
+            }
+            return obj;
+          }),
         };
+        
         setOrderInfo(newData);
         callback && callback();
       })
