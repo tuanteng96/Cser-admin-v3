@@ -260,6 +260,10 @@ const getOsTimeisUp = () => {
   return axiosClient.get("/api/v3/OrderService25@TimeisUp");
 };
 
+const getAllWorkSheet = (data) => {
+  return axiosClient.post("/api/v3/userwork23@workList", JSON.stringify(data));
+};
+
 const urlAction = (body) =>
   axiosClient.post(`/api/v3/UrlAction@invoke`, JSON.stringify(body));
 
@@ -307,6 +311,7 @@ const CalendarCrud = {
   getReportSellOut,
   getReportService,
   getOsTimeisUp,
-  urlAction
+  urlAction,
+  getAllWorkSheet
 };
 export default CalendarCrud;

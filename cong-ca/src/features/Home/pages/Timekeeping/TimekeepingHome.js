@@ -1192,6 +1192,10 @@ function TimekeepingHome(props) {
           }
         }
       }
+      else {
+        delete obj.Info["DI_SOM"]
+        delete obj.Info["DI_MUON"]
+      }
       if (WorkTrack.Info.CheckOut.TimekeepingType) {
         if (
           WorkTrack.Info.CheckOut[
@@ -1210,12 +1214,20 @@ function TimekeepingHome(props) {
           }
         }
       }
-      if (WorkTrack.Info.Type) {
-        obj.Info.Type = WorkTrack.Info.Type.value
+      else {
+        delete obj.Info?.CheckOut["VE_SOM"]
+        delete obj.Info?.CheckOut["VE_MUON"]
       }
-      if (WorkTrack.Info.CheckOut.Type) {
-        obj.Info.CheckOut.Type = WorkTrack.Info.CheckOut.Type.value
-      }
+
+      obj.Info.Type = WorkTrack?.Info?.Type?.value || ''
+
+      obj.Info.CheckOut.Type = WorkTrack?.Info?.CheckOut?.Type?.value
+      // if (WorkTrack.Info.Type) {
+      //   obj.Info.Type = WorkTrack.Info.Type.value
+      // }
+      // if (WorkTrack.Info.CheckOut.Type) {
+      //   obj.Info.CheckOut.Type = WorkTrack.Info.CheckOut.Type.value
+      // }
       if (
         WorkTrack?.Info?.CheckOut &&
         WorkTrack?.Info?.CheckOut?.WorkToday?.Value === WorkTrack.Info.CountWork

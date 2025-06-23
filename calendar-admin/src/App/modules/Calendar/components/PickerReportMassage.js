@@ -7,13 +7,18 @@ import CalendarCrud from "../_redux/CalendarCrud";
 import moment from "moment";
 import vi from "date-fns/locale/vi";
 import { PriceHelper } from "../../../../helpers/PriceHelper";
+import clsx from "clsx";
 
 function PickerReportMassage({ children }) {
-  const { AuthCrStockID } = useSelector(({ Auth, JsonConfig }) => ({
-    AuthCrStockID: Auth.CrStockID,
-    GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
-    GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
-  }));
+  const { AuthCrStockID, checkout_time, TU_DONG_TIP } = useSelector(
+    ({ Auth, JsonConfig }) => ({
+      AuthCrStockID: Auth.CrStockID,
+      GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
+      GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
+      checkout_time: JsonConfig?.Admin?.checkout_time || "",
+      TU_DONG_TIP: JsonConfig?.Admin?.TU_DONG_TIP || false,
+    })
+  );
 
   const [visible, setVisible] = useState(false);
 
@@ -30,6 +35,16 @@ function PickerReportMassage({ children }) {
   const { data, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["ListCurrentCalendars", { visible, CrDate }],
     queryFn: async () => {
+      let objTime = {
+        hours: "23",
+        minute: "59",
+      };
+      if (checkout_time && TU_DONG_TIP) {
+        objTime = {
+          hours: checkout_time.split(";")[1].split(":")[0],
+          minute: checkout_time.split(";")[1].split(":")[1],
+        };
+      }
       let { result: rs1 } = await CalendarCrud.getReportOverallSales({
         DateEnd: moment(CrDate).format("DD/MM/YYYY"),
         DateStart: moment(CrDate).format("DD/MM/YYYY"),
@@ -49,8 +64,13 @@ function PickerReportMassage({ children }) {
       });
       let { result: rs3 } = await CalendarCrud.getReportService({
         StockID: AuthCrStockID,
-        DateEnd: moment(CrDate).format("DD/MM/YYYY"),
-        DateStart: moment(CrDate).format("DD/MM/YYYY"),
+        DateEnd: moment(CrDate)
+          .add(checkout_time && TU_DONG_TIP ? 1 : 0, "days")
+          .set(objTime)
+          .format("DD/MM/YYYY HH:mm"),
+        DateStart: moment(CrDate)
+          .set({ hours: "00", minute: "00" })
+          .format("DD/MM/YYYY HH:mm"),
         Pi: 1,
         Ps: 5000,
         MemberID: "",
@@ -65,6 +85,13 @@ function PickerReportMassage({ children }) {
         TransfUserID: "",
         ShowsX: "2",
       });
+      let { list: rs4 } = await CalendarCrud.getAllWorkSheet({
+        From: moment(CrDate).format("DD/MM/YYYY"),
+        To: moment(CrDate).format("DD/MM/YYYY"),
+        StockID: AuthCrStockID,
+        key: "",
+      });
+
       let TIP = null;
       let TONG_THANH_TOAN = 0;
       if (rs2 && rs2.length > 0) {
@@ -79,6 +106,16 @@ function PickerReportMassage({ children }) {
           .reduce((partialSum, a) => partialSum + a, 0);
       }
 
+      let CheckIns = rs4
+        .map((x) => ({
+          UserID: x.UserID,
+          CheckIn: x.Dates[0].WorkTrack?.CheckIn,
+        }))
+        .sort(
+          (a, b) => moment(a.CheckIn).valueOf() - moment(b.CheckIn).valueOf()
+        )
+        .map((item, index) => ({ ...item, Index: index }));
+
       let STAFFS = [];
       let SERVICES = [];
 
@@ -90,10 +127,14 @@ function PickerReportMassage({ children }) {
               if (index > -1) {
                 STAFFS[index].Items = [...STAFFS[index].Items, item];
               } else {
+                let Position = CheckIns.findIndex(
+                  (x) => x.UserID === staff?.StaffId
+                );
                 STAFFS.push({
                   FullName: staff?.FullName,
                   ID: staff?.StaffId,
                   Items: [item],
+                  Index: Position > -1 ? CheckIns[Position].Index : 9999999,
                 });
               }
             }
@@ -112,6 +153,8 @@ function PickerReportMassage({ children }) {
           }
         }
       }
+
+      STAFFS = STAFFS.sort((a, b) => a.Index - b.Index);
 
       return {
         Today: {
@@ -446,14 +489,34 @@ function PickerReportMassage({ children }) {
                             {data?.STAFFS && data?.STAFFS.length > 0 ? (
                               data?.STAFFS.map((item, index) => (
                                 <div
-                                  className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                                  className="flex lg:flex-row flex-col lg:items-end border-b border-dashed last:!border-0 px-6 py-3"
                                   key={index}
                                 >
-                                  <div className="font-light">
-                                    {item?.FullName}
+                                  <div className="flex">
+                                    <div className="font-light">
+                                      {item?.FullName}
+                                    </div>
+                                    <div className="ml-1 font-semibold font-title">
+                                      ({item?.Items?.length})
+                                    </div>
                                   </div>
-                                  <div className="ml-1 font-semibold font-title">
-                                    ({item?.Items?.length})
+                                  <div className="text-[13px] font-light ml-1 leading-5">
+                                    (
+                                    {item?.Items.map((x, index) => (
+                                      <span key={index}>
+                                        <span
+                                          className={clsx(
+                                            x.Status === "doing" && "text-warning"
+                                          )}
+                                        >
+                                          {x.ProServiceName} {x.IsMemberSet && "(YC)"}
+                                        </span>
+                                        {item?.Items.length - 1 !== index && (
+                                          <span>, </span>
+                                        )}
+                                      </span>
+                                    ))}
+                                    )
                                   </div>
                                 </div>
                               ))

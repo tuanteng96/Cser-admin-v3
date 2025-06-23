@@ -185,8 +185,7 @@ function PickerClassAddMember({
                   touched,
                   values,
                   handleBlur,
-                  setFieldValue,
-                  handleChange
+                  setFieldValue
                 } = formikProps;
 
                 return (
@@ -247,8 +246,8 @@ function PickerClassAddMember({
                               type="checkbox"
                               className="sr-only peer"
                               checked={values.IsAllService}
-                              onChange={handleChange}
-                              onBlur={handleBlur}
+                              onChange={(e) => setFieldValue("IsAllService", e.target.checked)}
+                              //onBlur={handleBlur}
                             />
                             <div className="relative w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:!bg-primary dark:peer-checked:bg-blue-600" />
                             <span className="text-[13px] text-gray-700 ms-2 dark:text-gray-300">
