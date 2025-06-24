@@ -109,7 +109,8 @@ function PickerReportMassage({ children }) {
       let CheckIns = rs4
         .map((x) => ({
           UserID: x.UserID,
-          CheckIn: x.Dates[0].WorkTrack?.CheckIn,
+          CheckIn: x.Dates[0].WorkTrack?.CheckIn || "",
+          FullName: x.FullName,
         }))
         .sort(
           (a, b) => moment(a.CheckIn).valueOf() - moment(b.CheckIn).valueOf()
@@ -149,6 +150,20 @@ function PickerReportMassage({ children }) {
               ProServiceId: item?.ProServiceId,
               ProServiceName: item?.ProServiceName,
               Items: [item],
+            });
+          }
+        }
+      }
+
+      for (let u of CheckIns) {
+        if (u.CheckIn) {
+          let index = STAFFS.findIndex((x) => x.ID === u.UserID);
+          if (index === -1) {
+            STAFFS.push({
+              FullName: u?.FullName,
+              ID: u?.UserID,
+              Items: [],
+              Index: u.Index,
             });
           }
         }
@@ -500,24 +515,28 @@ function PickerReportMassage({ children }) {
                                       ({item?.Items?.length})
                                     </div>
                                   </div>
-                                  <div className="text-[13px] font-light ml-1 leading-5">
-                                    (
-                                    {item?.Items.map((x, index) => (
-                                      <span key={index}>
-                                        <span
-                                          className={clsx(
-                                            x.Status === "doing" && "text-warning"
+                                  {item?.Items && item?.Items.length > 0 && (
+                                    <div className="text-[13px] font-light ml-1 leading-5">
+                                      (
+                                      {item?.Items.map((x, index) => (
+                                        <span key={index}>
+                                          <span
+                                            className={clsx(
+                                              x.Status === "doing" &&
+                                                "text-warning"
+                                            )}
+                                          >
+                                            {x.ProServiceName}{" "}
+                                            {x.IsMemberSet && "(YC)"}
+                                          </span>
+                                          {item?.Items.length - 1 !== index && (
+                                            <span>, </span>
                                           )}
-                                        >
-                                          {x.ProServiceName} {x.IsMemberSet && "(YC)"}
                                         </span>
-                                        {item?.Items.length - 1 !== index && (
-                                          <span>, </span>
-                                        )}
-                                      </span>
-                                    ))}
-                                    )
-                                  </div>
+                                      ))}
+                                      )
+                                    </div>
+                                  )}
                                 </div>
                               ))
                             ) : (
