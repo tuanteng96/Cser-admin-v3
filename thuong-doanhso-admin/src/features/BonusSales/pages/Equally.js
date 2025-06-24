@@ -34,10 +34,11 @@ function Equally({ OrderInfo, onSubmit, loading }) {
         }
         return Salary * item.Qty;
       }
+      
       if (Type.value !== "KY_THUAT_VIEN") {
-        return item.prodBonus.BonusSale2 * item.Qty
+        return item.prodBonus.BonusSale * item.Qty
       };
-      return item.prodBonus.BonusSale * item.Qty;
+      return item.prodBonus.BonusSale2 * item.Qty;
     }
 
     if (

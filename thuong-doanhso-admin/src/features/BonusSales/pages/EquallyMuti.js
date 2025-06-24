@@ -13,7 +13,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
   const { UserID } = useSelector(({ Auth }) => ({
     UserID: Auth?.User?.ID,
   }));
-  
+    
   const getValueHH = ({ user, item, Type }) => {
     if (typeof item.initialRose === "object") {
       if (
@@ -30,9 +30,9 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
         return Salary * item.Qty;
       }
       if (Type.value !== "KY_THUAT_VIEN") {
-        return item.prodBonus.BonusSale2 * item.Qty;
+        return item.prodBonus.BonusSale * item.Qty;
       }
-      return item.prodBonus.BonusSale * item.Qty;
+      return item.prodBonus.BonusSale2 * item.Qty;
     }
     if (
       item?.prodBonus?.BonusSaleLevels &&
