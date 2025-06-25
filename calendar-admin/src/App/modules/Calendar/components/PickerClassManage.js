@@ -528,6 +528,7 @@ function PickerClassManage({ children }) {
   };
 
   const onDelete = ({ rowData }) => {
+    
     if (!initialValue?.ID) return;
 
     Swal.fire({
@@ -558,9 +559,8 @@ function PickerClassManage({ children }) {
           } else {
             let newLists = [...(CrClass?.Member?.Lists || [])];
             newLists = newLists.filter(
-              (x) => x?.Member?.ID !== rowData?.Member?.ID
+              (x) => !(x?.Member?.ID === rowData?.Member?.ID && x?.Os?.ID === rowData?.Os?.ID)
             );
-
             let newValues = {
               arr: [
                 {
@@ -642,7 +642,7 @@ function PickerClassManage({ children }) {
             });
           } else {
             let index = CrClass?.Member?.Lists?.findIndex(
-              (x) => x.Member.ID === rowData.Member.ID
+              (x) => x.Member.ID === rowData.Member.ID && rowData?.Os?.ID === x?.Os?.ID
             );
             if (index > -1) {
               let CrStatus = CrClass?.Member?.Lists[index].Status;

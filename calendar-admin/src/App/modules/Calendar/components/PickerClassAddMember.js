@@ -200,13 +200,13 @@ function PickerClassAddMember({
                         <div className="mb-px text-gray-700">Học viên</div>
                         <div>
                           <SelectMember
-                            removeMembers={
-                              initialValue?.Member?.Lists
-                                ? initialValue?.Member?.Lists.map(
-                                    (x) => x.Member.ID
-                                  )
-                                : null
-                            }
+                            // removeMembers={
+                            //   initialValue?.Member?.Lists
+                            //     ? initialValue?.Member?.Lists.map(
+                            //         (x) => x.Member.ID
+                            //       )
+                            //     : null
+                            // }
                             classIcon="fas fa-user-plus"
                             menuPlacement="bottom"
                             className={clsx(
