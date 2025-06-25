@@ -468,7 +468,7 @@ function CalendarMassagePage(props) {
     },
   });
 
-  window.top.OsRooms = ListRooms?.data || []
+  window.top.OsRooms = ListRooms?.data || [];
 
   const SettingCalendar = useQuery({
     queryKey: ["SettingCalendar", AuthCrStockID],
@@ -866,7 +866,13 @@ function CalendarMassagePage(props) {
     }
   };
 
-  const onGuestsArrive = async (values) => {
+  const onGuestsArrive = async (values, { setFieldError, setFieldTouched }) => {
+    if (!values?.RootIdS || values.RootIdS.length === 0) {
+      setFieldError("RootIdS", "Vui lòng chọn dịch vụ thực hiện.");
+      setFieldTouched("RootIdS", true);
+      return;
+    }
+
     setBtnLoading((prevState) => ({
       ...prevState,
       isBtnGuestsArrive: true,

@@ -209,7 +209,7 @@ function ModalMassageCalendar({
           StockID: AuthCrStockID,
           BookDate: initialValue?.BookDate ? initialValue.BookDate : new Date(),
           UserServiceIDs: initialValue?.UserServiceIDs || [],
-          TreatmentJson: initialValue?.TreatmentJson || null
+          TreatmentJson: initialValue?.TreatmentJson || null,
         }));
       }
     } else {
@@ -355,9 +355,9 @@ function ModalMassageCalendar({
     // MemberID: Yup.object()
     //   .nullable()
     //   .required("Vui lòng chọn khách hàng"),
-    // RootIdS: Yup.array()
-    //   .required("Vui lòng chọn dịch vụ.")
-    //   .nullable(),
+    RootIdS: Yup.array()
+      .required("Vui lòng chọn dịch vụ.")
+      .nullable(),
     // UserServiceIDs: Yup.array()
     //   .required("Vui lòng chọn nhân viên.")
     //   .nullable(),
@@ -540,7 +540,7 @@ function ModalMassageCalendar({
                       Lặp lại
                     </span> */}
                     </label>
-                    
+
                     <DatePicker
                       minDate={new Date()}
                       minTime={
@@ -845,7 +845,9 @@ function ModalMassageCalendar({
                               Đặt lịch ngay
                             </button>
                             <button
-                              onClick={() => onGuestsArrive(values)}
+                              onClick={() =>
+                                onGuestsArrive(values, formikProps)
+                              }
                               type="button"
                               className={`btn btn-sm btn-success flex-1 ${
                                 btnLoading.isBtnGuestsArrive
@@ -967,7 +969,7 @@ function ModalMassageCalendar({
                                         </Dropdown.Item>
                                       </Dropdown.Menu>
                                     </Dropdown>
-                                    
+
                                     <button
                                       type="button"
                                       className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
