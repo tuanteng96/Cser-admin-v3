@@ -468,7 +468,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                       type="submit"
                       disabled={loading.divided}
                     >
-                      Cập nhập
+                      Cập nhật
                     </button>
                     <button
                       className={`btn btn-danger ms-2`}

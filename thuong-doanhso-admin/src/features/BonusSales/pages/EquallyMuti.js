@@ -642,7 +642,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                       type="submit"
                       disabled={loading.equally}
                     >
-                      Cập nhập
+                      Cập nhật
                     </button>
                     <button
                       className={`btn btn-danger ms-2`}

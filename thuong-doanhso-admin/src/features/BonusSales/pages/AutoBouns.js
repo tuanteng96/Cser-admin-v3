@@ -476,7 +476,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                 type="submit"
                 disabled={loading.autoBouns}
               >
-                Cập nhập
+                Cập nhật
               </button>
             </div>
           </Form>

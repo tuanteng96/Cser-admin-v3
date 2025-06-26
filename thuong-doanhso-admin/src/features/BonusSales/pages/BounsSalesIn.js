@@ -34,7 +34,7 @@ const PickerDate = ({ children, sub, onRefresh }) => {
         onRefresh(() => {
           setLoading(false);
           window?.top?.toastr &&
-            window?.top?.toastr.success("Cập nhập thành công.", "", {
+            window?.top?.toastr.success("Cập nhật thành công.", "", {
               timeOut: 1000,
             });
           document.body.click();
@@ -98,7 +98,7 @@ const PickerDate = ({ children, sub, onRefresh }) => {
                         type="submit"
                         disabled={loading}
                       >
-                        {loading ? "Đang cập nhập" : "Cập nhập"}
+                        {loading ? "Đang cập nhật" : "Cập nhật"}
                       </button>
                     </div>
                   </Form>
@@ -126,7 +126,7 @@ const PickerDateDS = ({ children, sub, onRefresh }) => {
         onRefresh(() => {
           setLoading(false);
           window?.top?.toastr &&
-            window?.top?.toastr.success("Cập nhập thành công.", "", {
+            window?.top?.toastr.success("Cập nhật thành công.", "", {
               timeOut: 1000,
             });
           document.body.click();
@@ -190,7 +190,7 @@ const PickerDateDS = ({ children, sub, onRefresh }) => {
                         type="submit"
                         disabled={loading}
                       >
-                        {loading ? "Đang cập nhập" : "Cập nhập"}
+                        {loading ? "Đang cập nhật" : "Cập nhật"}
                       </button>
                     </div>
                   </Form>
@@ -1001,7 +1001,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                 disabled={loading}
                 type="submit"
               >
-                {loading ? "Đang cập nhập..." : "Cập nhập"}
+                {loading ? "Đang cập nhật..." : "Cập nhật"}
               </button>
             </div> */}
             <AutoSubmit
