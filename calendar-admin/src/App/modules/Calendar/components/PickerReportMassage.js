@@ -166,8 +166,6 @@ function PickerReportMassage({ children }) {
           }
         }
       }
-      console.log(CheckIns)
-      console.log(STAFFS)
       STAFFS = STAFFS.map((x) => ({
         ...x,
         ValueOf: x.CheckIn ? moment(x.CheckIn).valueOf() : -1,
