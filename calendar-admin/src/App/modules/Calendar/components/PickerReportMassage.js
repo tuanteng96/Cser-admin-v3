@@ -109,6 +109,7 @@ function PickerReportMassage({ children }) {
       let CheckIns = rs4.map((x) => ({
         UserID: x.UserID,
         CheckIn: x.Dates[0].WorkTrack?.CheckIn || "",
+        CheckOut: x.Dates[0].WorkTrack?.CheckOut || "",
         FullName: x.FullName,
       }));
 
@@ -154,16 +155,19 @@ function PickerReportMassage({ children }) {
           STAFFS[index].CheckIn = u?.CheckIn || null;
           STAFFS[index].CheckOut = u?.CheckOut || null;
         } else {
-          STAFFS.push({
-            FullName: u?.FullName,
-            ID: u?.UserID,
-            CheckIn: u?.CheckIn || null,
-            CheckOut: u?.CheckOut || null,
-            Items: [],
-          });
+          if (u?.CheckIn) {
+            STAFFS.push({
+              FullName: u?.FullName,
+              ID: u?.UserID,
+              CheckIn: u?.CheckIn || null,
+              CheckOut: u?.CheckOut || null,
+              Items: [],
+            });
+          }
         }
       }
-
+      console.log(CheckIns)
+      console.log(STAFFS)
       STAFFS = STAFFS.map((x) => ({
         ...x,
         ValueOf: x.CheckIn ? moment(x.CheckIn).valueOf() : -1,
@@ -518,15 +522,19 @@ function PickerReportMassage({ children }) {
                                       {item?.FullName}
                                     </div>
                                     {item?.CheckIn && (
-                                      <div className="ml-1 font-light font-title">
+                                      <div className={clsx("ml-1 font-light font-title", item.CheckOut && "text-danger")}>
                                         ({moment(item?.CheckIn).format("HH:mm")}
                                         {item?.CheckOut && (
                                           <>
-                                            <span className="px-1.5">-</span>
-                                            {item?.CheckOut}
+                                            <span className="px-1">-</span>
+                                            {moment(item?.CheckOut).format("HH:mm")}
                                           </>
                                         )}
                                         )
+                                        {
+                                          item?.CheckOut && <span>( Đã về )</span>
+                                        }
+                                        
                                       </div>
                                     )}
 
