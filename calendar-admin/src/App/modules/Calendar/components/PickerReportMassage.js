@@ -106,16 +106,11 @@ function PickerReportMassage({ children }) {
           .reduce((partialSum, a) => partialSum + a, 0);
       }
 
-      let CheckIns = rs4
-        .map((x) => ({
-          UserID: x.UserID,
-          CheckIn: x.Dates[0].WorkTrack?.CheckIn || "",
-          FullName: x.FullName,
-        }))
-        .sort(
-          (a, b) => moment(a.CheckIn).valueOf() - moment(b.CheckIn).valueOf()
-        )
-        .map((item, index) => ({ ...item, Index: index }));
+      let CheckIns = rs4.map((x) => ({
+        UserID: x.UserID,
+        CheckIn: x.Dates[0].WorkTrack?.CheckIn || "",
+        FullName: x.FullName,
+      }));
 
       let STAFFS = [];
       let SERVICES = [];
@@ -128,14 +123,10 @@ function PickerReportMassage({ children }) {
               if (index > -1) {
                 STAFFS[index].Items = [...STAFFS[index].Items, item];
               } else {
-                let Position = CheckIns.findIndex(
-                  (x) => x.UserID === staff?.StaffId
-                );
                 STAFFS.push({
                   FullName: staff?.FullName,
                   ID: staff?.StaffId,
                   Items: [item],
-                  Index: Position > -1 ? CheckIns[Position].Index : 9999999,
                 });
               }
             }
@@ -156,20 +147,27 @@ function PickerReportMassage({ children }) {
       }
 
       for (let u of CheckIns) {
-        if (u.CheckIn) {
-          let index = STAFFS.findIndex((x) => x.ID === u.UserID);
-          if (index === -1) {
-            STAFFS.push({
-              FullName: u?.FullName,
-              ID: u?.UserID,
-              Items: [],
-              Index: u.Index,
-            });
-          }
+        let index = STAFFS.findIndex((x) => x.ID === u.UserID);
+        if (index > -1) {
+          STAFFS[index].FullName = u?.FullName;
+          STAFFS[index].ID = u?.UserID;
+          STAFFS[index].CheckIn = u?.CheckIn || null;
+          STAFFS[index].CheckOut = u?.CheckOut || null;
+        } else {
+          STAFFS.push({
+            FullName: u?.FullName,
+            ID: u?.UserID,
+            CheckIn: u?.CheckIn || null,
+            CheckOut: u?.CheckOut || null,
+            Items: [],
+          });
         }
       }
 
-      STAFFS = STAFFS.sort((a, b) => a.Index - b.Index);
+      STAFFS = STAFFS.map((x) => ({
+        ...x,
+        ValueOf: x.CheckIn ? moment(x.CheckIn).valueOf() : -1,
+      })).sort((a, b) => a.ValueOf - b.ValueOf);
 
       return {
         Today: {
@@ -181,7 +179,10 @@ function PickerReportMassage({ children }) {
           DV_BAN_RA:
             rs2 && rs2.length > 0 ? rs2.filter((x) => x.Format === 2) : [],
         },
-        STAFFS,
+        STAFFS: [
+          ...STAFFS.filter((x) => x.ValueOf > 0),
+          ...STAFFS.filter((x) => x.ValueOf < 0),
+        ],
         SERVICES,
       };
     },
@@ -504,20 +505,37 @@ function PickerReportMassage({ children }) {
                             {data?.STAFFS && data?.STAFFS.length > 0 ? (
                               data?.STAFFS.map((item, index) => (
                                 <div
-                                  className="flex lg:flex-row flex-col lg:items-end border-b border-dashed last:!border-0 px-6 py-3"
+                                  className="flex flex-col border-b border-dashed last:!border-0 px-6 py-3"
                                   key={index}
                                 >
                                   <div className="flex">
-                                    <div className="font-light">
+                                    <div
+                                      className={clsx(
+                                        "font-light",
+                                        item.CheckOut && "text-danger"
+                                      )}
+                                    >
                                       {item?.FullName}
                                     </div>
+                                    {item?.CheckIn && (
+                                      <div className="ml-1 font-light font-title">
+                                        ({moment(item?.CheckIn).format("HH:mm")}
+                                        {item?.CheckOut && (
+                                          <>
+                                            <span className="px-1.5">-</span>
+                                            {item?.CheckOut}
+                                          </>
+                                        )}
+                                        )
+                                      </div>
+                                    )}
+
                                     <div className="ml-1 font-semibold font-title">
                                       ({item?.Items?.length})
                                     </div>
                                   </div>
                                   {item?.Items && item?.Items.length > 0 && (
-                                    <div className="text-[13px] font-light ml-1 leading-5">
-                                      (
+                                    <div className="text-[13px] font-light leading-5 mt-px">
                                       {item?.Items.map((x, index) => (
                                         <span key={index}>
                                           <span
@@ -534,7 +552,6 @@ function PickerReportMassage({ children }) {
                                           )}
                                         </span>
                                       ))}
-                                      )
                                     </div>
                                   )}
                                 </div>

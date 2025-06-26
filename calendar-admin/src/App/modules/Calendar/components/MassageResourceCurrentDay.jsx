@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
-import { useMutation, useQuery } from "react-query";
+import { useQuery } from "react-query";
 import moment from "moment";
 import CalendarCrud from "../_redux/CalendarCrud";
 import clsx from "clsx";
@@ -10,19 +10,15 @@ import {
 } from "../../../../helpers/AssetsHelpers";
 
 function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
-  const {
-    AuthCrStockID,
-    GTimeOpen,
-    GTimeClose,
-    checkout_time,
-    TextToSpeech,
-  } = useSelector(({ Auth, JsonConfig }) => ({
-    AuthCrStockID: Auth.CrStockID,
-    GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
-    GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
-    checkout_time: Boolean(JsonConfig?.Admin?.checkout_time),
-    TextToSpeech: JsonConfig?.Admin?.TextToSpeech,
-  }));
+  const { AuthCrStockID, GTimeOpen, GTimeClose, checkout_time } = useSelector(
+    ({ Auth, JsonConfig }) => ({
+      AuthCrStockID: Auth.CrStockID,
+      GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
+      GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
+      checkout_time: Boolean(JsonConfig?.Admin?.checkout_time),
+      TextToSpeech: JsonConfig?.Admin?.TextToSpeech,
+    })
+  );
 
   const [filters] = useState({
     Status: ["XAC_NHAN", "DANG_THUC_HIEN"],
@@ -457,79 +453,6 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
     },
     keepPreviousData: true,
   });
-
-  const textSpeechMutation = useMutation({
-    mutationFn: async (body) => {
-      let data = await CalendarCrud.urlAction(body);
-      return data;
-    },
-  });
-
-  // const { data: OsTimeisUp } = useQuery({
-  //   queryKey: ["OsTimeisUp"],
-  //   queryFn: async () => {
-  //     let rs = await CalendarCrud.getOsTimeisUp();
-  //     return rs;
-  //   },
-  //   onSuccess: async (rs) => {
-  //     console.log(rs);
-  //     let src = "";
-  //     let text = "";
-  //     // if (TextToSpeech.toUpperCase() === "GOOGLE") {
-  //     //   let rsSrcGoogle = await textSpeechMutation.mutateAsync({
-  //     //     url: "https://texttospeech.googleapis.com/v1/text:synthesize",
-  //     //     headers: {},
-  //     //     param: {
-  //     //       key: "{KEY_API_TEXT_TO_SPEECH}",
-  //     //     },
-  //     //     method: "POST", //"GET",
-  //     //     include: "ENV",
-  //     //     body: {
-  //     //       audioConfig: {
-  //     //         audioEncoding: "LINEAR16",
-  //     //         effectsProfileId: ["small-bluetooth-speaker-class-device"],
-  //     //         pitch: 0,
-  //     //         speakingRate: 1,
-  //     //       },
-  //     //       input: {
-  //     //         text: text,
-  //     //       },
-  //     //       voice: {
-  //     //         languageCode: "vi-VN",
-  //     //         name: "vi-VN-Wavenet-D",
-  //     //       },
-  //     //     },
-  //     //     resultType: "json",
-  //     //   });
-  //     // }
-  //     // if (TextToSpeech.toUpperCase() === "ZALO") {
-  //     //   let rsSrcZalo = await textSpeechMutation.mutate({
-  //     //     url: "https://api.zalo.ai/v1/tts/synthesize",
-  //     //     headers: {
-  //     //       "Content-Type": "application/x-www-form-urlencoded",
-  //     //       apikey: "[KEY_API_TEXT_TO_SPEECH_ZALO]",
-  //     //     },
-  //     //     method: "POST", //"GET",
-  //     //     include: "ENV",
-  //     //     body: {
-  //     //       speaker_id: "4",
-  //     //       speed: "1",
-  //     //       input: text,
-  //     //     },
-  //     //     resultType: "json",
-  //     //   });
-  //     // }
-  //     // if(audio) {
-  //     //   audio?.pause()
-  //     // }
-  //     // audio = new Audio("https://cserbeauty.com/Admin/BookAdmin/mp3-demo.mp3");
-  //     // audio.play();
-  //   },
-  //   refetchInterval: (data) => {
-  //     return data ? 5000 : false;
-  //   },
-  //   //enabled: enabled,
-  // });
 
   const getClassWrap = (item) => {
     if (item?.Offlines && item.Offlines.length > 0) {
