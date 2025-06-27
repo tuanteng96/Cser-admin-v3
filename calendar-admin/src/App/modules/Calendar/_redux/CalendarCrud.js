@@ -46,6 +46,12 @@ const getStaffs = ({ StockID, key = "", All }) => {
   );
 };
 
+const getBookID = (id) => {
+  return axiosClient.get(
+    `/api/v3/mbookadmin?cmd=getbooks&id=${id}`
+  );
+};
+
 const getStaffsFull = ({ StockID, key = "", All }) => {
   return axiosClient.get(
     `${GET_MEMBERS_STAFF_URL}?cmd=user&roles=&crstockid=${StockID}&q=${key}${
@@ -312,6 +318,7 @@ const CalendarCrud = {
   getReportService,
   getOsTimeisUp,
   urlAction,
-  getAllWorkSheet
+  getAllWorkSheet,
+  getBookID
 };
 export default CalendarCrud;

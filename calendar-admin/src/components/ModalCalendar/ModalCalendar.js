@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { NumericFormat } from "react-number-format";
 import clsx from "clsx";
 import SelectServiceBed from "../Select/SelectServiceBed/SelectServiceBed";
+import { useQuery } from "react-query";
 moment.locale("vi");
 
 ModalCalendar.propTypes = {
@@ -133,6 +134,84 @@ function ModalCalendar({
   });
 
   const [loading, setLoading] = useState(false);
+
+  const { isLoading } = useQuery({
+    queryKey: ["BookID", show],
+    queryFn: async () => {
+      let { books } = await CalendarCrud.getBookID(initialValue?.ID);
+      return books && books.length > 0 ? books[0] : null;
+    },
+    onSuccess: (rs) => {
+      if (rs) {
+        let newDesc = rs.Desc;
+        let AmountPeople = {
+          label: "1 khách",
+          value: 1,
+        };
+        let TagSetting = [];
+        let descSplit = newDesc.split("\n");
+        for (let i of descSplit) {
+          if (i.includes("Số lượng khách:")) {
+            let SL = Number(i.match(/\d+/)[0]);
+            AmountPeople = {
+              label: SL + " khách",
+              value: SL,
+            };
+          }
+          if (i.includes("Tags:")) {
+            let newTagSetting = i.replaceAll("Tags: ", "");
+            TagSetting = newTagSetting
+              .split(",")
+              .map((x) => ({ label: x, value: x }));
+          }
+          if (i.includes("Ghi chú:")) {
+            newDesc = i.replaceAll("Ghi chú: ", "");
+          }
+        }
+        setInitialValues((prevState) => ({
+          ...prevState,
+          ID: rs.ID,
+          MemberID: rs?.Member
+            ? {
+                label: rs.Member.FullName,
+                text: rs.FullName || rs.Member.FullName,
+                value: rs.Member.ID,
+                suffix: rs.Phone || rs.Member.MobilePhone,
+              }
+            : null,
+          FullName: rs?.FullName || "",
+          Phone: rs?.Phone || "",
+          RootIdS: rs.Roots
+            ? rs.Roots.map((item) => ({
+                ...item,
+                value: item.ID,
+                label: item.Title,
+              }))
+            : "",
+          Status: rs.Status,
+          BookDate: rs.BookDate,
+          StockID: rs.StockID,
+          Desc: newDesc.replaceAll("</br>", "\n"),
+          UserServiceIDs: rs.UserServices.map((item) => ({
+            ...item,
+            value: item.ID,
+            label: item.FullName,
+          })),
+          AtHome: rs.AtHome,
+          IsMemberCurrent: getIsMember(rs),
+          CreateBy: rs?.CreateBy || "",
+          TeleTags: rs?.Member?.TeleTags || "",
+          AmountPeople,
+          TagSetting,
+          TreatmentJson: rs?.TreatmentJson ? JSON.parse(rs?.TreatmentJson) : "",
+          History: rs?.HistoryJSON ? JSON.parse(rs?.HistoryJSON) : "",
+        }));
+      } else {
+        onHide();
+      }
+    },
+    enabled: Boolean(initialValue?.ID) && show,
+  });
 
   useEffect(() => {
     if (show) {
@@ -287,7 +366,11 @@ function ModalCalendar({
       <Dropdown>
         <Dropdown.Toggle
           className={`bg-transparent p-0 border-0 modal-dropdown-title ${
-            Status === "XAC_NHAN" ? (isAuto ? "text-primary1" : "text-primary") : ""
+            Status === "XAC_NHAN"
+              ? isAuto
+                ? "text-primary1"
+                : "text-primary"
+              : ""
           } ${
             Status === "KHACH_KHONG_DEN" || Status === "TU_CHOI"
               ? "text-danger"
@@ -296,7 +379,11 @@ function ModalCalendar({
           id="dropdown-custom-1"
         >
           <span>
-            {Status === "XAC_NHAN" ? (isAuto ?  "Đặt lịch dự kiến" : "Đã xác nhận") : ""}
+            {Status === "XAC_NHAN"
+              ? isAuto
+                ? "Đặt lịch dự kiến"
+                : "Đã xác nhận"
+              : ""}
             {Status === "KHACH_KHONG_DEN" ? "Khách không đến" : ""}
             {Status === "KHACH_DEN" ? "Khách có đến" : ""}
             {Status === "TU_CHOI" ? "Khách hủy lịch" : ""}
@@ -310,7 +397,6 @@ function ModalCalendar({
             onClick={() => setFieldValue("Status", "XAC_NHAN", false)}
           >
             {isAuto ? "Đặt lịch dự kiến" : "Đã xác nhận"}
-            
           </Dropdown.Item>
           <Dropdown.Item
             className="font-weight-bold"
@@ -843,11 +929,13 @@ function ModalCalendar({
                                 <button
                                   type="submit"
                                   className={`btn btn-sm btn-primary mr-2 flex-1 ${
-                                    btnLoading.isBtnBooking
+                                    btnLoading.isBtnBooking || isLoading
                                       ? "spinner spinner-white spinner-right"
                                       : ""
                                   } w-auto my-0 mr-0 h-auto`}
-                                  disabled={btnLoading.isBtnBooking}
+                                  disabled={
+                                    btnLoading.isBtnBooking || isLoading
+                                  }
                                   onClick={() => {
                                     setFieldValue(
                                       "Status",
@@ -861,11 +949,11 @@ function ModalCalendar({
                                 <button
                                   type="button"
                                   className={`btn btn-sm btn-danger ${
-                                    btnLoading.isBtnDelete
+                                    btnLoading.isBtnDelete || isLoading
                                       ? "spinner spinner-white spinner-right"
                                       : ""
                                   } w-auto my-0 mr-0 h-auto`}
-                                  disabled={btnLoading.isBtnDelete}
+                                  disabled={btnLoading.isBtnDelete || isLoading}
                                   onClick={() => onDelete(values)}
                                 >
                                   Hủy lịch
@@ -876,18 +964,20 @@ function ModalCalendar({
                                 <button
                                   type="submit"
                                   className={`btn btn-sm btn-success text-truncate flex-1 ${
-                                    btnLoading.isBtnBooking &&
-                                    values.Status !== "KHACH_KHONG_DEN" &&
-                                    values.Status !== "TU_CHOI" &&
-                                    values.Status !== "KHACH_DEN"
+                                    (btnLoading.isBtnBooking &&
+                                      values.Status !== "KHACH_KHONG_DEN" &&
+                                      values.Status !== "TU_CHOI" &&
+                                      values.Status !== "KHACH_DEN") ||
+                                    isLoading
                                       ? "spinner spinner-white spinner-right"
                                       : ""
                                   } w-auto my-0 mr-0 h-auto`}
                                   disabled={
-                                    btnLoading.isBtnBooking &&
-                                    values.Status !== "KHACH_KHONG_DEN" &&
-                                    values.Status !== "TU_CHOI" &&
-                                    values.Status !== "KHACH_DEN"
+                                    (btnLoading.isBtnBooking &&
+                                      values.Status !== "KHACH_KHONG_DEN" &&
+                                      values.Status !== "TU_CHOI" &&
+                                      values.Status !== "KHACH_DEN") ||
+                                    isLoading
                                   }
                                 >
                                   Cập nhật
@@ -896,16 +986,18 @@ function ModalCalendar({
                                   <>
                                     <Dropdown>
                                       <Dropdown.Toggle
-                                        className={`btn btn-danger hide-icon-after text-truncate ml-2 ${((btnLoading.isBtnBooking &&
+                                        className={`btn btn-danger hide-icon-after text-truncate ml-2 ${(btnLoading.isBtnBooking &&
                                           values.Status ===
                                             "KHACH_KHONG_DEN") ||
-                                          btnLoading.isBtnDelete) &&
-                                          "spinner spinner-white spinner-right"}`}
+                                          btnLoading.isBtnDelete ||
+                                          (isLoading &&
+                                            "spinner spinner-white spinner-right")}`}
                                         disabled={
                                           (btnLoading.isBtnBooking &&
                                             values.Status ===
                                               "KHACH_KHONG_DEN") ||
-                                          btnLoading.isBtnDelete
+                                          btnLoading.isBtnDelete ||
+                                          isLoading
                                         }
                                       >
                                         Hủy
@@ -948,14 +1040,16 @@ function ModalCalendar({
                                     <button
                                       type="button"
                                       className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
-                                        btnLoading.isBtnBooking &&
-                                        values.Status === "KHACH_DEN"
+                                        (btnLoading.isBtnBooking &&
+                                          values.Status === "KHACH_DEN") ||
+                                        isLoading
                                           ? "spinner spinner-white spinner-right"
                                           : ""
                                       } w-auto my-0 mr-0 h-auto`}
                                       disabled={
-                                        btnLoading.isBtnBooking &&
-                                        values.Status === "KHACH_DEN"
+                                        (btnLoading.isBtnBooking &&
+                                          values.Status === "KHACH_DEN") ||
+                                        isLoading
                                       }
                                       onClick={() => onFinish(values)}
                                     >
@@ -977,11 +1071,11 @@ function ModalCalendar({
                             type="button"
                             onClick={onChangeStatusTele}
                             className={`btn btn-sm btn-secondary ml-2 ${
-                              loading
+                              loading || isLoading
                                 ? "spinner spinner-white spinner-right"
                                 : ""
                             } w-auto my-0 h-auto`}
-                            disabled={loading}
+                            disabled={loading || isLoading}
                           >
                             Khách chốt
                           </button>
