@@ -1260,7 +1260,7 @@ function CalendarPage(props) {
                   )}`,
                   resourceIds:
                     topCalendar?.type?.value === "resourceTimelineDay"
-                      ? [TreatmentJson?.ID || 0]
+                      ? [TreatmentJson?.ID || TreatmentJson?.value || 0]
                       : item.UserServices &&
                         Array.isArray(item.UserServices) &&
                         item.UserServices.length > 0

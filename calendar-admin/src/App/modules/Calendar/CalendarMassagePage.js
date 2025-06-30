@@ -1665,7 +1665,7 @@ function CalendarMassagePage(props) {
                   )}`,
                   resourceIds:
                     topCalendar?.type?.value === "resourceTimelineDay"
-                      ? [TreatmentJson?.ID || 0]
+                      ? [TreatmentJson?.ID || TreatmentJson?.value || 0]
                       : item.UserServices &&
                         Array.isArray(item.UserServices) &&
                         item.UserServices.length > 0
@@ -1689,7 +1689,7 @@ function CalendarMassagePage(props) {
               })
               .filter((item) => item.Status !== "TU_CHOI")
           : [];
-
+              
       let dataBooksAuto =
         data.osList && Array.isArray(data.osList)
           ? data.osList.map((item) => ({

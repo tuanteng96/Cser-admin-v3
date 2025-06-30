@@ -206,7 +206,7 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
                     item.UserServices && item.UserServices.length > 0
                       ? item.UserServices.map((x) => x.ID)
                       : [],
-                  RoomID: TreatmentJson?.ID || "",
+                  RoomID: TreatmentJson?.ID || TreatmentJson?.value || "",
                   RoomTitle: TreatmentJson?.label || "",
                 };
               })
@@ -773,7 +773,7 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
                   <div className="flex flex-col gap-1.5 py-3 group-last:!pb-0">
                     {gr.options &&
                       gr.options.map((room, i) => (
-                        <div className="bg-white rounded-[4px]">
+                        <div className="bg-white rounded-[4px]" key={i}>
                           <div
                             className="p-2 lg:text-[13px] text-[11px] flex-col lg:flex-row flex items-center lg:gap-2 cursor-pointer"
                             key={i}
