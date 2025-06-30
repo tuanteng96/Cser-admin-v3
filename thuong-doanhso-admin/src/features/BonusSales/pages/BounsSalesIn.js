@@ -70,6 +70,7 @@ const PickerDate = ({ children, sub, onRefresh }) => {
                 return (
                   <Form>
                     <div className="p-3" style={{ width: "250px" }}>
+                      {sub?.stock?.Title && <div className="mb-2">{sub?.stock?.Title}</div>}
                       <div className="mb-3">
                         <DatePicker
                           name="date"
@@ -162,6 +163,7 @@ const PickerDateDS = ({ children, sub, onRefresh }) => {
                 return (
                   <Form>
                     <div className="p-3" style={{ width: "250px" }}>
+                      {sub?.stock?.Title && <div className="mb-2">{sub?.stock?.Title}</div>}
                       <div className="mb-3">
                         <DatePicker
                           name="date"

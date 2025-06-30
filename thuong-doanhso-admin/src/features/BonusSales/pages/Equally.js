@@ -156,7 +156,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
   if (window.top?.GlobalConfig?.Admin.hoa_hong_an_gia) {
     if (!adminTools_byStock?.hasRight) isHiddenPrice = true;
   }
-
+  
   return (
     <Fragment>
       <div className="row">

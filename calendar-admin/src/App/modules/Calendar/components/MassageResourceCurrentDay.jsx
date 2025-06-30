@@ -364,29 +364,7 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
                 )
             );
 
-            // let StaffNextBooksAuto = dataBooksAuto.filter(
-            //   (x) =>
-            //     x.StaffIds &&
-            //     x.StaffIds.includes(staff.id) &&
-            //     (moment(
-            //       moment(CrDate).format("YYYY-MM-DD HH:mm"),
-            //       "YYYY-MM-DD HH:mm"
-            //     ).isBetween(
-            //       moment(moment(x.start, "YYYY-MM-DD HH:mm")),
-            //       moment(moment(x.end, "YYYY-MM-DD HH:mm")),
-            //       null,
-            //       "[]"
-            //     ) ||
-            //       moment(
-            //         moment(CrDate).format("YYYY-MM-DD HH:mm"),
-            //         "YYYY-MM-DD HH:mm"
-            //       ).diff(
-            //         moment(moment(x.start, "YYYY-MM-DD HH:mm")),
-            //         "minutes"
-            //       ) <= 0)
-            // );
             newStaff.Books = [...newStaff.Books, ...StaffDataBooksAuto];
-            //newStaff.NextBooks = [...newStaff.NextBooks, ...StaffNextBooksAuto];
           }
           rs.push(newStaff);
         }
@@ -431,6 +409,8 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
                       label: o.label,
                       value: o.ID,
                       Books: [],
+                      Book: null,
+                      NextBooks: [],
                     };
                     obj.Books = rs
                       .filter((k) => k.Book?.RoomID && k.Book?.RoomID === o.ID)
@@ -439,6 +419,38 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
                           new Date(a?.Book?.BookDate) -
                           new Date(b?.Book?.BookDate)
                       );
+                    obj.Book =
+                      obj.Books && obj.Books.length > 0 && obj.Books[0].Book
+                        ? obj.Books[0].Book
+                        : null;
+
+                    let RoomNextBooks = [...(dataBooks || [])]
+                      .filter(
+                        (x) =>
+                          x.RoomID &&
+                          x.RoomID === o.ID &&
+                          (moment(
+                            moment(CrDate).format("YYYY-MM-DD HH:mm"),
+                            "YYYY-MM-DD HH:mm"
+                          ).isBetween(
+                            moment(moment(x.start, "YYYY-MM-DD HH:mm")),
+                            moment(moment(x.end, "YYYY-MM-DD HH:mm")),
+                            null,
+                            "[]"
+                          ) ||
+                            moment(
+                              moment(CrDate).format("YYYY-MM-DD HH:mm"),
+                              "YYYY-MM-DD HH:mm"
+                            ).diff(
+                              moment(moment(x.start, "YYYY-MM-DD HH:mm")),
+                              "minutes"
+                            ) <= 0)
+                      )
+                      .filter((x) => x.ID !== obj.Book?.ID);
+
+                    obj.NextBooks = RoomNextBooks.sort(
+                      (a, b) => new Date(a.BookDate) - new Date(b.BookDate)
+                    );
                     return obj;
                   })
                 : [],
@@ -453,7 +465,7 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
     },
     keepPreviousData: true,
   });
-
+  
   const getClassWrap = (item) => {
     if (item?.Offlines && item.Offlines.length > 0) {
       return "bg-danger border-danger text-white";
@@ -761,55 +773,75 @@ function MassageResourceCurrentDay({ setInitialValue, onOpenModal }) {
                   <div className="flex flex-col gap-1.5 py-3 group-last:!pb-0">
                     {gr.options &&
                       gr.options.map((room, i) => (
-                        <div
-                          className="p-2 bg-white lg:text-[13px] text-[11px] rounded-[4px] flex-col lg:flex-row flex items-center lg:gap-2 cursor-pointer"
-                          key={i}
-                          onClick={() => {
-                            if (!room?.Books || room?.Books.length === 0) {
-                              setInitialValue({
-                                TreatmentJson: {
-                                  label: room?.label,
-                                  value: room?.value,
-                                },
-                              });
-                              onOpenModal();
-                            } else {
-                              if (room?.Books[0]?.Book?.os) {
-                                // window?.top?.BANGLICH_BUOI &&
-                                //   window?.top?.BANGLICH_BUOI(
-                                //     room?.Books[0],
-                                //     onRefresh
-                                //   );
-                                window.top.location.href = `/admin/?mdl=store&act=sell#mp:${room?.Books[0]?.Book?.os?.MemberID}`;
-                              } else {
-                                setInitialValue(room?.Books[0]?.Book);
+                        <div className="bg-white rounded-[4px]">
+                          <div
+                            className="p-2 lg:text-[13px] text-[11px] flex-col lg:flex-row flex items-center lg:gap-2 cursor-pointer"
+                            key={i}
+                            onClick={() => {
+                              if (!room?.Book) {
+                                setInitialValue({
+                                  TreatmentJson: {
+                                    label: room?.label,
+                                    value: room?.value,
+                                  },
+                                });
                                 onOpenModal();
+                              } else {
+                                if (room?.Book?.os) {
+                                  // window?.top?.BANGLICH_BUOI &&
+                                  //   window?.top?.BANGLICH_BUOI(
+                                  //     room?.Books[0],
+                                  //     onRefresh
+                                  //   );
+                                  window.top.location.href = `/admin/?mdl=store&act=sell#mp:${room?.Book?.os?.MemberID}`;
+                                } else {
+                                  setInitialValue(room?.Book);
+                                  onOpenModal();
+                                }
                               }
-                            }
-                          }}
-                        >
-                          {room.Books && room.Books.length > 0 ? (
-                            <div
-                              className={clsx(
-                                "w-3.5 h-3.5 rounded-full",
-                                getClassWrap(room.Books[0])
-                              )}
-                            ></div>
-                          ) : (
-                            <div
-                              className={clsx(
-                                "w-3.5 h-3.5 rounded-full bg-warning"
-                              )}
-                            ></div>
-                          )}
-                          <div className="mt-1 truncate lg:flex-1 lg:mt-0">
-                            {room.label}
+                            }}
+                          >
+                            {room.Book ? (
+                              <div
+                                className={clsx(
+                                  "w-3.5 h-3.5 rounded-full",
+                                  getClassWrap({ Book: room.Book })
+                                )}
+                              ></div>
+                            ) : (
+                              <div
+                                className={clsx(
+                                  "w-3.5 h-3.5 rounded-full bg-warning"
+                                )}
+                              ></div>
+                            )}
+                            <div className="mt-1 truncate lg:flex-1 lg:mt-0">
+                              {room.label}
+                            </div>
+                            {room.Book && (
+                              <div className="lg:w-[90px] w-full lg:text-[12px] text-[11px] flex lg:justify-end justify-center">
+                                {moment(room.Book.start).format("HH:mm")}
+                                <span className="px-px">-</span>
+                                {moment(room.Book.end).format("HH:mm")}
+                              </div>
+                            )}
                           </div>
-                          {room.Books && room.Books.length > 0 && (
-                            <div className="lg:w-[90px] w-full lg:text-[12px] text-[11px] flex lg:justify-end justify-center">
-                              {moment(room.Books[0].Book.start).format("HH:mm")}
-                              <span className="px-px">-</span>
-                              {moment(room.Books[0].Book.end).format("HH:mm")}
+                          {room.NextBooks && room.NextBooks.length > 0 && (
+                            <div className="border-t border-dashed lg:text-[12px] text-[11px] flex px-3 py-2 gap-1.5 flex-wrap">
+                              {room.NextBooks.map((o, k) => (
+                                <div
+                                  className="text-[#3F4254] bg-[#E4E6EF] px-1.5 py-px rounded-[3px] cursor-pointer"
+                                  key={k}
+                                  onClick={() => {
+                                    setInitialValue(o);
+                                    onOpenModal();
+                                  }}
+                                >
+                                  {moment(o.start).format("HH:mm")}
+                                  <span className="px-px">-</span>
+                                  {moment(o.end).format("HH:mm")}
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div>
