@@ -204,6 +204,10 @@ const addEditPointOsMember = (data) => {
   return axiosClient.post(`/api/v3/MemberPoint27@Edit`, JSON.stringify(data));
 };
 
+const resetPointOsMember = (data) => {
+  return axiosClient.post(`/api/v3/osc@Reset1`, JSON.stringify(data));
+};
+
 const deletePointOsMember = (data) => {
   return axiosClient.post(
     `/api/v3/MemberPoint27@Deletes`,
@@ -319,6 +323,7 @@ const CalendarCrud = {
   getOsTimeisUp,
   urlAction,
   getAllWorkSheet,
-  getBookID
+  getBookID,
+  resetPointOsMember
 };
 export default CalendarCrud;

@@ -397,13 +397,20 @@ function PickerClassManage({ children }) {
   });
 
   const updateOsStatusMutation = useMutation({
-    mutationFn: async ({ data, update, addPoint, deletePoint }) => {
+    mutationFn: async ({ data, update, addPoint, deletePoint, OsReset }) => {
       let rs = await CalendarCrud.CalendarClassMembersAddEdit(data);
       await CalendarCrud.CalendarClassMembersUpdateOs(update);
 
       if (addPoint) await CalendarCrud.addEditPointOsMember(addPoint);
 
       if (deletePoint) await CalendarCrud.deletePointOsMember(deletePoint);
+
+      if (
+        window?.top?.GlobalConfig?.Admin?.lop_hoc_pt_reset_enddate &&
+        OsReset
+      ) {
+        await CalendarCrud.resetPointOsMember(OsReset);
+      }
 
       await refetch();
       await queryClient.invalidateQueries({ queryKey: ["CalendarClass"] });
@@ -528,7 +535,6 @@ function PickerClassManage({ children }) {
   };
 
   const onDelete = ({ rowData }) => {
-    
     if (!initialValue?.ID) return;
 
     Swal.fire({
@@ -559,7 +565,11 @@ function PickerClassManage({ children }) {
           } else {
             let newLists = [...(CrClass?.Member?.Lists || [])];
             newLists = newLists.filter(
-              (x) => !(x?.Member?.ID === rowData?.Member?.ID && x?.Os?.ID === rowData?.Os?.ID)
+              (x) =>
+                !(
+                  x?.Member?.ID === rowData?.Member?.ID &&
+                  x?.Os?.ID === rowData?.Os?.ID
+                )
             );
             let newValues = {
               arr: [
@@ -642,7 +652,9 @@ function PickerClassManage({ children }) {
             });
           } else {
             let index = CrClass?.Member?.Lists?.findIndex(
-              (x) => x.Member.ID === rowData.Member.ID && rowData?.Os?.ID === x?.Os?.ID
+              (x) =>
+                x.Member.ID === rowData.Member.ID &&
+                rowData?.Os?.ID === x?.Os?.ID
             );
             if (index > -1) {
               let CrStatus = CrClass?.Member?.Lists[index].Status;
@@ -709,6 +721,10 @@ function PickerClassManage({ children }) {
                         edit: [addPoints],
                       }
                     : null,
+                  OsReset: {
+                    osID: rowData?.Os?.ID,
+                    isRestore: Boolean(!Status?.value)
+                  },
                   deletePoint: deletePoints,
                 },
                 {
