@@ -737,6 +737,7 @@
         .fc-event,
         .fc-event-dot {
             padding: 0;
+            overflow: hidden;
             @include border-radius($border-radius);
             .fc-content {
                 padding: 0.55rem 0.55rem 0.55rem 0.55rem;

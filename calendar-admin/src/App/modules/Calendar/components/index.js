@@ -17,6 +17,9 @@ import PickerUserRequestFilter from "./PickerUserRequestFilter";
 import PickerTakeBreak from "./PickerTakeBreak"
 import PickerCurrentCalendar from "./PickerCurrentCalendar";
 import PickerReportMassage from "./PickerReportMassage";
+import PickerCalendarRooms from "./PickerCalendarRooms";
+import PickerReportStaffService from "./PickerReportStaffService";
+import PickerReportMassageV2 from "./PickerReportMassageV2";
 
 export {
   PickerSettingBookOnline,
@@ -37,5 +40,8 @@ export {
   PickerOfflineSchedule,
   PickerTakeBreak,
   PickerCurrentCalendar,
-  PickerReportMassage
+  PickerReportMassage,
+  PickerCalendarRooms,
+  PickerReportStaffService,
+  PickerReportMassageV2
 };

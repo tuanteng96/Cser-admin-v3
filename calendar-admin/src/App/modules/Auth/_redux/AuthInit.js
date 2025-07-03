@@ -155,7 +155,7 @@ function AuthInit({ isConfig, children }) {
             ],
           },
           token:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjAyMDAiLCJuYmYiOjE3NTA3Mjk4NjMsImV4cCI6MTgzNzEyOTg2MywiaWF0IjoxNzUwNzI5ODYzfQ.k66K_J977smRWwJyJs_9m1Ja7ReHxlD4wruXeJFq3e8',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjAyNzYiLCJuYmYiOjE3NTE1MTM1MTksImV4cCI6MTgzNzkxMzUxOSwiaWF0IjoxNzUxNTEzNTE5fQ.5n2twP-gc6qfaP6fL3ujnwPaofwTUvwFbcgqOX7DAgM',
         };
         window.GlobalConfig = {
           APP: {
@@ -167,7 +167,7 @@ function AuthInit({ isConfig, children }) {
           },
           Admin: {
             TextToSpeech: "zalo",
-            PosActiveCalendar: "",
+            PosActiveCalendar: "", //PickerCalendarRooms
             lop_hoc_diem: 10,
             kpiFinish: "Khách đến làm dịch vụ",
             kpiCancel: "Khách hủy",

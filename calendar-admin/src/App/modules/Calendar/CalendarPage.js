@@ -18,7 +18,7 @@ import { useWindowSize } from "../../../hooks/useWindowSize";
 import { AppContext } from "../../App";
 import ModalCalendarLock from "../../../components/ModalCalendarLock/ModalCalendarLock";
 import scrollGridPlugin from "@fullcalendar/scrollgrid";
-import { useQuery } from "react-query";
+import { useQuery, useQueryClient } from "react-query";
 import Swal from "sweetalert2";
 import Select from "react-select";
 
@@ -31,6 +31,7 @@ import { Dropdown } from "react-bootstrap";
 import PickerSettingCalendar from "../../../components/PickerSettingCalendar/PickerSettingCalendar";
 import {
   PickerCalendarClass,
+  PickerCalendarRooms,
   PickerCareSchedule,
   PickerClass,
   PickerControlBookOnline,
@@ -137,6 +138,8 @@ const getStatusClss = (Status, item) => {
 };
 
 function CalendarPage(props) {
+  const queryClient = useQueryClient();
+
   const {
     AuthCrStockID,
     GTimeOpen,
@@ -225,14 +228,18 @@ function CalendarPage(props) {
   });
 
   const [topCalendar, setTopCalendar] = useState({
-    type: GlobalConfig?.Admin?.PosActiveCalendar
-      ? optionsCalendar.filter(
-          (x) => x.value === GlobalConfig?.Admin?.PosActiveCalendar
-        )[0]
-      : {
-          value: "resourceTimeGridDay",
-          label: "Nhân viên",
-        },
+    type:
+      GlobalConfig?.Admin?.PosActiveCalendar &&
+      optionsCalendar.filter(
+        (x) => x.value === GlobalConfig?.Admin?.PosActiveCalendar
+      ).length > 0
+        ? optionsCalendar.filter(
+            (x) => x.value === GlobalConfig?.Admin?.PosActiveCalendar
+          )[0]
+        : {
+            value: "resourceTimeGridDay",
+            label: "Nhân viên",
+          },
     day: moment().toDate(),
   });
 
@@ -250,8 +257,19 @@ function CalendarPage(props) {
     ListLocks: [],
   });
   const [btnLoadingLock, setBtnLoadingLock] = useState(false);
+
   const calendarRef = useRef("");
+  const CalendarRoomsRef = useRef(null);
+
   const { isTelesales } = useContext(AppContext);
+
+  useEffect(() => {
+    if (GlobalConfig?.Admin?.PosActiveCalendar) {
+      if (GlobalConfig?.Admin?.PosActiveCalendar === "PickerCalendarRooms") {
+        CalendarRoomsRef?.current?.open();
+      }
+    }
+  }, [CalendarRoomsRef, GlobalConfig?.Admin?.PosActiveCalendar]);
 
   useEffect(() => {
     if (topCalendar?.type?.value === "resourceTimeGridDay") {
@@ -438,7 +456,7 @@ function CalendarPage(props) {
     },
   });
 
-  window.top.OsRooms = ListRooms?.data || []
+  window.top.OsRooms = ListRooms?.data || [];
 
   const SettingCalendar = useQuery({
     queryKey: ["SettingCalendar", AuthCrStockID],
@@ -721,6 +739,8 @@ function CalendarPage(props) {
         u_id_z4aDf2,
       });
 
+      await queryClient.invalidateQueries({ queryKey: ["ListCalendarRooms"] });
+
       if (values.Status === "KHACH_KHONG_DEN") {
         if (
           window?.top?.GlobalConfig?.Admin?.kpiCancelFinish &&
@@ -900,6 +920,8 @@ function CalendarPage(props) {
         u_id_z4aDf2,
       });
 
+      await queryClient.invalidateQueries({ queryKey: ["ListCalendarRooms"] });
+
       if (window?.top?.GlobalConfig?.Admin?.kpiFinish && values?.CreateBy) {
         let newData = {
           update: [
@@ -1004,6 +1026,7 @@ function CalendarPage(props) {
         CurrentStockID,
         u_id_z4aDf2,
       });
+      await queryClient.invalidateQueries({ queryKey: ["ListCalendarRooms"] });
       if (window?.top?.GlobalConfig?.Admin?.kpiCancel && values?.CreateBy) {
         let newData = {
           update: [
@@ -1528,55 +1551,72 @@ function CalendarPage(props) {
                       {(CalendarClass) => (
                         <PickerControlBookOnline>
                           {(ControlBookOnline) => (
-                            <Select
-                              options={[
-                                ...optionsCalendar,
-                                {
-                                  value: "PickerCalendarClass",
-                                  label: "Bảng lịch lớp học",
-                                  hidden: !lop_hoc_pt,
-                                },
-                                {
-                                  value: "PickerControlBookOnline",
-                                  label: "Kiểm soát đặt lịch Online",
-                                  hidden: !SettingBookOnline,
-                                },
-                                {
-                                  value: "PickerCareSchedule",
-                                  label: "Lịch chăm sóc",
-                                },
-                              ].filter((x) => !x.hidden)}
-                              value={topCalendar.type}
-                              onChange={(val) => {
-                                if (val?.value === "PickerCalendarClass") {
-                                  CalendarClass.open();
-                                } else if (
-                                  val?.value === "PickerControlBookOnline"
-                                ) {
-                                  ControlBookOnline.open();
-                                } else if (
-                                  val?.value === "PickerCareSchedule"
-                                ) {
-                                  CareSchedule.open();
-                                } else {
-                                  setTopCalendar((prevState) => ({
-                                    ...prevState,
-                                    type: val,
-                                  }));
-                                }
-                              }}
-                              menuPosition="fixed"
-                              styles={{
-                                menuPortal: (base) => ({
-                                  ...base,
-                                  zIndex: 9999,
-                                }),
-                              }}
-                              menuPortalTarget={document.body}
-                              isClearable={false}
-                              className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
-                              classNamePrefix="select"
-                            />
+                            <PickerCalendarRooms
+                              onOpenModal={onOpenModal}
+                              setInitialValue={setInitialValue}
+                              ref={CalendarRoomsRef}
+                            >
+                              {(CalendarRooms) => (
+                                <Select
+                                  options={[
+                                    ...optionsCalendar,
+                                    {
+                                      value: "PickerCalendarRooms",
+                                      label: "Nhân viên / Phòng",
+                                      hidden: false,
+                                    },
+                                    {
+                                      value: "PickerCalendarClass",
+                                      label: "Bảng lịch lớp học",
+                                      hidden: !lop_hoc_pt,
+                                    },
+                                    {
+                                      value: "PickerControlBookOnline",
+                                      label: "Kiểm soát đặt lịch Online",
+                                      hidden: !SettingBookOnline,
+                                    },
+                                    {
+                                      value: "PickerCareSchedule",
+                                      label: "Lịch chăm sóc",
+                                    },
+                                  ].filter((x) => !x.hidden)}
+                                  value={topCalendar.type}
+                                  onChange={(val) => {
+                                    if (val?.value === "PickerCalendarClass") {
+                                      CalendarClass.open();
+                                    } else if (
+                                      val?.value === "PickerControlBookOnline"
+                                    ) {
+                                      ControlBookOnline.open();
+                                    } else if (
+                                      val?.value === "PickerCalendarRooms"
+                                    ) {
+                                      CalendarRooms.open();
+                                    } else if (
+                                      val?.value === "PickerCareSchedule"
+                                    ) {
+                                      CareSchedule.open();
+                                    } else {
+                                      setTopCalendar((prevState) => ({
+                                        ...prevState,
+                                        type: val,
+                                      }));
+                                    }
+                                  }}
+                                  menuPosition="fixed"
+                                  styles={{
+                                    menuPortal: (base) => ({
+                                      ...base,
+                                      zIndex: 9999,
+                                    }),
+                                  }}
+                                  menuPortalTarget={document.body}
+                                  isClearable={false}
+                                  className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
+                                  classNamePrefix="select"
+                                />
+                              )}
+                            </PickerCalendarRooms>
                           )}
                         </PickerControlBookOnline>
                       )}
