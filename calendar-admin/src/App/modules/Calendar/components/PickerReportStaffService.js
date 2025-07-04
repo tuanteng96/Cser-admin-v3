@@ -11,11 +11,10 @@ import { useWindowSize } from "../../../../hooks/useWindowSize";
 import clsx from "clsx";
 
 function PickerReportStaffService({ children }) {
-  const { AuthCrStockID, checkout_time, TU_DONG_TIP } = useSelector(
+  const { AuthCrStockID, checkout_time } = useSelector(
     ({ Auth, JsonConfig }) => ({
       AuthCrStockID: Auth.CrStockID,
       checkout_time: JsonConfig?.Admin?.checkout_time || "",
-      TU_DONG_TIP: JsonConfig?.Admin?.TU_DONG_TIP || false,
     })
   );
 
@@ -27,25 +26,79 @@ function PickerReportStaffService({ children }) {
   const { data, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["ListReportStaffService", { visible, CrDate }],
     queryFn: async () => {
-      let objTime = {
-        hours: "23",
-        minute: "59",
-      };
-      if (checkout_time && TU_DONG_TIP) {
-        objTime = {
+      let isSkips = false;
+
+      let DateStart = null;
+      let DateEnd = null;
+
+      if (checkout_time) {
+        let CrIn = moment()
+          .subtract(1, "days")
+          .set({
+            hours: checkout_time.split(";")[0].split(":")[0],
+            minute: checkout_time.split(";")[0].split(":")[1],
+          });
+        let CrInEnd = moment()
+          .subtract(1, "days")
+          .set({
+            hours: "23",
+            minute: "59",
+          });
+        let CrOut = moment().set({
+          hours: "00",
+          minute: "00",
+        });
+        let CrOutEnd = moment().set({
           hours: checkout_time.split(";")[1].split(":")[0],
           minute: checkout_time.split(";")[1].split(":")[1],
-        };
+        });
+
+        let now = moment();
+
+        if (now.isBetween(CrIn, CrInEnd, null, "[]")) {
+          DateEnd = moment(CrDate)
+            .add(1, "days")
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+        } else if (now.isBetween(CrOut, CrOutEnd, null, "[]")) {
+          isSkips = true;
+          DateStart = moment(CrDate)
+            .subtract(1, "days")
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+          DateEnd = moment(CrDate)
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+        } else {
+          DateStart = moment(CrDate)
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+          DateEnd = moment(CrDate)
+            .add(1, "days")
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+        }
       }
+
       let { result: rs3 } = await CalendarCrud.getReportService({
         StockID: AuthCrStockID,
-        DateEnd: moment(CrDate)
-          .add(checkout_time && TU_DONG_TIP ? 1 : 0, "days")
-          .set(objTime)
-          .format("DD/MM/YYYY HH:mm"),
-        DateStart: moment(CrDate)
-          .set({ hours: "00", minute: "00" })
-          .format("DD/MM/YYYY HH:mm"),
+        DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY HH:mm"),
+        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY HH:mm"),
         Pi: 1,
         Ps: 5000,
         MemberID: "",
@@ -61,8 +114,12 @@ function PickerReportStaffService({ children }) {
         ShowsX: "2",
       });
       let { list: rs4 } = await CalendarCrud.getAllWorkSheet({
-        From: moment(CrDate).format("DD/MM/YYYY"),
-        To: moment(CrDate).format("DD/MM/YYYY"),
+        From: moment(CrDate)
+          .subtract(isSkips ? 1 : 0, "days")
+          .format("DD/MM/YYYY"),
+        To: moment(CrDate)
+          .subtract(isSkips ? 1 : 0, "days")
+          .format("DD/MM/YYYY"),
         StockID: AuthCrStockID,
         key: "",
       });
@@ -114,11 +171,16 @@ function PickerReportStaffService({ children }) {
           }
         }
       }
+
       STAFFS = STAFFS.map((x) => ({
         ...x,
-        ValueOf: x.CheckIn ? moment(x.CheckIn).valueOf() : moment().add(1, "years").valueOf(),
+        ValueOf: x.CheckIn
+          ? moment(x.CheckIn).valueOf()
+          : moment()
+              .add(1, "years")
+              .valueOf(),
       })).sort((a, b) => a.ValueOf - b.ValueOf);
-      
+
       return STAFFS || [];
     },
     enabled: Boolean(CrDate) && visible,
@@ -131,9 +193,9 @@ function PickerReportStaffService({ children }) {
     () => [
       {
         key: "FullName",
-        title: "Họ tên nhân viên",
+        title: "Nhân viên",
         dataKey: "FullName",
-        width: 350,
+        width: width > 767 ? 350 : 180,
         sortable: false,
       },
       {
@@ -190,7 +252,9 @@ function PickerReportStaffService({ children }) {
                   >
                     {x.ProServiceName} {x.IsMemberSet && "(YC)"}
                   </span>
-                  {rowData?.Items.length - 1 !== index && <span className="pr-1">,</span>}
+                  {rowData?.Items.length - 1 !== index && (
+                    <span className="pr-1">,</span>
+                  )}
                 </span>
               ))
             ) : (
@@ -218,8 +282,8 @@ function PickerReportStaffService({ children }) {
               <div className="hidden text-xl font-medium lg:block">
                 Dịch vụ thực hiện
               </div>
-              <div className="flex gap-3">
-                <div className="w-[150px]">
+              <div className="flex w-full gap-3 lg:w-auto">
+                <div className="lg:w-[150px] flex-1">
                   <DatePicker
                     locale={vi}
                     selected={CrDate ? new Date(CrDate) : null}
@@ -297,7 +361,6 @@ function PickerReportStaffService({ children }) {
               </div>
             </div>
             <div className="relative p-4 grow lg:h-[calc(100%-73px)]">
-              
               <AutoResizer>
                 {({ width, height }) => (
                   <Table

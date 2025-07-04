@@ -9,13 +9,12 @@ import vi from "date-fns/locale/vi";
 import { PriceHelper } from "../../../../helpers/PriceHelper";
 
 function PickerReportMassageV2({ children }) {
-  const { AuthCrStockID, checkout_time, TU_DONG_TIP } = useSelector(
+  const { AuthCrStockID, checkout_time } = useSelector(
     ({ Auth, JsonConfig }) => ({
       AuthCrStockID: Auth.CrStockID,
       GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
       GTimeClose: JsonConfig?.APP?.Working?.TimeClose || "23:59:00",
       checkout_time: JsonConfig?.Admin?.checkout_time || "",
-      TU_DONG_TIP: JsonConfig?.Admin?.TU_DONG_TIP || false,
     })
   );
 
@@ -34,25 +33,84 @@ function PickerReportMassageV2({ children }) {
   const { data, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["ListCurrentCalendars", { visible, CrDate }],
     queryFn: async () => {
-      let objTime = {
-        hours: "23",
-        minute: "59",
-      };
-      if (checkout_time && TU_DONG_TIP) {
-        objTime = {
+      let isSkips = false;
+
+      let DateStart = null;
+      let DateEnd = null;
+
+      if (checkout_time) {
+        let CrIn = moment()
+          .subtract(1, "days")
+          .set({
+            hours: checkout_time.split(";")[0].split(":")[0],
+            minute: checkout_time.split(";")[0].split(":")[1],
+          });
+        let CrInEnd = moment()
+          .subtract(1, "days")
+          .set({
+            hours: "23",
+            minute: "59",
+          });
+        let CrOut = moment().set({
+          hours: "00",
+          minute: "00",
+        });
+        let CrOutEnd = moment().set({
           hours: checkout_time.split(";")[1].split(":")[0],
           minute: checkout_time.split(";")[1].split(":")[1],
-        };
+        });
+
+        let now = moment();
+
+        if (now.isBetween(CrIn, CrInEnd, null, "[]")) {
+          DateEnd = moment(CrDate)
+            .add(1, "days")
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+        } else if (now.isBetween(CrOut, CrOutEnd, null, "[]")) {
+          isSkips = true;
+          DateStart = moment(CrDate)
+            .subtract(1, "days")
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+          DateEnd = moment(CrDate)
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+        } else {
+          DateStart = moment(CrDate)
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+          DateEnd = moment(CrDate)
+            .add(1, "days")
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
+        }
       }
+
       let { result: rs1 } = await CalendarCrud.getReportOverallSales({
-        DateEnd: moment(CrDate).format("DD/MM/YYYY"),
-        DateStart: moment(CrDate).format("DD/MM/YYYY"),
+        DateEnd: DateStart || moment(CrDate).format("DD/MM/YYYY"),
+        DateStart: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
         StockID: AuthCrStockID,
       });
       let { result: rs2 } = await CalendarCrud.getReportSellOut({
         StockID: AuthCrStockID,
-        DateEnd: moment(CrDate).format("DD/MM/YYYY"),
-        DateStart: moment(CrDate).format("DD/MM/YYYY"),
+        DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
+        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY"),
         BrandIds: "",
         CategoriesIds: "",
         ProductIds: "",
@@ -63,13 +121,8 @@ function PickerReportMassageV2({ children }) {
       });
       let { result: rs3 } = await CalendarCrud.getReportService({
         StockID: AuthCrStockID,
-        DateEnd: moment(CrDate)
-          .add(checkout_time && TU_DONG_TIP ? 1 : 0, "days")
-          .set(objTime)
-          .format("DD/MM/YYYY HH:mm"),
-        DateStart: moment(CrDate)
-          .set({ hours: "00", minute: "00" })
-          .format("DD/MM/YYYY HH:mm"),
+        DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
+        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY"),
         Pi: 1,
         Ps: 5000,
         MemberID: "",
@@ -85,8 +138,12 @@ function PickerReportMassageV2({ children }) {
         ShowsX: "2",
       });
       let { list: rs4 } = await CalendarCrud.getAllWorkSheet({
-        From: moment(CrDate).format("DD/MM/YYYY"),
-        To: moment(CrDate).format("DD/MM/YYYY"),
+        From: moment(CrDate)
+          .subtract(isSkips ? 1 : 0, "days")
+          .format("DD/MM/YYYY"),
+        To: moment(CrDate)
+          .subtract(isSkips ? 1 : 0, "days")
+          .format("DD/MM/YYYY"),
         StockID: AuthCrStockID,
         key: "",
       });
@@ -202,9 +259,9 @@ function PickerReportMassageV2({ children }) {
         createPortal(
           <div className="fixed top-0 left-0 z-[1003] bg-white !h-full w-full flex flex-col">
             <div className="flex items-center justify-between px-4 py-3.5 border-b">
-              <div className="text-xl font-medium">Thống kê</div>
-              <div className="flex gap-3">
-                <div className="w-[160px]">
+              <div className="hidden text-xl font-medium lg:block">Thống kê</div>
+              <div className="flex w-full gap-3 lg:w-auto">
+                <div className="lg:w-[160px] flex-1">
                   <DatePicker
                     locale={vi}
                     selected={CrDate}

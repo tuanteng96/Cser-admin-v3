@@ -10,7 +10,7 @@ import moment from 'moment'
 import { useSelector } from 'react-redux'
 
 function PickerTakeBreak({ children, item }) {
-  const { TimeOpen, TimeClose } = useSelector(({ auth }) => ({
+  const { TimeOpen, TimeClose, checkout_time } = useSelector(({ auth }) => ({
     TimeClose: auth?.GlobalConfig?.APP?.Working?.TimeClose || '23:45:00',
     TimeOpen: auth?.GlobalConfig?.APP?.Working?.TimeOpen || '00:00:00'
   }))
@@ -36,19 +36,46 @@ function PickerTakeBreak({ children, item }) {
   })
 
   useEffect(() => {
-    if (visible && item) {
-      setInitialValues(prevState => ({
-        ...prevState,
-        ...item,
-        ID: item.ID,
-        From: item.From,
-        To: item.To,
-        UserID: {
-          label: item?.User?.UserName,
-          value: item?.UserID
-        },
-        Desc: item.Desc
-      }))
+    if (visible) {
+      if (item) {
+        setInitialValues(prevState => ({
+          ...prevState,
+          ...item,
+          ID: item.ID,
+          From: item.From,
+          To: item.To,
+          UserID: {
+            label: item?.User?.UserName,
+            value: item?.UserID
+          },
+          Desc: item.Desc
+        }))
+      } else {
+        let DateStart = null
+        let DateEnd = null
+
+        if (window.top?.GlobalConfig?.Admin?.checkout_time) {
+          let checkout_time = window.top?.GlobalConfig?.Admin?.checkout_time
+          DateStart = moment()
+            .set({
+              hours: checkout_time.split(';')[1].split(':')[0],
+              minute: checkout_time.split(';')[1].split(':')[1]
+            })
+            .toDate()
+          DateEnd = moment()
+            .add(1, 'days')
+            .set({
+              hours: checkout_time.split(';')[1].split(':')[0],
+              minute: checkout_time.split(';')[1].split(':')[1]
+            })
+            .toDate()
+        }
+        setInitialValues(prevState => ({
+          ...prevState,
+          From: DateStart || prevState.From,
+          To: DateEnd || prevState.To
+        }))
+      }
     }
   }, [visible, item])
 
@@ -208,7 +235,7 @@ function PickerTakeBreak({ children, item }) {
                       //filterTime={filterPassedTime}
                     />
                   </div>
-                  <div className="form-group mb-0">
+                  <div className="mb-0 form-group">
                     <label className="font-label text-muted mb-5px">
                       Lý do
                     </label>

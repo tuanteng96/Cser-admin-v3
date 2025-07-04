@@ -462,6 +462,7 @@ const PickerCalendarRooms = forwardRef(
         };
       },
       keepPreviousData: true,
+      enabled: visible && Boolean(filters.From),
     });
 
     const getClassWrap = (item) => {
@@ -514,7 +515,9 @@ const PickerCalendarRooms = forwardRef(
           createPortal(
             <div className="fixed top-0 left-0 z-[1003] bg-white !h-full w-full flex flex-col">
               <div className="flex items-center justify-between p-4 border-b">
-                <div className="text-xl font-medium">Nhân viên / Phòng</div>
+                <div className="hidden text-xl font-medium lg:block">
+                  Nhân viên / Phòng
+                </div>
                 <Formik
                   initialValues={filters}
                   onSubmit={async (values) => {
@@ -668,7 +671,7 @@ const PickerCalendarRooms = forwardRef(
                           type="button"
                           className="rounded-[4px] px-4 text-white bg-primary"
                         >
-                          Tạo đặt lịch mới
+                          Tạo đặt lịch
                         </button>
                         <div className="h-11 w-[1px] bg-gray-300"></div>
                         <div

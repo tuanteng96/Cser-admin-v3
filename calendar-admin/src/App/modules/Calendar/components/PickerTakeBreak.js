@@ -19,10 +19,13 @@ const CreateSchema = Yup.object().shape({
 });
 
 function PickerTakeBreak({ children, item, UserID, AuthCrStockID }) {
-  const { TimeOpen, TimeClose } = useSelector(({ auth }) => ({
-    TimeClose: auth?.GlobalConfig?.APP?.Working?.TimeClose || "23:45:00",
-    TimeOpen: auth?.GlobalConfig?.APP?.Working?.TimeOpen || "00:00:00",
-  }));
+  const { TimeOpen, TimeClose, checkout_time } = useSelector(
+    ({ auth, JsonConfig }) => ({
+      TimeClose: auth?.GlobalConfig?.APP?.Working?.TimeClose || "23:45:00",
+      TimeOpen: auth?.GlobalConfig?.APP?.Working?.TimeOpen || "00:00:00",
+      checkout_time: JsonConfig?.Admin?.checkout_time || "",
+    })
+  );
   const queryClient = useQueryClient();
   const [visible, setVisible] = useState(false);
   const [initialValues, setInitialValues] = useState({
@@ -60,12 +63,33 @@ function PickerTakeBreak({ children, item, UserID, AuthCrStockID }) {
           Desc: item.Desc,
         }));
       } else {
+        let DateStart = null;
+        let DateEnd = null;
+
+        if (checkout_time) {
+          DateStart = moment()
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .toDate();
+          DateEnd = moment()
+            .add(1, "days")
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .toDate();
+        }
         setInitialValues((prevState) => ({
           ...prevState,
           UserID: UserID,
+          From: DateStart || prevState.From,
+          To: DateEnd || prevState.To,
         }));
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible, item, UserID]);
 
   const onHide = () => setVisible(false);
@@ -216,7 +240,7 @@ function PickerTakeBreak({ children, item, UserID, AuthCrStockID }) {
                           "is-invalid solid-invalid"
                       )}
                       shouldCloseOnSelect={false}
-                      dateFormat="dd/MM/yyyy HH:mm"
+                      dateFormat="HH:mm dd/MM/yyyy"
                       placeholderText="Chọn thời gian"
                       timeInputLabel="Thời gian"
                       showTimeSelect
@@ -240,7 +264,7 @@ function PickerTakeBreak({ children, item, UserID, AuthCrStockID }) {
                         errors.To && touched.To && "is-invalid solid-invalid"
                       )}
                       shouldCloseOnSelect={false}
-                      dateFormat="dd/MM/yyyy HH:mm"
+                      dateFormat="HH:mm dd/MM/yyyy"
                       placeholderText="Chọn thời gian"
                       timeInputLabel="Thời gian"
                       showTimeSelect
