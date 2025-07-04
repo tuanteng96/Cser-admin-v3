@@ -931,7 +931,7 @@ function TimekeepingMember(props) {
     window?.top?.loading &&
       window?.top?.loading('Đang thực hiện ...', () => {
         ExcelHepers.dataToExcel(
-          data?.FullName + ', T' + moment(filters.From).format('MM-YYYY'),
+          data?.FullName.replace(/\./g, "_") + ', T' + moment(filters.From).format('MM-YYYY'),
           (sheet, workbook) => {
             workbook.suspendPaint()
             workbook.suspendEvent()
