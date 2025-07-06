@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import DatePicker from "react-datepicker";
 import { useSelector } from "react-redux";
@@ -14,14 +14,19 @@ function PickerReportStaffService({ children }) {
   const { AuthCrStockID, checkout_time } = useSelector(
     ({ Auth, JsonConfig }) => ({
       AuthCrStockID: Auth.CrStockID,
-      checkout_time: JsonConfig?.Admin?.checkout_time || "",
+      checkout_time: JsonConfig?.Admin?.checkout_time || "", 
     })
   );
 
   const [visible, setVisible] = useState(false);
   const [CrDate, setCrDate] = useState(new Date());
+  const [filters, setFilters] = useState(null);
 
   let { width } = useWindowSize();
+
+  useEffect(() => {
+    setCrDate(new Date());
+  }, [visible]);
 
   const { data, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["ListReportStaffService", { visible, CrDate }],
@@ -32,73 +37,89 @@ function PickerReportStaffService({ children }) {
       let DateEnd = null;
 
       if (checkout_time) {
-        let CrIn = moment()
-          .subtract(1, "days")
-          .set({
-            hours: checkout_time.split(";")[0].split(":")[0],
-            minute: checkout_time.split(";")[0].split(":")[1],
-          });
-        let CrInEnd = moment()
-          .subtract(1, "days")
-          .set({
-            hours: "23",
-            minute: "59",
-          });
-        let CrOut = moment().set({
-          hours: "00",
-          minute: "00",
-        });
-        let CrOutEnd = moment().set({
-          hours: checkout_time.split(";")[1].split(":")[0],
-          minute: checkout_time.split(";")[1].split(":")[1],
-        });
-
-        let now = moment();
-
-        if (now.isBetween(CrIn, CrInEnd, null, "[]")) {
+        if (moment(CrDate).diff(moment(), "days") < 0) {
+          DateStart = moment(CrDate)
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+            })
+            .format("DD/MM/YYYY HH:mm");
           DateEnd = moment(CrDate)
             .add(1, "days")
-            .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-            })
-            .format("DD/MM/YYYY HH:mm");
-        } else if (now.isBetween(CrOut, CrOutEnd, null, "[]")) {
-          isSkips = true;
-          DateStart = moment(CrDate)
-            .subtract(1, "days")
-            .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-            })
-            .format("DD/MM/YYYY HH:mm");
-          DateEnd = moment(CrDate)
             .set({
               hours: checkout_time.split(";")[1].split(":")[0],
               minute: checkout_time.split(";")[1].split(":")[1],
             })
             .format("DD/MM/YYYY HH:mm");
         } else {
-          DateStart = moment(CrDate)
+          let CrIn = moment()
+            .subtract(1, "days")
             .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-            })
-            .format("DD/MM/YYYY HH:mm");
-          DateEnd = moment(CrDate)
-            .add(1, "days")
+              hours: checkout_time.split(";")[0].split(":")[0],
+              minute: checkout_time.split(";")[0].split(":")[1],
+            });
+          let CrInEnd = moment()
+            .subtract(1, "days")
             .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-            })
-            .format("DD/MM/YYYY HH:mm");
+              hours: "23",
+              minute: "59",
+            });
+          let CrOut = moment().set({
+            hours: "00",
+            minute: "00",
+          });
+          let CrOutEnd = moment().set({
+            hours: checkout_time.split(";")[1].split(":")[0],
+            minute: checkout_time.split(";")[1].split(":")[1],
+          });
+
+          let now = moment();
+
+          if (now.isBetween(CrIn, CrInEnd, null, "[]")) {
+            DateEnd = moment(CrDate)
+              .add(1, "days")
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+              })
+              .format("DD/MM/YYYY HH:mm");
+          } else if (now.isBetween(CrOut, CrOutEnd, null, "[]")) {
+            isSkips = true;
+            DateStart = moment(CrDate)
+              .subtract(1, "days")
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+              })
+              .format("DD/MM/YYYY HH:mm");
+            DateEnd = moment(CrDate)
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+              })
+              .format("DD/MM/YYYY HH:mm");
+          } else {
+            DateStart = moment(CrDate)
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+              })
+              .format("DD/MM/YYYY HH:mm");
+            DateEnd = moment(CrDate)
+              .add(1, "days")
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+              })
+              .format("DD/MM/YYYY HH:mm");
+          }
         }
       }
 
       let { result: rs3 } = await CalendarCrud.getReportService({
         StockID: AuthCrStockID,
-        DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY HH:mm"),
-        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY HH:mm"),
+        DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
+        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY"),
         Pi: 1,
         Ps: 5000,
         MemberID: "",
@@ -129,6 +150,7 @@ function PickerReportStaffService({ children }) {
         CheckIn: x.Dates[0].WorkTrack?.CheckIn || "",
         CheckOut: x.Dates[0].WorkTrack?.CheckOut || "",
         FullName: x.FullName,
+        Info: x.Dates[0].WorkTrack?.Info || null,
       }));
 
       let STAFFS = [];
@@ -159,6 +181,7 @@ function PickerReportStaffService({ children }) {
           STAFFS[index].ID = u?.UserID;
           STAFFS[index].CheckIn = u?.CheckIn || null;
           STAFFS[index].CheckOut = u?.CheckOut || null;
+          STAFFS[index].Info = u?.Info || null;
         } else {
           if (u?.CheckIn) {
             STAFFS.push({
@@ -166,6 +189,7 @@ function PickerReportStaffService({ children }) {
               ID: u?.UserID,
               CheckIn: u?.CheckIn || null,
               CheckOut: u?.CheckOut || null,
+              Info: u?.Info || null,
               Items: [],
             });
           }
@@ -180,8 +204,21 @@ function PickerReportStaffService({ children }) {
               .add(1, "years")
               .valueOf(),
       })).sort((a, b) => a.ValueOf - b.ValueOf);
-
-      return STAFFS || [];
+      
+      return {
+        Lists: STAFFS || [],
+        filters: {
+          DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY"),
+          DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
+        },
+      };
+    },
+    onSuccess: (rs) => {
+      if (rs.filters) {
+        setFilters(rs.filters);
+      } else {
+        setFilters(null);
+      }
     },
     enabled: Boolean(CrDate) && visible,
     keepPreviousData: true,
@@ -205,7 +242,14 @@ function PickerReportStaffService({ children }) {
         cellRenderer: ({ rowData }) => (
           <>
             {rowData?.CheckIn ? (
-              <>{moment(rowData?.CheckIn).format("HH:mm DD-MM-YYYY")}</>
+              <>
+                {rowData?.Info?.CheckInReality
+                  ? moment(
+                      rowData?.Info?.CheckInReality,
+                      "YYYY-MM-DD HH:mm"
+                    ).format("HH:mm DD-MM-YYYY")
+                  : moment(rowData?.CheckIn).format("HH:mm DD-MM-YYYY")}
+              </>
             ) : (
               <></>
             )}
@@ -221,7 +265,14 @@ function PickerReportStaffService({ children }) {
         cellRenderer: ({ rowData }) => (
           <>
             {rowData?.CheckOut ? (
-              <>{moment(rowData?.CheckOut).format("HH:mm DD-MM-YYYY")}</>
+              <>
+                {rowData?.Info?.CheckOutReality
+                  ? moment(
+                      rowData?.Info?.CheckOutReality,
+                      "YYYY-MM-DD HH:mm"
+                    ).format("HH:mm DD-MM-YYYY")
+                  : moment(rowData?.CheckOut).format("HH:mm DD-MM-YYYY")}
+              </>
             ) : (
               <></>
             )}
@@ -280,7 +331,12 @@ function PickerReportStaffService({ children }) {
           <div className="fixed top-0 left-0 z-[1003] bg-white !h-full w-full flex flex-col">
             <div className="flex items-center justify-between px-4 py-3.5 border-b md:flex-row flex-col">
               <div className="hidden text-xl font-medium lg:block">
-                Dịch vụ thực hiện
+                Bảng xếp Tour
+                {filters && checkout_time && (
+                  <span className="pl-1 text-sm">
+                    ({filters?.DateStart} - {filters?.DateEnd})
+                  </span>
+                )}
               </div>
               <div className="flex w-full gap-3 lg:w-auto">
                 <div className="lg:w-[150px] flex-1">
@@ -369,7 +425,7 @@ function PickerReportStaffService({ children }) {
                     width={width}
                     height={height}
                     columns={columns}
-                    data={data}
+                    data={data?.Lists || []}
                     disabled={isLoading}
                     loadingMore={isFetching}
                     // onEndReachedThreshold={300}

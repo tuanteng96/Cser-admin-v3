@@ -252,11 +252,11 @@ const PickerCalendarRooms = forwardRef(
               })
             : [];
 
-        dataBooks = dataBooks.filter(
-          (x) =>
-            dataBooksAuto.findIndex((o) => o?.Member?.ID === x?.Member?.ID) ===
-            -1
-        );
+        // dataBooks = dataBooks.filter(
+        //   (x) =>
+        //     dataBooksAuto.findIndex((o) => o?.Member?.ID === x?.Member?.ID) ===
+        //     -1
+        // );
 
         const { data: dataStaffs } = await CalendarCrud.getStaffs({
           StockID: AuthCrStockID,
@@ -377,6 +377,27 @@ const PickerCalendarRooms = forwardRef(
             obj.NextBooks = obj.NextBooks?.filter(
               (o) => o?.ID !== obj.Book?.ID
             );
+
+            if (obj.Book && obj.Book?.os) {
+              obj.NextBooks = obj.NextBooks.filter(
+                (x) =>
+                  !moment(
+                    moment(x.start).format("YYYY-MM-DD HH:mm"),
+                    "YYYY-MM-DD HH:mm"
+                  ).isBetween(
+                    moment(moment(obj.Book?.BookDate, "YYYY-MM-DD HH:mm")),
+                    moment(
+                      moment(obj.Book?.BookDate, "YYYY-MM-DD HH:mm").add(
+                        obj.Book?.os.RootMinutes || 90,
+                        "minutes"
+                      )
+                    ),
+                    null,
+                    "()"
+                  )
+              );
+            }
+
             return obj;
           })
           .sort((a, b) => a?.source?.Order - b?.source?.Order);
@@ -445,6 +466,28 @@ const PickerCalendarRooms = forwardRef(
                               ) <= 0)
                         )
                         .filter((x) => x.ID !== obj.Book?.ID);
+
+                      if (obj.Book && obj.Book?.os) {
+                        RoomNextBooks = RoomNextBooks.filter(
+                          (x) =>
+                            !moment(
+                              moment(x.start).format("YYYY-MM-DD HH:mm"),
+                              "YYYY-MM-DD HH:mm"
+                            ).isBetween(
+                              moment(
+                                moment(obj.Book?.BookDate, "YYYY-MM-DD HH:mm")
+                              ),
+                              moment(
+                                moment(
+                                  obj.Book?.BookDate,
+                                  "YYYY-MM-DD HH:mm"
+                                ).add(obj.Book?.os.RootMinutes || 90, "minutes")
+                              ),
+                              null,
+                              "()"
+                            )
+                        );
+                      }
 
                       obj.NextBooks = RoomNextBooks.sort(
                         (a, b) => new Date(a.BookDate) - new Date(b.BookDate)

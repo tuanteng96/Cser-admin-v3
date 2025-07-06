@@ -28,7 +28,7 @@ import clsx from "clsx";
 import DateTimePicker from "../../../shared/DateTimePicker/DateTimePicker";
 import { Dropdown } from "react-bootstrap";
 import PickerSettingCalendar from "../../../components/PickerSettingCalendar/PickerSettingCalendar";
-import { PickerOfflineSchedule, PickerReportMassage } from "./components";
+import { PickerOfflineSchedule, PickerReportMassage, PickerReportMassageV2, PickerReportStaffService } from "./components";
 import { toAbsoluteUrl, toAbsoluteUser } from "../../../helpers/AssetsHelpers";
 import ModalMassageCalendar from "../../../components/ModalCalendar/ModalMassageCalendar";
 import MassageResourceCurrentDay from "./components/MassageResourceCurrentDay";
@@ -200,7 +200,7 @@ function CalendarMassagePage(props) {
       hidden: false,
     },
   ];
-  
+
   const [TimeOpen, setTimeOpen] = useState(GTimeOpen);
   const [TimeClose, setTimeClose] = useState(GTimeClose);
 
@@ -1689,7 +1689,7 @@ function CalendarMassagePage(props) {
               })
               .filter((item) => item.Status !== "TU_CHOI")
           : [];
-              
+
       let dataBooksAuto =
         data.osList && Array.isArray(data.osList)
           ? data.osList.map((item) => ({
@@ -1941,51 +1941,66 @@ function CalendarMassagePage(props) {
               </div>
 
               <div className="flex">
-                <PickerReportMassage>
-                  {(Report) => (
-                    <PickerOfflineSchedule>
-                      {(OfflineSchedule) => (
-                        <Select
-                          options={[
-                            ...optionsCalendar,
-                            {
-                              value: "PickerOfflineSchedule",
-                              label: "Lịch nghỉ",
-                            },
-                            {
-                              value: "PickerReportMassage",
-                              label: "Thống kê",
-                            },
-                          ].filter((x) => !x.hidden)}
-                          value={topCalendar.type}
-                          onChange={(val) => {
-                            if (val?.value === "PickerOfflineSchedule") {
-                              OfflineSchedule.open();
-                            } else if (val?.value === "PickerReportMassage") {
-                              Report?.open();
-                            } else {
-                              setTopCalendar((prevState) => ({
-                                ...prevState,
-                                type: val,
-                              }));
-                            }
-                          }}
-                          menuPosition="fixed"
-                          styles={{
-                            menuPortal: (base) => ({
-                              ...base,
-                              zIndex: 9999,
-                            }),
-                          }}
-                          menuPortalTarget={document.body}
-                          isClearable={false}
-                          className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
-                          classNamePrefix="select"
-                        />
+                <PickerReportStaffService>
+                  {(ReportStaff) => (
+                    <PickerReportMassageV2>
+                      {(Report) => (
+                        <PickerOfflineSchedule>
+                          {(OfflineSchedule) => (
+                            <Select
+                              options={[
+                                ...optionsCalendar,
+                                {
+                                  value: "PickerOfflineSchedule",
+                                  label: "Lịch nghỉ",
+                                },
+                                {
+                                  value: "PickerReportStaffService",
+                                  label: "Bảng xếp Tour",
+                                },
+                                {
+                                  value: "PickerReportMassage",
+                                  label: "Thống kê",
+                                },
+                              ].filter((x) => !x.hidden)}
+                              value={topCalendar.type}
+                              onChange={(val) => {
+                                if (val?.value === "PickerOfflineSchedule") {
+                                  OfflineSchedule.open();
+                                } else if (
+                                  val?.value === "PickerReportMassage"
+                                ) {
+                                  Report?.open();
+                                } else if (
+                                  val?.value === "PickerReportStaffService"
+                                ) {
+                                  ReportStaff?.open();
+                                } else {
+                                  setTopCalendar((prevState) => ({
+                                    ...prevState,
+                                    type: val,
+                                  }));
+                                }
+                              }}
+                              menuPosition="fixed"
+                              styles={{
+                                menuPortal: (base) => ({
+                                  ...base,
+                                  zIndex: 9999,
+                                }),
+                              }}
+                              menuPortalTarget={document.body}
+                              isClearable={false}
+                              className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
+                              classNamePrefix="select"
+                            />
+                          )}
+                        </PickerOfflineSchedule>
                       )}
-                    </PickerOfflineSchedule>
+                    </PickerReportMassageV2>
                   )}
-                </PickerReportMassage>
+                </PickerReportStaffService>
+
                 {topCalendar?.type?.value === "resourceCurrentDay" && (
                   <button
                     type="button"

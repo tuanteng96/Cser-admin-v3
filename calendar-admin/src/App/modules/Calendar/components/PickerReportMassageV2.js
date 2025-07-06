@@ -22,6 +22,8 @@ function PickerReportMassageV2({ children }) {
 
   let [CrDate, setCrDate] = useState(new Date());
 
+  const [filters, setFilters] = useState(null);
+
   useEffect(() => {
     if (visible) {
       setCrDate(moment().toDate());
@@ -39,66 +41,89 @@ function PickerReportMassageV2({ children }) {
       let DateEnd = null;
 
       if (checkout_time) {
-        let CrIn = moment()
-          .subtract(1, "days")
-          .set({
-            hours: checkout_time.split(";")[0].split(":")[0],
-            minute: checkout_time.split(";")[0].split(":")[1],
-          });
-        let CrInEnd = moment()
-          .subtract(1, "days")
-          .set({
-            hours: "23",
-            minute: "59",
-          });
-        let CrOut = moment().set({
-          hours: "00",
-          minute: "00",
-        });
-        let CrOutEnd = moment().set({
-          hours: checkout_time.split(";")[1].split(":")[0],
-          minute: checkout_time.split(";")[1].split(":")[1],
-        });
-
-        let now = moment();
-
-        if (now.isBetween(CrIn, CrInEnd, null, "[]")) {
+        if (moment(CrDate).diff(moment(), "days") < 0) {
+          DateStart = moment(CrDate)
+            .set({
+              hours: checkout_time.split(";")[1].split(":")[0],
+              minute: checkout_time.split(";")[1].split(":")[1],
+              second: "00",
+            })
+            .format("DD/MM/YYYY HH:mm:ss");
           DateEnd = moment(CrDate)
             .add(1, "days")
             .set({
               hours: checkout_time.split(";")[1].split(":")[0],
               minute: checkout_time.split(";")[1].split(":")[1],
+              second: "00",
             })
-            .format("DD/MM/YYYY HH:mm");
-        } else if (now.isBetween(CrOut, CrOutEnd, null, "[]")) {
-          isSkips = true;
-          DateStart = moment(CrDate)
+            .format("DD/MM/YYYY HH:mm:ss");
+        } else {
+          let CrIn = moment()
             .subtract(1, "days")
             .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-            })
-            .format("DD/MM/YYYY HH:mm");
-          DateEnd = moment(CrDate)
+              hours: checkout_time.split(";")[0].split(":")[0],
+              minute: checkout_time.split(";")[0].split(":")[1],
+            });
+          let CrInEnd = moment()
+            .subtract(1, "days")
             .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-            })
-            .format("DD/MM/YYYY HH:mm");
-        } else {
-          DateStart = moment(CrDate)
-            .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-            })
-            .format("DD/MM/YYYY HH:mm");
-          DateEnd = moment(CrDate)
-            .add(1, "days")
-            .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-            })
-            .format("DD/MM/YYYY HH:mm");
+              hours: "23",
+              minute: "59",
+            });
+          let CrOut = moment().set({
+            hours: "00",
+            minute: "00",
+          });
+          let CrOutEnd = moment().set({
+            hours: checkout_time.split(";")[1].split(":")[0],
+            minute: checkout_time.split(";")[1].split(":")[1],
+          });
+
+          let now = moment();
+
+          if (now.isBetween(CrIn, CrInEnd, null, "[]")) {
+            DateEnd = moment(CrDate)
+              .add(1, "days")
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+                second: "00",
+              })
+              .format("DD/MM/YYYY HH:mm:ss");
+          } else if (now.isBetween(CrOut, CrOutEnd, null, "[]")) {
+            isSkips = true;
+            DateStart = moment(CrDate)
+              .subtract(1, "days")
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+                second: "00",
+              })
+              .format("DD/MM/YYYY HH:mm:ss");
+            DateEnd = moment(CrDate)
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+                second: "00",
+              })
+              .format("DD/MM/YYYY HH:mm:ss");
+          } else {
+            DateStart = moment(CrDate)
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+                second: "00",
+              })
+              .format("DD/MM/YYYY HH:mm:ss");
+            DateEnd = moment(CrDate)
+              .add(1, "days")
+              .set({
+                hours: checkout_time.split(";")[1].split(":")[0],
+                minute: checkout_time.split(";")[1].split(":")[1],
+                second: "00",
+              })
+              .format("DD/MM/YYYY HH:mm:ss");
+          }
         }
       }
 
@@ -137,6 +162,7 @@ function PickerReportMassageV2({ children }) {
         TransfUserID: "",
         ShowsX: "2",
       });
+
       let { list: rs4 } = await CalendarCrud.getAllWorkSheet({
         From: moment(CrDate)
           .subtract(isSkips ? 1 : 0, "days")
@@ -242,7 +268,18 @@ function PickerReportMassageV2({ children }) {
           ...STAFFS.filter((x) => x.ValueOf < 0),
         ],
         SERVICES,
+        filters: {
+          DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY HH:mm"),
+          DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY HH:mm"),
+        },
       };
+    },
+    onSuccess: (rs) => {
+      if (rs.filters) {
+        setFilters(rs.filters);
+      } else {
+        setFilters(null);
+      }
     },
     enabled: Boolean(CrDate) && visible,
     keepPreviousData: true,
@@ -259,7 +296,14 @@ function PickerReportMassageV2({ children }) {
         createPortal(
           <div className="fixed top-0 left-0 z-[1003] bg-white !h-full w-full flex flex-col">
             <div className="flex items-center justify-between px-4 py-3.5 border-b">
-              <div className="hidden text-xl font-medium lg:block">Thống kê</div>
+              <div className="hidden text-xl font-medium lg:block">
+                Thống kê
+                {checkout_time && filters && (
+                  <span className="pl-1 text-sm">
+                    ({filters?.DateStart} - {filters?.DateEnd})
+                  </span>
+                )}
+              </div>
               <div className="flex w-full gap-3 lg:w-auto">
                 <div className="lg:w-[160px] flex-1">
                   <DatePicker
