@@ -28,7 +28,12 @@ import clsx from "clsx";
 import DateTimePicker from "../../../shared/DateTimePicker/DateTimePicker";
 import { Dropdown } from "react-bootstrap";
 import PickerSettingCalendar from "../../../components/PickerSettingCalendar/PickerSettingCalendar";
-import { PickerOfflineSchedule, PickerReportMassage, PickerReportMassageV2, PickerReportStaffService } from "./components";
+import {
+  PickerOfflineSchedule,
+  PickerReportMassage,
+  PickerReportMassageV2,
+  PickerReportStaffService,
+} from "./components";
 import { toAbsoluteUrl, toAbsoluteUser } from "../../../helpers/AssetsHelpers";
 import ModalMassageCalendar from "../../../components/ModalCalendar/ModalMassageCalendar";
 import MassageResourceCurrentDay from "./components/MassageResourceCurrentDay";
@@ -703,14 +708,16 @@ function CalendarMassagePage(props) {
         objBooking.MemberID = newMember?.member?.ID || 0;
 
         if (newMember?.member) Members = { ...newMember?.member };
-      } else if (!objBooking.MemberID) {
+      } else if (!values.MemberID) {
         let NextMember = await CalendarCrud.getNextMember();
         if (NextMember?.Member) {
           objBooking.MemberID = NextMember?.Member?.ID || 0;
 
           let FullName = NextMember?.Member?.FullName || "";
 
-          if (values?.TreatmentJson?.label && !values.ID) {
+          if (!values.ID) {
+            //values?.TreatmentJson?.label &&
+
             let memberUpdate = {
               ...NextMember?.Member,
               Birth: NextMember?.Member?.BirthDate
@@ -718,8 +725,7 @@ function CalendarMassagePage(props) {
                     "DD/MM/YYYY"
                   )
                 : "",
-              FullName:
-                NextMember?.Member?.ID + " - " + values?.TreatmentJson?.label,
+              FullName: NextMember?.Member?.ID, // + " - " + values?.TreatmentJson?.label,
             };
 
             let rsMUpdate = await CalendarCrud.addEditMember({
@@ -907,6 +913,7 @@ function CalendarMassagePage(props) {
       TreatmentJson: values?.TreatmentJson
         ? JSON.stringify(values?.TreatmentJson)
         : "",
+      IsAnonymous: values.MemberID?.PassersBy || false,
       // Desc:
       //   window?.top?.GlobalConfig?.APP?.SL_khach && values.AmountPeople
       //     ? `Số lượng khách: ${values.AmountPeople.value}. \nGhi chú: ${values.Desc}`
@@ -921,41 +928,39 @@ function CalendarMassagePage(props) {
     };
 
     try {
-      if (values?.IsMemberCurrent?.IsAnonymous) {
-        if (!values?.IsMemberCurrent?.MemberPhone) {
-          const objCreate = {
-            member: {
-              MobilePhone: values?.IsMemberCurrent?.MemberCreate?.Phone,
-              FullName: values?.IsMemberCurrent?.MemberCreate?.FullName,
-              EmptyPhone: true,
-            },
-          };
-          const newMember = await CalendarCrud.createMember(objCreate);
-          if (newMember.error) {
-            toast.error(newMember.error, {
-              position: toast.POSITION.TOP_RIGHT,
-              autoClose: 1500,
-            });
-            setBtnLoading((prevState) => ({
-              ...prevState,
-              isBtnGuestsArrive: false,
-            }));
-            return;
-          }
-          objBooking.MemberID = newMember?.member?.ID;
-          Members = { ...newMember?.member };
-        } else {
-          objBooking.MemberID = values?.IsMemberCurrent?.MemberPhone.ID;
-          Members = { ...values?.IsMemberCurrent?.MemberPhone };
+      if (values?.MemberID?.isCreate && !values.MemberID?.PassersBy) {
+        const objCreate = {
+          member: {
+            MobilePhone: values.MemberID?.suffix,
+            FullName: values.MemberID?.text,
+            EmptyPhone: true,
+            IsAff: 1,
+          },
+        };
+        const newMember = await CalendarCrud.createMember(objCreate);
+        if (newMember?.error) {
+          toast.error(newMember?.error || JSON.stringify(newMember), {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 1500,
+          });
+          setBtnLoading((prevState) => ({
+            ...prevState,
+            isBtnBooking: false,
+          }));
+          return;
         }
-      } else if (!objBooking.MemberID) {
+        objBooking.MemberID = newMember?.member?.ID || 0;
+
+        if (newMember?.member) Members = { ...newMember?.member };
+      } else if (!values.MemberID) {
         let NextMember = await CalendarCrud.getNextMember();
         if (NextMember?.Member) {
           objBooking.MemberID = NextMember?.Member?.ID || 0;
 
           let FullName = NextMember?.Member?.FullName || "";
 
-          if (values?.TreatmentJson?.label && !values.ID) {
+          if (!values.ID) {
+            //values?.TreatmentJson?.label
             let memberUpdate = {
               ...NextMember?.Member,
               Birth: NextMember?.Member?.BirthDate
@@ -963,8 +968,7 @@ function CalendarMassagePage(props) {
                     "DD/MM/YYYY"
                   )
                 : "",
-              FullName:
-                NextMember?.Member?.ID + " - " + values?.TreatmentJson?.label,
+              FullName: NextMember?.Member?.ID, // + " - " + values?.TreatmentJson?.label,
             };
 
             let rsMUpdate = await CalendarCrud.addEditMember({

@@ -35,13 +35,14 @@ function PickerReportMassageV2({ children }) {
   const { data, isFetching, isLoading, refetch } = useQuery({
     queryKey: ["ListCurrentCalendars", { visible, CrDate }],
     queryFn: async () => {
-      let isSkips = false;
+      
 
       let DateStart = null;
       let DateEnd = null;
 
       if (checkout_time) {
         if (moment(CrDate).diff(moment(), "days") < 0) {
+          
           DateStart = moment(CrDate)
             .set({
               hours: checkout_time.split(";")[1].split(":")[0],
@@ -58,6 +59,7 @@ function PickerReportMassageV2({ children }) {
             })
             .format("DD/MM/YYYY HH:mm:ss");
         } else {
+          
           let CrIn = moment()
             .subtract(1, "days")
             .set({
@@ -90,6 +92,7 @@ function PickerReportMassageV2({ children }) {
                 second: "00",
               })
               .format("DD/MM/YYYY HH:mm:ss");
+              
           } else if (now.isBetween(CrOut, CrOutEnd, null, "[]")) {
             isSkips = true;
             DateStart = moment(CrDate)
@@ -128,8 +131,8 @@ function PickerReportMassageV2({ children }) {
       }
 
       let { result: rs1 } = await CalendarCrud.getReportOverallSales({
-        DateEnd: DateStart || moment(CrDate).format("DD/MM/YYYY"),
-        DateStart: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
+        DateEnd:  DateEnd || moment(CrDate).format("DD/MM/YYYY"),
+        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY"),
         StockID: AuthCrStockID,
       });
       let { result: rs2 } = await CalendarCrud.getReportSellOut({
@@ -176,6 +179,7 @@ function PickerReportMassageV2({ children }) {
 
       let TIP = null;
       let TONG_THANH_TOAN = 0;
+      
       if (rs2 && rs2.length > 0) {
         let index = rs2.findIndex(
           (x) => x.Format === 1 && x.ProdTitle === "TIP"
@@ -252,7 +256,7 @@ function PickerReportMassageV2({ children }) {
         ...x,
         ValueOf: x.CheckIn ? moment(x.CheckIn).valueOf() : -1,
       })).sort((a, b) => a.ValueOf - b.ValueOf);
-
+      
       return {
         Today: {
           ...rs1,
