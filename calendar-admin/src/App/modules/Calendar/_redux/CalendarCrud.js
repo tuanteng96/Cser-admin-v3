@@ -11,6 +11,12 @@ const getListStaff = (stockid) => {
   );
 };
 
+const getStaffFull = () => {
+  return axiosClient.get(
+    `/api/gl/select2?cmd=user`
+  );
+};
+
 const getListStaffs = ({ StockID, Key }) => {
   return axiosClient.get(
     `/api/gl/select2?cmd=user&q=${Key}&crstockid=${StockID}&byStockID=1&includeSource=1`
@@ -252,6 +258,13 @@ const getReportOverallSales = (data) => {
   );
 };
 
+const getReportOrdersSales = (data) => {
+  return axiosClient.post(
+    `/api/v4/r27@invoke`,
+    JSON.stringify(data)
+  );
+};
+
 const getReportSellOut = (data) => {
   return axiosClient.post(
     `/api/v3/r23/ban-hang/doanh-so-chi-tiet`,
@@ -324,6 +337,8 @@ const CalendarCrud = {
   urlAction,
   getAllWorkSheet,
   getBookID,
-  resetPointOsMember
+  resetPointOsMember,
+  getReportOrdersSales,
+  getStaffFull
 };
 export default CalendarCrud;

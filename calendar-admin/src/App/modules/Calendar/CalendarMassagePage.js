@@ -716,8 +716,11 @@ function CalendarMassagePage(props) {
           let FullName = NextMember?.Member?.FullName || "";
 
           if (!values.ID) {
-            //values?.TreatmentJson?.label &&
-
+            let newFullName = NextMember?.Member?.ID;
+            if (values?.TreatmentJson?.label) {
+              newFullName =
+                NextMember?.Member?.ID + " - " + values?.TreatmentJson?.label;
+            }
             let memberUpdate = {
               ...NextMember?.Member,
               Birth: NextMember?.Member?.BirthDate
@@ -725,7 +728,7 @@ function CalendarMassagePage(props) {
                     "DD/MM/YYYY"
                   )
                 : "",
-              FullName: NextMember?.Member?.ID, // + " - " + values?.TreatmentJson?.label,
+              FullName: newFullName,
             };
 
             let rsMUpdate = await CalendarCrud.addEditMember({
@@ -958,9 +961,14 @@ function CalendarMassagePage(props) {
           objBooking.MemberID = NextMember?.Member?.ID || 0;
 
           let FullName = NextMember?.Member?.FullName || "";
-
+          
           if (!values.ID) {
-            //values?.TreatmentJson?.label
+            let newFullName = NextMember?.Member?.ID;
+
+            if (values?.TreatmentJson?.label) {
+              newFullName =
+                NextMember?.Member?.ID + " - " + values?.TreatmentJson?.label;
+            }
             let memberUpdate = {
               ...NextMember?.Member,
               Birth: NextMember?.Member?.BirthDate
@@ -968,7 +976,7 @@ function CalendarMassagePage(props) {
                     "DD/MM/YYYY"
                   )
                 : "",
-              FullName: NextMember?.Member?.ID, // + " - " + values?.TreatmentJson?.label,
+              FullName: newFullName,
             };
 
             let rsMUpdate = await CalendarCrud.addEditMember({

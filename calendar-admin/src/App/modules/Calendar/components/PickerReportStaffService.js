@@ -14,7 +14,7 @@ function PickerReportStaffService({ children }) {
   const { AuthCrStockID, checkout_time } = useSelector(
     ({ Auth, JsonConfig }) => ({
       AuthCrStockID: Auth.CrStockID,
-      checkout_time: JsonConfig?.Admin?.checkout_time || "", 
+      checkout_time: JsonConfig?.Admin?.checkout_time || "",
     })
   );
 
@@ -204,7 +204,7 @@ function PickerReportStaffService({ children }) {
               .add(1, "years")
               .valueOf(),
       })).sort((a, b) => a.ValueOf - b.ValueOf);
-      
+
       return {
         Lists: STAFFS || [],
         filters: {
@@ -294,10 +294,10 @@ function PickerReportStaffService({ children }) {
         title: "Dịch vụ thực hiện",
         dataKey: "Items",
         cellRenderer: ({ rowData }) => (
-          <>
+          <div className="flex flex-wrap">
             {rowData?.Items && rowData?.Items.length > 0 ? (
               rowData?.Items.map((x, index) => (
-                <span key={index}>
+                <div key={index}>
                   <span
                     className={clsx(x.Status === "doing" && "text-warning")}
                   >
@@ -306,12 +306,12 @@ function PickerReportStaffService({ children }) {
                   {rowData?.Items.length - 1 !== index && (
                     <span className="pr-1">,</span>
                   )}
-                </span>
+                </div>
               ))
             ) : (
               <></>
             )}
-          </>
+          </div>
         ),
         width: 400,
         sortable: false,

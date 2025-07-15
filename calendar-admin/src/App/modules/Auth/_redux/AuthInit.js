@@ -39,7 +39,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 0,
             },
             {
-              ID: 11340,
+              ID: 11576,
               Title: "Cser Hà Nội",
               KeySEO: "[05:00;20:00;60]{CN;10:00;21:00;120}{T2;09:00;18:30}",
               ParentID: 778,
@@ -65,14 +65,14 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
           ],
-          CrStockID: 11340, //8975
+          CrStockID: 11576, //8975
           rightsSum: {
             pos: {
               hasRight: true,
               stocks: [
                 [
                   {
-                    ID: 11340,
+                    ID: 11576,
                     Title: "Cser Hà Nội",
                     KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                     ParentID: 778,
@@ -91,7 +91,7 @@ function AuthInit({ isConfig, children }) {
               hasRight: true,
               stocks: [
                 {
-                  ID: 11340,
+                  ID: 11576,
                   Title: "Cser Hà Nội",
                   KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                   ParentID: 778,
@@ -109,7 +109,7 @@ function AuthInit({ isConfig, children }) {
               hasRight: true,
               stocks: [
                 {
-                  ID: 11340,
+                  ID: 11576,
                   Title: "Cser Hà Nội",
                   KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                   ParentID: 778,
@@ -143,7 +143,7 @@ function AuthInit({ isConfig, children }) {
                         text: "Công cụ hệ thống - Điểm",
                         stocksList: [
                           {
-                            ID: 11340,
+                            ID: 11576,
                             Title: "Cser Beauty Hà Nội",
                           },
                         ],
@@ -155,7 +155,7 @@ function AuthInit({ isConfig, children }) {
             ],
           },
           token:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjU3Mzg1NzkwNTczODYyOTMiLCJuYmYiOjE3NTE1MzYwOTQsImV4cCI6MTgzNzkzNjA5NCwiaWF0IjoxNzUxNTM2MDk0fQ.1TD3hAngwnDGNKtsl1MP7CkJiD6bkZnqP_6wehS2Nf4',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjAzNDQiLCJuYmYiOjE3NTIyOTIyNTksImV4cCI6MTgzODY5MjI1OSwiaWF0IjoxNzUyMjkyMjU5fQ.OWgnB3NFMx9WqVY14cfiT_5SqCI96C3xZQcwjb0mT0g',
         };
         window.GlobalConfig = {
           APP: {
@@ -178,7 +178,7 @@ function AuthInit({ isConfig, children }) {
             SettingBookOnline: true,
             SettingBookOnlineMinutes: 0,
             lop_hoc_pt: true,
-            checkout_time: "21:00;05:00"
+            checkout_time: "21:00;15:00"
           },
         };
       }

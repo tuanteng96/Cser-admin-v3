@@ -17,7 +17,7 @@ html.dark {
     background-color: var(--tabel-bs-bg);
     position: relative;
     box-sizing: border-box;
-    font-size: 15px;
+    font-size: 14px;
 }
 
 .BaseTable--disabled {
@@ -134,7 +134,12 @@ html.dark {
 
 .BaseTable__header-row {
     background-color: var(--tabel-bs-bg-header);
-    font-weight: 700;
+    font-weight: 600;
+}
+
+.BaseTable__header-row .BaseTable__header-cell-text {
+    text-transform: uppercase;
+    font-size: 14px;
 }
 
 .BaseTable__row {
