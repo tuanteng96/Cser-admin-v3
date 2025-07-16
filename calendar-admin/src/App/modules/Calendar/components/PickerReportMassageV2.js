@@ -283,10 +283,38 @@ function PickerReportMassageV2({ children }) {
         Today: {
           ...rs1,
           TIP,
+          TIPs:
+            rs2 && rs2.length > 0
+              ? rs2.filter(
+                  (x) => x.Format === 1 && x.ProdTitle.indexOf("TIP") > -1
+                )
+              : [],
+          DV_CONG_THEM:
+            rs2 && rs2.length > 0
+              ? rs2.filter((x) => x.Format === 1 && x.IsCourse)
+              : [],
           SP_BAN_RA:
-            rs2 && rs2.length > 0 ? rs2.filter((x) => x.Format === 1) : [],
+            rs2 && rs2.length > 0
+              ? rs2.filter(
+                  (x) => x.Format === 1 && x.ProdTitle.indexOf("TIP") === -1
+                )
+              : [],
           DV_BAN_RA:
-            rs2 && rs2.length > 0 ? rs2.filter((x) => x.Format === 2) : [],
+            rs2 && rs2.length > 0
+              ? rs2.filter(
+                  (x) =>
+                    x.Format === 2 &&
+                    x.ProdTitle.toUpperCase().indexOf("COMBO") === -1
+                )
+              : [],
+          COMBOS:
+            rs2 && rs2.length > 0
+              ? rs2.filter(
+                  (x) =>
+                    x.Format === 2 &&
+                    x.ProdTitle.toUpperCase().indexOf("COMBO") > -1
+                )
+              : [],
         },
         STAFFS: [
           ...STAFFS.filter((x) => x.ValueOf > 0),
@@ -385,7 +413,9 @@ function PickerReportMassageV2({ children }) {
 
   const getTIP = (rowData) => {
     let TIP = 0;
-    if (rowData.Prod) {
+    if (rowData.ReducedValue) {
+      TIP = Math.abs(rowData.ReducedValue);
+    } else if (rowData.Prod) {
       let Prods = rowData.Prod.split(";");
       let index = rowData.Prod.split(";").findIndex(
         (x) => x.indexOf("TIP") > -1
@@ -728,7 +758,7 @@ function PickerReportMassageV2({ children }) {
       Staffs,
       RateNote,
       Rate: Rate ? `${Rate} sao` : "",
-      RateNotes
+      RateNotes,
     };
   };
 
@@ -736,15 +766,14 @@ function PickerReportMassageV2({ children }) {
     let Source = "";
     let IsMember = "";
     let Desc = getServices(rowData).RateNotes;
-    
+
     if (Desc) {
       let DescSplit = Desc.split(",");
       let index = DescSplit.findIndex(
         (x) => x.indexOf("Đã từng trả nghiệm dịch vụ") > -1
       );
-      
+
       if (index > -1) {
-        
         if (DescSplit[index].indexOf("Chưa từng") > -1) {
           IsMember = "Khách mới";
         } else {
@@ -1292,6 +1321,32 @@ function PickerReportMassageV2({ children }) {
                     </div>
                     <div>
                       <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                        TIP
+                      </div>
+                      <div>
+                        {data?.Today?.TIPs && data?.Today?.TIPs.length > 0 ? (
+                          data?.Today?.TIPs.map((item, index) => (
+                            <div
+                              className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                              key={index}
+                            >
+                              <div className="flex-1 font-light">
+                                {item?.ProdTitle} (x{item?.SumQTy})
+                              </div>
+                              <div className="w-[180px] text-right font-semibold font-title">
+                                {PriceHelper.formatVND(item?.SumTopay)}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                            Không có dữ liệu.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
                         Sản phẩm
                       </div>
                       <div>
@@ -1319,12 +1374,66 @@ function PickerReportMassageV2({ children }) {
                     </div>
                     <div>
                       <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                        Dịch vụ cộng thêm
+                      </div>
+                      <div>
+                        {data?.Today?.DV_CONG_THEM &&
+                        data?.Today?.DV_CONG_THEM.length > 0 ? (
+                          data?.Today?.DV_CONG_THEM.map((item, index) => (
+                            <div
+                              className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                              key={index}
+                            >
+                              <div className="flex-1 font-light">
+                                {item?.ProdTitle} (x{item?.SumQTy})
+                              </div>
+                              <div className="w-[180px] text-right font-semibold font-title">
+                                {PriceHelper.formatVND(item?.SumTopay)}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                            Không có dữ liệu.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
                         Dịch vụ
                       </div>
                       <div>
                         {data?.Today?.DV_BAN_RA &&
                         data?.Today?.DV_BAN_RA.length > 0 ? (
                           data?.Today?.DV_BAN_RA.map((item, index) => (
+                            <div
+                              className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
+                              key={index}
+                            >
+                              <div className="flex-1 font-light">
+                                {item?.ProdTitle} (x{item?.SumQTy})
+                              </div>
+                              <div className="w-[180px] text-right font-semibold font-title">
+                                {PriceHelper.formatVND(item?.SumTopay)}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                            Không có dữ liệu.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                        Combos
+                      </div>
+                      <div>
+                        {data?.Today?.COMBOS &&
+                        data?.Today?.COMBOS.length > 0 ? (
+                          data?.Today?.COMBOS.map((item, index) => (
                             <div
                               className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
                               key={index}
