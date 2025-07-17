@@ -744,8 +744,8 @@ const PickerCalendarRooms = forwardRef(
               <div className="relative p-4 grow [&>*]:h-full lg:h-[calc(100%-73px)] flex">
                 <div className="relative flex-1 h-full pt-8 pr-5 overflow-auto">
                   {isLoading && (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 xl:gap-x-5 xl:gap-y-8 xl:grid-cols-5">
-                      {Array(5)
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-8 xl:gap-x-5 xl:gap-y-8 xl:grid-cols-4 2xl:grid-cols-5">
+                      {Array(4)
                         .fill()
                         .map((_, index) => (
                           <div

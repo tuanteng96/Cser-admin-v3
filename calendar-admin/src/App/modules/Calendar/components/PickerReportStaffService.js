@@ -9,6 +9,7 @@ import moment from "moment";
 import vi from "date-fns/locale/vi";
 import { useWindowSize } from "../../../../hooks/useWindowSize";
 import clsx from "clsx";
+import { v4 as uuidv4 } from "uuid";
 
 function PickerReportStaffService({ children }) {
   const { AuthCrStockID, checkout_time } = useSelector(
@@ -198,6 +199,7 @@ function PickerReportStaffService({ children }) {
 
       STAFFS = STAFFS.map((x) => ({
         ...x,
+        id: uuidv4(),
         ValueOf: x.CheckIn
           ? moment(x.CheckIn).valueOf()
           : moment()
@@ -417,10 +419,11 @@ function PickerReportStaffService({ children }) {
               </div>
             </div>
             <div className="relative p-4 grow lg:h-[calc(100%-73px)]">
+              
               <AutoResizer>
                 {({ width, height }) => (
                   <Table
-                    key="ID"
+                    key="id"
                     fixed
                     width={width}
                     height={height}

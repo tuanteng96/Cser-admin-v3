@@ -8,10 +8,7 @@ import moment from "moment";
 import vi from "date-fns/locale/vi";
 import { PriceHelper } from "../../../../helpers/PriceHelper";
 import Table, { AutoResizer } from "react-base-table";
-import Text from "react-texty";
-import clsx from "clsx";
 import ExcelHepers from "../../../../helpers/ExcelHepers";
-import { Form, Formik } from "formik";
 
 let formatArray = {
   useInfiniteQuery: (page, key = "data") => {
@@ -125,148 +122,6 @@ const getDateToFrom = ({ checkout_time, CrDate }) => {
   };
 };
 
-const getDateToFromV2 = ({ checkout_time, DateStart, DateEnd }) => {
-  let isSkips = false;
-
-  let newDateStart = null;
-  let newDateEnd = null;
-
-  if (checkout_time) {
-    if (DateStart) {
-      if (
-        moment().format("DD-MM-YYYY") === moment(DateStart).format("DD-MM-YYYY")
-      ) {
-        let CrOut = moment().set({
-          hours: "00",
-          minute: "00",
-        });
-        let CrOutEnd = moment().set({
-          hours: checkout_time.split(";")[1].split(":")[0],
-          minute: checkout_time.split(";")[1].split(":")[1],
-        });
-
-        let now = moment();
-
-        if (now.isBetween(CrOut, CrOutEnd, null, "[]")) {
-          newDateStart = moment(DateStart)
-            .subtract(1, "days")
-            .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-              second: "00",
-            })
-            .toDate();
-        } else {
-          newDateStart = moment(DateStart)
-            .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-              second: "00",
-            })
-            .toDate();
-        }
-      } else {
-        newDateStart = moment(DateStart)
-          .set({
-            hours: "00",
-            minute: "00",
-            second: "00",
-          })
-          .toDate();
-      }
-    }
-    if (DateEnd) {
-      if (
-        moment().format("DD-MM-YYYY") === moment(DateEnd).format("DD-MM-YYYY")
-      ) {
-        let CrIn = moment()
-          .subtract(1, "days")
-          .set({
-            hours: checkout_time.split(";")[0].split(":")[0],
-            minute: checkout_time.split(";")[0].split(":")[1],
-          });
-        let CrInEnd = moment()
-          .subtract(1, "days")
-          .set({
-            hours: "23",
-            minute: "59",
-          });
-        let CrOut = moment().set({
-          hours: "00",
-          minute: "00",
-        });
-        let CrOutEnd = moment().set({
-          hours: checkout_time.split(";")[1].split(":")[0],
-          minute: checkout_time.split(";")[1].split(":")[1],
-        });
-
-        let now = moment();
-
-        if (now.isBetween(CrIn, CrInEnd, null, "[]")) {
-          newDateEnd = moment(DateEnd)
-            .add(1, "days")
-            .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-              second: "00",
-            })
-            .toDate();
-        } else if (now.isBetween(CrOut, CrOutEnd, null, "[]")) {
-          isSkips = true;
-          newDateEnd = moment(DateEnd)
-            .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-              second: "00",
-            })
-            .toDate();
-        } else {
-          DateEnd = moment(DateEnd)
-            .add(1, "days")
-            .set({
-              hours: checkout_time.split(";")[1].split(":")[0],
-              minute: checkout_time.split(";")[1].split(":")[1],
-              second: "00",
-            })
-            .toDate();
-        }
-      } else {
-        newDateEnd = moment(DateEnd)
-          .set({
-            hours: "23",
-            minute: "59",
-            second: "59",
-          })
-          .toDate();
-      }
-    }
-  } else {
-    newDateStart = DateStart
-      ? moment(DateStart)
-          .set({
-            hours: "00",
-            minute: "00",
-            second: "00",
-          })
-          .toDate()
-      : null;
-    newDateEnd = DateEnd
-      ? moment(DateEnd)
-          .set({
-            hours: "23",
-            minute: "59",
-            second: "59",
-          })
-          .toDate()
-      : null;
-  }
-  return {
-    isSkips,
-    DateStart: newDateStart,
-    DateEnd: newDateEnd,
-  };
-};
-
 function PickerReportMassageV2({ children }) {
   const { AuthCrStockID, checkout_time } = useSelector(
     ({ Auth, JsonConfig }) => ({
@@ -283,42 +138,33 @@ function PickerReportMassageV2({ children }) {
 
   let [CrDate, setCrDate] = useState(new Date());
 
-  const [filters, setFilters] = useState({
-    DateStart: null,
-    DateEnd: null,
-  });
+  const [filters, setFilters] = useState(null);
 
   useEffect(() => {
     if (visible) {
-      setFilters({
-        DateStart: new Date(),
-        DateEnd: new Date(),
-      });
+      setCrDate(moment().toDate());
     } else {
-      setFilters({
-        DateStart: null,
-        DateEnd: null,
-      });
+      setCrDate(null);
     }
   }, [visible]);
 
   const { data, isFetching, isLoading, refetch } = useQuery({
-    queryKey: ["ListCurrentCalendars", { visible, filters }],
+    queryKey: ["ListCurrentCalendars", { visible, CrDate }],
     queryFn: async () => {
-      let { DateStart, DateEnd, isSkips } = getDateToFromV2({
-        ...filters,
+      let { DateStart, DateEnd, isSkips } = getDateToFrom({
+        CrDate,
         checkout_time,
       });
 
       let { result: rs1 } = await CalendarCrud.getReportOverallSales({
-        DateStart: moment(DateStart).format("DD/MM/YYYY HH:mm:ss"),
-        DateEnd: moment(DateEnd).format("DD/MM/YYYY HH:mm:ss"),
+        DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
+        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY"),
         StockID: AuthCrStockID,
       });
       let { result: rs2 } = await CalendarCrud.getReportSellOut({
         StockID: AuthCrStockID,
-        DateStart: moment(DateStart).format("DD/MM/YYYY HH:mm:ss"),
-        DateEnd: moment(DateEnd).format("DD/MM/YYYY HH:mm:ss"),
+        DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
+        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY"),
         BrandIds: "",
         CategoriesIds: "",
         ProductIds: "",
@@ -329,8 +175,8 @@ function PickerReportMassageV2({ children }) {
       });
       let { result: rs3 } = await CalendarCrud.getReportService({
         StockID: AuthCrStockID,
-        DateStart: moment(DateStart).format("DD/MM/YYYY HH:mm:ss"),
-        DateEnd: moment(DateEnd).format("DD/MM/YYYY HH:mm:ss"),
+        DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
+        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY"),
         Pi: 1,
         Ps: 5000,
         MemberID: "",
@@ -437,10 +283,43 @@ function PickerReportMassageV2({ children }) {
         Today: {
           ...rs1,
           TIP,
+          TIPs:
+            rs2 && rs2.length > 0
+              ? rs2.filter(
+                  (x) => x.Format === 1 && x.ProdTitle.indexOf("TIP") > -1
+                )
+              : [],
+          DV_CONG_THEM:
+            rs2 && rs2.length > 0
+              ? rs2.filter(
+                  (x) =>
+                    x.Format === 1 &&
+                    x.IsCourse &&
+                    x.ProdTitle.indexOf("TIP") === -1
+                )
+              : [],
           SP_BAN_RA:
-            rs2 && rs2.length > 0 ? rs2.filter((x) => x.Format === 1) : [],
+            rs2 && rs2.length > 0
+              ? rs2.filter(
+                  (x) => x.Format === 1 && x.ProdTitle.indexOf("TIP") === -1 && !x.IsCourse
+                )
+              : [],
           DV_BAN_RA:
-            rs2 && rs2.length > 0 ? rs2.filter((x) => x.Format === 2) : [],
+            rs2 && rs2.length > 0
+              ? rs2.filter(
+                  (x) =>
+                    x.Format === 2 &&
+                    x.ProdTitle.toUpperCase().indexOf("COMBO") === -1
+                )
+              : [],
+          COMBOS:
+            rs2 && rs2.length > 0
+              ? rs2.filter(
+                  (x) =>
+                    x.Format === 2 &&
+                    x.ProdTitle.toUpperCase().indexOf("COMBO") > -1
+                )
+              : [],
         },
         STAFFS: [
           ...STAFFS.filter((x) => x.ValueOf > 0),
@@ -453,23 +332,29 @@ function PickerReportMassageV2({ children }) {
         },
       };
     },
-    enabled:
-      Boolean(filters && filters?.DateStart && filters?.DateEnd) && visible,
+    onSuccess: (rs) => {
+      if (rs.filters) {
+        setFilters(rs.filters);
+      } else {
+        setFilters(null);
+      }
+    },
+    enabled: Boolean(CrDate) && visible,
     keepPreviousData: true,
   });
 
   const Orders = useInfiniteQuery({
     queryKey: ["ListCurrentOrdersCalendars", { filters }],
     queryFn: async ({ pageParam = 1 }) => {
-      let { DateStart, DateEnd } = getDateToFromV2({
-        ...filters,
+      let { DateStart, DateEnd } = getDateToFrom({
+        CrDate,
         checkout_time,
       });
       let rs = await CalendarCrud.getReportOrdersSales({
         _Method_: "Reports.v2.Ban_Hang.GetBCao_DSo_DSach2",
         StockID: AuthCrStockID,
-        DateStart: moment(DateStart).format("DD/MM/YYYY HH:mm:ss"),
-        DateEnd: moment(DateEnd).format("DD/MM/YYYY HH:mm:ss"),
+        DateStart: DateStart || moment(CrDate).format("DD/MM/YYYY"),
+        DateEnd: DateEnd || moment(CrDate).format("DD/MM/YYYY"),
         Pi: pageParam,
         Ps: 20,
         Voucher: "",
@@ -524,8 +409,7 @@ function PickerReportMassageV2({ children }) {
     getNextPageParam: (lastPage, pages) =>
       lastPage?.Pi === lastPage?.PCount ? undefined : lastPage.Pi + 1,
     keepPreviousData: true,
-    enabled:
-      Boolean(filters && filters?.DateStart && filters?.DateEnd) && visible,
+    enabled: Boolean(CrDate) && visible,
   });
 
   const Lists = formatArray.useInfiniteQuery(Orders?.data?.pages, "Items");
@@ -534,7 +418,9 @@ function PickerReportMassageV2({ children }) {
 
   const getTIP = (rowData) => {
     let TIP = 0;
-    if (rowData.Prod) {
+    if (rowData.ReducedValue) {
+      TIP = Math.abs(rowData.ReducedValue);
+    } else if (rowData.Prod) {
       let Prods = rowData.Prod.split(";");
       let index = rowData.Prod.split(";").findIndex(
         (x) => x.indexOf("TIP") > -1
@@ -834,11 +720,12 @@ function PickerReportMassageV2({ children }) {
   const getServices = (rowData) => {
     let Staffs = "";
     let RateNote = "";
+    let RateNotes = "";
     let Rate = "";
 
     if (rowData.Services && rowData.Services.length > 0) {
       RateNote = rowData.Services[0].RateNote || "";
-
+      RateNotes = RateNote;
       if (RateNote.indexOf("Đã từng trả nghiệm dịch vụ") > -1) {
         RateNote = RateNote.slice(
           0,
@@ -876,20 +763,25 @@ function PickerReportMassageV2({ children }) {
       Staffs,
       RateNote,
       Rate: Rate ? `${Rate} sao` : "",
+      RateNotes,
     };
   };
 
   const getInfoSource = (rowData) => {
     let Source = "";
-    let IsMember = "Khách mới";
-    let Desc = getServices(rowData).RateNote;
+    let IsMember = "";
+    let Desc = getServices(rowData).RateNotes;
+
     if (Desc) {
       let DescSplit = Desc.split(",");
       let index = DescSplit.findIndex(
         (x) => x.indexOf("Đã từng trả nghiệm dịch vụ") > -1
       );
+
       if (index > -1) {
-        if (DescSplit[index].indexOf("Đã từng") > -1) {
+        if (DescSplit[index].indexOf("Chưa từng") > -1) {
+          IsMember = "Khách mới";
+        } else {
           IsMember = "Khách cũ";
         }
       }
@@ -1112,203 +1004,102 @@ function PickerReportMassageV2({ children }) {
             <div className="flex items-center justify-between px-4 py-3.5 border-b">
               <div className="hidden text-xl font-medium lg:block">
                 Thống kê
-                {/* {checkout_time && filters && (
+                {checkout_time && filters && (
                   <span className="pl-1 text-sm">
                     ({filters?.DateStart} - {filters?.DateEnd})
                   </span>
-                )} */}
+                )}
               </div>
-              <Formik
-                initialValues={filters}
-                onSubmit={(values) => {
-                  if (
-                    values.DateStart &&
-                    values.DateEnd &&
-                    moment(values.DateStart).format("DD-MM-YYYY") ===
-                      moment(filters.DateStart).format("DD-MM-YYYY") &&
-                    moment(values.DateEnd).format("DD-MM-YYYY") ===
-                      moment(filters.DateEnd).format("DD-MM-YYYY")
-                  ) {
-                    Orders.refetch();
-                    refetch();
-                  } else {
-                    setFilters(values);
-                  }
-                }}
-                enableReinitialize
-              >
-                {(formikProps) => {
-                  const { values, setFieldValue } = formikProps;
 
-                  return (
-                    <Form className="flex w-full gap-2 md:gap-3 lg:w-auto">
-                      <div className="lg:w-[160px] flex-1">
-                        <DatePicker
-                          locale={vi}
-                          selected={
-                            values.DateStart ? new Date(values.DateStart) : null
-                          }
-                          onChange={(date) => setFieldValue("DateStart", date)}
-                          className="!h-11 form-control !rounded-[4px] !text-[15px] px-2 md:px-4"
-                          shouldCloseOnSelect={true}
-                          dateFormat="dd/MM/yyyy"
-                          placeholderText="Từ thời gian"
-                          // showTimeSelect
-                          // showTimeSelectOnly
-                          // timeIntervals={1}
+              <div className="flex w-full gap-2 md:gap-3 lg:w-auto">
+                <div className="lg:w-[160px] flex-1">
+                  <DatePicker
+                    locale={vi}
+                    selected={CrDate}
+                    onChange={(date) => setCrDate(date)}
+                    className="!h-11 form-control !rounded-[4px] !text-[15px] px-2 md:px-4"
+                    shouldCloseOnSelect={true}
+                    dateFormat="dd/MM/yyyy"
+                    placeholderText="Từ thời gian"
+                    // showTimeSelect
+                    // showTimeSelectOnly
+                    // timeIntervals={1}
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="rounded-[4px] w-11 text-primary"
+                  onClick={async () => {
+                    await refetch();
+                    await Orders?.refetch();
+                  }}
+                >
+                  {!isLoading &&
+                    !isFetching &&
+                    !Orders?.isLoading &&
+                    !Orders?.isFetching && (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="1.5"
+                        stroke="currentColor"
+                        className="w-6"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
                         />
-                      </div>
-                      <div className="items-center hidden md:flex">-</div>
-                      <div className="lg:w-[160px] flex-1">
-                        <DatePicker
-                          locale={vi}
-                          selected={
-                            values.DateEnd ? new Date(values.DateEnd) : null
-                          }
-                          onChange={(date) => setFieldValue("DateEnd", date)}
-                          className="!h-11 form-control !rounded-[4px] !text-[15px] px-2 md:px-4"
-                          shouldCloseOnSelect={true}
-                          dateFormat="dd/MM/yyyy"
-                          placeholderText="Đến thời gian"
-                          // showTimeSelect
-                          // showTimeSelectOnly
-                          // timeIntervals={1}
+                      </svg>
+                    )}
+
+                  {(isLoading ||
+                    isFetching ||
+                    Orders?.isLoading ||
+                    Orders?.isFetching) && (
+                    <div role="status">
+                      <svg
+                        aria-hidden="true"
+                        className="w-6 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                        viewBox="0 0 100 101"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                          fill="currentColor"
                         />
-                      </div>
-                      <button
-                        type="submit"
-                        className="rounded-[4px] w-11 bg-primary text-white disabled:opacity-50"
-                        disabled={
-                          isLoading ||
-                          isFetching ||
-                          Orders?.isLoading ||
-                          Orders?.isFetching ||
-                          !filters.DateStart ||
-                          !filters.DateEnd
-                        }
-                      >
-                        {!isLoading &&
-                          !isFetching &&
-                          !Orders?.isLoading &&
-                          !Orders?.isFetching && (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="w-6"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                              />
-                            </svg>
-                          )}
-
-                        {(isLoading ||
-                          isFetching ||
-                          Orders?.isLoading ||
-                          Orders?.isFetching) && (
-                          <div role="status">
-                            <svg
-                              aria-hidden="true"
-                              className="w-6 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                              viewBox="0 0 100 101"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                fill="currentColor"
-                              />
-                              <path
-                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                fill="currentFill"
-                              />
-                            </svg>
-                            <span className="sr-only">Loading...</span>
-                          </div>
-                        )}
-                      </button>
-                      <button
-                        type="button"
-                        className="rounded-[4px] w-11 text-primary hidden md:block"
-                        onClick={async () => {
-                          await refetch();
-                          await Orders?.refetch();
-                        }}
-                      >
-                        {!isLoading &&
-                          !isFetching &&
-                          !Orders?.isLoading &&
-                          !Orders?.isFetching && (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              strokeWidth="1.5"
-                              stroke="currentColor"
-                              className="w-6"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                              />
-                            </svg>
-                          )}
-
-                        {(isLoading ||
-                          isFetching ||
-                          Orders?.isLoading ||
-                          Orders?.isFetching) && (
-                          <div role="status">
-                            <svg
-                              aria-hidden="true"
-                              className="w-6 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
-                              viewBox="0 0 100 101"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path
-                                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                fill="currentColor"
-                              />
-                              <path
-                                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                fill="currentFill"
-                              />
-                            </svg>
-                            <span className="sr-only">Loading...</span>
-                          </div>
-                        )}
-                      </button>
-                      <div className="h-11 w-[1px] bg-gray-300"></div>
-                      <div
-                        className="flex items-center justify-center cursor-pointer md:w-12 w-11 h-11"
-                        onClick={onHide}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          strokeWidth="1.5"
-                          stroke="currentColor"
-                          className="w-6 md:w-8"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18 18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </div>
-                    </Form>
-                  );
-                }}
-              </Formik>
+                        <path
+                          d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                          fill="currentFill"
+                        />
+                      </svg>
+                      <span className="sr-only">Loading...</span>
+                    </div>
+                  )}
+                </button>
+                <div className="h-11 w-[1px] bg-gray-300"></div>
+                <div
+                  className="flex items-center justify-center cursor-pointer md:w-12 w-11 h-11"
+                  onClick={onHide}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 md:w-8"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18 18 6M6 6l12 12"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
             <div className="relative p-4 overflow-auto grow bg-[#ededf1]">
               {isLoading && (
@@ -1535,6 +1326,32 @@ function PickerReportMassageV2({ children }) {
                     </div>
                     <div>
                       <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                        TIP
+                      </div>
+                      <div>
+                        {data?.Today?.TIPs && data?.Today?.TIPs.length > 0 ? (
+                          data?.Today?.TIPs.map((item, index) => (
+                            <div
+                              className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                              key={index}
+                            >
+                              <div className="flex-1 font-light">
+                                {item?.ProdTitle} (x{item?.SumQTy})
+                              </div>
+                              <div className="w-[180px] text-right font-semibold font-title">
+                                {PriceHelper.formatVND(item?.SumTopay)}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                            Không có dữ liệu.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
                         Sản phẩm
                       </div>
                       <div>
@@ -1562,12 +1379,66 @@ function PickerReportMassageV2({ children }) {
                     </div>
                     <div>
                       <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                        Dịch vụ cộng thêm
+                      </div>
+                      <div>
+                        {data?.Today?.DV_CONG_THEM &&
+                        data?.Today?.DV_CONG_THEM.length > 0 ? (
+                          data?.Today?.DV_CONG_THEM.map((item, index) => (
+                            <div
+                              className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                              key={index}
+                            >
+                              <div className="flex-1 font-light">
+                                {item?.ProdTitle} (x{item?.SumQTy})
+                              </div>
+                              <div className="w-[180px] text-right font-semibold font-title">
+                                {PriceHelper.formatVND(item?.SumTopay)}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                            Không có dữ liệu.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
                         Dịch vụ
                       </div>
                       <div>
                         {data?.Today?.DV_BAN_RA &&
                         data?.Today?.DV_BAN_RA.length > 0 ? (
                           data?.Today?.DV_BAN_RA.map((item, index) => (
+                            <div
+                              className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
+                              key={index}
+                            >
+                              <div className="flex-1 font-light">
+                                {item?.ProdTitle} (x{item?.SumQTy})
+                              </div>
+                              <div className="w-[180px] text-right font-semibold font-title">
+                                {PriceHelper.formatVND(item?.SumTopay)}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                            Không có dữ liệu.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                        Combos
+                      </div>
+                      <div>
+                        {data?.Today?.COMBOS &&
+                        data?.Today?.COMBOS.length > 0 ? (
+                          data?.Today?.COMBOS.map((item, index) => (
                             <div
                               className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
                               key={index}

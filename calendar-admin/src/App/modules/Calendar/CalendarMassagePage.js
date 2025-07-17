@@ -30,7 +30,6 @@ import { Dropdown } from "react-bootstrap";
 import PickerSettingCalendar from "../../../components/PickerSettingCalendar/PickerSettingCalendar";
 import {
   PickerOfflineSchedule,
-  PickerReportMassage,
   PickerReportMassageV2,
   PickerReportStaffService,
 } from "./components";

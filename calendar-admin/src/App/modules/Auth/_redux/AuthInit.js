@@ -178,7 +178,7 @@ function AuthInit({ isConfig, children }) {
             SettingBookOnline: true,
             SettingBookOnlineMinutes: 0,
             lop_hoc_pt: true,
-            checkout_time: "21:00;05:00",
+            checkout_time: "05:00;06:00",
           },
         };
       }
