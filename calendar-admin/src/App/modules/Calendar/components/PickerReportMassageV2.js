@@ -1396,77 +1396,220 @@ function PickerReportMassageV2({ children }) {
               )}
               {!isLoading && (
                 <div>
-                  <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-3">
-                    <div className="bg-white rounded">
-                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                        <div>Tổng đơn hàng</div>
-                        <div className="text-lg font-semibold text-primary font-title">
-                          {PriceHelper.formatVND(data?.Today?.DSo_Ngay || 0)}
+                  <div className="flex flex-col gap-4 mb-4 lg:flex-row">
+                    <div className="grid grid-cols-1 gap-4 lg:w-[400px]">
+                      <div className="bg-white rounded">
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tổng đơn hàng</div>
+                          <div className="text-lg font-semibold text-primary font-title">
+                            {PriceHelper.formatVND(data?.Today?.DSo_Ngay || 0)}
+                          </div>
                         </div>
-                      </div>
-                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                        <div>Đã thanh toán</div>
-                        <div className="text-lg font-semibold text-success font-title">
-                          {PriceHelper.formatVND(
-                            (data?.Today?.DSo_TToan || 0) +
-                              Math.abs(data?.Today?.DSo_TToan_ThTien || 0) +
-                              Math.abs(data?.Today?.DSo_TToan_Vi || 0)
-                          )}
-                        </div>
-                      </div>
-                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                        <div>Chờ thanh toán</div>
-                        <div className="text-lg font-semibold text-warning font-title">
-                          {PriceHelper.formatVND(
-                            (data?.Today?.DSo_Ngay || 0) -
-                              ((data?.Today?.DSo_TToan || 0) +
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Đã thanh toán</div>
+                          <div className="text-lg font-semibold text-success font-title">
+                            {PriceHelper.formatVND(
+                              (data?.Today?.DSo_TToan || 0) +
                                 Math.abs(data?.Today?.DSo_TToan_ThTien || 0) +
-                                Math.abs(data?.Today?.DSo_TToan_Vi || 0))
-                          )}
+                                Math.abs(data?.Today?.DSo_TToan_Vi || 0)
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Chờ thanh toán</div>
+                          <div className="text-lg font-semibold text-warning font-title">
+                            {PriceHelper.formatVND(
+                              (data?.Today?.DSo_Ngay || 0) -
+                                ((data?.Today?.DSo_TToan || 0) +
+                                  Math.abs(data?.Today?.DSo_TToan_ThTien || 0) +
+                                  Math.abs(data?.Today?.DSo_TToan_Vi || 0))
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-white rounded">
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tiền Spa</div>
+                          <div className="text-lg font-semibold font-title">
+                            {PriceHelper.formatVND(
+                              (data?.Today?.DSo_Ngay || 0) -
+                                (data?.Today?.TIP?.SumTopay || 0)
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tiền TIP</div>
+                          <div className="text-lg font-semibold font-title">
+                            {PriceHelper.formatVND(
+                              data?.Today?.TIP?.SumTopay || 0
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="bg-white rounded">
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Chuyển khoản</div>
+                          <div className="text-lg font-semibold font-title">
+                            {PriceHelper.formatVND(
+                              data?.Today?.DSo_TToan_CKhoan || 0
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Quẹt thẻ</div>
+                          <div className="text-lg font-semibold font-title">
+                            {PriceHelper.formatVND(
+                              data?.Today?.DSo_TToan_QThe || 0
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tiền mặt</div>
+                          <div className="text-lg font-semibold font-title">
+                            {PriceHelper.formatVND(
+                              data?.Today?.DSo_TToan_TMat || 0
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                    <div className="bg-white rounded">
-                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                        <div>Tiền Spa</div>
-                        <div className="text-lg font-semibold font-title">
-                          {PriceHelper.formatVND(
-                            (data?.Today?.DSo_Ngay || 0) -
-                              (data?.Today?.TIP?.SumTopay || 0)
+                    <div className="bg-white rounded lg:flex-1">
+                      <div className="px-5 py-4 border-b">
+                        <div className="text-lg font-medium uppercase">
+                          Bán hàng
+                        </div>
+                      </div>
+                      <div>
+                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                          TIP
+                        </div>
+                        <div>
+                          {data?.Today?.TIPs && data?.Today?.TIPs.length > 0 ? (
+                            data?.Today?.TIPs.map((item, index) => (
+                              <div
+                                className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                                key={index}
+                              >
+                                <div className="flex-1 font-light">
+                                  {item?.ProdTitle} (x{item?.SumQTy})
+                                </div>
+                                <div className="w-[180px] text-right font-semibold font-title">
+                                  {PriceHelper.formatVND(item?.SumTopay)}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                              Không có dữ liệu.
+                            </div>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                        <div>Tiền TIP</div>
-                        <div className="text-lg font-semibold font-title">
-                          {PriceHelper.formatVND(
-                            data?.Today?.TIP?.SumTopay || 0
+                      <div>
+                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                          Sản phẩm
+                        </div>
+                        <div>
+                          {data?.Today?.SP_BAN_RA &&
+                          data?.Today?.SP_BAN_RA.length > 0 ? (
+                            data?.Today?.SP_BAN_RA.map((item, index) => (
+                              <div
+                                className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                                key={index}
+                              >
+                                <div className="flex-1 font-light">
+                                  {item?.ProdTitle} (x{item?.SumQTy})
+                                </div>
+                                <div className="w-[180px] text-right font-semibold font-title">
+                                  {PriceHelper.formatVND(item?.SumTopay)}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                              Không có dữ liệu.
+                            </div>
                           )}
                         </div>
                       </div>
-                    </div>
-                    <div className="bg-white rounded">
-                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                        <div>Chuyển khoản</div>
-                        <div className="text-lg font-semibold font-title">
-                          {PriceHelper.formatVND(
-                            data?.Today?.DSo_TToan_CKhoan || 0
+                      <div>
+                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                          Dịch vụ cộng thêm
+                        </div>
+                        <div>
+                          {data?.Today?.DV_CONG_THEM &&
+                          data?.Today?.DV_CONG_THEM.length > 0 ? (
+                            data?.Today?.DV_CONG_THEM.map((item, index) => (
+                              <div
+                                className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                                key={index}
+                              >
+                                <div className="flex-1 font-light">
+                                  {item?.ProdTitle} (x{item?.SumQTy})
+                                </div>
+                                <div className="w-[180px] text-right font-semibold font-title">
+                                  {PriceHelper.formatVND(item?.SumTopay)}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                              Không có dữ liệu.
+                            </div>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                        <div>Quẹt thẻ</div>
-                        <div className="text-lg font-semibold font-title">
-                          {PriceHelper.formatVND(
-                            data?.Today?.DSo_TToan_QThe || 0
+                      <div>
+                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                          Dịch vụ
+                        </div>
+                        <div>
+                          {data?.Today?.DV_BAN_RA &&
+                          data?.Today?.DV_BAN_RA.length > 0 ? (
+                            data?.Today?.DV_BAN_RA.map((item, index) => (
+                              <div
+                                className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
+                                key={index}
+                              >
+                                <div className="flex-1 font-light">
+                                  {item?.ProdTitle} (x{item?.SumQTy})
+                                </div>
+                                <div className="w-[180px] text-right font-semibold font-title">
+                                  {PriceHelper.formatVND(item?.SumTopay)}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                              Không có dữ liệu.
+                            </div>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                        <div>Tiền mặt</div>
-                        <div className="text-lg font-semibold font-title">
-                          {PriceHelper.formatVND(
-                            data?.Today?.DSo_TToan_TMat || 0
+                      <div>
+                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                          Combos
+                        </div>
+                        <div>
+                          {data?.Today?.COMBOS &&
+                          data?.Today?.COMBOS.length > 0 ? (
+                            data?.Today?.COMBOS.map((item, index) => (
+                              <div
+                                className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
+                                key={index}
+                              >
+                                <div className="flex-1 font-light">
+                                  {item?.ProdTitle} (x{item?.SumQTy})
+                                </div>
+                                <div className="w-[180px] text-right font-semibold font-title">
+                                  {PriceHelper.formatVND(item?.SumTopay)}
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                              Không có dữ liệu.
+                            </div>
                           )}
                         </div>
                       </div>
@@ -1564,147 +1707,6 @@ function PickerReportMassageV2({ children }) {
                           />
                         )}
                       </AutoResizer>
-                    </div>
-                  </div>
-                  <div className="bg-white rounded">
-                    <div className="px-5 py-4 border-b">
-                      <div className="text-lg font-medium uppercase">
-                        Bán hàng
-                      </div>
-                    </div>
-                    <div>
-                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
-                        TIP
-                      </div>
-                      <div>
-                        {data?.Today?.TIPs && data?.Today?.TIPs.length > 0 ? (
-                          data?.Today?.TIPs.map((item, index) => (
-                            <div
-                              className="flex border-b border-dashed last:!border-0 px-6 py-3"
-                              key={index}
-                            >
-                              <div className="flex-1 font-light">
-                                {item?.ProdTitle} (x{item?.SumQTy})
-                              </div>
-                              <div className="w-[180px] text-right font-semibold font-title">
-                                {PriceHelper.formatVND(item?.SumTopay)}
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                            Không có dữ liệu.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
-                        Sản phẩm
-                      </div>
-                      <div>
-                        {data?.Today?.SP_BAN_RA &&
-                        data?.Today?.SP_BAN_RA.length > 0 ? (
-                          data?.Today?.SP_BAN_RA.map((item, index) => (
-                            <div
-                              className="flex border-b border-dashed last:!border-0 px-6 py-3"
-                              key={index}
-                            >
-                              <div className="flex-1 font-light">
-                                {item?.ProdTitle} (x{item?.SumQTy})
-                              </div>
-                              <div className="w-[180px] text-right font-semibold font-title">
-                                {PriceHelper.formatVND(item?.SumTopay)}
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                            Không có dữ liệu.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
-                        Dịch vụ cộng thêm
-                      </div>
-                      <div>
-                        {data?.Today?.DV_CONG_THEM &&
-                        data?.Today?.DV_CONG_THEM.length > 0 ? (
-                          data?.Today?.DV_CONG_THEM.map((item, index) => (
-                            <div
-                              className="flex border-b border-dashed last:!border-0 px-6 py-3"
-                              key={index}
-                            >
-                              <div className="flex-1 font-light">
-                                {item?.ProdTitle} (x{item?.SumQTy})
-                              </div>
-                              <div className="w-[180px] text-right font-semibold font-title">
-                                {PriceHelper.formatVND(item?.SumTopay)}
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                            Không có dữ liệu.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
-                        Dịch vụ
-                      </div>
-                      <div>
-                        {data?.Today?.DV_BAN_RA &&
-                        data?.Today?.DV_BAN_RA.length > 0 ? (
-                          data?.Today?.DV_BAN_RA.map((item, index) => (
-                            <div
-                              className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
-                              key={index}
-                            >
-                              <div className="flex-1 font-light">
-                                {item?.ProdTitle} (x{item?.SumQTy})
-                              </div>
-                              <div className="w-[180px] text-right font-semibold font-title">
-                                {PriceHelper.formatVND(item?.SumTopay)}
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                            Không có dữ liệu.
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
-                        Combos
-                      </div>
-                      <div>
-                        {data?.Today?.COMBOS &&
-                        data?.Today?.COMBOS.length > 0 ? (
-                          data?.Today?.COMBOS.map((item, index) => (
-                            <div
-                              className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
-                              key={index}
-                            >
-                              <div className="flex-1 font-light">
-                                {item?.ProdTitle} (x{item?.SumQTy})
-                              </div>
-                              <div className="w-[180px] text-right font-semibold font-title">
-                                {PriceHelper.formatVND(item?.SumTopay)}
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                            Không có dữ liệu.
-                          </div>
-                        )}
-                      </div>
                     </div>
                   </div>
                 </div>
