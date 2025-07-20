@@ -567,9 +567,7 @@ function PickerReportMassageV2({ children }) {
 
   const getTIP = (rowData) => {
     let TIP = 0;
-    if (rowData.ReducedValue) {
-      TIP = Math.abs(rowData.ReducedValue);
-    } else if (rowData.Prod) {
+    if (rowData.Prod) {
       let Prods = rowData.Prod.split(";");
       let index = rowData.Prod.split(";").findIndex(
         (x) => x.indexOf("TIP") > -1
@@ -650,7 +648,7 @@ function PickerReportMassageV2({ children }) {
       },
       {
         key: "IsNewMember",
-        title: "Loại Cũ / Mới",
+        title: "Loại Cũ / Mới (ĐG)",
         dataKey: "IsNewMember",
         cellRenderer: ({ rowData }) => getInfoSource(rowData).IsMember,
         width: 200,
@@ -660,10 +658,36 @@ function PickerReportMassageV2({ children }) {
         },
       },
       {
-        key: "MemberSource",
-        title: "Nguồn khách hàng",
-        dataKey: "MemberSource",
+        key: "Gioitinh",
+        title: "Loại Cũ / Mới (KH)",
+        dataKey: "Gioitinh",
+        cellRenderer: ({ rowData }) => {
+          if(rowData?.Gioitinh) {
+            return rowData?.Gioitinh === 1 ? "Khách mới" : "Khách cũ"
+          }
+          return <></>
+        },
+        width: 200,
+        sortable: false,
+        mobileOptions: {
+          visible: true,
+        },
+      },
+      {
+        key: "GetSource",
+        title: "Nguồn KH (ĐG)",
+        dataKey: "GetSource",
         cellRenderer: ({ rowData }) => getInfoSource(rowData).Source,
+        width: 200,
+        sortable: false,
+        mobileOptions: {
+          visible: true,
+        },
+      },
+      {
+        key: "MemberSource",
+        title: "Nguồn KH (NV)",
+        dataKey: "MemberSource",
         width: 200,
         sortable: false,
         mobileOptions: {
@@ -989,8 +1013,10 @@ function PickerReportMassageV2({ children }) {
                 "THỜI GIAN",
                 "TÊN KHÁCH HÀNG",
                 "SỐ ĐIỆN THOẠI",
-                "LOẠI CŨ / MỚI",
-                "NGUỒN KHÁCH HÀNG",
+                "LOẠI CŨ / MỚI (ĐG)",
+                "LOẠI CŨ / MỚI (KH)",
+                "NGUỒN KH (ĐG)",
+                "NGUỒN KH (NV)",
                 "QUỐC GIA",
                 "GIÁ TRỊ TỔNG (ĐH)",
                 "GIÁ TRỊ TIP (ĐH)",
@@ -1023,6 +1049,10 @@ function PickerReportMassageV2({ children }) {
                       0
                     );
                 }
+                let loai = ""
+                if(rowData.Gioitinh) {
+                  loai = rowData.Gioitinh === 1 ? "Khách mới" : "Khách cũ"
+                }
                 Response.push([
                   rowData.Id,
                   rowData?.UserFullName || "",
@@ -1031,7 +1061,9 @@ function PickerReportMassageV2({ children }) {
                   rowData.MemberName,
                   rowData.MemberPhone,
                   getInfoSource(rowData).IsMember,
+                  loai,
                   getInfoSource(rowData).Source,
+                  rowData.MemberSource,
                   rowData.Jobs,
                   rowData.ToPay,
                   getTIP(rowData),
@@ -1396,8 +1428,8 @@ function PickerReportMassageV2({ children }) {
               )}
               {!isLoading && (
                 <div>
-                  <div className="flex flex-col gap-4 mb-4 lg:flex-row">
-                    <div className="grid grid-cols-1 gap-4 lg:w-[400px]">
+                  <div className="grid grid-cols-4 gap-4 mb-4 lg:flex-row">
+                    <div className="grid grid-cols-1 gap-4">
                       <div className="bg-white rounded">
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Tổng đơn hàng</div>
@@ -1473,149 +1505,130 @@ function PickerReportMassageV2({ children }) {
                         </div>
                       </div>
                     </div>
-                    <div className="bg-white rounded lg:flex-1">
+                    <div className="bg-white rounded">
                       <div className="px-5 py-4 border-b">
                         <div className="text-lg font-medium uppercase">
-                          Bán hàng
-                        </div>
-                      </div>
-                      <div>
-                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
-                          TIP
-                        </div>
-                        <div>
-                          {data?.Today?.TIPs && data?.Today?.TIPs.length > 0 ? (
-                            data?.Today?.TIPs.map((item, index) => (
-                              <div
-                                className="flex border-b border-dashed last:!border-0 px-6 py-3"
-                                key={index}
-                              >
-                                <div className="flex-1 font-light">
-                                  {item?.ProdTitle} (x{item?.SumQTy})
-                                </div>
-                                <div className="w-[180px] text-right font-semibold font-title">
-                                  {PriceHelper.formatVND(item?.SumTopay)}
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                              Không có dữ liệu.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
                           Sản phẩm
                         </div>
-                        <div>
-                          {data?.Today?.SP_BAN_RA &&
-                          data?.Today?.SP_BAN_RA.length > 0 ? (
-                            data?.Today?.SP_BAN_RA.map((item, index) => (
-                              <div
-                                className="flex border-b border-dashed last:!border-0 px-6 py-3"
-                                key={index}
-                              >
-                                <div className="flex-1 font-light">
-                                  {item?.ProdTitle} (x{item?.SumQTy})
-                                </div>
-                                <div className="w-[180px] text-right font-semibold font-title">
-                                  {PriceHelper.formatVND(item?.SumTopay)}
-                                </div>
+                      </div>
+
+                      <div className="h-[456px] overflow-auto">
+                        {data?.Today?.SP_BAN_RA &&
+                        data?.Today?.SP_BAN_RA.length > 0 ? (
+                          data?.Today?.SP_BAN_RA.map((item, index) => (
+                            <div
+                              className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                              key={index}
+                            >
+                              <div className="flex-1 font-light">
+                                {item?.ProdTitle} (x{item?.SumQTy})
                               </div>
-                            ))
-                          ) : (
-                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                              Không có dữ liệu.
+                              <div className="w-[150px] text-right font-semibold font-title">
+                                {PriceHelper.formatVND(item?.SumTopay)}
+                              </div>
                             </div>
-                          )}
+                          ))
+                        ) : (
+                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                            Không có dữ liệu.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="bg-white rounded">
+                      <div className="px-5 py-4 border-b">
+                        <div className="text-lg font-medium uppercase">
+                          Dịch vụ / Dịch vụ cộng thêm
                         </div>
                       </div>
-                      <div>
-                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
-                          Dịch vụ cộng thêm
+                      <div className="h-[456px] overflow-auto">
+                        <div>
+                          <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                            Dịch vụ cộng thêm
+                          </div>
+                          <div>
+                            {data?.Today?.DV_CONG_THEM &&
+                            data?.Today?.DV_CONG_THEM.length > 0 ? (
+                              data?.Today?.DV_CONG_THEM.map((item, index) => (
+                                <div
+                                  className="flex border-b border-dashed last:!border-0 px-6 py-3"
+                                  key={index}
+                                >
+                                  <div className="flex-1 font-light">
+                                    {item?.ProdTitle} (x{item?.SumQTy})
+                                  </div>
+                                  <div className="w-[150px] text-right font-semibold font-title">
+                                    {PriceHelper.formatVND(item?.SumTopay)}
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                                Không có dữ liệu.
+                              </div>
+                            )}
+                          </div>
                         </div>
                         <div>
-                          {data?.Today?.DV_CONG_THEM &&
-                          data?.Today?.DV_CONG_THEM.length > 0 ? (
-                            data?.Today?.DV_CONG_THEM.map((item, index) => (
-                              <div
-                                className="flex border-b border-dashed last:!border-0 px-6 py-3"
-                                key={index}
-                              >
-                                <div className="flex-1 font-light">
-                                  {item?.ProdTitle} (x{item?.SumQTy})
+                          <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
+                            Dịch vụ
+                          </div>
+                          <div>
+                            {data?.Today?.DV_BAN_RA &&
+                            data?.Today?.DV_BAN_RA.length > 0 ? (
+                              data?.Today?.DV_BAN_RA.map((item, index) => (
+                                <div
+                                  className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
+                                  key={index}
+                                >
+                                  <div className="flex-1 font-light">
+                                    {item?.ProdTitle} (x{item?.SumQTy})
+                                  </div>
+                                  <div className="w-[150px] text-right font-semibold font-title">
+                                    {PriceHelper.formatVND(item?.SumTopay)}
+                                  </div>
                                 </div>
-                                <div className="w-[180px] text-right font-semibold font-title">
-                                  {PriceHelper.formatVND(item?.SumTopay)}
-                                </div>
+                              ))
+                            ) : (
+                              <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                                Không có dữ liệu.
                               </div>
-                            ))
-                          ) : (
-                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                              Không có dữ liệu.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
-                          Dịch vụ
-                        </div>
-                        <div>
-                          {data?.Today?.DV_BAN_RA &&
-                          data?.Today?.DV_BAN_RA.length > 0 ? (
-                            data?.Today?.DV_BAN_RA.map((item, index) => (
-                              <div
-                                className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
-                                key={index}
-                              >
-                                <div className="flex-1 font-light">
-                                  {item?.ProdTitle} (x{item?.SumQTy})
-                                </div>
-                                <div className="w-[180px] text-right font-semibold font-title">
-                                  {PriceHelper.formatVND(item?.SumTopay)}
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                              Không có dữ liệu.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="bg-[#f4f6f9] px-6 py-3 text-[#3F4254] font-semibold uppercase text-[12px]">
-                          Combos
-                        </div>
-                        <div>
-                          {data?.Today?.COMBOS &&
-                          data?.Today?.COMBOS.length > 0 ? (
-                            data?.Today?.COMBOS.map((item, index) => (
-                              <div
-                                className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
-                                key={index}
-                              >
-                                <div className="flex-1 font-light">
-                                  {item?.ProdTitle} (x{item?.SumQTy})
-                                </div>
-                                <div className="w-[180px] text-right font-semibold font-title">
-                                  {PriceHelper.formatVND(item?.SumTopay)}
-                                </div>
-                              </div>
-                            ))
-                          ) : (
-                            <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
-                              Không có dữ liệu.
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
+                    <div className="bg-white rounded">
+                      <div className="px-5 py-4 border-b">
+                        <div className="text-lg font-medium uppercase">
+                          Combos
+                        </div>
+                      </div>
+                      <div className="h-[456px] overflow-auto">
+                        {data?.Today?.COMBOS &&
+                        data?.Today?.COMBOS.length > 0 ? (
+                          data?.Today?.COMBOS.map((item, index) => (
+                            <div
+                              className="flex justify-between border-b border-dashed last:!border-0 px-6 py-3"
+                              key={index}
+                            >
+                              <div className="flex-1 font-light">
+                                {item?.ProdTitle} (x{item?.SumQTy})
+                              </div>
+                              <div className="w-[150px] text-right font-semibold font-title">
+                                {PriceHelper.formatVND(item?.SumTopay)}
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex border-b border-dashed last:!border-0 px-6 py-3 font-light">
+                            Không có dữ liệu.
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="mb-4 bg-white rounded">
+                  <div className="bg-white rounded">
                     <div className="flex items-center justify-between px-5 py-3 border-b">
                       <div className="text-lg font-medium uppercase">
                         <span className="hidden lg:block">
@@ -1659,6 +1672,7 @@ function PickerReportMassageV2({ children }) {
                           <Table
                             fixed
                             key="id"
+                            rowKey="id"
                             width={width}
                             height={height}
                             columns={columns}
