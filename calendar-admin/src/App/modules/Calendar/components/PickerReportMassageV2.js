@@ -1158,6 +1158,11 @@ function PickerReportMassageV2({ children }) {
       });
   };
 
+  const SumTotal = (arr, key) => {
+    if(!arr || arr.length === 0) return 0
+    return arr.reduce((n, item) => n + item[key], 0)
+  }
+
   return (
     <>
       {children({
@@ -1401,7 +1406,7 @@ function PickerReportMassageV2({ children }) {
                     </div>
                     <div className="bg-white rounded">
                       <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                        <div>Tiền Spa</div>
+                        <div>Tiền SP/DV/Combos</div>
                         <div className="h-4 bg-gray-200 rounded-full w-[100px] animate-pulse"></div>
                       </div>
                       <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
@@ -1428,18 +1433,18 @@ function PickerReportMassageV2({ children }) {
               )}
               {!isLoading && (
                 <div>
-                  <div className="grid grid-cols-4 gap-4 mb-4 lg:flex-row">
+                  <div className="grid grid-cols-1 gap-4 mb-4 xl:grid-cols-4 md:grid-cols-2 lg:flex-row">
                     <div className="grid grid-cols-1 gap-4">
                       <div className="bg-white rounded">
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Tổng đơn hàng</div>
-                          <div className="text-lg font-semibold text-primary font-title">
+                          <div className="leading-5 text-[16px] font-semibold text-primary font-title">
                             {PriceHelper.formatVND(data?.Today?.DSo_Ngay || 0)}
                           </div>
                         </div>
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Đã thanh toán</div>
-                          <div className="text-lg font-semibold text-success font-title">
+                          <div className="leading-5 text-[16px] font-semibold text-success font-title">
                             {PriceHelper.formatVND(
                               (data?.Today?.DSo_TToan || 0) +
                                 Math.abs(data?.Today?.DSo_TToan_ThTien || 0) +
@@ -1449,7 +1454,7 @@ function PickerReportMassageV2({ children }) {
                         </div>
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Chờ thanh toán</div>
-                          <div className="text-lg font-semibold text-warning font-title">
+                          <div className="leading-5 text-[16px] font-semibold text-warning font-title">
                             {PriceHelper.formatVND(
                               (data?.Today?.DSo_Ngay || 0) -
                                 ((data?.Today?.DSo_TToan || 0) +
@@ -1461,8 +1466,8 @@ function PickerReportMassageV2({ children }) {
                       </div>
                       <div className="bg-white rounded">
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                          <div>Tiền Spa</div>
-                          <div className="text-lg font-semibold font-title">
+                          <div>Tiền SP/DV/Combos</div>
+                          <div className="leading-5 text-[16px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               (data?.Today?.DSo_Ngay || 0) -
                                 (data?.Today?.TIP?.SumTopay || 0)
@@ -1470,8 +1475,32 @@ function PickerReportMassageV2({ children }) {
                           </div>
                         </div>
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tiền sản phẩm</div>
+                          <div className="leading-5 text-[16px] font-semibold font-title">
+                            {PriceHelper.formatVND(SumTotal(data?.Today?.SP_BAN_RA, "SumTopay"))}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tiền dịch vụ</div>
+                          <div className="leading-5 text-[16px] font-semibold font-title">
+                            {PriceHelper.formatVND(SumTotal(data?.Today?.DV_BAN_RA, "SumTopay"))}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tiền DV cộng thêm</div>
+                          <div className="leading-5 text-[16px] font-semibold font-title">
+                            {PriceHelper.formatVND(SumTotal(data?.Today?.DV_CONG_THEM, "SumTopay"))}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tiền combo</div>
+                          <div className="leading-5 text-[16px] font-semibold font-title">
+                            {PriceHelper.formatVND(SumTotal(data?.Today?.COMBOS, "SumTopay"))}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Tiền TIP</div>
-                          <div className="text-lg font-semibold font-title">
+                          <div className="leading-5 text-[16px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               data?.Today?.TIP?.SumTopay || 0
                             )}
@@ -1481,7 +1510,7 @@ function PickerReportMassageV2({ children }) {
                       <div className="bg-white rounded">
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Chuyển khoản</div>
-                          <div className="text-lg font-semibold font-title">
+                          <div className="leading-5 text-[16px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               data?.Today?.DSo_TToan_CKhoan || 0
                             )}
@@ -1489,7 +1518,7 @@ function PickerReportMassageV2({ children }) {
                         </div>
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Quẹt thẻ</div>
-                          <div className="text-lg font-semibold font-title">
+                          <div className="leading-5 text-[16px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               data?.Today?.DSo_TToan_QThe || 0
                             )}
@@ -1497,7 +1526,7 @@ function PickerReportMassageV2({ children }) {
                         </div>
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Tiền mặt</div>
-                          <div className="text-lg font-semibold font-title">
+                          <div className="leading-5 text-[16px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               data?.Today?.DSo_TToan_TMat || 0
                             )}
@@ -1507,7 +1536,7 @@ function PickerReportMassageV2({ children }) {
                     </div>
                     <div className="bg-white rounded">
                       <div className="px-5 py-4 border-b">
-                        <div className="text-lg font-medium uppercase">
+                        <div className="leading-5 text-[16px] font-medium uppercase">
                           Sản phẩm
                         </div>
                       </div>
@@ -1537,7 +1566,7 @@ function PickerReportMassageV2({ children }) {
                     </div>
                     <div className="bg-white rounded">
                       <div className="px-5 py-4 border-b">
-                        <div className="text-lg font-medium uppercase">
+                        <div className="leading-5 text-[16px] font-medium uppercase">
                           Dịch vụ / Dịch vụ cộng thêm
                         </div>
                       </div>
@@ -1600,8 +1629,8 @@ function PickerReportMassageV2({ children }) {
                     </div>
                     <div className="bg-white rounded">
                       <div className="px-5 py-4 border-b">
-                        <div className="text-lg font-medium uppercase">
-                          Combos
+                        <div className="leading-5 text-[16px] font-medium uppercase">
+                          Combo
                         </div>
                       </div>
                       <div className="h-[456px] overflow-auto">
@@ -1630,7 +1659,7 @@ function PickerReportMassageV2({ children }) {
                   </div>
                   <div className="bg-white rounded">
                     <div className="flex items-center justify-between px-5 py-3 border-b">
-                      <div className="text-lg font-medium uppercase">
+                      <div className="leading-5 text-[16px] font-medium uppercase">
                         <span className="hidden lg:block">
                           Danh sách đơn hàng
                         </span>
