@@ -567,18 +567,12 @@ function PickerReportMassageV2({ children }) {
 
   const getTIP = (rowData) => {
     let TIP = 0;
-    if (rowData.Prod) {
-      let Prods = rowData.Prod.split(";");
-      let index = rowData.Prod.split(";").findIndex(
-        (x) => x.indexOf("TIP") > -1
-      );
-
-      if (index > -1) {
-        const regex = /\(([^)]+)\)/g;
-        const matches = [...Prods[index].matchAll(regex)];
-        const values = matches.map((match) => match[1]);
-        if (values && values.length > 0 && values[0].split(",").length > 1) {
-          TIP = Number(values[0].split(",")[1]);
+    if (rowData.MetaJSON) {
+      let PeJson = JSON.parse(rowData.MetaJSON);
+      if (PeJson.oi && PeJson.oi.length > 0) {
+        let index = PeJson.oi.findIndex((x) => x.name === "TIP");
+        if (index > -1) {
+          TIP = PeJson.oi[index].tp;
         }
       }
     }
@@ -662,10 +656,10 @@ function PickerReportMassageV2({ children }) {
         title: "Loại Cũ / Mới (KH)",
         dataKey: "Gioitinh",
         cellRenderer: ({ rowData }) => {
-          if(rowData?.Gioitinh) {
-            return rowData?.Gioitinh === 1 ? "Khách mới" : "Khách cũ"
+          if (rowData?.Gioitinh) {
+            return rowData?.Gioitinh === 1 ? "Khách mới" : "Khách cũ";
           }
-          return <></>
+          return <></>;
         },
         width: 200,
         sortable: false,
@@ -1049,9 +1043,9 @@ function PickerReportMassageV2({ children }) {
                       0
                     );
                 }
-                let loai = ""
-                if(rowData.Gioitinh) {
-                  loai = rowData.Gioitinh === 1 ? "Khách mới" : "Khách cũ"
+                let loai = "";
+                if (rowData.Gioitinh) {
+                  loai = rowData.Gioitinh === 1 ? "Khách mới" : "Khách cũ";
                 }
                 Response.push([
                   rowData.Id,
@@ -1159,9 +1153,9 @@ function PickerReportMassageV2({ children }) {
   };
 
   const SumTotal = (arr, key) => {
-    if(!arr || arr.length === 0) return 0
-    return arr.reduce((n, item) => n + item[key], 0)
-  }
+    if (!arr || arr.length === 0) return 0;
+    return arr.reduce((n, item) => n + item[key], 0);
+  };
 
   return (
     <>
@@ -1477,25 +1471,33 @@ function PickerReportMassageV2({ children }) {
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Tiền sản phẩm</div>
                           <div className="leading-5 text-[16px] font-semibold font-title">
-                            {PriceHelper.formatVND(SumTotal(data?.Today?.SP_BAN_RA, "SumTopay"))}
+                            {PriceHelper.formatVND(
+                              SumTotal(data?.Today?.SP_BAN_RA, "SumTopay")
+                            )}
                           </div>
                         </div>
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Tiền dịch vụ</div>
                           <div className="leading-5 text-[16px] font-semibold font-title">
-                            {PriceHelper.formatVND(SumTotal(data?.Today?.DV_BAN_RA, "SumTopay"))}
+                            {PriceHelper.formatVND(
+                              SumTotal(data?.Today?.DV_BAN_RA, "SumTopay")
+                            )}
                           </div>
                         </div>
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Tiền DV cộng thêm</div>
                           <div className="leading-5 text-[16px] font-semibold font-title">
-                            {PriceHelper.formatVND(SumTotal(data?.Today?.DV_CONG_THEM, "SumTopay"))}
+                            {PriceHelper.formatVND(
+                              SumTotal(data?.Today?.DV_CONG_THEM, "SumTopay")
+                            )}
                           </div>
                         </div>
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                           <div>Tiền combo</div>
                           <div className="leading-5 text-[16px] font-semibold font-title">
-                            {PriceHelper.formatVND(SumTotal(data?.Today?.COMBOS, "SumTopay"))}
+                            {PriceHelper.formatVND(
+                              SumTotal(data?.Today?.COMBOS, "SumTopay")
+                            )}
                           </div>
                         </div>
                         <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
@@ -1707,9 +1709,13 @@ function PickerReportMassageV2({ children }) {
                             columns={columns}
                             data={Lists}
                             disabled={Orders?.isLoading}
-                            loadingMore={Orders?.isFetching}
+                            loadingMore={Orders?.hasNextPage}
                             onEndReachedThreshold={300}
-                            onEndReached={Orders?.fetchNextPage}
+                            onEndReached={() => {
+                              if(!Orders.isFetchingNextPage) {
+                                Orders?.fetchNextPage();
+                              }
+                            }}
                             //overlayRenderer={this.renderOverlay}
                             //emptyRenderer={this.renderEmpty}
                             ignoreFunctionInColumnCompare={false}
