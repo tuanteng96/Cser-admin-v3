@@ -562,7 +562,7 @@ function PickerReportMassageV2({ children }) {
   });
 
   const Lists = formatArray.useInfiniteQuery(Orders?.data?.pages, "Items");
-
+  console.log(Lists)
   const onHide = () => setVisible(false);
 
   const getTIP = (rowData) => {
@@ -679,9 +679,9 @@ function PickerReportMassageV2({ children }) {
         },
       },
       {
-        key: "MemberSource",
+        key: "Source",
         title: "Nguồn KH (NV)",
-        dataKey: "MemberSource",
+        dataKey: "Source",
         width: 200,
         sortable: false,
         mobileOptions: {
@@ -1057,7 +1057,7 @@ function PickerReportMassageV2({ children }) {
                   getInfoSource(rowData).IsMember,
                   loai,
                   getInfoSource(rowData).Source,
-                  rowData.MemberSource,
+                  rowData.Source,
                   rowData.Jobs,
                   rowData.ToPay,
                   getTIP(rowData),
