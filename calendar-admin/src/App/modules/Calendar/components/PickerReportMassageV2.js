@@ -355,6 +355,8 @@ function PickerReportMassageV2({ children }) {
       });
 
       let TIP = null;
+      let PHI_QUET_THE = null;
+      let PHI_DICH_VU = null;
 
       if (rs2 && rs2.length > 0) {
         let index = rs2.findIndex(
@@ -362,6 +364,18 @@ function PickerReportMassageV2({ children }) {
         );
         if (index > -1) {
           TIP = rs2[index];
+        }
+        let indexQT = rs2.findIndex(
+          (x) => x.Format === 1 && x.ProdTitle === "Phí quẹt thẻ"
+        );
+        if (indexQT > -1) {
+          PHI_QUET_THE = rs2[indexQT];
+        }
+        let indexDV = rs2.findIndex(
+          (x) => x.Format === 1 && x.ProdTitle === "Phí dịch vụ"
+        );
+        if (indexDV > -1) {
+          PHI_DICH_VU = rs2[indexDV];
         }
       }
 
@@ -434,6 +448,8 @@ function PickerReportMassageV2({ children }) {
         Today: {
           ...rs1,
           TIP,
+          PHI_DICH_VU,
+          PHI_QUET_THE,
           TIPs:
             rs2 && rs2.length > 0
               ? rs2.filter(
@@ -446,7 +462,9 @@ function PickerReportMassageV2({ children }) {
                   (x) =>
                     x.Format === 1 &&
                     x.IsCourse &&
-                    x.ProdTitle.indexOf("TIP") === -1
+                    x.ProdTitle.indexOf("TIP") === -1 &&
+                    x.ProdTitle !== "Phí dịch vụ" &&
+                    x.ProdTitle !== "Phí quẹt thẻ"
                 )
               : [],
           SP_BAN_RA:
@@ -562,7 +580,7 @@ function PickerReportMassageV2({ children }) {
   });
 
   const Lists = formatArray.useInfiniteQuery(Orders?.data?.pages, "Items");
-  console.log(Lists)
+
   const onHide = () => setVisible(false);
 
   const getTIP = (rowData) => {
@@ -577,6 +595,34 @@ function PickerReportMassageV2({ children }) {
       }
     }
     return TIP;
+  };
+
+  const getPHI_DICH_VU = (rowData) => {
+    let Value = 0;
+    if (rowData.MetaJSON) {
+      let PeJson = JSON.parse(rowData.MetaJSON);
+      if (PeJson.oi && PeJson.oi.length > 0) {
+        let index = PeJson.oi.findIndex((x) => x.name === "Phí dịch vụ");
+        if (index > -1) {
+          Value = PeJson.oi[index].tp;
+        }
+      }
+    }
+    return Value;
+  };
+
+  const getPHI_QUET_THE = (rowData) => {
+    let Value = 0;
+    if (rowData.MetaJSON) {
+      let PeJson = JSON.parse(rowData.MetaJSON);
+      if (PeJson.oi && PeJson.oi.length > 0) {
+        let index = PeJson.oi.findIndex((x) => x.name === "Phí quẹt thẻ");
+        if (index > -1) {
+          Value = PeJson.oi[index].tp;
+        }
+      }
+    }
+    return Value;
   };
 
   const columns = useMemo(
@@ -717,11 +763,36 @@ function PickerReportMassageV2({ children }) {
         sortable: false,
       },
       {
+        key: "PHI_DICH_VU",
+        title: "Phí dịch vụ",
+        dataKey: "PHI_DICH_VU",
+        cellRenderer: ({ rowData }) => {
+          return PriceHelper.formatVND(getPHI_DICH_VU(rowData));
+        },
+        width: 180,
+        sortable: false,
+      },
+      {
+        key: "PHI_QUET_THE",
+        title: "Phí quẹt thẻ",
+        dataKey: "PHI_QUET_THE",
+        cellRenderer: ({ rowData }) => {
+          return PriceHelper.formatVND(getPHI_QUET_THE(rowData));
+        },
+        width: 180,
+        sortable: false,
+      },
+      {
         key: "TOTAL/SP/DV",
         title: "Giá trị SP/DV (ĐH)",
         dataKey: "TOTAL/SP/DV",
         cellRenderer: ({ rowData }) => {
-          return PriceHelper.formatVND(rowData.ToPay - getTIP(rowData));
+          return PriceHelper.formatVND(
+            rowData.ToPay -
+              getTIP(rowData) -
+              getPHI_DICH_VU(rowData) -
+              getPHI_QUET_THE(rowData)
+          );
         },
         width: 180,
         sortable: false,
@@ -736,9 +807,16 @@ function PickerReportMassageV2({ children }) {
 
           newOi = newOi?.oi || [];
 
-          newOi = newOi.filter((x) => x.name !== "TIP");
+          newOi = newOi.filter(
+            (x) =>
+              x.name !== "TIP" &&
+              x.name !== "Phí quẹt thẻ" &&
+              x.name !== "Phí dịch vụ"
+          );
+
           if (newOi && newOi.length > 0) {
             Total = newOi
+              .filter((x) => x.p > 0)
               .map((x) => x.p * x.qty - x.tp)
               .reduce(
                 (accumulator, currentValue) => accumulator + currentValue,
@@ -817,7 +895,12 @@ function PickerReportMassageV2({ children }) {
 
           newOi = newOi?.oi || [];
 
-          newOi = newOi.filter((x) => x.name !== "TIP");
+          newOi = newOi.filter(
+            (x) =>
+              x.name !== "TIP" &&
+              x.name !== "Phí dịch vụ" &&
+              x.name !== "Phí quẹt thẻ"
+          );
 
           return (
             <div>
@@ -991,8 +1074,47 @@ function PickerReportMassageV2({ children }) {
           DebtFrom: null,
           DebtTo: null,
           no: "",
-        }).then((rs) => {
+        }).then(async (rs) => {
           let { Total, Items } = rs;
+          let { data: rsRooms } = await CalendarCrud.getConfigName(`room`);
+          let RoomsList =
+            rsRooms && rsRooms.length > 0 && rsRooms[0].Value
+              ? JSON.parse(rsRooms[0].Value)
+              : null;
+          let Rooms = [];
+          for (let st of RoomsList) {
+            if (st?.ListRooms && st?.ListRooms.length > 0) {
+              for (let room of st?.ListRooms) {
+                if (room.Children && room.Children.length > 0) {
+                  for (let r of room.Children) {
+                    Rooms.push(r);
+                  }
+                }
+              }
+            }
+          }
+          let newItems =
+            Items && Items.length > 0
+              ? Items.map((x) => {
+                  let obj = { ...x, id: uuidv4() };
+                  if (x.Services && x.Services.length > 0) {
+                    obj.Services = obj.Services
+                      ? obj.Services.map((k) => {
+                          let sv = { ...k };
+                          if (sv.RoomID) {
+                            let index = Rooms.findIndex(
+                              (o) => o.ID === sv.RoomID
+                            );
+                            if (index > -1) sv.RoomTitle = Rooms[index].label;
+                          }
+                          return sv;
+                        })
+                      : [];
+                  }
+                  return obj;
+                })
+              : [];
+
           ExcelHepers.dataToExcel(
             `Danh sách đơn hàng (${Total}) - Từ ${moment(DateStart).format(
               "DD/MM/YYYY"
@@ -1014,6 +1136,8 @@ function PickerReportMassageV2({ children }) {
                 "QUỐC GIA",
                 "GIÁ TRỊ TỔNG (ĐH)",
                 "GIÁ TRỊ TIP (ĐH)",
+                "PHÍ DỊCH VỤ",
+                "PHÍ QUẸT THẺ",
                 "GIÁ TRỊ SP/DV (ĐH)",
                 "GIẢM GIÁ (ĐH)",
                 "TT TIỀN MẶT",
@@ -1028,15 +1152,21 @@ function PickerReportMassageV2({ children }) {
                 "NỘI DUNG",
               ];
               let Response = [Head];
-              for (let rowData of Items) {
+              for (let rowData of newItems) {
                 let TotalGG = 0;
                 let newOi = rowData.MetaJSON
                   ? JSON.parse(rowData.MetaJSON)
                   : [];
                 newOi = newOi?.oi || [];
-                newOi = newOi.filter((x) => x.name !== "TIP");
+                newOi = newOi.filter(
+                  (x) =>
+                    x.name !== "TIP" &&
+                    x.name !== "Phí dịch vụ" &&
+                    x.name !== "Phí quẹt thẻ"
+                );
                 if (newOi && newOi.length > 0) {
                   TotalGG = newOi
+                    .filter((x) => x.p > 0)
                     .map((x) => x.p * x.qty - x.tp)
                     .reduce(
                       (accumulator, currentValue) => accumulator + currentValue,
@@ -1061,7 +1191,12 @@ function PickerReportMassageV2({ children }) {
                   rowData.Jobs,
                   rowData.ToPay,
                   getTIP(rowData),
-                  rowData.ToPay - getTIP(rowData),
+                  getPHI_DICH_VU(rowData),
+                  getPHI_QUET_THE(rowData),
+                  rowData.ToPay -
+                    getTIP(rowData) -
+                    getPHI_DICH_VU(rowData) -
+                    getPHI_QUET_THE(rowData),
                   Math.abs(TotalGG),
                   rowData.DaThToan_TM,
                   rowData.DaThToan_CK,
@@ -1404,6 +1539,38 @@ function PickerReportMassageV2({ children }) {
                         <div className="h-4 bg-gray-200 rounded-full w-[100px] animate-pulse"></div>
                       </div>
                       <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                        <div className="pl-2">- Tiền sản phẩm</div>
+                        <div className="font-semibold leading-5 font-title">
+                          <div className="h-4 bg-gray-200 rounded-full w-[100px] animate-pulse"></div>
+                        </div>
+                      </div>
+                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                        <div className="pl-1">- Tiền dịch vụ</div>
+                        <div className="leading-5 text-[16px] font-semibold font-title">
+                          <div className="h-4 bg-gray-200 rounded-full w-[100px] animate-pulse"></div>
+                        </div>
+                      </div>
+                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                        <div className="pl-1">- Tiền DV cộng thêm</div>
+                        <div className="leading-5 text-[16px] font-semibold font-title">
+                          <div className="h-4 bg-gray-200 rounded-full w-[100px] animate-pulse"></div>
+                        </div>
+                      </div>
+                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                        <div className="pl-1">- Tiền combo</div>
+                        <div className="leading-5 text-[16px] font-semibold font-title">
+                          <div className="h-4 bg-gray-200 rounded-full w-[100px] animate-pulse"></div>
+                        </div>
+                      </div>
+                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                        <div>Tiền phí quẹt thẻ</div>
+                        <div className="h-4 bg-gray-200 rounded-full w-[100px] animate-pulse"></div>
+                      </div>
+                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                        <div>Tiền phí dịch vụ</div>
+                        <div className="h-4 bg-gray-200 rounded-full w-[100px] animate-pulse"></div>
+                      </div>
+                      <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
                         <div>Tiền TIP</div>
                         <div className="h-4 bg-gray-200 rounded-full w-[100px] animate-pulse"></div>
                       </div>
@@ -1464,39 +1631,57 @@ function PickerReportMassageV2({ children }) {
                           <div className="leading-5 text-[16px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               (data?.Today?.DSo_Ngay || 0) -
-                                (data?.Today?.TIP?.SumTopay || 0)
+                                (data?.Today?.TIP?.SumTopay || 0) -
+                                (data?.Today?.PHI_QUET_THE?.SumTopay || 0) -
+                                (data?.Today?.PHI_DICH_VU?.SumTopay || 0)
                             )}
                           </div>
                         </div>
-                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                          <div>Tiền sản phẩm</div>
-                          <div className="leading-5 text-[16px] font-semibold font-title">
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0 text-[13px] text-gray-800">
+                          <div className="pl-5">Tiền sản phẩm</div>
+                          <div className="leading-5 text-[15px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               SumTotal(data?.Today?.SP_BAN_RA, "SumTopay")
                             )}
                           </div>
                         </div>
-                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                          <div>Tiền dịch vụ</div>
-                          <div className="leading-5 text-[16px] font-semibold font-title">
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0 text-[13px] text-gray-800">
+                          <div className="pl-5">Tiền dịch vụ</div>
+                          <div className="leading-5 text-[15px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               SumTotal(data?.Today?.DV_BAN_RA, "SumTopay")
                             )}
                           </div>
                         </div>
-                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                          <div>Tiền DV cộng thêm</div>
-                          <div className="leading-5 text-[16px] font-semibold font-title">
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0 text-[13px] text-gray-800">
+                          <div className="pl-5">Tiền DV cộng thêm</div>
+                          <div className="leading-5 text-[15px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               SumTotal(data?.Today?.DV_CONG_THEM, "SumTopay")
                             )}
                           </div>
                         </div>
-                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
-                          <div>Tiền combo</div>
-                          <div className="leading-5 text-[16px] font-semibold font-title">
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0 text-[13px] text-gray-800">
+                          <div className="pl-5">Tiền combo</div>
+                          <div className="leading-5 text-[15px] font-semibold font-title">
                             {PriceHelper.formatVND(
                               SumTotal(data?.Today?.COMBOS, "SumTopay")
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tiền phí quẹt thẻ</div>
+                          <div className="leading-5 text-[16px] font-semibold font-title">
+                            {PriceHelper.formatVND(
+                              data?.Today?.PHI_QUET_THE?.SumTopay || 0
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-end justify-between px-6 py-4 border-b border-dashed last:!border-0">
+                          <div>Tiền phí dịch vụ</div>
+                          <div className="leading-5 text-[16px] font-semibold font-title">
+                            {PriceHelper.formatVND(
+                              data?.Today?.PHI_DICH_VU?.SumTopay || 0
                             )}
                           </div>
                         </div>
@@ -1712,7 +1897,7 @@ function PickerReportMassageV2({ children }) {
                             loadingMore={Orders?.hasNextPage}
                             onEndReachedThreshold={300}
                             onEndReached={() => {
-                              if(!Orders.isFetchingNextPage) {
+                              if (!Orders.isFetchingNextPage) {
                                 Orders?.fetchNextPage();
                               }
                             }}

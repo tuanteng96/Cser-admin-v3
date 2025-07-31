@@ -39,7 +39,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 0,
             },
             {
-              ID: 11340,
+              ID: 11558,
               Title: "Cser Hà Nội",
               KeySEO: "[05:00;20:00;60]{CN;10:00;21:00;120}{T2;09:00;18:30}",
               ParentID: 778,
@@ -65,14 +65,14 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
           ],
-          CrStockID: 11340, //8975
+          CrStockID: 11558, //8975
           rightsSum: {
             pos: {
               hasRight: true,
               stocks: [
                 [
                   {
-                    ID: 11340,
+                    ID: 11558,
                     Title: "Cser Hà Nội",
                     KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                     ParentID: 778,
@@ -91,7 +91,7 @@ function AuthInit({ isConfig, children }) {
               hasRight: true,
               stocks: [
                 {
-                  ID: 11340,
+                  ID: 11558,
                   Title: "Cser Hà Nội",
                   KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                   ParentID: 778,
@@ -109,7 +109,7 @@ function AuthInit({ isConfig, children }) {
               hasRight: true,
               stocks: [
                 {
-                  ID: 11340,
+                  ID: 11558,
                   Title: "Cser Hà Nội",
                   KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                   ParentID: 778,
@@ -143,7 +143,7 @@ function AuthInit({ isConfig, children }) {
                         text: "Công cụ hệ thống - Điểm",
                         stocksList: [
                           {
-                            ID: 11340,
+                            ID: 11558,
                             Title: "Cser Beauty Hà Nội",
                           },
                         ],
@@ -155,7 +155,7 @@ function AuthInit({ isConfig, children }) {
             ],
           },
           token:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjU3Mzg1NzkwNTczODYzMzciLCJuYmYiOjE3NTI4OTA0OTcsImV4cCI6MTgzOTI5MDQ5NywiaWF0IjoxNzUyODkwNDk3fQ.Dt0G4gwqWHjhn4EdqKZHYxzYT9YRDS-45g_TP7eU2cw',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjA0NjEiLCJuYmYiOjE3NTM2MDgxMzgsImV4cCI6MTg0MDAwODEzOCwiaWF0IjoxNzUzNjA4MTM4fQ.UEi0rtjbhvT6Phb1ABXPTSCaQl8V3wqIKFgc-OgvBdY',
         };
         window.GlobalConfig = {
           APP: {
