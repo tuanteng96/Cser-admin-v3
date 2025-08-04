@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { Form, Formik } from 'formik'
 import { values } from 'lodash'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import { Button, Modal } from 'react-bootstrap'
 import * as Yup from 'yup'
@@ -9,13 +9,33 @@ const AddSchema = Yup.object().shape({
   Title: Yup.string().required('Vui lòng nhập tên loại ca.')
 })
 
-function PickerAddShift({ children, onSubmit }) {
+function PickerAddShift({ children, onSubmit, Title }) {
   const [visible, setVisible] = useState(false)
-  const [initialValues] = useState({ Title: '', flexible: false })
+  const [initialValues, setInitialValues] = useState({
+    Title: '',
+    flexible: false
+  })
+
+  useEffect(() => {
+    if (visible) {
+      if (Title) {
+        setInitialValues(prevState => ({
+          ...prevState,
+          Title
+        }))
+      } else {
+        setInitialValues({
+          Title: '',
+          flexible: false
+        })
+      }
+    }
+  }, [visible])
+
   const onHide = () => {
     setVisible(false)
   }
-
+  
   return (
     <>
       {children({
@@ -37,16 +57,19 @@ function PickerAddShift({ children, onSubmit }) {
         >
           {formikProps => {
             // errors, touched, handleChange, handleBlur
-            const { handleChange, handleBlur, errors, touched } = formikProps
+            const { handleChange, handleBlur, errors, touched, values } = formikProps
             return (
               <Form className="h-100 card" autoComplete="off">
                 <Modal.Header closeButton>
-                  <Modal.Title>Thêm mới ca làm việc</Modal.Title>
+                  <Modal.Title>
+                    {Title ? 'Chỉnh sửa ca làm việc' : 'Thêm mới ca làm việc'}
+                  </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                  <div className="mb-4 form-group">
+                  <div className="mb-4 form-group last:!mb-0">
                     <div className="mb-1">Tên loại ca</div>
                     <input
+                      value={values.Title}
                       name="Title"
                       type="text"
                       className={clsx(
@@ -58,21 +81,23 @@ function PickerAddShift({ children, onSubmit }) {
                       onBlur={handleBlur}
                     />
                   </div>
-                  <div>
-                    <label className="checkbox checkbox-solid">
-                      <input
-                        type="checkbox"
-                        checked={values.flexible}
-                        name="flexible"
-                        onChange={handleChange}
-                        onBlur={handleBlur}
-                      />
-                      <span className="icon"></span>
-                      <span className="pl-2 font-medium cursor-pointer">
-                        Ca linh hoạt
-                      </span>
-                    </label>
-                  </div>
+                  {!Title && (
+                    <div className="mb-4 last:!mb-0">
+                      <label className="checkbox checkbox-solid">
+                        <input
+                          type="checkbox"
+                          checked={values.flexible}
+                          name="flexible"
+                          onChange={handleChange}
+                          onBlur={handleBlur}
+                        />
+                        <span className="icon"></span>
+                        <span className="pl-2 font-medium cursor-pointer">
+                          Ca linh hoạt
+                        </span>
+                      </label>
+                    </div>
+                  )}
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={onHide}>

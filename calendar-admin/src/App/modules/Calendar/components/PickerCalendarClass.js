@@ -74,7 +74,7 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
       });
       let Resources = [];
       let Events = [];
-
+      
       for (let clss of data.Items) {
         if (clss.TimeSlot && clss.TimeSlot.length > 0) {
           for (let day of clss.TimeSlot) {
@@ -211,7 +211,6 @@ function PickerCalendarClass({ children, TimeOpen, TimeClose }) {
           }
         }
       }
-
       return { Resources, Events };
     },
     enabled: visible && Boolean(filters.CrDate),

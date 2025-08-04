@@ -218,7 +218,12 @@ function ShiftWorks(props) {
                             }}
                           >
                             {({ open }) => (
-                              <button className='mt-1 bg-white border-0 text-success' type="button" onClick={open}>
+                              <button
+                                className="mt-1 bg-white border-0 text-success"
+                                type="button"
+                                onClick={open}
+                              >
+                                Thêm
                                 <i className="far fa-plus text-[17px]"></i>
                               </button>
                             )}
@@ -306,9 +311,38 @@ function ShiftWorks(props) {
                                 )}
                                 key={index}
                               >
-                                <div className="mb-8 text-3xl font-bold">
-                                  {item.Name}
-                                </div>
+                                <PickerAddShift
+                                  Title={item.Name}
+                                  onSubmit={({ Title }, { onHide }) => {
+                                    setFieldValue(
+                                      `CONG_CA[${index}].Name`,
+                                      Title
+                                    )
+                                    onHide()
+                                  }}
+                                >
+                                  {({ open }) => (
+                                    <div
+                                      className="mb-8 text-3xl font-bold cursor-pointer"
+                                      onClick={open}
+                                    >
+                                      {item.Name}
+                                      <svg
+                                        fill="currentColor"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 32 32"
+                                        className="w-6 ml-2.5"
+                                      >
+                                        <path
+                                          fillRule="evenodd"
+                                          d="M21 4a2 2 0 0 0-1.422.593l-15 15A1.99 1.99 0 0 0 4 20.998v5.588a2 2 0 0 0 2 2h5.588c.324 0 .537-.058.758-.15.242-.099.462-.244.647-.429l15-15a2 2 0 0 0 0-2.843l-5.571-5.57A2 2 0 0 0 21 4m-4 6L6 21v5.586h5.586l11-11zm1.414-1.414L24 14.172l2.58-2.592-5.585-5.575z"
+                                          clipRule="evenodd"
+                                        />
+                                      </svg>
+                                    </div>
+                                  )}
+                                </PickerAddShift>
+
                                 {values.CONG_CA[index].flexible ? (
                                   <FieldArray
                                     name={`CONG_CA[${index}].Options`}
