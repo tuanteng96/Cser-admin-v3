@@ -223,7 +223,6 @@ function ShiftWorks(props) {
                                 type="button"
                                 onClick={open}
                               >
-                                Thêm
                                 <i className="far fa-plus text-[17px]"></i>
                               </button>
                             )}
