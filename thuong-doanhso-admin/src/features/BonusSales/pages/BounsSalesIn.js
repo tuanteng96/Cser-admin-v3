@@ -245,17 +245,17 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
           : [];
 
       if (
-        window.GlobalConfig?.Admin?.cai_dat_phi?.visible &&
-        window.GlobalConfig?.Admin?.cai_dat_phi?.an_tinh_hs_ds
+        window.top?.GlobalConfig?.Admin?.cai_dat_phi?.visible &&
+        window.top?.GlobalConfig?.Admin?.cai_dat_phi?.an_tinh_hs_ds
       ) {
         newObj = newObj.filter(
           (x) =>
             x.Product.ProdTitle !==
-              window.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
         );
       }
       setInitialValues((prevState) => ({

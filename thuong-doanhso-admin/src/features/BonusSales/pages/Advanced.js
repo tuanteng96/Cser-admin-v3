@@ -22,17 +22,17 @@ const initialValues = {
 function Advanced({ OrderInfo, onSubmit, loading }) {
   let oiItems = OrderInfo?.oiItems ? [...OrderInfo?.oiItems] : [];
   if (
-    window.GlobalConfig?.Admin?.cai_dat_phi?.visible &&
-    window.GlobalConfig?.Admin?.cai_dat_phi?.an_tinh_hs_ds
+    window.top?.GlobalConfig?.Admin?.cai_dat_phi?.visible &&
+    window.top?.GlobalConfig?.Admin?.cai_dat_phi?.an_tinh_hs_ds
   ) {
     oiItems = oiItems.filter(
       (x) =>
         x.ProdTitle !==
-          window.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
+          window.top?.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
         x.ProdTitle !==
-          window.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+          window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
         x.ProdTitle !==
-          window.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+          window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
     );
   }
   
