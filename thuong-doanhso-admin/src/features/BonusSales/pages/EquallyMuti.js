@@ -13,7 +13,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
   const { UserID } = useSelector(({ Auth }) => ({
     UserID: Auth?.User?.ID,
   }));
-    
+
   const getValueHH = ({ user, item, Type }) => {
     if (typeof item.initialRose === "object") {
       if (
@@ -97,7 +97,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
     const { Types, Type } = values;
     let ToAdd = [...Types.BS, ...Types.KTV, ...Types.Sale];
     if (ToAdd.length > 0) {
-      const newArr =
+      let newArr =
         OrderInfo && OrderInfo.oiItems && OrderInfo.oiItems.length > 0
           ? OrderInfo.oiItems.map((item) => ({
               Product: item,
@@ -119,6 +119,21 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
               })),
             }))
           : [];
+
+      if (
+        window.GlobalConfig?.Admin?.cai_dat_phi?.visible &&
+        window.GlobalConfig?.Admin?.cai_dat_phi?.an_tinh_hs_ds
+      ) {
+        newArr = newArr.filter(
+          (x) =>
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+        );
+      }
       setInitialValues({ equally: newArr });
       resetForm();
     }

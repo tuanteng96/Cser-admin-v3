@@ -20,7 +20,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
   useEffect(() => {
     if (OrderInfo) {
       const { oiItems } = OrderInfo;
-      const newObt =
+      let newObt =
         oiItems && oiItems.length > 0
           ? oiItems.map((item) => ({
               Product: item,
@@ -28,6 +28,21 @@ function Divided({ OrderInfo, onSubmit, loading }) {
               Type: TypeStaff[0],
             }))
           : [];
+      if (
+        window.GlobalConfig?.Admin?.cai_dat_phi?.visible &&
+        window.GlobalConfig?.Admin?.cai_dat_phi?.an_tinh_hs_ds
+      ) {
+        newObt = newObt.filter(
+          (x) =>
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+        );
+      }
+
       setInitialValuesAdd({ ToAdd: newObt });
     }
   }, [OrderInfo]);
@@ -97,7 +112,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
       ToAdd && ToAdd.length > 0 ? ToAdd.filter((item) => item.Staff) : [];
 
     if (itemChange.length > 0) {
-      const newArr = itemChange.map((item) => ({
+      let newArr = itemChange.map((item) => ({
         Product: item.Product,
         Hoa_Hong: [
           {
@@ -117,6 +132,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
           },
         ],
       }));
+
       setInitialValues({ divided: newArr });
       resetForm();
     }

@@ -25,7 +25,6 @@ function Equally({ OrderInfo, onSubmit, loading }) {
         item?.prodBonus?.BonusSaleLevels.some((x) => x.Salary) &&
         Type.value !== "KY_THUAT_VIEN"
       ) {
-        
         let { BonusSaleLevels } = item?.prodBonus;
         let index = BonusSaleLevels.findIndex((x) => x.Level === user.level);
         let Salary = 0;
@@ -34,10 +33,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
         }
         return Salary * item.Qty;
       }
-      
+
       if (Type.value !== "KY_THUAT_VIEN") {
-        return item.prodBonus.BonusSale * item.Qty
-      };
+        return item.prodBonus.BonusSale * item.Qty;
+      }
       return item.prodBonus.BonusSale2 * item.Qty;
     }
 
@@ -103,27 +102,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
   const onToAdd = (values, { resetForm }) => {
     const { ToAdd, Type } = values;
     if (ToAdd.length > 0) {
-      const newArr =
+      let newArr =
         OrderInfo && OrderInfo.oiItems && OrderInfo.oiItems.length > 0
           ? OrderInfo.oiItems.map((item) => ({
               Product: item,
-              // Hoa_Hong: ToAdd.map((user) => {
-              //   let newItem = { ...item };
-              //   if (
-              //     item?.ToPay === 0 &&
-              //     (item?.prodBonus?.BonusSale > 100 ||
-              //       item?.prodBonus?.BonusSale2 > 100)
-              //   ) {
-              //     newItem.ToPay = 1;
-              //     newItem.gia_tri_thanh_toan_thuc_te = 1;
-              //   }
-              //   let obj = {
-              //     Product: item,
-              //     Staff: user,
-              //     Value: getValueHH({ user, item: newItem, Type }),
-              //   };
-              //   return obj;
-              // }),
               Hoa_Hong: ToAdd.map((user) => ({
                 Product: item,
                 Staff: user,
@@ -146,6 +128,20 @@ function Equally({ OrderInfo, onSubmit, loading }) {
             }))
           : [];
 
+      if (
+        window.GlobalConfig?.Admin?.cai_dat_phi?.visible &&
+        window.GlobalConfig?.Admin?.cai_dat_phi?.an_tinh_hs_ds
+      ) {
+        newArr = newArr.filter(
+          (x) =>
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+        );
+      }
       setInitialValues({ equally: newArr });
       resetForm();
     }
@@ -156,7 +152,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
   if (window.top?.GlobalConfig?.Admin.hoa_hong_an_gia) {
     if (!adminTools_byStock?.hasRight) isHiddenPrice = true;
   }
-  
+
   return (
     <Fragment>
       <div className="row">

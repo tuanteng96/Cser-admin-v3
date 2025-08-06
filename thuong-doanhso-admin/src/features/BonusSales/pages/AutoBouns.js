@@ -19,7 +19,7 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
   useEffect(() => {
     if (OrderInfo) {
       const { doanh_so, hoa_hong, oiItems } = OrderInfo;
-      const newObj =
+      let newObj =
         oiItems && oiItems.length > 0
           ? oiItems.map((product) => {
               const Hoa_hong_arr = hoa_hong
@@ -86,6 +86,21 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
             })
           : [];
 
+      if (
+        window.GlobalConfig?.Admin?.cai_dat_phi?.visible &&
+        window.GlobalConfig?.Admin?.cai_dat_phi?.an_tinh_hs_ds
+      ) {
+        newObj = newObj.filter(
+          (x) =>
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+        );
+      }
+
       setInitialValues((prevState) => ({
         ...prevState,
         AutoBouns: newObj,
@@ -98,7 +113,6 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
   if (window.top?.GlobalConfig?.Admin.hoa_hong_an_gia) {
     if (!adminTools_byStock?.hasRight) isHiddenPrice = true;
   }
-
 
   return (
     <Formik

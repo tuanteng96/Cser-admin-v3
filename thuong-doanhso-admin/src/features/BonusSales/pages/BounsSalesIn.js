@@ -70,7 +70,9 @@ const PickerDate = ({ children, sub, onRefresh }) => {
                 return (
                   <Form>
                     <div className="p-3" style={{ width: "250px" }}>
-                      {sub?.stock?.Title && <div className="mb-2">{sub?.stock?.Title}</div>}
+                      {sub?.stock?.Title && (
+                        <div className="mb-2">{sub?.stock?.Title}</div>
+                      )}
                       <div className="mb-3">
                         <DatePicker
                           name="date"
@@ -163,7 +165,9 @@ const PickerDateDS = ({ children, sub, onRefresh }) => {
                 return (
                   <Form>
                     <div className="p-3" style={{ width: "250px" }}>
-                      {sub?.stock?.Title && <div className="mb-2">{sub?.stock?.Title}</div>}
+                      {sub?.stock?.Title && (
+                        <div className="mb-2">{sub?.stock?.Title}</div>
+                      )}
                       <div className="mb-3">
                         <DatePicker
                           name="date"
@@ -219,7 +223,7 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
   useEffect(() => {
     if (OrderInfo) {
       const { doanh_so, hoa_hong, oiItems } = OrderInfo;
-      const newObj =
+      let newObj =
         oiItems && oiItems.length > 0
           ? oiItems.map((product) => {
               const Hoa_hong_arr = hoa_hong.filter(
@@ -239,6 +243,21 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
               };
             })
           : [];
+
+      if (
+        window.GlobalConfig?.Admin?.cai_dat_phi?.visible &&
+        window.GlobalConfig?.Admin?.cai_dat_phi?.an_tinh_hs_ds
+      ) {
+        newObj = newObj.filter(
+          (x) =>
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+            x.Product.ProdTitle !==
+              window.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+        );
+      }
       setInitialValues((prevState) => ({
         ...prevState,
         BounsSalesIn: newObj,

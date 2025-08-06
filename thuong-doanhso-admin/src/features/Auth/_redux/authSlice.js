@@ -9,7 +9,7 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
         ParentID: 0,
       },
       {
-        ID: 11557,
+        ID: 11593,
         Title: "Cser Hà Nội",
         ParentID: 778,
       },
@@ -51,14 +51,14 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
     User: {
       ID: 1,
     },
-    CrStockID: 11557,
+    CrStockID: 11593,
   };
 
   window.top.token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjAyMjYiLCJuYmYiOjE3NTEwNDI0NDksImV4cCI6MTgzNzQ0MjQ0OSwiaWF0IjoxNzUxMDQyNDQ5fQ.64iAqrW_bAXjxFZ-J2B6-eGiAb97vuDyma-9eKDvdzs';
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjA1MTEiLCJuYmYiOjE3NTQzNjQwNTgsImV4cCI6MTg0MDc2NDA1OCwiaWF0IjoxNzU0MzY0MDU4fQ.EtzQ0sAGPrgXqQvakkwh1qjHbNMqubHuv335EjXRRBE";
 
   window.top.OrderBonus23Info = {
-    OrderID: 58340,
+    OrderID: 58796,
     Order: {
       //Status: "finish",
       //AdminAction: "TANG_DH_KET_THUC_NO",
@@ -68,7 +68,32 @@ if (!process.env.NODE_ENV || process.env.NODE_ENV === "development") {
   window.top.GlobalConfig = {
     Admin: {
       thuong_ds_nang_cao: false,
-      hoa_hong_an_gia: true
+      hoa_hong_an_gia: true,
+      cai_dat_phi: {
+        an_tinh_hs_ds: true,
+        sp_loai_bo: "20258,20416,20417",
+        visible: true,
+        TIP: {
+          ProdID: "20258",
+          ProdTitle: "TIP",
+        },
+        PHIDICHVU: {
+          ProdID: "20416",
+          ProdTitle: "Phí dịch vụ",
+          Value: "8",
+          Type: "don_hang",
+          _Type: "dich_vu",
+          donhang_type: [0, 1, 2, 3, 4],
+          donhang_price: "GG",
+          _donhang_price: "NG",
+          max: 100000,
+        },
+        PHIQUETTHE: {
+          ProdID: "20417",
+          ProdTitle: "Phí quẹt thẻ",
+          Value: "3.5",
+        },
+      },
     },
   };
 }
