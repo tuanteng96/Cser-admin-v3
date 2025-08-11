@@ -290,6 +290,8 @@ const getAllWorkSheet = (data) => {
 const urlAction = (body) =>
   axiosClient.post(`/api/v3/UrlAction@invoke`, JSON.stringify(body));
 
+const getRevenueEndExpenditure = (body) => axiosClient.post(`/api/v3/r23/bao-cao-thu-chi/danh-sach`, JSON.stringify(body));
+
 const CalendarCrud = {
   getMembers,
   getStaffs,
@@ -339,6 +341,7 @@ const CalendarCrud = {
   getBookID,
   resetPointOsMember,
   getReportOrdersSales,
-  getStaffFull
+  getStaffFull,
+  getRevenueEndExpenditure
 };
 export default CalendarCrud;
