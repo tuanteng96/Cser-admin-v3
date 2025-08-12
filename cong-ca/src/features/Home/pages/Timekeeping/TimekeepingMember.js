@@ -987,7 +987,7 @@ function TimekeepingMember(props) {
                     obj?.WorkTrack?.Info?.CountWorkTime || '',
                     Number(obj?.WorkTrack?.Info?.CountWork) >
                     (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
-                      ? data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY
+                      ? (data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY || '')
                       : '',
                     obj?.WorkTrack?.Info?.Note || ''
                   ])

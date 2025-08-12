@@ -137,9 +137,11 @@ function Equally({ OrderInfo, onSubmit, loading }) {
             x.Product.ProdTitle !==
               window.top?.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU
+                ?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE
+                ?.ProdTitle
         );
       }
       setInitialValues({ equally: newArr });
@@ -178,6 +180,17 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                         placeholder="Chọn Nhân viên"
                         noOptionsMessage={() => "Không có lựa chọn"}
                         onChange={(option) => {
+                          if (window.top?.GlobalConfig?.Admin?.so_luong_nv_buoi_dv) {
+                            if (
+                              values.ToAdd &&
+                              values.ToAdd.length >=
+                                window.top?.GlobalConfig?.Admin?.so_luong_nv_buoi_dv
+                            ) {
+                              window.top?.toastr?.error("",`Chỉ có thể chọn tối đa ${window.top?.GlobalConfig?.Admin?.so_luong_nv_buoi_dv} nhân viên.`, {timeOut: 800})
+
+                              return;
+                            }
+                          }
                           let surplus = 100 % option.length;
                           let newOption = [];
                           if (option.length <= 10) {

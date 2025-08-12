@@ -1097,11 +1097,11 @@ function CalendarPage(props) {
       return "*";
     }
   };
-
+  
   const ListCalendars = useQuery({
     queryKey: [
       "ListCalendars",
-      { ListLock, filters, View: topCalendar?.type?.value },
+      { ListLock, filters }, //View: topCalendar?.type?.value
     ],
     queryFn: async () => {
       const newFilters = {
@@ -1354,9 +1354,9 @@ function CalendarPage(props) {
 
       return [...dataBooks, ...dataBooksAuto, ...dataOffline];
     },
-    enabled: Boolean(filters && filters.From),
+    enabled: Boolean(filters && filters.From && !BanTimeCalendar?.isLoading),
   });
-
+  
   const onRefresh = (callback) =>
     ListCalendars.refetch().then(() => callback && callback());
 

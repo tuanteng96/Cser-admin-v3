@@ -42,6 +42,7 @@ import WorksHelpers from 'src/helpers/WorksHelpers'
 import PickerChangeStock from '../../components/Picker/PickerChangeStock'
 import Swal from 'sweetalert2'
 import { useRoles } from 'src/hooks/useRoles'
+import ExcelHepers from 'src/helpers/ExcelHepers'
 
 moment.locale('vi')
 
@@ -133,6 +134,7 @@ function TimekeepingHome(props) {
     StockID: '',
     key: ''
   })
+  const [isExport, setIsExport] = useState(false)
   const { width } = useWindowSize()
   const typingTimeoutRef = useRef(null)
 
@@ -1191,10 +1193,9 @@ function TimekeepingHome(props) {
             Value: Math.abs(WorkTrack.Info.TimekeepingTypeValue)
           }
         }
-      }
-      else {
-        delete obj.Info["DI_SOM"]
-        delete obj.Info["DI_MUON"]
+      } else {
+        delete obj.Info['DI_SOM']
+        delete obj.Info['DI_MUON']
       }
       if (WorkTrack.Info.CheckOut.TimekeepingType) {
         if (
@@ -1213,10 +1214,9 @@ function TimekeepingHome(props) {
             Value: Math.abs(WorkTrack.Info.CheckOut.TimekeepingTypeValue)
           }
         }
-      }
-      else {
-        delete obj.Info?.CheckOut["VE_SOM"]
-        delete obj.Info?.CheckOut["VE_MUON"]
+      } else {
+        delete obj.Info?.CheckOut['VE_SOM']
+        delete obj.Info?.CheckOut['VE_MUON']
       }
 
       obj.Info.Type = WorkTrack?.Info?.Type?.value || ''
@@ -1249,7 +1249,7 @@ function TimekeepingHome(props) {
       }
       newValues.edit.push(obj)
     }
-    
+
     saveTimeKeepMutation.mutate(newValues, {
       onSuccess: () => {
         refetch().then(
@@ -1307,6 +1307,246 @@ function TimekeepingHome(props) {
         '!bg-[#FFF4DE]')
     )
   }
+
+  const onExport = () => {
+    if (!ListWorkSheet?.data?.list) return
+    setIsExport(true)
+
+    window?.top?.loading &&
+      window?.top?.loading('Đang thực hiện ...', () => {
+        ExcelHepers.dataToExcel(
+          'Chấm công ngày ' + filters.From + ' - ' + filters.StockID?.label,
+          (sheet, workbook) => {
+            workbook.suspendPaint()
+            workbook.suspendEvent()
+
+            let Head = [
+              'Ngày',
+              'VÀO / RA',
+              'CƠ SỞ',
+              'LOẠI',
+              'TIỀN THƯỞNG / PHẠT',
+              'LÝ DO',
+              'MÔ TẢ LÝ DO',
+              'SỐ CÔNG',
+              'SỐ PHÚT LÀM',
+              'PHỤ CẤP NGÀY',
+              'GHI CHÚ'
+            ]
+
+            let Response = [Head]
+            let Rows = []
+
+            let indexStart = 2
+            for (let data of ListWorkSheet?.data?.list || []) {
+              if (data?.Dates) {
+                for (let obj of data?.Dates) {
+                  indexStart += 1
+                  if (indexStart % 2 !== 0) {
+                    const rowObj = {
+                      row: indexStart,
+                      rowCount: 2
+                    }
+                    Rows.push(rowObj)
+
+                    let CountWork = obj?.WorkTrack?.Info?.WorkToday?.hiddenTime
+                      ? 0
+                      : obj?.WorkTrack?.Info?.CountWork || 0
+
+                    Response.push([
+                      moment(obj.Date).format('DD-MM-YYYY'),
+                      obj?.WorkTrack?.CheckIn
+                        ? moment(obj?.WorkTrack?.CheckIn).format('HH:mm:ss')
+                        : '',
+                      obj?.WorkTrack?.StockID
+                        ? obj?.WorkTrack?.StockID !== data?.StockID
+                          ? 'Khác điểm ' + obj?.WorkTrack?.StockTitle
+                          : 'Đúng điểm'
+                        : '',
+                      obj?.WorkTrack?.Info?.WorkToday?.hiddenTime
+                        ? 'Theo giờ'
+                        : obj?.WorkTrack?.Info?.TimekeepingType?.label || '',
+                      obj?.WorkTrack?.Info?.TimekeepingTypeValue || 0,
+                      obj?.WorkTrack?.Info?.Type?.label || '',
+                      obj?.WorkTrack?.Info?.Desc || '',
+                      Number(CountWork),
+                      obj?.WorkTrack?.Info?.CountWorkTime || '',
+                      Number(obj?.WorkTrack?.Info?.CountWork) >
+                      (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong ||
+                        0.1)
+                        ? data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY
+                        : '',
+                      obj?.WorkTrack?.Info?.Note || ''
+                    ])
+                  }
+                  indexStart += 1
+
+                  Response.push([
+                    moment(obj.Date).format('DD-MM-YYYY'),
+                    obj?.WorkTrack?.CheckOut
+                      ? moment(obj?.WorkTrack?.CheckOut).format('HH:mm:ss')
+                      : '',
+                    obj?.WorkTrack?.StockID
+                      ? obj?.WorkTrack?.StockID !== data?.StockID
+                        ? 'Khác điểm ' + obj?.WorkTrack?.StockTitle
+                        : 'Đúng điểm'
+                      : '',
+                    obj?.WorkTrack?.Info?.CheckOut?.TimekeepingType?.label ||
+                      '',
+                    obj?.WorkTrack?.Info?.CheckOut?.TimekeepingTypeValue || 0,
+                    obj?.WorkTrack?.Info?.CheckOut?.Type?.label || '',
+                    obj?.WorkTrack?.Info?.CheckOut?.Desc || '',
+                    0,
+                    obj?.WorkTrack?.Info?.CountWorkTime || '',
+                    Number(obj?.WorkTrack?.Info?.CountWork) >
+                    (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
+                      ? data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY || ''
+                      : '',
+                    obj?.WorkTrack?.Info?.Note || ''
+                  ])
+                }
+              }
+            }
+
+            let TotalRow = Response.length
+            let TotalColumn = Head.length
+
+            sheet.setArray(2, 0, Response)
+
+            //title
+            workbook
+              .getActiveSheet()
+              .getCell(0, 0)
+              .value(
+                'Chấm công ngày ' + filters.From + ' - ' + filters.StockID?.label
+              )
+            workbook.getActiveSheet().getCell(0, 0).font('18pt Arial')
+
+            workbook
+              .getActiveSheet()
+              .getRange(2, 0, 1, TotalColumn)
+              .font('12pt Arial')
+            workbook
+              .getActiveSheet()
+              .getRange(2, 0, 1, TotalColumn)
+              .backColor('#E7E9EB')
+            //border
+            var border = new window.GC.Spread.Sheets.LineBorder()
+            border.color = '#000'
+            border.style = window.GC.Spread.Sheets.LineStyle.thin
+            workbook
+              .getActiveSheet()
+              .getRange(2, 0, TotalRow, TotalColumn)
+              .borderLeft(border)
+            workbook
+              .getActiveSheet()
+              .getRange(2, 0, TotalRow, TotalColumn)
+              .borderRight(border)
+            workbook
+              .getActiveSheet()
+              .getRange(2, 0, TotalRow, TotalColumn)
+              .borderBottom(border)
+            workbook
+              .getActiveSheet()
+              .getRange(2, 0, TotalRow, TotalColumn)
+              .borderTop(border)
+            //filter
+            var cellrange = new window.GC.Spread.Sheets.Range(
+              3,
+              0,
+              1,
+              TotalColumn
+            )
+            var hideRowFilter =
+              new window.GC.Spread.Sheets.Filter.HideRowFilter(cellrange)
+            workbook.getActiveSheet().rowFilter(hideRowFilter)
+
+            //format number
+            workbook
+              .getActiveSheet()
+              .getCell(2, 0)
+              .hAlign(window.GC.Spread.Sheets.HorizontalAlign.center)
+
+            //auto fit width and height
+            workbook.getActiveSheet().autoFitRow(TotalRow + 2)
+            workbook.getActiveSheet().autoFitRow(0)
+
+            for (let i = 1; i < TotalColumn; i++) {
+              workbook.getActiveSheet().autoFitColumn(i)
+            }
+
+            workbook
+              .getActiveSheet()
+              .setColumnWidth(
+                0,
+                150.0,
+                window.GC.Spread.Sheets.SheetArea.viewport
+              )
+            workbook
+              .getActiveSheet()
+              .setColumnWidth(
+                1,
+                150.0,
+                window.GC.Spread.Sheets.SheetArea.viewport
+              )
+            workbook
+              .getActiveSheet()
+              .setColumnWidth(
+                2,
+                250.0,
+                window.GC.Spread.Sheets.SheetArea.viewport
+              )
+            workbook
+              .getActiveSheet()
+              .setColumnWidth(
+                3,
+                150.0,
+                window.GC.Spread.Sheets.SheetArea.viewport
+              )
+            workbook
+              .getActiveSheet()
+              .setColumnWidth(
+                5,
+                150.0,
+                window.GC.Spread.Sheets.SheetArea.viewport
+              )
+
+            for (let i = 0; i <= TotalRow; i++) {
+              workbook.getActiveSheet().setFormatter(i + 3, 4, '#,#')
+              workbook.getActiveSheet().setFormatter(i + 3, 8, '#,#')
+            }
+
+            for (const x of Rows) {
+              for (let i of [0, 2, 7, 8, 9, 10]) {
+                //i là vị trí cột
+                workbook
+                  .getActiveSheet()
+                  .addSpan(
+                    x.row,
+                    i,
+                    x.rowCount,
+                    1,
+                    window.GC.Spread.Sheets.SheetArea.viewport
+                  )
+                workbook
+                  .getActiveSheet()
+                  .getCell(x.row, i)
+                  .vAlign(window.GC.Spread.Sheets.VerticalAlign.center)
+              }
+            }
+
+            window.top?.toastr?.remove()
+
+            //Finish
+            workbook.resumePaint()
+            workbook.resumeEvent()
+
+            setIsExport(false)
+          }
+        )
+      })
+  }
+
   return (
     <>
       <Formik
@@ -1552,13 +1792,21 @@ function TimekeepingHome(props) {
                     )}
                   />
                 </div>
-                <div className="card-footer d-flex justify-content-end align-items-center">
+                <div className="gap-2 card-footer d-flex justify-content-end align-items-center">
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={onExport}
+                    disabled={isExport}
+                  >
+                    Xuất Excel
+                  </button>
                   {window.top?.GlobalConfig?.Admin?.sua_ngay_cong && (
                     <button
                       type="button"
                       onClick={() => autoUpdate(values, formikProps.resetForm)}
                       className={clsx(
-                        'btn btn-primary fw-500 mr-2',
+                        'btn btn-primary fw-500',
                         saveTimeKeepMutation.isLoading &&
                           'spinner spinner-white spinner-right'
                       )}
