@@ -1,8 +1,7 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import Select, { components } from "react-select";
-import AsyncCreatableSelect from "react-select/async-creatable";
-import AsyncSelect from "react-select/async";
+import Creatable from "react-select/creatable";
 import { Dropdown, Modal } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import { Form, Formik } from "formik";
@@ -19,6 +18,8 @@ import { NumericFormat } from "react-number-format";
 import clsx from "clsx";
 import SelectServiceBed from "../Select/SelectServiceBed/SelectServiceBed";
 import { useQuery } from "react-query";
+import { withAsyncPaginate, AsyncPaginate } from "react-select-async-paginate";
+
 moment.locale("vi");
 
 ModalCalendar.propTypes = {
@@ -31,6 +32,8 @@ ModalCalendar.defaultProps = {
   onHide: null,
   onSubmit: null,
 };
+
+const CreatableAsyncPaginate = withAsyncPaginate(Creatable);
 
 function getUniqueListBy(arr, key) {
   return [...new Map(arr.map((item) => [item[key], item])).values()];
@@ -312,43 +315,44 @@ function ModalCalendar({
     return objMember;
   };
 
-  const loadOptionsCustomer = (inputValue, callback) => {
-    setTimeout(async () => {
-      const { data } = await CalendarCrud.getMembers(
-        inputValue,
-        "",
-        inputValue === "" ? 0 : ""
-      );
-      let dataResult = data.map((item) => ({
-        ...item,
-        value: item.id,
-        label:
-          inputValue === "" && item.text === "Khách vãng lai"
-            ? "Đặt lịch cho khách vãng lai"
-            : item.text,
-        Thumbnail: toUrlServer("/images/user.png"),
-      }));
+  const loadOptionsCustomer = async (search) => {
+    const { data } = await CalendarCrud.getMembers(
+      search,
+      "",
+      search === "" ? 0 : ""
+    );
+    let dataResult = data.map((item) => ({
+      ...item,
+      value: item.id,
+      label:
+        search === "" && item.text === "Khách vãng lai"
+          ? "Đặt lịch cho khách vãng lai"
+          : item.text,
+      Thumbnail: toUrlServer("/images/user.png"),
+    }));
 
-      dataResult = getUniqueListBy(dataResult, "value");
-
-      callback(dataResult);
-    }, 300);
+    dataResult = getUniqueListBy(dataResult, "value");
+    return {
+      options: dataResult,
+      hasMore: false,
+    };
   };
 
-  const loadOptionsServices = (inputValue, callback, stockID, MemberID) => {
+  const loadOptionsServices = async (inputValue, stockID, MemberID) => {
     const filters = {
       Key: inputValue,
       StockID: stockID,
       MemberID: MemberID?.value || "",
     };
-    setTimeout(async () => {
-      const { lst } = await CalendarCrud.getRootServices(filters);
-      const dataResult = lst.map((item) => ({
-        value: item.ID,
-        label: item.Title,
-      }));
-      callback(dataResult);
-    }, 300);
+    const { lst } = await CalendarCrud.getRootServices(filters);
+    const dataResult = lst.map((item) => ({
+      value: item.ID,
+      label: item.Title,
+    }));
+    return {
+      options: dataResult,
+      hasMore: false,
+    };
   };
 
   const getTitleModal = (Status, formikProps) => {
@@ -494,7 +498,8 @@ function ModalCalendar({
                 <Modal.Body className="p-0">
                   <div className="px-6 pt-3 mb-3 form-group form-group-ezs">
                     {/* <label className="mb-1 d-none d-md-block">Khách hàng</label> */}
-                    <AsyncCreatableSelect
+                    <CreatableAsyncPaginate
+                      debounceTimeout={500}
                       className={`select-control ${
                         errors.MemberID && touched.MemberID
                           ? "is-invalid solid-invalid"
@@ -534,12 +539,13 @@ function ModalCalendar({
                         </span>
                       )}
                       menuPosition="fixed"
-                      cacheOptions
                       loadOptions={loadOptionsCustomer}
-                      defaultOptions
+                      cacheOptions
+                      //loadOptions={debouncedLoadCustomer}
+                      //defaultOptions
                       noOptionsMessage={({ inputValue }) =>
                         !inputValue
-                          ? "Không có khách hàng"
+                          ? "Nhập tên, số điện thoại để tìm kiếm"
                           : "Không tìm thấy khách hàng"
                       }
                       isValidNewOption={(
@@ -682,7 +688,7 @@ function ModalCalendar({
                   </div>
                   <div className="px-6 pt-3 mb-3 form-group form-group-ezs border-top">
                     <label className="mb-1 d-none d-md-block">Dịch vụ</label>
-                    <AsyncSelect
+                    <AsyncPaginate
                       key={`${
                         values.MemberID && values.MemberID.value
                           ? values.MemberID.value
@@ -700,21 +706,16 @@ function ModalCalendar({
                       isDisabled={false}
                       isClearable
                       isSearchable
-                      //menuIsOpen={true}
+                      debounceTimeout={500}
                       value={values.RootIdS}
                       onChange={(option) => setFieldValue("RootIdS", option)}
                       name="RootIdS"
                       placeholder="Chọn dịch vụ"
                       cacheOptions
-                      loadOptions={(v, callback) =>
-                        loadOptionsServices(
-                          v,
-                          callback,
-                          values.StockID,
-                          values.MemberID
-                        )
+                      loadOptions={(v) =>
+                        loadOptionsServices(v, values.StockID, values.MemberID)
                       }
-                      defaultOptions
+                      //defaultOptions
                       noOptionsMessage={({ inputValue }) =>
                         !inputValue
                           ? "Không có dịch vụ"

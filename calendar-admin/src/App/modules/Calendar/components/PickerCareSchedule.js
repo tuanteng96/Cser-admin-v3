@@ -33,8 +33,8 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
   const [filters, setFilters] = useState({
     MemberIDs: [],
     StockID: [AuthCrStockID],
-    DateStart: new Date(),
-    DateEnd: new Date(),
+    DateStart: null,
+    DateEnd: null,
     Pi: 1,
     Ps: 15,
   });
@@ -46,6 +46,16 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
         StockID: [AuthCrStockID],
         DateStart: new Date(),
         DateEnd: new Date(),
+        Pi: 1,
+        Ps: 20,
+      });
+    }
+    else {
+      setFilters({
+        MemberIDs: "",
+        StockID: [AuthCrStockID],
+        DateStart: null,
+        DateEnd: null,
         Pi: 1,
         Ps: 20,
       });
@@ -75,7 +85,7 @@ function PickerCareSchedule({ children, TimeOpen, TimeClose }) {
     getNextPageParam: (lastPage, pages) =>
       lastPage.Pi === lastPage.PCount ? undefined : lastPage.Pi + 1,
     keepPreviousData: true,
-    enabled: visible,
+    enabled: Boolean(filters.DateStart) && visible,
   });
 
   const Lists = formatArray.useInfiniteQuery(data?.pages, "Items");

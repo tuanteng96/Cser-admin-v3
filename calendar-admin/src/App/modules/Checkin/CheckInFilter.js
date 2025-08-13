@@ -40,7 +40,7 @@ function CheckInFilter({ onSubmit, initialValues }) {
                 />
                 <i className="far fa-search font-size-sm position-absolute top-12px left-12px"></i>
               </div>
-              <div className="w-180px pl-12px">
+              {/* <div className="w-180px pl-12px">
                 <Select
                   className="select-control"
                   classNamePrefix="select"
@@ -67,7 +67,7 @@ function CheckInFilter({ onSubmit, initialValues }) {
                     },
                   ]}
                 />
-              </div>
+              </div> */}
             </div>
             <ValueChangeListener />
           </Form>

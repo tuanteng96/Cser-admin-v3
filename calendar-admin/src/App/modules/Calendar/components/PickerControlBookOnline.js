@@ -73,6 +73,11 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
         CrDate: new Date(),
         StockID: AuthCrStockID,
       });
+    } else {
+      setFilters({
+        CrDate: null,
+        StockID: AuthCrStockID,
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
@@ -349,7 +354,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
         Lists,
       };
     },
-    enabled: visible,
+    enabled: Boolean(filters.CrDate) && visible,
     keepPreviousData: true,
     onSuccess: () => {},
   });

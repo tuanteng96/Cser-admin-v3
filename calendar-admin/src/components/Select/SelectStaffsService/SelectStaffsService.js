@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { isArray } from "lodash";
 import { useSelector } from "react-redux";
-import Select from "react-select";
 import CalendarCrud from "../../../App/modules/Calendar/_redux/CalendarCrud";
 import { toUrlServer } from "../../../helpers/AssetsHelpers";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 SelectStaffsService.propTypes = {
   onChange: PropTypes.func,
@@ -43,16 +42,7 @@ function SelectStaffsService({
     })
   );
 
-  const [loading, setLoading] = useState(false);
-  const [ListOption, setListOption] = useState([]);
-
-  useEffect(() => {
-    getAllStaffs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const getAllStaffs = async () => {
-    setLoading(true);
+  const loadOptionsStaffs = async (search) => {
     const { data } = await CalendarCrud.getStaffs({
       All: true,
       StockID: StockID,
@@ -97,18 +87,27 @@ function SelectStaffsService({
         );
       }
     }
-    setLoading(false);
-    setListOption(newData.map((item) => ({
-      ...item, 
-      options: item?.options ? item?.options.sort((a,b) => a?.source?.Order - b?.source?.Order) : []
-    })));
+    return {
+      options: newData.map((item) => ({
+        ...item,
+        options: item?.options
+          ? item?.options
+              .filter((option) =>
+                option.label.toLowerCase().includes(search.toLowerCase())
+              )
+              .sort((a, b) => a?.source?.Order - b?.source?.Order)
+          : [],
+      })),
+      hasMore: false,
+    };
   };
 
   return (
-    <Select
-      isLoading={isLoading || loading}
+    <AsyncPaginate
+      debounceTimeout={500}
       classNamePrefix="select"
-      options={ListOption}
+      loadOptions={loadOptionsStaffs}
+      cacheOptions
       placeholder="Chọn nhân viên"
       value={value}
       onChange={onChange}

@@ -33,9 +33,9 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
   const [initialValues, setInitialValues] = useState(initialValue);
 
   useEffect(() => {
-    getListRooms();
+    if(show) getListRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [AuthCrStockID]);
+  }, [AuthCrStockID, show]);
 
   const getListRooms = (callback) => {
     CalendarCrud.getConfigName(`room`)
@@ -375,8 +375,7 @@ function ModalRoom({ show, onHide, StocksList, AuthCrStockID }) {
                                                               ChildrenHelpers.push(
                                                                 {
                                                                   ID: uuidv4(),
-                                                                  label:
-                                                                    "",
+                                                                  label: "",
                                                                 }
                                                               )
                                                             }

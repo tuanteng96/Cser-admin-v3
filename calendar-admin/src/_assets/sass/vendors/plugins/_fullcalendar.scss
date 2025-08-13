@@ -687,6 +687,31 @@
                 .fc-timeline-body>.fc-scrollgrid-sync-table tr td {
                     height: 50px !important;
                 }
+
+                .fc-timeline-header-row:last-child .fc-timeline-slot-frame {
+                    overflow: visible;
+                }
+
+                .fc-timeline-header-row th:first-child .gird-time {
+                    display: none !important;
+                }
+
+                .fc-timeline-header-row th .fc-timeline-slot-cushion {
+                    display: block;
+                    height: 100%;
+                    position: relative;
+                }
+
+                .fc-timeline-header-row th .fc-timeline-slot-cushion .gird-time {
+                    position: absolute;
+                    background: #fff;
+                    top: 0;
+                    left: -17px;
+                    height: 90%;
+                    display: flex;
+                    align-items: center;
+                    width: 34px;
+                }
             }
         }
         .fc-resourceTimeGridDay-view {
@@ -1371,3 +1396,33 @@
 }
 
 @include fullcalendar-theme();
+
+.fc-setting-book-online {
+    &.fc-resourceTimelineDay-view {
+.fc-timeline-header-row:last-child .fc-timeline-slot-frame {
+                    overflow: visible;
+                }
+
+                .fc-timeline-header-row th:first-child .gird-time {
+                    display: none !important;
+                }
+
+                .fc-timeline-header-row th .fc-timeline-slot-cushion {
+                    display: block;
+                    height: 100%;
+                    width: 100%;
+                    position: relative;
+                }
+
+                .fc-timeline-header-row th .fc-timeline-slot-cushion .gird-time {
+                    position: absolute;
+                    background: #fff;
+                    top: 0;
+                    left: -21px;
+                    height: 90%;
+                    display: flex;
+                    align-items: center;
+                    width: 42px;
+                }
+    }
+}

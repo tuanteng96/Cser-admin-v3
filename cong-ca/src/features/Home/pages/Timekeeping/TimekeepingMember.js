@@ -490,32 +490,36 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
                     )}
                   </Field>
                 </div>
-                <button
-                  type="submit"
-                  disabled={updateTimeKeepMutation.isLoading}
-                  className={clsx(
-                    'btn btn-primary min-w-[102px]',
-                    updateTimeKeepMutation.isLoading &&
-                      'spinner spinner-white spinner-right'
-                  )}
-                >
-                  {Locked ? 'Cập nhập' : 'Chốt lương'}
-                </button>
-                {Locked && (
-                  <button
-                    type="button"
-                    disabled={unLockTimeKeepMutation.isLoading}
-                    className={clsx(
-                      'btn btn-danger min-w-[102px] ml-2',
-                      unLockTimeKeepMutation.isLoading &&
-                        'spinner spinner-white spinner-right'
+                {!isHidden && (
+                  <>
+                    <button
+                      type="submit"
+                      disabled={updateTimeKeepMutation.isLoading}
+                      className={clsx(
+                        'btn btn-primary min-w-[102px]',
+                        updateTimeKeepMutation.isLoading &&
+                          'spinner spinner-white spinner-right'
+                      )}
+                    >
+                      {Locked ? 'Cập nhập' : 'Chốt lương'}
+                    </button>
+                    {Locked && (
+                      <button
+                        type="button"
+                        disabled={unLockTimeKeepMutation.isLoading}
+                        className={clsx(
+                          'btn btn-danger min-w-[102px] ml-2',
+                          unLockTimeKeepMutation.isLoading &&
+                            'spinner spinner-white spinner-right'
+                        )}
+                        onClick={() => {
+                          unLockSubmit(values)
+                        }}
+                      >
+                        Hủy chốt lương
+                      </button>
                     )}
-                    onClick={() => {
-                      unLockSubmit(values)
-                    }}
-                  >
-                    Hủy chốt lương
-                  </button>
+                  </>
                 )}
               </div>
             </Form>
@@ -525,6 +529,10 @@ const RenderFooter = forwardRef(({ data, SalaryConfigMons, refetch }, ref) => {
     </div>
   )
 })
+
+let isHidden =
+  window.top?.Info?.User?.FullName &&
+  window.top?.Info?.User?.FullName.toUpperCase().indexOf('XEMCHAMCONG') > -1
 
 function TimekeepingMember(props) {
   const navigate = useNavigate()
@@ -931,7 +939,9 @@ function TimekeepingMember(props) {
     window?.top?.loading &&
       window?.top?.loading('Đang thực hiện ...', () => {
         ExcelHepers.dataToExcel(
-          data?.FullName.replace(/\./g, "_") + ', T' + moment(filters.From).format('MM-YYYY'),
+          data?.FullName.replace(/\./g, '_') +
+            ', T' +
+            moment(filters.From).format('MM-YYYY'),
           (sheet, workbook) => {
             workbook.suspendPaint()
             workbook.suspendEvent()
@@ -987,7 +997,7 @@ function TimekeepingMember(props) {
                     obj?.WorkTrack?.Info?.CountWorkTime || '',
                     Number(obj?.WorkTrack?.Info?.CountWork) >
                     (window.top?.GlobalConfig?.Admin?.phu_cap_ngay_cong || 0.1)
-                      ? (data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY || '')
+                      ? data?.SalaryConfigMons[0]?.Values?.TRO_CAP_NGAY || ''
                       : '',
                     obj?.WorkTrack?.Info?.Note || ''
                   ])

@@ -322,7 +322,7 @@ function CalendarPage(props) {
       From: moment(moment(topCalendar?.day, "YYYY-MM-DD")),
       To: moment(moment(topCalendar?.day, "YYYY-MM-DD")),
     };
-    
+
     switch (topCalendar?.type?.value) {
       case "dayGridMonth":
         params.From = params.From.startOf("month").format("YYYY-MM-DD");
@@ -1097,7 +1097,7 @@ function CalendarPage(props) {
       return "*";
     }
   };
-  
+
   const ListCalendars = useQuery({
     queryKey: [
       "ListCalendars",
@@ -1356,7 +1356,7 @@ function CalendarPage(props) {
     },
     enabled: Boolean(filters && filters.From && !BanTimeCalendar?.isLoading),
   });
-  
+
   const onRefresh = (callback) =>
     ListCalendars.refetch().then(() => callback && callback());
 

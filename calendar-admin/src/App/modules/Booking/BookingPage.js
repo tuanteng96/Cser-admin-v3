@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import Select, { components } from "react-select";
-import AsyncSelect from "react-select/async";
+import { AsyncPaginate } from "react-select-async-paginate";
 import CalendarCrud from "../Calendar/_redux/CalendarCrud";
 import { useSelector } from "react-redux";
 import Cookies from "js-cookie";
@@ -158,20 +158,21 @@ function BookingPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [Book, BookMember, AuthCrStockID]);
 
-  const loadOptionsServices = (inputValue, callback, stockID, MemberID) => {
+  const loadOptionsServices = async (inputValue, stockID, MemberID) => {
     const filters = {
       Key: inputValue,
       StockID: stockID,
-      MemberID: MemberID?.value,
+      MemberID: MemberID?.value || "",
     };
-    setTimeout(async () => {
-      const { lst } = await CalendarCrud.getRootServices(filters);
-      const dataResult = lst.map((item) => ({
-        value: item.ID,
-        label: item.Title,
-      }));
-      callback(dataResult);
-    }, 300);
+    const { lst } = await CalendarCrud.getRootServices(filters);
+    const dataResult = lst.map((item) => ({
+      value: item.ID,
+      label: item.Title,
+    }));
+    return {
+      options: dataResult,
+      hasMore: false,
+    };
   };
 
   const onSubmitBooking = async (values) => {
@@ -523,27 +524,54 @@ function BookingPage() {
     StockID: Yup.string().required("Vui lòng chọn cơ sở."),
   });
 
-  const SettingCalendar = useQuery({
-    queryKey: ["SettingCalendar"],
-    queryFn: async () => {
-      let { data } = await CalendarCrud.getConfigName(`ArticleRel`);
-      let rs = {
-        Tags: "",
-        OriginalServices: [],
-      };
-      if (data && data.length > 0) {
-        const result = JSON.parse(data[0].Value);
-        if (result) {
-          rs = result;
-        }
-      }
-      return rs;
-    },
-    initialData: {
+  const loadOptionsTags = async (inputValue) => {
+    let { data } = await CalendarCrud.getConfigName(`ArticleRel`);
+    let rs = {
       Tags: "",
       OriginalServices: [],
-    },
-  });
+    };
+    if (data && data.length > 0) {
+      const result = JSON.parse(data[0].Value);
+      if (result) {
+        rs = result;
+      }
+    }
+    return {
+      options: rs?.Tags
+        ? rs?.Tags.split(",")
+            .map((x) => ({
+              label: x,
+              value: x,
+            }))
+            .filter((option) =>
+              option.label.toLowerCase().includes(inputValue.toLowerCase())
+            )
+        : [],
+      hasMore: false,
+    };
+  };
+
+  // const SettingCalendar = useQuery({
+  //   queryKey: ["SettingCalendar"],
+  //   queryFn: async () => {
+  //     let { data } = await CalendarCrud.getConfigName(`ArticleRel`);
+  //     let rs = {
+  //       Tags: "",
+  //       OriginalServices: [],
+  //     };
+  //     if (data && data.length > 0) {
+  //       const result = JSON.parse(data[0].Value);
+  //       if (result) {
+  //         rs = result;
+  //       }
+  //     }
+  //     return rs;
+  //   },
+  //   initialData: {
+  //     Tags: "",
+  //     OriginalServices: [],
+  //   },
+  // });
 
   return (
     <div className="booking">
@@ -680,7 +708,8 @@ function BookingPage() {
                 </div>
                 <div className="px-6 pt-3 form-group form-group-ezs border-top">
                   <label className="mb-1">Dịch vụ</label>
-                  <AsyncSelect
+                  <AsyncPaginate
+                    debounceTimeout={500}
                     key={`${
                       values.MemberID && values.MemberID.value
                         ? values.MemberID.value
@@ -703,15 +732,10 @@ function BookingPage() {
                     name="RootIdS"
                     placeholder="Chọn dịch vụ"
                     cacheOptions
-                    loadOptions={(v, callback) =>
-                      loadOptionsServices(
-                        v,
-                        callback,
-                        values.StockID,
-                        values.MemberID
-                      )
+                    loadOptions={(v) =>
+                      loadOptionsServices(v, values.StockID, values.MemberID)
                     }
-                    defaultOptions
+                    //defaultOptions
                     noOptionsMessage={({ inputValue }) =>
                       !inputValue
                         ? "Không có dịch vụ"
@@ -815,19 +839,14 @@ function BookingPage() {
                     />
                   )}
 
-                  <Select
+                  <AsyncPaginate
+                    debounceTimeout={500}
                     isMulti
                     isClearable
                     classNamePrefix="select"
                     className="mt-2 select-control"
-                    options={
-                      SettingCalendar?.data?.Tags
-                        ? SettingCalendar?.data?.Tags.split(",").map((x) => ({
-                            label: x,
-                            value: x,
-                          }))
-                        : []
-                    }
+                    cacheOptions
+                    loadOptions={loadOptionsTags}
                     placeholder="Chọn tags"
                     value={values.TagSetting}
                     onChange={(value) => setFieldValue("TagSetting", value)}

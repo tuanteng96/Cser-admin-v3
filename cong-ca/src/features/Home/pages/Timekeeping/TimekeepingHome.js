@@ -52,7 +52,7 @@ const CalendarContainer = ({ children }) => {
   return <Portal container={el}>{children}</Portal>
 }
 
-const PopoverCustom = ({ children }) => {
+const PopoverCustom = ({ children, isHidden }) => {
   const [isOpen, setIsOpen] = useState(false)
   const arrowRef = useRef(null)
   const { x, y, refs, context } = useFloating({
@@ -76,6 +76,8 @@ const PopoverCustom = ({ children }) => {
     click,
     dismiss
   ])
+
+  if (isHidden) return <></>
 
   return (
     <>
@@ -113,6 +115,10 @@ const PopoverCustom = ({ children }) => {
     </>
   )
 }
+
+let isHidden =
+  window.top?.Info?.User?.FullName &&
+  window.top?.Info?.User?.FullName.toUpperCase().indexOf('XEMCHAMCONG') > -1
 
 function TimekeepingHome(props) {
   const navigate = useNavigate()
@@ -397,7 +403,7 @@ function TimekeepingHome(props) {
               {rowData.Dates.map((date, i) => (
                 <PickerChangeStock key={i} rowData={rowData} refetch={refetch}>
                   {({ open }) => (
-                    <div onClick={open}>
+                    <div onClick={() => !isHidden && open()}>
                       {date.WorkTrack?.StockID &&
                       date.WorkTrack?.StockID !== rowData.StockID ? (
                         <div className="text-danger text-[13px] font-medium mt-1 cursor-pointer">
@@ -420,7 +426,7 @@ function TimekeepingHome(props) {
                 </PickerChangeStock>
               ))}
             </div>
-            <PopoverCustom>
+            <PopoverCustom isHidden={isHidden}>
               {({ onClose }) => (
                 <div className="bg-white shadow-lg py-2.5 min-w-[250px]">
                   <div className="px-3 border-bottom pb-2.5 mb-2.5">
@@ -1136,7 +1142,7 @@ function TimekeepingHome(props) {
       }
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [width, CrDate, usrmng]
+    [width, CrDate, usrmng, isHidden]
   )
 
   const saveTimeKeepMutation = useMutation({
@@ -1418,7 +1424,10 @@ function TimekeepingHome(props) {
               .getActiveSheet()
               .getCell(0, 0)
               .value(
-                'Chấm công ngày ' + filters.From + ' - ' + filters.StockID?.label
+                'Chấm công ngày ' +
+                  filters.From +
+                  ' - ' +
+                  filters.StockID?.label
               )
             workbook.getActiveSheet().getCell(0, 0).font('18pt Arial')
 
@@ -1801,31 +1810,37 @@ function TimekeepingHome(props) {
                   >
                     Xuất Excel
                   </button>
-                  {window.top?.GlobalConfig?.Admin?.sua_ngay_cong && (
-                    <button
-                      type="button"
-                      onClick={() => autoUpdate(values, formikProps.resetForm)}
-                      className={clsx(
-                        'btn btn-primary fw-500',
-                        saveTimeKeepMutation.isLoading &&
-                          'spinner spinner-white spinner-right'
+                  {!isHidden && (
+                    <>
+                      {window.top?.GlobalConfig?.Admin?.sua_ngay_cong && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            autoUpdate(values, formikProps.resetForm)
+                          }
+                          className={clsx(
+                            'btn btn-primary fw-500',
+                            saveTimeKeepMutation.isLoading &&
+                              'spinner spinner-white spinner-right'
+                          )}
+                        >
+                          Tự động tính lại
+                        </button>
                       )}
-                    >
-                      Tự động tính lại
-                    </button>
-                  )}
 
-                  <button
-                    type="submit"
-                    disabled={saveTimeKeepMutation.isLoading}
-                    className={clsx(
-                      'btn btn-success fw-500',
-                      saveTimeKeepMutation.isLoading &&
-                        'spinner spinner-white spinner-right'
-                    )}
-                  >
-                    Lưu thay đổi
-                  </button>
+                      <button
+                        type="submit"
+                        disabled={saveTimeKeepMutation.isLoading}
+                        className={clsx(
+                          'btn btn-success fw-500',
+                          saveTimeKeepMutation.isLoading &&
+                            'spinner spinner-white spinner-right'
+                        )}
+                      >
+                        Lưu thay đổi
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </Form>
