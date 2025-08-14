@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import { TypeStaff } from "../../../Json/Json";
 import { useSelector } from "react-redux";
 import { useRoles } from "../../../helpers/useRoles";
+import ConditionsHelpers from "../../../helpers/ConditionsHelpers";
 
 function Divided({ OrderInfo, onSubmit, loading }) {
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
@@ -37,9 +38,11 @@ function Divided({ OrderInfo, onSubmit, loading }) {
             x.Product.ProdTitle !==
               window.top?.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU
+                ?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE
+                ?.ProdTitle
         );
       }
 
@@ -297,10 +300,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        (window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao &&
-                                          UserID !== 1) ||
-                                        isHiddenPrice
+                                        ConditionsHelpers.isDisabledSalesSommission(
+                                          sub,
+                                          adminTools_byStock?.hasRight
+                                        ) || isHiddenPrice
                                       }
                                     />
                                   </div>
@@ -345,10 +348,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        (window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao &&
-                                          UserID !== 1) ||
-                                        isHiddenPrice
+                                        ConditionsHelpers.isDisabledSalesSommission(
+                                          sub,
+                                          adminTools_byStock?.hasRight
+                                        ) || isHiddenPrice
                                       }
                                     />
                                   </div>
@@ -413,10 +416,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                         }}
                                         onBlur={handleBlur}
                                         disabled={
-                                          (window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao &&
-                                            UserID !== 1) ||
-                                          isHiddenPrice
+                                          ConditionsHelpers.isDisabledSalesSommission(
+                                            sub,
+                                            adminTools_byStock?.hasRight
+                                          ) || isHiddenPrice
                                         }
                                       />
                                     </div>
@@ -458,10 +461,10 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                         }}
                                         onBlur={handleBlur}
                                         disabled={
-                                          (window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao &&
-                                            UserID !== 1) ||
-                                          isHiddenPrice
+                                          ConditionsHelpers.isDisabledSalesSommission(
+                                            sub,
+                                            adminTools_byStock?.hasRight
+                                          ) || isHiddenPrice
                                         }
                                       />
                                     </div>

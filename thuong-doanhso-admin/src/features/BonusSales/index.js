@@ -8,6 +8,7 @@ import Equally from "./pages/Equally";
 import AutoBouns from "./pages/AutoBouns";
 import { Dropdown } from "react-bootstrap";
 import EquallyMuti from "./pages/EquallyMuti";
+import { useRoles } from "../../helpers/useRoles";
 
 const isVisible = (Type) => {
   return Type.some((item) => item.Visible);
@@ -25,6 +26,9 @@ const BonusSales = () => {
         Auth?.Order?.AdminAction === "KHOA_NO_KET_THUC_NO"),
   }));
   const [OrderInfo, setOrderInfo] = useState({});
+
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
+
   const [Type, setType] = useState([
     {
       ID: 1,
@@ -50,7 +54,7 @@ const BonusSales = () => {
       Title: "Nâng cao",
       Visible: false,
       IsActive: false,
-      Hide: window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao && UserID !== 1,
+      Hide: window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao ? !adminTools_byStock?.hasRight : window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao,
       className: "btn btn-primary",
     },
     {

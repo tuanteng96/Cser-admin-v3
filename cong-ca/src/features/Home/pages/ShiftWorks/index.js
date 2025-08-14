@@ -28,8 +28,11 @@ let getInitial = () => {
 window.initNum = 1
 
 let isHidden =
-  window.top?.Info?.User?.FullName &&
-  window.top?.Info?.User?.FullName.toUpperCase().indexOf('XEMCHAMCONG') > -1
+  window.top?.Info?.Groups &&
+  window.top?.Info?.Groups.length > 0 &&
+  window.top?.Info?.Groups.findIndex(
+    x => x.Title.toUpperCase().indexOf('CHẤM CÔNG') > -1
+  ) > -1
 
 function ShiftWorks(props) {
   const navigate = useNavigate()
@@ -547,7 +550,8 @@ function ShiftWorks(props) {
                                                 <button
                                                   disabled={
                                                     values.CONG_CA[index]
-                                                      .Options.length <= 1 || isHidden
+                                                      .Options.length <= 1 ||
+                                                    isHidden
                                                   }
                                                   type="button"
                                                   className={clsx(

@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import SelectType from "../components/SelectType";
 import { formatArray } from "../../../helpers/formatArray";
 import { useRoles } from "../../../helpers/useRoles";
+import ConditionsHelpers from "../../../helpers/ConditionsHelpers";
 
 function Equally({ OrderInfo, onSubmit, loading }) {
   const [initialValues, setInitialValues] = useState({ equally: [] });
@@ -17,7 +18,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
   }));
 
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
-
+  
   const getValueHH = ({ user, item, Type }) => {
     if (typeof item.initialRose === "object") {
       if (
@@ -180,13 +181,20 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                         placeholder="Chọn Nhân viên"
                         noOptionsMessage={() => "Không có lựa chọn"}
                         onChange={(option) => {
-                          if (window.top?.GlobalConfig?.Admin?.so_luong_nv_buoi_dv) {
+                          if (
+                            window.top?.GlobalConfig?.Admin?.so_luong_nv_buoi_dv
+                          ) {
                             if (
                               values.ToAdd &&
                               values.ToAdd.length >=
-                                window.top?.GlobalConfig?.Admin?.so_luong_nv_buoi_dv
+                                window.top?.GlobalConfig?.Admin
+                                  ?.so_luong_nv_buoi_dv
                             ) {
-                              window.top?.toastr?.error("",`Chỉ có thể chọn tối đa ${window.top?.GlobalConfig?.Admin?.so_luong_nv_buoi_dv} nhân viên.`, {timeOut: 800})
+                              window.top?.toastr?.error(
+                                "",
+                                `Chỉ có thể chọn tối đa ${window.top?.GlobalConfig?.Admin?.so_luong_nv_buoi_dv} nhân viên.`,
+                                { timeOut: 800 }
+                              );
 
                               return;
                             }
@@ -388,10 +396,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        (window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao &&
-                                          UserID !== 1) ||
-                                        isHiddenPrice
+                                        ConditionsHelpers.isDisabledSalesSommission(
+                                          sub,
+                                          adminTools_byStock?.hasRight
+                                        ) || isHiddenPrice
                                       }
                                     />
                                   </div>
@@ -436,10 +444,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        (window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao &&
-                                          UserID !== 1) ||
-                                        isHiddenPrice
+                                        ConditionsHelpers.isDisabledSalesSommission(
+                                          sub,
+                                          adminTools_byStock?.hasRight
+                                        ) || isHiddenPrice
                                       }
                                     />
                                     <SelectType
@@ -454,10 +462,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                         );
                                       }}
                                       disabled={
-                                        (window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao &&
-                                          UserID !== 1) ||
-                                        isHiddenPrice
+                                        ConditionsHelpers.isDisabledSalesSommission(
+                                          sub,
+                                          adminTools_byStock?.hasRight
+                                        ) || isHiddenPrice
                                       }
                                     />
                                   </div>
@@ -529,10 +537,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                         }}
                                         onBlur={handleBlur}
                                         disabled={
-                                          (window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao &&
-                                            UserID !== 1) ||
-                                          isHiddenPrice
+                                          ConditionsHelpers.isDisabledSalesSommission(
+                                            sub,
+                                            adminTools_byStock?.hasRight
+                                          ) || isHiddenPrice
                                         }
                                       />
                                     </div>
@@ -571,10 +579,10 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                         }}
                                         //onBlur={handleBlur}
                                         disabled={
-                                          (window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao &&
-                                            UserID !== 1) ||
-                                          isHiddenPrice
+                                          ConditionsHelpers.isDisabledSalesSommission(
+                                            sub,
+                                            adminTools_byStock?.hasRight
+                                          ) || isHiddenPrice
                                         }
                                       />
                                       <SelectType

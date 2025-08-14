@@ -37,8 +37,11 @@ let initialValueOption = {
 }
 
 let isHidden =
-  window.top?.Info?.User?.FullName &&
-  window.top?.Info?.User?.FullName.toUpperCase().indexOf('XEMCHAMCONG') > -1
+  window.top?.Info?.Groups &&
+  window.top?.Info?.Groups.length > 0 &&
+  window.top?.Info?.Groups.findIndex(
+    x => x.Title.toUpperCase().indexOf('CHẤM CÔNG') > -1
+  ) > -1
 
 function PickerImages({ children, Src }) {
   const [visible, setVisible] = useState(false)
@@ -748,11 +751,12 @@ function PayOffPage(props) {
                                                   <td className="align-middle text-center !px-3 py-3">
                                                     <button
                                                       disabled={
-                                                        values[item].Options
+                                                        (values[item].Options
                                                           .length === 1 &&
-                                                        x.FromMinute === '' &&
-                                                        x.ToMinute === '' &&
-                                                        x.Value === '' || isHidden
+                                                          x.FromMinute === '' &&
+                                                          x.ToMinute === '' &&
+                                                          x.Value === '') ||
+                                                        isHidden
                                                       }
                                                       type="button"
                                                       className="btn btn-danger btn-xs w-[30px] h-[30px] disabled:opacity-30"

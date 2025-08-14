@@ -15,6 +15,7 @@ import "../../../_assets/plugins/react-datepicker/react-datepicker.css";
 import BonusSaleCrud from "../_redux/BonusSaleCrud";
 import * as Yup from "yup";
 import clsx from "clsx";
+import ConditionsHelpers from "../../../helpers/ConditionsHelpers";
 
 moment.locale(); // vi
 
@@ -253,9 +254,11 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
             x.Product.ProdTitle !==
               window.top?.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU
+                ?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE
+                ?.ProdTitle
         );
       }
       setInitialValues((prevState) => ({
@@ -398,12 +401,10 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                       className="text-muted line-height-sm"
                                       style={{ fontSize: "12px" }}
                                     >
-                                      {(window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao &&
-                                        UserID === 1) ||
-                                      (!window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao &&
-                                        adminTools_byStock?.hasRight) ? (
+                                      {!ConditionsHelpers.isDisabledSalesSommission(
+                                        sub,
+                                        adminTools_byStock?.hasRight
+                                      ) ? (
                                         <>
                                           <PickerDate
                                             onRefresh={onRefresh}
@@ -466,44 +467,23 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                       }}
                                       onBlur={handleBlur}
                                       disabled={
-                                        (window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao
-                                          ? UserID !== 1
-                                          : !(
-                                              adminTools_byStock?.hasRight ||
-                                              moment(sub.CreateDate).format(
-                                                "DD-MM-YYYY"
-                                              ) ===
-                                                moment().format("DD-MM-YYYY")
-                                            )) || isHiddenPrice
+                                        ConditionsHelpers.isDisabledSalesSommission(
+                                          sub,
+                                          adminTools_byStock?.hasRight
+                                        ) || isHiddenPrice
                                       }
                                     />
-                                    {window.top?.GlobalConfig?.Admin
-                                      ?.thuong_ds_nang_cao
-                                      ? UserID === 1 && (
-                                          <div
-                                            className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
-                                            onClick={() =>
-                                              arrayHelpers.remove(idx)
-                                            }
-                                          >
-                                            Xóa
-                                          </div>
-                                        )
-                                      : (adminTools_byStock?.hasRight ||
-                                          moment(sub.CreateDate).format(
-                                            "DD-MM-YYYY"
-                                          ) ===
-                                            moment().format("DD-MM-YYYY")) && (
-                                          <div
-                                            className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
-                                            onClick={() =>
-                                              arrayHelpers.remove(idx)
-                                            }
-                                          >
-                                            Xóa
-                                          </div>
-                                        )}
+                                    {!ConditionsHelpers.isDisabledSalesSommission(
+                                      sub,
+                                      adminTools_byStock?.hasRight
+                                    ) && (
+                                      <div
+                                        className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
+                                        onClick={() => arrayHelpers.remove(idx)}
+                                      >
+                                        Xóa
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               ))
@@ -536,12 +516,10 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                       className="text-muted line-height-sm"
                                       style={{ fontSize: "12px" }}
                                     >
-                                      {(window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao &&
-                                        UserID === 1) ||
-                                      (!window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao &&
-                                        adminTools_byStock?.hasRight) ? (
+                                      {!ConditionsHelpers.isDisabledSalesSommission(
+                                        sub,
+                                        adminTools_byStock?.hasRight
+                                      ) ? (
                                         <>
                                           <PickerDate
                                             onRefresh={onRefresh}
@@ -603,15 +581,10 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     }}
                                     onBlur={handleBlur}
                                     disabled={
-                                      (window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao
-                                        ? UserID !== 1
-                                        : !(
-                                            adminTools_byStock?.hasRight ||
-                                            moment(sub.CreateDate).format(
-                                              "DD-MM-YYYY"
-                                            ) === moment().format("DD-MM-YYYY")
-                                          )) || isHiddenPrice
+                                      ConditionsHelpers.isDisabledSalesSommission(
+                                        sub,
+                                        adminTools_byStock?.hasRight
+                                      ) || isHiddenPrice
                                     }
                                   />
                                   <SelectType
@@ -626,45 +599,23 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                         false
                                       );
                                     }}
-                                    isDisabled={
-                                      window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao
-                                        ? UserID !== 1
-                                        : !(
-                                            adminTools_byStock?.hasRight ||
-                                            moment(sub.CreateDate).format(
-                                              "DD-MM-YYYY"
-                                            ) === moment().format("DD-MM-YYYY")
-                                          )
-                                    }
+                                    isDisabled={ConditionsHelpers.isDisabledSalesSommission(
+                                      sub,
+                                      adminTools_byStock?.hasRight
+                                    )}
                                   />
                                   <div className="mt-2">
-                                    {window.top?.GlobalConfig?.Admin
-                                      ?.thuong_ds_nang_cao
-                                      ? UserID === 1 && (
-                                          <div
-                                            className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
-                                            onClick={() =>
-                                              arrayHelpers.remove(idx)
-                                            }
-                                          >
-                                            Xóa
-                                          </div>
-                                        )
-                                      : (adminTools_byStock?.hasRight ||
-                                          moment(sub.CreateDate).format(
-                                            "DD-MM-YYYY"
-                                          ) ===
-                                            moment().format("DD-MM-YYYY")) && (
-                                          <div
-                                            className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
-                                            onClick={() =>
-                                              arrayHelpers.remove(idx)
-                                            }
-                                          >
-                                            Xóa
-                                          </div>
-                                        )}
+                                    {!ConditionsHelpers.isDisabledSalesSommission(
+                                      sub,
+                                      adminTools_byStock?.hasRight
+                                    ) && (
+                                      <div
+                                        className="cursor-pointer text-danger w-30px text-end pl-5px font-size-sm"
+                                        onClick={() => arrayHelpers.remove(idx)}
+                                      >
+                                        Xóa
+                                      </div>
+                                    )}
                                   </div>
                                 </div>
                               ))
@@ -709,27 +660,30 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                             <div className="fw-bolder mb-10px">
                               {item.Product.ProdTitle}
                               {((item.Hoa_Hong && item.Hoa_Hong.length > 0) ||
-                                (item.Doanh_So &&
-                                  item.Doanh_So.length > 0)) && (
-                                <span
-                                  className="cursor-pointer text-danger pl-5px"
-                                  style={{ fontWeight: "400" }}
-                                  onClick={() => {
-                                    setFieldValue(
-                                      `BounsSalesIn[${index}].Hoa_Hong`,
-                                      [],
-                                      false
-                                    );
-                                    setFieldValue(
-                                      `BounsSalesIn[${index}].Doanh_So`,
-                                      [],
-                                      false
-                                    );
-                                  }}
-                                >
-                                  [Xoá]
-                                </span>
-                              )}
+                                (item.Doanh_So && item.Doanh_So.length > 0)) &&
+                                ConditionsHelpers.isDeleteProductSalesSommission(
+                                  item,
+                                  adminTools_byStock?.hasRight
+                                ) && (
+                                  <span
+                                    className="cursor-pointer text-danger pl-5px"
+                                    style={{ fontWeight: "400" }}
+                                    onClick={() => {
+                                      setFieldValue(
+                                        `BounsSalesIn[${index}].Hoa_Hong`,
+                                        [],
+                                        false
+                                      );
+                                      setFieldValue(
+                                        `BounsSalesIn[${index}].Doanh_So`,
+                                        [],
+                                        false
+                                      );
+                                    }}
+                                  >
+                                    [Xoá]
+                                  </span>
+                                )}
                             </div>
                             <div>
                               SL : {item.Product.Qty} *{" "}
@@ -753,12 +707,10 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                       {sub.User.FullName}
                                     </label>
                                     <div className="text-muted line-height-sm">
-                                      {(window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao &&
-                                        UserID === 1) ||
-                                      (!window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao &&
-                                        adminTools_byStock?.hasRight) ? (
+                                      {!ConditionsHelpers.isDisabledSalesSommission(
+                                        sub,
+                                        adminTools_byStock?.hasRight
+                                      ) ? (
                                         <>
                                           <PickerDate
                                             onRefresh={onRefresh}
@@ -822,43 +774,23 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     }}
                                     onBlur={handleBlur}
                                     disabled={
-                                      (window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao
-                                        ? UserID !== 1
-                                        : !(
-                                            adminTools_byStock?.hasRight ||
-                                            moment(sub.CreateDate).format(
-                                              "DD-MM-YYYY"
-                                            ) === moment().format("DD-MM-YYYY")
-                                          )) || isHiddenPrice
+                                      ConditionsHelpers.isDisabledSalesSommission(
+                                        sub,
+                                        adminTools_byStock?.hasRight
+                                      ) || isHiddenPrice
                                     }
                                   />
-                                  {window.top?.GlobalConfig?.Admin
-                                    ?.thuong_ds_nang_cao
-                                    ? UserID === 1 && (
-                                        <div
-                                          className="cursor-pointer text-danger w-30px text-end"
-                                          onClick={() =>
-                                            arrayHelpers.remove(idx)
-                                          }
-                                        >
-                                          Xóa
-                                        </div>
-                                      )
-                                    : (adminTools_byStock?.hasRight ||
-                                        moment(sub.CreateDate).format(
-                                          "DD-MM-YYYY"
-                                        ) ===
-                                          moment().format("DD-MM-YYYY")) && (
-                                        <div
-                                          className="cursor-pointer text-danger w-30px text-end"
-                                          onClick={() =>
-                                            arrayHelpers.remove(idx)
-                                          }
-                                        >
-                                          Xóa
-                                        </div>
-                                      )}
+                                  {!ConditionsHelpers.isDisabledSalesSommission(
+                                    sub,
+                                    adminTools_byStock?.hasRight
+                                  ) && (
+                                    <div
+                                      className="cursor-pointer text-danger w-30px text-end"
+                                      onClick={() => arrayHelpers.remove(idx)}
+                                    >
+                                      Xóa
+                                    </div>
+                                  )}
                                 </div>
                               ))
                             }
@@ -879,12 +811,10 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                       {sub.User.FullName}
                                     </label>
                                     <div className="text-muted line-height-sm">
-                                      {(window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao &&
-                                        UserID === 1) ||
-                                      (!window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao &&
-                                        adminTools_byStock?.hasRight) ? (
+                                      {!ConditionsHelpers.isDisabledSalesSommission(
+                                        sub,
+                                        adminTools_byStock?.hasRight
+                                      ) ? (
                                         <>
                                           <PickerDateDS
                                             onRefresh={onRefresh}
@@ -946,15 +876,10 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                     }}
                                     onBlur={handleBlur}
                                     disabled={
-                                      (window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao
-                                        ? UserID !== 1
-                                        : !(
-                                            adminTools_byStock?.hasRight ||
-                                            moment(sub.CreateDate).format(
-                                              "DD-MM-YYYY"
-                                            ) === moment().format("DD-MM-YYYY")
-                                          )) || isHiddenPrice
+                                      ConditionsHelpers.isDisabledSalesSommission(
+                                        sub,
+                                        adminTools_byStock?.hasRight
+                                      ) || isHiddenPrice
                                     }
                                   />
                                   <SelectType
@@ -968,44 +893,22 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                         false
                                       );
                                     }}
-                                    isDisabled={
-                                      window.top?.GlobalConfig?.Admin
-                                        ?.thuong_ds_nang_cao
-                                        ? UserID !== 1
-                                        : !(
-                                            adminTools_byStock?.hasRight ||
-                                            moment(sub.CreateDate).format(
-                                              "DD-MM-YYYY"
-                                            ) === moment().format("DD-MM-YYYY")
-                                          )
-                                    }
+                                    isDisabled={ConditionsHelpers.isDisabledSalesSommission(
+                                      sub,
+                                      adminTools_byStock?.hasRight
+                                    )}
                                   />
-                                  {window.top?.GlobalConfig?.Admin
-                                    ?.thuong_ds_nang_cao
-                                    ? UserID === 1 && (
-                                        <div
-                                          className="cursor-pointer text-danger w-30px text-end"
-                                          onClick={() =>
-                                            arrayHelpers.remove(idx)
-                                          }
-                                        >
-                                          Xóa
-                                        </div>
-                                      )
-                                    : (adminTools_byStock?.hasRight ||
-                                        moment(sub.CreateDate).format(
-                                          "DD-MM-YYYY"
-                                        ) ===
-                                          moment().format("DD-MM-YYYY")) && (
-                                        <div
-                                          className="cursor-pointer text-danger w-30px text-end"
-                                          onClick={() =>
-                                            arrayHelpers.remove(idx)
-                                          }
-                                        >
-                                          Xóa
-                                        </div>
-                                      )}
+                                  {!ConditionsHelpers.isDisabledSalesSommission(
+                                    sub,
+                                    adminTools_byStock?.hasRight
+                                  ) && (
+                                    <div
+                                      className="cursor-pointer text-danger w-30px text-end"
+                                      onClick={() => arrayHelpers.remove(idx)}
+                                    >
+                                      Xóa
+                                    </div>
+                                  )}
                                 </div>
                               ))
                             }

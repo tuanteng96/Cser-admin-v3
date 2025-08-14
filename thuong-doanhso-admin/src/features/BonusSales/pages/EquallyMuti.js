@@ -7,12 +7,16 @@ import PropTypes from "prop-types";
 import { TypeStaff } from "../../../Json/Json";
 import { useSelector } from "react-redux";
 import SelectType from "../components/SelectType";
+import { useRoles } from "../../../helpers/useRoles";
+import ConditionsHelpers from "../../../helpers/ConditionsHelpers";
 
 function EquallyMuti({ OrderInfo, onSubmit, loading }) {
   const [initialValues, setInitialValues] = useState({ equally: [] });
   const { UserID } = useSelector(({ Auth }) => ({
     UserID: Auth?.User?.ID,
   }));
+
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
   const getValueHH = ({ user, item, Type }) => {
     if (typeof item.initialRose === "object") {
@@ -129,9 +133,11 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
             x.Product.ProdTitle !==
               window.top?.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU
+                ?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE
+                ?.ProdTitle
         );
       }
       setInitialValues({ equally: newArr });
@@ -452,10 +458,10 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                                         );
                                       }}
                                       onBlur={handleBlur}
-                                      disabled={
-                                        window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao && UserID !== 1
-                                      }
+                                      disabled={ConditionsHelpers.isDisabledSalesSommission(
+                                        sub,
+                                        adminTools_byStock?.hasRight
+                                      )}
                                     />
                                   </div>
                                 ))
@@ -497,10 +503,10 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                                         );
                                       }}
                                       onBlur={handleBlur}
-                                      disabled={
-                                        window.top?.GlobalConfig?.Admin
-                                          ?.thuong_ds_nang_cao && UserID !== 1
-                                      }
+                                      disabled={ConditionsHelpers.isDisabledSalesSommission(
+                                        sub,
+                                        adminTools_byStock?.hasRight
+                                      )}
                                     />
                                     <SelectType
                                       name={`equally[${index}].Doanh_So[${idx}].Type`}
@@ -580,10 +586,10 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                                           );
                                         }}
                                         onBlur={handleBlur}
-                                        disabled={
-                                          window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao && UserID !== 1
-                                        }
+                                        disabled={ConditionsHelpers.isDisabledSalesSommission(
+                                          sub,
+                                          adminTools_byStock?.hasRight
+                                        )}
                                       />
                                     </div>
                                   ))
@@ -620,10 +626,10 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
                                           );
                                         }}
                                         onBlur={handleBlur}
-                                        disabled={
-                                          window.top?.GlobalConfig?.Admin
-                                            ?.thuong_ds_nang_cao && UserID !== 1
-                                        }
+                                        disabled={ConditionsHelpers.isDisabledSalesSommission(
+                                          sub,
+                                          adminTools_byStock?.hasRight
+                                        )}
                                       />
                                       <SelectType
                                         name={`equally[${index}].Doanh_So[${idx}].Type`}

@@ -117,8 +117,11 @@ const PopoverCustom = ({ children, isHidden }) => {
 }
 
 let isHidden =
-  window.top?.Info?.User?.FullName &&
-  window.top?.Info?.User?.FullName.toUpperCase().indexOf('XEMCHAMCONG') > -1
+  window.top?.Info?.Groups &&
+  window.top?.Info?.Groups.length > 0 &&
+  window.top?.Info?.Groups.findIndex(
+    x => x.Title.toUpperCase().indexOf('CHẤM CÔNG') > -1
+  ) > -1
 
 function TimekeepingHome(props) {
   const navigate = useNavigate()
