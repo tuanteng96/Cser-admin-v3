@@ -147,23 +147,30 @@ function TimekeepingHome(props) {
   const { width } = useWindowSize()
   const typingTimeoutRef = useRef(null)
 
+  const { usrmng, cong_ca } = useRoles({
+    nameRoles: ['usrmng', 'cong_ca'],
+    useAuth: { RightTree: rightTree, CrStocks: { ID: filters?.StockID?.ID } }
+  })
+
   useEffect(() => {
-    let newStocks = rightsSum?.stocks?.map(stock => ({
-      ...stock,
-      label: stock.Title,
-      value: stock.ID
-    }))
-    if (rightsSum?.IsAllStock) {
-      let index = Stocks.findIndex(x => x.ID === 778)
-      if (index > -1) {
-        newStocks.unshift({
-          ...Stocks[index],
-          value: Stocks[index].ID,
-          label: 'Hệ thống'
-        })
+    if (cong_ca?.hasRight) {
+      let newStocks = cong_ca?.StockRoles
+      if (cong_ca?.IsStocks) {
+        newStocks = [
+          {
+            label: 'Tất cả',
+            value: ''
+          },
+          {
+            label: 'Hệ thống',
+            value: 778,
+            ID: 778,
+            Title: 'Hệ thống'
+          },
+          ...newStocks
+        ]
       }
-    }
-    if (newStocks.length > 0) {
+
       if (!CrStockID) {
         setFilters(prevState => ({
           ...prevState,
@@ -175,14 +182,9 @@ function TimekeepingHome(props) {
           StockID: newStocks.filter(o => o.ID === CrStockID)[0]
         }))
       }
+      setStocksList(newStocks)
     }
-    setStocksList(newStocks)
-  }, [Stocks, CrStockID, rightsSum])
-
-  const { usrmng } = useRoles({
-    nameRoles: 'usrmng',
-    useAuth: { RightTree: rightTree, CrStocks: { ID: filters?.StockID?.ID } }
-  })
+  }, [cong_ca?.hasRight])
 
   useEffect(() => {
     setFilters(prevState => ({
@@ -1330,9 +1332,11 @@ function TimekeepingHome(props) {
             workbook.suspendEvent()
 
             let Head = [
-              'Ngày',
-              'VÀO / RA',
+              'NHÂN VIÊN',
               'CƠ SỞ',
+              'NGÀY',
+              'VÀO / RA',
+              'CƠ SỞ CHẤM CÔNG',
               'LOẠI',
               'TIỀN THƯỞNG / PHẠT',
               'LÝ DO',
@@ -1363,6 +1367,8 @@ function TimekeepingHome(props) {
                       : obj?.WorkTrack?.Info?.CountWork || 0
 
                     Response.push([
+                      data?.FullName || '',
+                      data?.StockTitle || '',
                       moment(obj.Date).format('DD-MM-YYYY'),
                       obj?.WorkTrack?.CheckIn
                         ? moment(obj?.WorkTrack?.CheckIn).format('HH:mm:ss')
@@ -1391,6 +1397,8 @@ function TimekeepingHome(props) {
                   indexStart += 1
 
                   Response.push([
+                    data?.FullName || '',
+                    data?.StockTitle || '',
                     moment(obj.Date).format('DD-MM-YYYY'),
                     obj?.WorkTrack?.CheckOut
                       ? moment(obj?.WorkTrack?.CheckOut).format('HH:mm:ss')
@@ -1524,12 +1532,12 @@ function TimekeepingHome(props) {
               )
 
             for (let i = 0; i <= TotalRow; i++) {
-              workbook.getActiveSheet().setFormatter(i + 3, 4, '#,#')
-              workbook.getActiveSheet().setFormatter(i + 3, 8, '#,#')
+              workbook.getActiveSheet().setFormatter(i + 3, 6, '#,#')
+              workbook.getActiveSheet().setFormatter(i + 3, 10, '#,#')
             }
 
             for (const x of Rows) {
-              for (let i of [0, 2, 7, 8, 9, 10]) {
+              for (let i of [0, 1, 2, 4, 9, 10, 11, 12]) {
                 //i là vị trí cột
                 workbook
                   .getActiveSheet()
@@ -1813,6 +1821,21 @@ function TimekeepingHome(props) {
                   >
                     Xuất Excel
                   </button>
+                  {/* <Dropdown>
+                    <Dropdown.Toggle variant="primary" id="dropdown-basic">
+                      Xuất Excel
+                    </Dropdown.Toggle>
+
+                    <Dropdown.Menu>
+                      <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
+                      <Dropdown.Item href="#/action-2">
+                        Another action
+                      </Dropdown.Item>
+                      <Dropdown.Item href="#/action-3">
+                        Something else
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown> */}
                   {!isHidden && (
                     <>
                       {window.top?.GlobalConfig?.Admin?.sua_ngay_cong && (

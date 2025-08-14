@@ -56,31 +56,30 @@ function AuthInit(props) {
               ParentID: 0
             },
             {
-              ID: 11594,
-              Title: 'Cser Hà Nội',
-              ParentID: 778
+              ID: 11593,
+              Title: 'Cser Hà Nội'
             },
             {
-              ID: 11441,
-              Title: 'Cser Hồ Chí Minh',
-              ParentID: 778
+              ID: 11594,
+              Title: 'Cser Hồ Chí Minh'
+            },
+            {
+              ID: 11595,
+              Title: 'Cser Đà nẵng'
             }
           ],
           StockRights: [
             {
+              ID: 11593,
+              Title: 'Cser Hà Nội'
+            },
+            {
               ID: 11594,
-              Title: 'Cser Hà Nội',
-              ParentID: 778
+              Title: 'Cser Hồ Chí Minh'
             },
             {
-              ID: 11441,
-              Title: 'Cser Hồ Chí Minh',
-              ParentID: 778
-            },
-            {
-              ID: 11387,
-              Title: 'Cser Chấm công',
-              ParentID: 778
+              ID: 11595,
+              Title: 'Cser Đà nẵng'
             }
           ],
           CrStockID: 11594, //8975
@@ -116,6 +115,39 @@ function AuthInit(props) {
                           {
                             ID: 11450,
                             Title: 'Cser Hà Nội'
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                group: 'Phần mềm',
+                rights: [
+                  {
+                    IsAllStock: true,
+                    hasRight: true,
+                    name: 'ketoan_hcns',
+                    subs: [
+                      {
+                        IsAllStock: true,
+                        hasRight: true,
+                        name: 'cong_ca',
+                        stocks: '',
+                        text: 'Công ca',
+                        stocksList: [
+                          {
+                            ID: 11593,
+                            Title: 'Cser Hà Nội'
+                          },
+                          {
+                            ID: 11594,
+                            Title: 'Cser Hồ Chí Minh'
+                          },
+                          {
+                            ID: 11595,
+                            Title: 'Cser Đà nẵng'
                           }
                         ]
                       }
