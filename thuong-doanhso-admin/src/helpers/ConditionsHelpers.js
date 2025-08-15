@@ -15,7 +15,7 @@ const ConditionsHelpers = {
           moment().format("DD-MM-YYYY")
       );
     }
-    return !window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao;
+    return window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao;
   },
   isDeleteProductSalesSommission: (item, rights) => {
     let newDoanh_So = item.Doanh_So
