@@ -39,7 +39,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 0,
             },
             {
-              ID: 11593,
+              ID: 11340,
               Title: "Cser Hà Nội",
               KeySEO:
                 "{T2;08:00;18:00;30}{T3;08:00;18:00;30}{T4;08:00;18:00;30}{T5;08:00;18:00;30}{T6;08:00;18:00;30}{T7;08:00;18:00;30}{CN;08:00;18:00;30}",
@@ -66,14 +66,14 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
           ],
-          CrStockID: 11593, //8975
+          CrStockID: 11340, //8975
           rightsSum: {
             pos: {
               hasRight: true,
               stocks: [
                 [
                   {
-                    ID: 11593,
+                    ID: 11340,
                     Title: "Cser Hà Nội",
                     KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                     ParentID: 778,
@@ -92,7 +92,7 @@ function AuthInit({ isConfig, children }) {
               hasRight: true,
               stocks: [
                 {
-                  ID: 11593,
+                  ID: 11340,
                   Title: "Cser Hà Nội",
                   KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                   ParentID: 778,
@@ -110,7 +110,7 @@ function AuthInit({ isConfig, children }) {
               hasRight: true,
               stocks: [
                 {
-                  ID: 11593,
+                  ID: 11340,
                   Title: "Cser Hà Nội",
                   KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
                   ParentID: 778,
@@ -144,7 +144,7 @@ function AuthInit({ isConfig, children }) {
                         text: "Công cụ hệ thống - Điểm",
                         stocksList: [
                           {
-                            ID: 11593,
+                            ID: 11340,
                             Title: "Cser Beauty Hà Nội",
                           },
                         ],
@@ -156,7 +156,7 @@ function AuthInit({ isConfig, children }) {
             ],
           },
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjA1NTciLCJuYmYiOjE3NTQ3MDczMDQsImV4cCI6MTg0MTEwNzMwNCwiaWF0IjoxNzU0NzA3MzA0fQ.ZOz2gxZQ3Wz6nhnXu3sI7odBAvpXNGTuR8wFQFQimJE",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjU3Mzg1NzkwNTczODYzNTQiLCJuYmYiOjE3NTUxNjM3MzksImV4cCI6MTg0MTU2MzczOSwiaWF0IjoxNzU1MTYzNzM5fQ.Pw8RU9IWnReifer5DH2PUPiQQhXi7JSdaVLta8Z02O4",
         };
         window.GlobalConfig = {
           APP: {

@@ -12,6 +12,10 @@ import ExcelHepers from "../../../../helpers/ExcelHepers";
 import { Form, Formik } from "formik";
 import { v4 as uuidv4 } from "uuid";
 
+var loading = (text, callback) => {
+  callback && callback();
+};
+
 let formatArray = {
   useInfiniteQuery: (page, key = "data") => {
     let newPages = [];
@@ -1064,7 +1068,7 @@ function PickerReportMassageV2({ children }) {
     );
   };
 
-  const exportExcel = async() => {
+  const exportExcel = async () => {
     // let { DateStart, DateEnd, isSkips } = getDateToFromV2({
     //   ...filters,
     //   checkout_time,
@@ -1149,8 +1153,8 @@ function PickerReportMassageV2({ children }) {
     //   }
     // );
 
-    window?.top?.loading &&
-      window?.top?.loading("Đang thực hiện ...", async () => {
+    loading &&
+      loading("Đang thực hiện ...", async () => {
         setIsExport2(true);
         let { DateStart, DateEnd, isSkips } = getDateToFromV2({
           ...filters,
@@ -1439,7 +1443,15 @@ function PickerReportMassageV2({ children }) {
 
             let table2 = {
               title: "THU CHI",
-              headers: ["KHOẢN", "LOẠI", "GHI CHÚ", "TM", "CK", "QT", "SỐ TIỀN"],
+              headers: [
+                "KHOẢN",
+                "LOẠI",
+                "GHI CHÚ",
+                "TM",
+                "CK",
+                "QT",
+                "SỐ TIỀN",
+              ],
               data: [
                 [
                   "THU BÁN HÀNG",
@@ -1448,7 +1460,9 @@ function PickerReportMassageV2({ children }) {
                   result1?.Today?.DSo_TToan_TMat,
                   result1?.Today?.DSo_TToan_CKhoan,
                   result1?.Today?.DSo_TToan_QThe,
-                  result1?.Today?.DSo_TToan_TMat + result1?.Today?.DSo_TToan_CKhoan + result1?.Today?.DSo_TToan_QThe,
+                  result1?.Today?.DSo_TToan_TMat +
+                    result1?.Today?.DSo_TToan_CKhoan +
+                    result1?.Today?.DSo_TToan_QThe,
                 ],
               ],
               formatters: [3, 4, 5, 6], // Cột Số tiền, TM, CK, QT sẽ được định dạng số
@@ -1495,6 +1509,29 @@ function PickerReportMassageV2({ children }) {
               sumArrayPrice(CHIs?.Items, "QT");
 
             table2.data.push([
+              "TỔNG THU",
+              "",
+              "",
+              sumArrayPrice(THUs?.Items, "TM"),
+              sumArrayPrice(THUs?.Items, "CK"),
+              sumArrayPrice(CHIs?.Items, "QT"),
+              result1?.Today?.DSo_TToan_TMat +
+                result1?.Today?.DSo_TToan_CKhoan +
+                result1?.Today?.DSo_TToan_QThe +
+                THUs_TONG,
+            ]);
+
+            table2.data.push([
+              "TỔNG THU",
+              "",
+              "",
+              sumArrayPrice(CHIs?.Items, "TM"),
+              sumArrayPrice(CHIs?.Items, "CK"),
+              sumArrayPrice(CHIs?.Items, "QT"),
+              CHIs_TONG,
+            ]);
+
+            table2.data.push([
               "TỒN",
               "",
               "",
@@ -1509,7 +1546,11 @@ function PickerReportMassageV2({ children }) {
               (result1?.Today?.DSo_TToan_QThe || 0) +
                 sumArrayPrice(THUs?.Items, "QT") -
                 sumArrayPrice(CHIs?.Items, "QT"),
-              (result1?.Today?.DSo_TToan_TMat + result1?.Today?.DSo_TToan_CKhoan + result1?.Today?.DSo_TToan_QThe) + THUs_TONG - CHIs_TONG,
+              result1?.Today?.DSo_TToan_TMat +
+                result1?.Today?.DSo_TToan_CKhoan +
+                result1?.Today?.DSo_TToan_QThe +
+                THUs_TONG -
+                CHIs_TONG,
             ]);
 
             // Thêm tiêu đề lớn ở đầu
@@ -1604,7 +1645,8 @@ function PickerReportMassageV2({ children }) {
             function exportTableNoHeaderNoBorder(
               startRow,
               data,
-              leftPadding = 0
+              leftPadding = 0,
+              first = false
             ) {
               data.forEach((row, r) => {
                 row.forEach((cell, c) => {
@@ -1628,10 +1670,19 @@ function PickerReportMassageV2({ children }) {
               if (data.length > 0) {
                 const lastRow = startRow + data.length - 1;
                 for (let c = 0; c < data[0].length; c++) {
-                  sheet.getCell(lastRow, c + leftPadding).backColor("#F64E60");
-                  sheet
-                    .getCell(lastRow, c + leftPadding)
-                    .font("bold 14pt Arial");
+                  if (!first) {
+                    sheet
+                      .getCell(lastRow, c + leftPadding)
+                      .backColor("#F64E60");
+                    sheet
+                      .getCell(lastRow, c + leftPadding)
+                      .font("bold 14pt Arial");
+                  }
+                  else {
+                    sheet
+                      .getCell(startRow, c + leftPadding)
+                      .font("bold 14pt Arial");
+                  }
                 }
 
                 const border = new window.GC.Spread.Sheets.LineBorder(
@@ -1667,6 +1718,22 @@ function PickerReportMassageV2({ children }) {
               ["TỔNG TIỀN", result1?.Today?.DSo_Ngay || 0],
             ];
             nextRow = exportTableNoHeaderNoBorder(nextRow - 1, middleTable, 4);
+
+            let middleTable2 = [
+              ["TỔNG GIẢM GIÁ", sumArrayPrice(Sales, "Giamgia"),],
+              ["TỔNG DỊCH VỤ", sumArrayPrice(result1?.Today?.DV_BAN_RA, "SumQTy")],
+              ["TỔNG COMBO", sumArrayPrice(result1?.Today?.COMBOS, "SumQTy")],
+              ["TỔNG SẢN PHẨM", sumArrayPrice(result1?.Today?.SP_BAN_RA, "SumQTy")],
+              ["TỔNG DV CỘNG THÊM", sumArrayPrice(result1?.Today?.DV_CONG_THEM, "SumQTy")],
+            ];
+
+            nextRow = exportTableNoHeaderNoBorder(
+              nextRow - 1,
+              middleTable2,
+              4,
+              true
+            );
+
             // Xuất bảng 2
             exportTable(
               nextRow,
@@ -1692,7 +1759,7 @@ function PickerReportMassageV2({ children }) {
             window.top?.toastr?.remove();
           }
         );
-     })
+      });
   };
 
   const onExport = () => {
