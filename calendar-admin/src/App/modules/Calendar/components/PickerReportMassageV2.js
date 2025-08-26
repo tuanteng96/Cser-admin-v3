@@ -1443,29 +1443,20 @@ function PickerReportMassageV2({ children }) {
 
             let table2 = {
               title: "THU CHI",
-              headers: [
-                "KHOẢN",
-                "LOẠI",
-                "GHI CHÚ",
-                "TM",
-                "CK",
-                "QT",
-                "SỐ TIỀN",
-              ],
+              headers: ["KHOẢN", "TM", "CK", "QT", "SỐ TIỀN", "GHI CHÚ"],
               data: [
                 [
                   "THU BÁN HÀNG",
-                  "",
-                  "",
                   result1?.Today?.DSo_TToan_TMat,
                   result1?.Today?.DSo_TToan_CKhoan,
                   result1?.Today?.DSo_TToan_QThe,
                   result1?.Today?.DSo_TToan_TMat +
                     result1?.Today?.DSo_TToan_CKhoan +
                     result1?.Today?.DSo_TToan_QThe,
+                  "",
                 ],
               ],
-              formatters: [3, 4, 5, 6], // Cột Số tiền, TM, CK, QT sẽ được định dạng số
+              formatters: [1, 2, 3, 4], // Cột Số tiền, TM, CK, QT sẽ được định dạng số
             };
 
             if (THUs?.Items && THUs?.Items.length > 0) {
@@ -1473,12 +1464,11 @@ function PickerReportMassageV2({ children }) {
                 let item = THUs.Items[i];
                 table2.data.push([
                   "Thu khác",
-                  item.CustomType || "",
-                  item.Content || "",
                   item.TM,
                   item.CK,
                   item.QT,
                   item.TM + item.CK + item.QT,
+                  item.Content || "",
                 ]);
               }
             }
@@ -1488,12 +1478,11 @@ function PickerReportMassageV2({ children }) {
                 let item = CHIs.Items[i];
                 table2.data.push([
                   "Chi",
-                  item.CustomType || "",
-                  item.Content || "",
                   Math.abs(item.TM),
                   Math.abs(item.CK),
                   Math.abs(item.QT),
                   Math.abs(item.TM) + Math.abs(item.CK) + Math.abs(item.QT),
+                  item.Content || "",
                 ]);
               }
             }
@@ -1510,31 +1499,28 @@ function PickerReportMassageV2({ children }) {
 
             table2.data.push([
               "TỔNG THU",
-              "",
-              "",
               sumArrayPrice(THUs?.Items, "TM") + result1?.Today?.DSo_TToan_TMat,
-              sumArrayPrice(THUs?.Items, "CK") + result1?.Today?.DSo_TToan_CKhoan,
+              sumArrayPrice(THUs?.Items, "CK") +
+                result1?.Today?.DSo_TToan_CKhoan,
               sumArrayPrice(CHIs?.Items, "QT") + result1?.Today?.DSo_TToan_QThe,
               result1?.Today?.DSo_TToan_TMat +
                 result1?.Today?.DSo_TToan_CKhoan +
                 result1?.Today?.DSo_TToan_QThe +
                 THUs_TONG,
+              "",
             ]);
 
             table2.data.push([
               "TỔNG CHI",
-              "",
-              "",
               sumArrayPrice(CHIs?.Items, "TM"),
               sumArrayPrice(CHIs?.Items, "CK"),
               sumArrayPrice(CHIs?.Items, "QT"),
               CHIs_TONG,
+              "",
             ]);
 
             table2.data.push([
               "TỒN",
-              "",
-              "",
               (result1?.Today?.DSo_TToan_TMat || 0) +
                 sumArrayPrice(THUs?.Items, "TM") -
                 sumArrayPrice(CHIs?.Items, "TM"),
@@ -1551,6 +1537,7 @@ function PickerReportMassageV2({ children }) {
                 result1?.Today?.DSo_TToan_QThe +
                 THUs_TONG -
                 CHIs_TONG,
+              "",
             ]);
 
             // Thêm tiêu đề lớn ở đầu
@@ -1677,8 +1664,7 @@ function PickerReportMassageV2({ children }) {
                     sheet
                       .getCell(lastRow, c + leftPadding)
                       .font("bold 14pt Arial");
-                  }
-                  else {
+                  } else {
                     sheet
                       .getCell(startRow, c + leftPadding)
                       .font("bold 14pt Arial");
@@ -1720,11 +1706,20 @@ function PickerReportMassageV2({ children }) {
             nextRow = exportTableNoHeaderNoBorder(nextRow - 1, middleTable, 4);
 
             let middleTable2 = [
-              ["TỔNG GIẢM GIÁ", sumArrayPrice(Sales, "Giamgia"),],
-              ["TỔNG DỊCH VỤ", sumArrayPrice(result1?.Today?.DV_BAN_RA, "SumQTy")],
+              ["TỔNG GIẢM GIÁ", sumArrayPrice(Sales, "Giamgia")],
+              [
+                "TỔNG DỊCH VỤ",
+                sumArrayPrice(result1?.Today?.DV_BAN_RA, "SumQTy"),
+              ],
               ["TỔNG COMBO", sumArrayPrice(result1?.Today?.COMBOS, "SumQTy")],
-              ["TỔNG SẢN PHẨM", sumArrayPrice(result1?.Today?.SP_BAN_RA, "SumQTy")],
-              ["TỔNG DV CỘNG THÊM", sumArrayPrice(result1?.Today?.DV_CONG_THEM, "SumQTy")],
+              [
+                "TỔNG SẢN PHẨM",
+                sumArrayPrice(result1?.Today?.SP_BAN_RA, "SumQTy"),
+              ],
+              [
+                "TỔNG DV CỘNG THÊM",
+                sumArrayPrice(result1?.Today?.DV_CONG_THEM, "SumQTy"),
+              ],
             ];
 
             nextRow = exportTableNoHeaderNoBorder(
