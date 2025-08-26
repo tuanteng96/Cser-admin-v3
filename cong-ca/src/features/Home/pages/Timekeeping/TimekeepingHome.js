@@ -43,6 +43,7 @@ import PickerChangeStock from '../../components/Picker/PickerChangeStock'
 import Swal from 'sweetalert2'
 import { useRoles } from 'src/hooks/useRoles'
 import ExcelHepers from 'src/helpers/ExcelHepers'
+import PickerRatio from './components/PickerRatio'
 
 moment.locale('vi')
 
@@ -125,14 +126,12 @@ let isHidden =
 
 function TimekeepingHome(props) {
   const navigate = useNavigate()
-  const { Stocks, CrStockID, rightsSum, rightTree } = useSelector(
-    ({ auth }) => ({
-      Stocks: auth?.Info?.Stocks || [],
-      rightsSum: auth?.Info?.rightsSum?.cong_ca || {},
-      CrStockID: auth?.Info?.CrStockID,
-      rightTree: auth?.Info?.rightTree
-    })
-  )
+  const { CrStockID, rightTree } = useSelector(({ auth }) => ({
+    Stocks: auth?.Info?.Stocks || [],
+    rightsSum: auth?.Info?.rightsSum?.cong_ca || {},
+    CrStockID: auth?.Info?.CrStockID,
+    rightTree: auth?.Info?.rightTree
+  }))
 
   const [StocksList, setStocksList] = useState([])
   const [CrDate, setCrDate] = useState(new Date())
@@ -147,8 +146,8 @@ function TimekeepingHome(props) {
   const { width } = useWindowSize()
   const typingTimeoutRef = useRef(null)
 
-  const { usrmng, cong_ca } = useRoles({
-    nameRoles: ['usrmng', 'cong_ca'],
+  const { usrmng, cong_ca, adminTools_byStock } = useRoles({
+    nameRoles: ['usrmng', 'cong_ca', 'adminTools_byStock'],
     useAuth: { RightTree: rightTree, CrStocks: { ID: filters?.StockID?.ID } }
   })
 
@@ -184,6 +183,8 @@ function TimekeepingHome(props) {
       }
       setStocksList(newStocks)
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cong_ca?.hasRight])
 
   useEffect(() => {
@@ -1310,6 +1311,53 @@ function TimekeepingHome(props) {
     resetForm({ list: result })
   }
 
+  const autoUpdateRatio = (values, resetForm, ratio) => {
+    if (!ratio) return
+    let { list } = values
+    let newList = list.filter(
+      x =>
+        x.Dates.filter(d => d?.WorkTrack?.CheckIn || d?.WorkTrack?.CheckOut)
+          .length > 0
+    )
+    let result = []
+    for (let member of newList) {
+      let newMember = {
+        ...member
+      }
+      if (
+        member.Dates.filter(
+          d => d?.WorkTrack?.CheckIn || d?.WorkTrack?.CheckOut
+        ).length > 0
+      ) {
+        let newDates = []
+        for (let date of member.Dates) {
+          let newDate = { ...date }
+          let { WorkTrack } = date
+
+          let newInfo = { ...(WorkTrack?.Info || {}) }
+
+          if (newInfo?.CountWork) {
+            newInfo['CountWork'] = Number(newInfo?.CountWork) * ratio
+          }
+          if (newInfo?.TimekeepingTypeValue) {
+            newInfo['TimekeepingTypeValue'] =
+              Number(newInfo?.TimekeepingTypeValue) * ratio
+          }
+          if (newInfo?.CheckOut?.TimekeepingTypeValue) {
+            newInfo.CheckOut['TimekeepingTypeValue'] =
+              Number(newInfo?.CheckOut?.TimekeepingTypeValue) * ratio
+          }
+          newDate.WorkTrack.Info = newInfo
+          newDates.push(newDate)
+        }
+        newMember.Dates = newDates
+      }
+
+      result.push(newMember)
+    }
+    resetForm({ list: result })
+  }
+
   const rowClassName = ({ rowData }) => {
     return (
       (rowData.Dates.some(x => x?.WorkTrack?.Info?.WorkToday?.isOff) &&
@@ -1813,6 +1861,27 @@ function TimekeepingHome(props) {
                   />
                 </div>
                 <div className="gap-2 card-footer d-flex justify-content-end align-items-center">
+                  {adminTools_byStock?.hasRight && (
+                    <PickerRatio
+                      filters={filters}
+                      onSubmit={val => {
+                        autoUpdateRatio(values, formikProps.resetForm, val)
+                      }}
+                    >
+                      {({ open }) => (
+                        <button
+                          onClick={open}
+                          type="button"
+                          className={clsx(
+                            'bg-[#ecf1f6] fw-500 border-0 h-[39px] rounded w-[45px]'
+                          )}
+                        >
+                          <i className="fal fa-users-cog text-[16px]"></i>
+                        </button>
+                      )}
+                    </PickerRatio>
+                  )}
+
                   <button
                     type="button"
                     className="btn btn-primary"
