@@ -1512,9 +1512,9 @@ function PickerReportMassageV2({ children }) {
               "TỔNG THU",
               "",
               "",
-              sumArrayPrice(THUs?.Items, "TM"),
-              sumArrayPrice(THUs?.Items, "CK"),
-              sumArrayPrice(CHIs?.Items, "QT"),
+              sumArrayPrice(THUs?.Items, "TM") + result1?.Today?.DSo_TToan_TMat,
+              sumArrayPrice(THUs?.Items, "CK") + result1?.Today?.DSo_TToan_CKhoan,
+              sumArrayPrice(CHIs?.Items, "QT") + result1?.Today?.DSo_TToan_QThe,
               result1?.Today?.DSo_TToan_TMat +
                 result1?.Today?.DSo_TToan_CKhoan +
                 result1?.Today?.DSo_TToan_QThe +
@@ -1522,7 +1522,7 @@ function PickerReportMassageV2({ children }) {
             ]);
 
             table2.data.push([
-              "TỔNG THU",
+              "TỔNG CHI",
               "",
               "",
               sumArrayPrice(CHIs?.Items, "TM"),
