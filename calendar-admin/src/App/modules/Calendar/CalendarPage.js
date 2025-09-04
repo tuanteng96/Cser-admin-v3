@@ -1310,7 +1310,6 @@ function CalendarPage(props) {
                   isBook: true,
                 };
               })
-              .filter((item) => item.Status !== "TU_CHOI")
           : [];
 
       let dataBooksAuto =
