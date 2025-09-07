@@ -66,7 +66,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 778,
             },
           ],
-          CrStockID: 11340, //8975
+          CrStockID: 11593, //8975
           rightsSum: {
             pos: {
               hasRight: true,
@@ -156,7 +156,7 @@ function AuthInit({ isConfig, children }) {
             ],
           },
           token:
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjU3Mzg1NzkwNTczODYzNTQiLCJuYmYiOjE3NTUxNjM3MzksImV4cCI6MTg0MTU2MzczOSwiaWF0IjoxNzU1MTYzNzM5fQ.Pw8RU9IWnReifer5DH2PUPiQQhXi7JSdaVLta8Z02O4",
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjA2NDUiLCJuYmYiOjE3NTYxOTUxMjAsImV4cCI6MTg0MjU5NTEyMCwiaWF0IjoxNzU2MTk1MTIwfQ.qOIVptRhDtSqoNrFmK6apVvw8YkPyiDXzrkbJUOupj4",
         };
         window.GlobalConfig = {
           APP: {

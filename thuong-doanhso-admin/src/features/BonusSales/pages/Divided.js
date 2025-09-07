@@ -112,28 +112,26 @@ function Divided({ OrderInfo, onSubmit, loading }) {
   const onToAdd = (values, { resetForm }) => {
     const { ToAdd } = values;
     const itemChange =
-      ToAdd && ToAdd.length > 0 ? ToAdd.filter((item) => item.Staff) : [];
+      ToAdd && ToAdd.length > 0
+        ? ToAdd.filter((item) => item.Staff && item.Staff.length > 0)
+        : [];
 
     if (itemChange.length > 0) {
       let newArr = itemChange.map((item) => ({
         Product: item.Product,
-        Hoa_Hong: [
-          {
-            Product: item.Product,
-            Staff: item.Staff,
-            Value:
-              item.Type.value === "KY_THUAT_VIEN"
-                ? getValueKTV({ item: item.Product, user: item.Staff })
-                : getValueHH({ item: item.Product, user: item.Staff }),
-          },
-        ],
-        Doanh_So: [
-          {
-            Product: item.Product,
-            Staff: item.Staff,
-            Value: item.Product.gia_tri_doanh_so,
-          },
-        ],
+        Hoa_Hong: item.Staff.map((x) => ({
+          Product: item.Product,
+          Staff: x,
+          Value:
+            item.Type.value === "KY_THUAT_VIEN"
+              ? getValueKTV({ item: item.Product, user: x }) / item.Staff.length
+              : getValueHH({ item: item.Product, user: x }) / item.Staff.length,
+        })),
+        Doanh_So: item.Staff.map((x) => ({
+          Product: item.Product,
+          Staff: x,
+          Value: item.Product.gia_tri_doanh_so / item.Staff.length,
+        })),
       }));
 
       setInitialValues({ divided: newArr });
@@ -174,6 +172,7 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                           </div>
                           <div className="flex-1 pr-md-15px w-100 w-md-auto my-10px my-md-0">
                             <Select
+                              isMulti
                               classNamePrefix="select"
                               className={`select-control`}
                               name={`ToAdd[${index}].Staff`}

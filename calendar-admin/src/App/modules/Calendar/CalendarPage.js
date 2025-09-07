@@ -126,6 +126,9 @@ const getStatusClss = (Status, item) => {
   if (Status === "KHACH_KHONG_DEN") {
     return "danger";
   }
+  if (Status === "TU_CHOI") {
+    return "danger";
+  }
   if (Status === "KHACH_DEN") {
     return "info";
   }
