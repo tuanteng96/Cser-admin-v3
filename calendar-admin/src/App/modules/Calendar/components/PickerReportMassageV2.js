@@ -620,6 +620,16 @@ function PickerReportMassageV2({ children }) {
         },
       },
       {
+        key: "Desc",
+        title: "Ghi chú",
+        dataKey: "Desc",
+        width: 200,
+        sortable: false,
+        mobileOptions: {
+          visible: true,
+        },
+      },
+      {
         key: "Rate",
         title: "Đánh giá",
         dataKey: "Rate",
@@ -1855,6 +1865,7 @@ function PickerReportMassageV2({ children }) {
                 "TT THẺ TIỀN",
                 "CÒN NỢ",
                 "CHI TIẾT ĐƠN HÀNG",
+                "GHI CHÚ",
                 "DỊCH VỤ / NHÂN VIÊN",
                 "ĐÁNH GIÁ",
                 "NỘI DUNG",
@@ -1913,6 +1924,7 @@ function PickerReportMassageV2({ children }) {
                   rowData.DaThToan_ThTien,
                   rowData.ConNo,
                   newOi.map((x) => `${x.name} (x${x.qty})`).join("; "),
+                  rowData?.Desc || "",
                   getServices(rowData).Staffs,
                   getServices(rowData).Rate,
                   getServices(rowData).RateNote,
