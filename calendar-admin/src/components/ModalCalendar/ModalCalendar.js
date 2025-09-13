@@ -444,7 +444,7 @@ function ModalCalendar({
     //   .nullable(),
     StockID: Yup.string().required("Vui lòng chọn cơ sở."),
     TagSetting: Yup.mixed().when([], {
-      is: () => window?.GlobalConfig?.Admin?.dat_lich_tag === true,
+      is: () => window?.top?.GlobalConfig?.Admin?.dat_lich_tag === true,
       then: (schema) => schema.required("Vui lòng chọn Tag"),
       otherwise: (schema) => schema.notRequired(),
     }),
