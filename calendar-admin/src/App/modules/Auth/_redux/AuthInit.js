@@ -167,6 +167,7 @@ function AuthInit({ isConfig, children }) {
             SL_khach: true,
           },
           Admin: {
+            dat_lich_tag: false,
             MasExportExcel: true,
             TextToSpeech: "zalo",
             PosActiveCalendar: "", //PickerCalendarRooms

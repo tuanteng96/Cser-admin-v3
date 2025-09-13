@@ -443,6 +443,11 @@ function ModalCalendar({
     //   .required("Vui lòng chọn nhân viên.")
     //   .nullable(),
     StockID: Yup.string().required("Vui lòng chọn cơ sở."),
+    TagSetting: Yup.mixed().when([], {
+      is: () => window?.GlobalConfig?.Admin?.dat_lich_tag === true,
+      then: (schema) => schema.required("Vui lòng chọn Tag"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   });
 
   const onChangeStatusTele = () => {
@@ -832,7 +837,10 @@ function ModalCalendar({
                       isMulti
                       isClearable
                       classNamePrefix="select"
-                      className="mt-2 select-control"
+                      className={clsx(
+                        "mt-2 select-control",
+                        errors.TagSetting && touched.TagSetting && "is-invalid solid-invalid"
+                      )}
                       options={TagsList}
                       placeholder="Chọn tags"
                       value={values.TagSetting}

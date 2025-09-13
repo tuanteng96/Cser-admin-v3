@@ -15,6 +15,7 @@ import { Dropdown } from "react-bootstrap";
 import { useQuery } from "react-query";
 import "../../../_assets/sass/pages/_booking.scss";
 import SelectServiceBed from "../../../components/Select/SelectServiceBed/SelectServiceBed";
+import clsx from "clsx";
 moment.locale("vi");
 
 const StatusArr = [
@@ -522,6 +523,11 @@ function BookingPage() {
     //   .required("Vui lòng chọn nhân viên.")
     //   .nullable(),
     StockID: Yup.string().required("Vui lòng chọn cơ sở."),
+    TagSetting: Yup.mixed().when([], {
+      is: () => window?.GlobalConfig?.Admin?.dat_lich_tag === true,
+      then: (schema) => schema.required("Vui lòng chọn Tag"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
   });
 
   const loadOptionsTags = async (inputValue) => {
@@ -844,7 +850,10 @@ function BookingPage() {
                     isMulti
                     isClearable
                     classNamePrefix="select"
-                    className="mt-2 select-control"
+                    className={clsx(
+                      "mt-2 select-control",
+                      errors.TagSetting && touched.TagSetting && "is-invalid solid-invalid"
+                    )}
                     cacheOptions
                     loadOptions={loadOptionsTags}
                     placeholder="Chọn tags"
