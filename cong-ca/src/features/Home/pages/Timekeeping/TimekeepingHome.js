@@ -1718,6 +1718,16 @@ function TimekeepingHome(props) {
                               ? 'Định vị - Wifi'
                               : 'Wifi chấm công'}
                           </Dropdown.Item>
+                          {window.top?.GlobalConfig?.Admin?.roster && (
+                            <Dropdown.Item
+                              onClick={() =>
+                                window?.top?.RosterSettingsModal &&
+                                window?.top?.RosterSettingsModal()
+                              }
+                            >
+                              Cài đặt ca Roster
+                            </Dropdown.Item>
+                          )}
                           <Dropdown.Divider
                             style={{
                               borderTop: '1px solid #ebebec',
@@ -1813,6 +1823,16 @@ function TimekeepingHome(props) {
                               ? 'Định vị - Wifi'
                               : 'Wifi chấm công'}
                           </Dropdown.Item>
+                          {window.top?.GlobalConfig?.Admin?.roster && (
+                            <Dropdown.Item
+                              onClick={() =>
+                                window?.top?.RosterSettingsModal &&
+                                window?.top?.RosterSettingsModal()
+                              }
+                            >
+                              Cài đặt ca Roster
+                            </Dropdown.Item>
+                          )}
                         </Dropdown.Menu>
                       </Dropdown>
                     </div>
