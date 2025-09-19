@@ -1272,47 +1272,43 @@ function CalendarPage(props) {
 
       let dataBooks =
         data.books && Array.isArray(data.books)
-          ? data.books
-              .map((item) => {
-                let TreatmentJson = item?.TreatmentJson
-                  ? JSON.parse(item?.TreatmentJson)
-                  : "";
+          ? data.books.map((item) => {
+              let TreatmentJson = item?.TreatmentJson
+                ? JSON.parse(item?.TreatmentJson)
+                : "";
 
-                return {
-                  ...item,
-                  start: item.BookDate,
-                  end: moment(item.BookDate)
-                    .add(item.RootMinutes ?? 60, "minutes")
-                    .toDate(),
-                  title: item.RootTitles,
-                  className: `fc-event-solid-${getStatusClss(
-                    item.Status,
-                    item
-                  )}`,
-                  resourceIds:
-                    topCalendar?.type?.value === "resourceTimelineDay"
-                      ? [TreatmentJson?.ID || TreatmentJson?.value || 0]
-                      : item.UserServices &&
-                        Array.isArray(item.UserServices) &&
-                        item.UserServices.length > 0
-                      ? item.UserServices.map((item) => item.ID)
-                      : [0],
-                  MemberCurrent: {
-                    FullName:
-                      item?.IsAnonymous ||
-                      item.Member?.MobilePhone === "0000000000"
-                        ? item?.FullName
-                        : item?.Member?.FullName,
-                    MobilePhone:
-                      item?.IsAnonymous ||
-                      item.Member?.MobilePhone === "0000000000"
-                        ? item?.Phone
-                        : item?.Member?.MobilePhone,
-                  },
-                  Star: checkStar(item),
-                  isBook: true,
-                };
-              })
+              return {
+                ...item,
+                start: item.BookDate,
+                end: moment(item.BookDate)
+                  .add(item.RootMinutes ?? 60, "minutes")
+                  .toDate(),
+                title: item.RootTitles,
+                className: `fc-event-solid-${getStatusClss(item.Status, item)}`,
+                resourceIds:
+                  topCalendar?.type?.value === "resourceTimelineDay"
+                    ? [TreatmentJson?.ID || TreatmentJson?.value || 0]
+                    : item.UserServices &&
+                      Array.isArray(item.UserServices) &&
+                      item.UserServices.length > 0
+                    ? item.UserServices.map((item) => item.ID)
+                    : [0],
+                MemberCurrent: {
+                  FullName:
+                    item?.IsAnonymous ||
+                    item.Member?.MobilePhone === "0000000000"
+                      ? item?.FullName
+                      : item?.Member?.FullName,
+                  MobilePhone:
+                    item?.IsAnonymous ||
+                    item.Member?.MobilePhone === "0000000000"
+                      ? item?.Phone
+                      : item?.Member?.MobilePhone,
+                },
+                Star: checkStar(item),
+                isBook: true,
+              };
+            })
           : [];
 
       let dataBooksAuto =
@@ -1677,6 +1673,17 @@ function CalendarPage(props) {
                           </Dropdown.Item>
                         )}
                       </PickerClass>
+                    )}
+                    {window?.top?.GlobalConfig?.Admin?.roster && (
+                      <Dropdown.Item
+                        href="#"
+                        onClick={() => {
+                          window?.top?.RosterSettingsModal &&
+                            window?.top?.RosterSettingsModal();
+                        }}
+                      >
+                        Cài đặt ca Roster
+                      </Dropdown.Item>
                     )}
 
                     {/* <div className="w-100 h-[1px] bg-gray-300 my-2.5"></div>
