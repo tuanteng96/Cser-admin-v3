@@ -721,7 +721,7 @@ function PickerReportMassageV2({ children }) {
 
       if (rs2 && rs2.length > 0) {
         let index = rs2.findIndex(
-          (x) => x.Format === 1 && x.ProdTitle === "TIP"
+          (x) => x.Format === 1 && x.ProdTitle.toUpperCase() === "TIP"
         );
         if (index > -1) {
           TIP = rs2[index];
