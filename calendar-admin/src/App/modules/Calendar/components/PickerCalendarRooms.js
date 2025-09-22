@@ -34,7 +34,7 @@ const PickerCalendarRooms = forwardRef(
     }));
 
     const [filters, setFilters] = useState({
-      Status: ["XAC_NHAN", "DANG_THUC_HIEN"],
+      Status: ["XAC_NHAN", "DANG_THUC_HIEN", "THUC_HIEN_XONG"],
       MemberID: "",
       From: moment().format("YYYY-MM-DD"),
       To: moment().format("YYYY-MM-DD"),
@@ -263,7 +263,7 @@ const PickerCalendarRooms = forwardRef(
           All: true,
         });
 
-        const ListStaffs =
+        let ListStaffs =
           Array.isArray(dataStaffs) && dataStaffs.length > 0
             ? dataStaffs.map((item) => ({
                 ...item,
@@ -271,6 +271,11 @@ const PickerCalendarRooms = forwardRef(
                 title: item.text,
               }))
             : [];
+        ListStaffs.push({
+          id: -1,
+          title: "Chưa chọn nhân viên",
+        });
+
         let rs = [];
 
         if (ListStaffs && ListStaffs.length > 0) {
@@ -281,6 +286,7 @@ const PickerCalendarRooms = forwardRef(
               Books: [],
               NextBooks: [],
               Book: null,
+              BooksOs: [],
             };
             if (dataOffline && dataOffline.length > 0) {
               newStaff.Offlines = dataOffline.filter(
@@ -353,10 +359,33 @@ const PickerCalendarRooms = forwardRef(
                     moment(moment(x.end, "YYYY-MM-DD HH:mm")),
                     null,
                     "[]"
-                  )
+                  ) &&
+                  x.Status !== "done"
               );
 
               newStaff.Books = [...newStaff.Books, ...StaffDataBooksAuto];
+
+              newStaff.BooksOs = dataBooksAuto.filter(
+                (x) =>
+                  x.StaffIds &&
+                  x.StaffIds.includes(staff.id) &&
+                  (x.Status === "doing" || x.Status === "done")
+              );
+            }
+            if (staff.id === -1) {
+              newStaff.NextBooks = dataBooks.filter(
+                (x) =>
+                  (!x.StaffIds || x.StaffIds.length === 0) &&
+                  moment(
+                    moment(CrDate).format("YYYY-MM-DD HH:mm"),
+                    "YYYY-MM-DD HH:mm"
+                  ).isBetween(
+                    moment(moment(x.start, "YYYY-MM-DD HH:mm")),
+                    moment(moment(x.end, "YYYY-MM-DD HH:mm")),
+                    null,
+                    "[]"
+                  )
+              );
             }
             rs.push(newStaff);
           }
@@ -797,12 +826,15 @@ const PickerCalendarRooms = forwardRef(
                                   item?.Offlines.length === 0
                                 ) {
                                   setInitialValue({
-                                    UserServiceIDs: [
-                                      {
-                                        value: item.id,
-                                        label: item.text,
-                                      },
-                                    ],
+                                    UserServiceIDs:
+                                      item.id !== -1
+                                        ? [
+                                            {
+                                              value: item.id,
+                                              label: item.text,
+                                            },
+                                          ]
+                                        : null,
                                   });
                                   onOpenModal();
                                 }
@@ -888,8 +920,14 @@ const PickerCalendarRooms = forwardRef(
                               </div>
                               <div className="mt-1.5 font-medium text-center text-[12px] lg:text-[14px]">
                                 {item.title}
+                                {item.BooksOs && item.BooksOs.length > 0 && (
+                                  <span className="pl-1">
+                                    ({item.BooksOs.length})
+                                  </span>
+                                )}
                               </div>
                             </div>
+
                             {((item.NextBooks && item.NextBooks.length > 0) ||
                               item.Book) && (
                               <div className="lg:pt-[90px] pt-[60px] lg:px-4 px-2 pb-3">
@@ -904,6 +942,19 @@ const PickerCalendarRooms = forwardRef(
                                     <div className="text-[12px] font-light">
                                       <div className="mb-px">
                                         {item.Book?.Member?.FullName || ""}
+                                        {item.Book?.Member?.MobilePhone ===
+                                          "0000000000" && (
+                                          <span className="pl-1.5">
+                                            (
+                                            {item.Book?.MemberCurrent?.FullName}
+                                            -
+                                            {
+                                              item.Book?.MemberCurrent
+                                                ?.MobilePhone
+                                            }
+                                            )
+                                          </span>
+                                        )}
                                         {item.Book?.RoomTitle && (
                                           <span className="pl-1">
                                             (Phòng {item.Book?.RoomTitle})
@@ -949,11 +1000,18 @@ const PickerCalendarRooms = forwardRef(
                                         <div className="text-[12px] font-light">
                                           <div className="mb-px">
                                             {book?.Member?.FullName || ""}
-                                            {/* {book?.RoomTitle && (
-                                                    <span className="pl-1">
-                                                      (Phòng {book?.RoomTitle})
-                                                    </span>
-                                                  )} */}
+                                            {book?.Member?.MobilePhone ===
+                                              "0000000000" && (
+                                              <span className="pl-1.5">
+                                                ({book?.MemberCurrent?.FullName}
+                                                -
+                                                {
+                                                  book?.MemberCurrent
+                                                    ?.MobilePhone
+                                                }
+                                                )
+                                              </span>
+                                            )}
                                           </div>
                                           <div>
                                             {moment(book.start).format("HH:mm")}
