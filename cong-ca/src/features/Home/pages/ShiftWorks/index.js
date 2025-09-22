@@ -62,7 +62,19 @@ function ShiftWorks(props) {
                     ...x,
                     Options:
                       x.Options && x.Options.length > 0
-                        ? [...x.Options]
+                        ? [...x.Options].map(o => {
+                            let obj = { ...o }
+
+                            if (
+                              x.Name &&
+                              x.Name.toUpperCase().includes('ROSTER')
+                            ) {
+                              obj['Color'] = obj?.Color || '#000'
+                              obj['Hours'] = obj?.Hours || ''
+                              obj['Symbol'] = obj?.Symbol || ''
+                            }
+                            return obj
+                          })
                         : [
                             {
                               Title: '',
@@ -210,7 +222,18 @@ function ShiftWorks(props) {
                                       TimeTo: '18:00',
                                       Value: 1
                                     }
-                                  ]
+                                  ].map(x => {
+                                    let obj = { ...x }
+                                    if (
+                                      Title &&
+                                      Title.toUpperCase().includes('ROSTER')
+                                    ) {
+                                      obj['Color'] = obj?.Color || '#000'
+                                      obj['Hours'] = obj?.Hours || ''
+                                      obj['Symbol'] = obj?.Symbol || ''
+                                    }
+                                    return x
+                                  })
                                 })
                               } else {
                                 arrayHelpers.push({
@@ -359,243 +382,649 @@ function ShiftWorks(props) {
                                     render={OptionHelpers => (
                                       <div>
                                         {values.CONG_CA[index].Options.map(
-                                          (option, i) => (
-                                            <div
-                                              className="d-flex mb-4 last:!mb-0 flex-wrap"
-                                              key={i}
-                                            >
-                                              <div className="flex flex-1 order-2">
+                                          (option, i) => {
+                                            if (
+                                              item.Name &&
+                                              item.Name.toUpperCase().includes(
+                                                'ROSTER'
+                                              )
+                                            ) {
+                                              return (
                                                 <div
-                                                  className="w-[42px] flex items-center justify-center mr-2 text-success cursor-pointer"
-                                                  onClick={() =>
-                                                    OptionHelpers.insert(
-                                                      i + 1,
-                                                      {
-                                                        Title: '',
-                                                        TimeFrom: '06:00',
-                                                        TimeTo: '18:00',
-                                                        Value: 1
-                                                      }
-                                                    )
-                                                  }
+                                                  className="d-flex mb-4 last:!mb-0 flex-wrap gap-2.5"
+                                                  key={i}
                                                 >
-                                                  <i className="far fa-plus text-[17px]"></i>
-                                                </div>
-                                                <input
-                                                  className="form-control"
-                                                  type="text"
-                                                  placeholder="Nhập tên"
-                                                  name="Title"
-                                                  value={option.Title}
-                                                  onChange={event => {
-                                                    if (
-                                                      event.target.value &&
-                                                      i ===
-                                                        values.CONG_CA[index]
-                                                          .Options.length -
-                                                          1
-                                                    ) {
-                                                      OptionHelpers.push({
-                                                        Title: '',
-                                                        TimeFrom: '06:00',
-                                                        TimeTo: '18:00',
-                                                        Value: 1
-                                                      })
+                                                  <div
+                                                    className="w-[42px] flex items-center justify-center text-success cursor-pointer"
+                                                    onClick={() =>
+                                                      OptionHelpers.insert(
+                                                        i + 1,
+                                                        {
+                                                          Title: '',
+                                                          TimeFrom: '06:00',
+                                                          TimeTo: '18:00',
+                                                          Value: 1,
+                                                          Color: '#000',
+                                                          Hours: '',
+                                                          Symbol: ''
+                                                        }
+                                                      )
                                                     }
-                                                    setFieldValue(
-                                                      `CONG_CA[${index}].Options[${i}].Title`,
-                                                      event.target.value
-                                                    )
-                                                  }}
-                                                  onBlur={handleBlur}
-                                                />
-                                              </div>
-                                              <div className="d-flex align-items-center mt-2.5 lg:mt-0 md:pl-[39px] lg:px-[15px] w-full lg:w-[450px] order-last lg:!order-3">
-                                                <>
-                                                  <div className="position-relative">
-                                                    <ReactDatePicker
-                                                      className="form-control"
-                                                      selected={
-                                                        option.TimeFrom
-                                                          ? moment(
-                                                              option.TimeFrom,
-                                                              'HH:mm'
-                                                            ).toDate()
-                                                          : null
-                                                      }
-                                                      onChange={val =>
-                                                        setFieldValue(
-                                                          `CONG_CA[${index}].Options[${i}].TimeFrom`,
-                                                          val
-                                                            ? moment(
-                                                                val
-                                                              ).format('HH:mm')
-                                                            : ''
-                                                        )
-                                                      }
-                                                      timeCaption="Thời gian"
-                                                      showTimeSelect
-                                                      timeFormat="HH:mm"
-                                                      timeIntervals={5}
-                                                      showTimeSelectOnly
-                                                      dateFormat="HH:mm"
-                                                    />
-                                                    <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
-                                                      <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        strokeWidth="1.5"
-                                                        stroke="currentColor"
-                                                        aria-hidden="true"
-                                                        className="w-18px"
-                                                      >
-                                                        <path
-                                                          strokeLinecap="round"
-                                                          strokeLinejoin="round"
-                                                          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                                                        />
-                                                      </svg>
-                                                    </div>
-                                                  </div>
-                                                  <div className="text-center w-40px">
-                                                    -
-                                                  </div>
-                                                  <div className="position-relative">
-                                                    <ReactDatePicker
-                                                      className="form-control"
-                                                      selected={
-                                                        option.TimeTo
-                                                          ? moment(
-                                                              option.TimeTo,
-                                                              'HH:mm'
-                                                            ).toDate()
-                                                          : null
-                                                      }
-                                                      onChange={val =>
-                                                        setFieldValue(
-                                                          `CONG_CA[${index}].Options[${i}].TimeTo`,
-                                                          val
-                                                            ? moment(
-                                                                val
-                                                              ).format('HH:mm')
-                                                            : ''
-                                                        )
-                                                      }
-                                                      timeCaption="Thời gian"
-                                                      showTimeSelect
-                                                      timeFormat="HH:mm"
-                                                      timeIntervals={5}
-                                                      showTimeSelectOnly
-                                                      dateFormat="HH:mm"
-                                                    />
-                                                    <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
-                                                      <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        strokeWidth="1.5"
-                                                        stroke="currentColor"
-                                                        aria-hidden="true"
-                                                        className="w-18px"
-                                                      >
-                                                        <path
-                                                          strokeLinecap="round"
-                                                          strokeLinejoin="round"
-                                                          d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-                                                        />
-                                                      </svg>
-                                                    </div>
-                                                  </div>
-                                                  <div className="ml-3 position-relative w-[200px]">
-                                                    <div className="input-group">
-                                                      <div className="input-group-prepend">
-                                                        <span
-                                                          className="input-group-text"
-                                                          style={{
-                                                            height: '100%',
-                                                            borderTopRightRadius: 0,
-                                                            borderBottomRightRadius: 0,
-                                                            fontSize: 13,
-                                                            border:
-                                                              '1px solid #e4e6ef',
-                                                            color: '#3F4254'
-                                                          }}
-                                                        >
-                                                          Số công
-                                                        </span>
-                                                      </div>
-                                                      <NumericFormat
-                                                        allowNegative
-                                                        className="text-center form-control"
-                                                        placeholder="Số công"
-                                                        name={`CONG_CA[${index}].Options[${i}].Value`}
-                                                        value={option.Value}
-                                                        onValueChange={({
-                                                          value,
-                                                          floatValue
-                                                        }) => {
-                                                          setFieldValue(
-                                                            `CONG_CA[${index}].Options[${i}].Value`,
-                                                            floatValue
-                                                          )
-                                                        }}
-                                                        allowLeadingZeros={true}
-                                                      />
-                                                    </div>
-                                                  </div>
-                                                </>
-                                              </div>
-                                              <div className="order-4 w-50px d-flex justify-content-center">
-                                                <button
-                                                  disabled={
-                                                    values.CONG_CA[index]
-                                                      .Options.length <= 1 ||
-                                                    isHidden
-                                                  }
-                                                  type="button"
-                                                  className={clsx(
-                                                    'rounded-full border-0 bg-transparent w-[42px] hover:!bg-[#f1f1f1] transition',
-                                                    values.CONG_CA[index]
-                                                      .Options.length <= 1 &&
-                                                      'opacity-30'
-                                                  )}
-                                                  onClick={() =>
-                                                    values.CONG_CA[index]
-                                                      .Options.length > 1 &&
-                                                    OptionHelpers.remove(i)
-                                                  }
-                                                >
-                                                  <svg
-                                                    className="w-24px"
-                                                    fill="currentColor"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 24 24"
                                                   >
-                                                    <path
-                                                      fillRule="evenodd"
-                                                      d="M8.159 2.659A2.25 2.25 0 0 1 9.75 2h4.5a2.25 2.25 0 0 1 2.25 2.25V5h3.75a.75.75 0 0 1 0 1.5h-.75V20a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20V6.5h-.75a.75.75 0 0 1 0-1.5H7.5v-.75c0-.597.237-1.169.659-1.591ZM6 6.5V20h12V6.5H6ZM15 5H9v-.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75V5ZM9.75 9.5a.75.75 0 0 1 .75.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 .75-.75Zm3.75.75a.75.75 0 0 1 1.5 0v6a.75.75 0 0 1-1.5 0v-6Z"
-                                                      clipRule="evenodd"
-                                                    />
-                                                  </svg>
-                                                </button>
+                                                    <i className="far fa-plus text-[17px]"></i>
+                                                  </div>
+                                                  <div className="flex-1">
+                                                    <div className="flex items-center gap-2.5">
+                                                      <div className="flex-1">
+                                                        <input
+                                                          className="form-control"
+                                                          type="text"
+                                                          placeholder="Nhập tên"
+                                                          name="Title"
+                                                          value={option.Title}
+                                                          onChange={event => {
+                                                            if (
+                                                              event.target
+                                                                .value &&
+                                                              i ===
+                                                                values.CONG_CA[
+                                                                  index
+                                                                ].Options
+                                                                  .length -
+                                                                  1
+                                                            ) {
+                                                              OptionHelpers.push(
+                                                                {
+                                                                  Title: '',
+                                                                  TimeFrom:
+                                                                    '06:00',
+                                                                  TimeTo:
+                                                                    '18:00',
+                                                                  Value: 1
+                                                                }
+                                                              )
+                                                            }
+                                                            setFieldValue(
+                                                              `CONG_CA[${index}].Options[${i}].Title`,
+                                                              event.target.value
+                                                            )
+                                                          }}
+                                                          onBlur={handleBlur}
+                                                        />
+                                                      </div>
+
+                                                      <div className="position-relative w-[95px]">
+                                                        <ReactDatePicker
+                                                          className="form-control"
+                                                          selected={
+                                                            option.TimeFrom
+                                                              ? moment(
+                                                                  option.TimeFrom,
+                                                                  'HH:mm'
+                                                                ).toDate()
+                                                              : null
+                                                          }
+                                                          onChange={val =>
+                                                            setFieldValue(
+                                                              `CONG_CA[${index}].Options[${i}].TimeFrom`,
+                                                              val
+                                                                ? moment(
+                                                                    val
+                                                                  ).format(
+                                                                    'HH:mm'
+                                                                  )
+                                                                : ''
+                                                            )
+                                                          }
+                                                          timeCaption="Thời gian"
+                                                          showTimeSelect
+                                                          timeFormat="HH:mm"
+                                                          timeIntervals={5}
+                                                          showTimeSelectOnly
+                                                          dateFormat="HH:mm"
+                                                        />
+                                                        <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
+                                                          <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth="1.5"
+                                                            stroke="currentColor"
+                                                            aria-hidden="true"
+                                                            className="w-18px"
+                                                          >
+                                                            <path
+                                                              strokeLinecap="round"
+                                                              strokeLinejoin="round"
+                                                              d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                                            />
+                                                          </svg>
+                                                        </div>
+                                                      </div>
+                                                      <div className="text-center w-[30px]">
+                                                        -
+                                                      </div>
+                                                      <div className="position-relative w-[95px]">
+                                                        <ReactDatePicker
+                                                          className="form-control"
+                                                          selected={
+                                                            option.TimeTo
+                                                              ? moment(
+                                                                  option.TimeTo,
+                                                                  'HH:mm'
+                                                                ).toDate()
+                                                              : null
+                                                          }
+                                                          onChange={val =>
+                                                            setFieldValue(
+                                                              `CONG_CA[${index}].Options[${i}].TimeTo`,
+                                                              val
+                                                                ? moment(
+                                                                    val
+                                                                  ).format(
+                                                                    'HH:mm'
+                                                                  )
+                                                                : ''
+                                                            )
+                                                          }
+                                                          timeCaption="Thời gian"
+                                                          showTimeSelect
+                                                          timeFormat="HH:mm"
+                                                          timeIntervals={5}
+                                                          showTimeSelectOnly
+                                                          dateFormat="HH:mm"
+                                                        />
+                                                        <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
+                                                          <svg
+                                                            xmlns="http://www.w3.org/2000/svg"
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            strokeWidth="1.5"
+                                                            stroke="currentColor"
+                                                            aria-hidden="true"
+                                                            className="w-18px"
+                                                          >
+                                                            <path
+                                                              strokeLinecap="round"
+                                                              strokeLinejoin="round"
+                                                              d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                                            />
+                                                          </svg>
+                                                        </div>
+                                                      </div>
+                                                      <div className="position-relative w-[150px]">
+                                                        <div className="input-group">
+                                                          <div className="input-group-prepend">
+                                                            <span
+                                                              className="input-group-text"
+                                                              style={{
+                                                                height: '100%',
+                                                                borderTopRightRadius: 0,
+                                                                borderBottomRightRadius: 0,
+                                                                fontSize: 13,
+                                                                border:
+                                                                  '1px solid #e4e6ef',
+                                                                color: '#3F4254'
+                                                              }}
+                                                            >
+                                                              Số công
+                                                            </span>
+                                                          </div>
+                                                          <NumericFormat
+                                                            allowNegative
+                                                            className="text-center form-control"
+                                                            placeholder="Số công"
+                                                            name={`CONG_CA[${index}].Options[${i}].Value`}
+                                                            value={option.Value}
+                                                            onValueChange={({
+                                                              value,
+                                                              floatValue
+                                                            }) => {
+                                                              setFieldValue(
+                                                                `CONG_CA[${index}].Options[${i}].Value`,
+                                                                floatValue
+                                                              )
+                                                            }}
+                                                            allowLeadingZeros={
+                                                              true
+                                                            }
+                                                          />
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                    <div className="grid grid-cols-3 gap-2.5 mt-2">
+                                                      <div className="position-relative">
+                                                        <div className="input-group">
+                                                          <div className="input-group-prepend">
+                                                            <span
+                                                              className="input-group-text"
+                                                              style={{
+                                                                height: '100%',
+                                                                borderTopRightRadius: 0,
+                                                                borderBottomRightRadius: 0,
+                                                                fontSize: 13,
+                                                                border:
+                                                                  '1px solid #e4e6ef',
+                                                                color: '#3F4254'
+                                                              }}
+                                                            >
+                                                              Số tiếng
+                                                            </span>
+                                                          </div>
+                                                          <NumericFormat
+                                                            allowNegative
+                                                            className="text-center form-control"
+                                                            placeholder="Nhập số tiếng"
+                                                            name={`CONG_CA[${index}].Options[${i}].Hours`}
+                                                            value={option.Hours}
+                                                            onValueChange={({
+                                                              value,
+                                                              floatValue
+                                                            }) => {
+                                                              setFieldValue(
+                                                                `CONG_CA[${index}].Options[${i}].Hours`,
+                                                                typeof floatValue ===
+                                                                  'undefined'
+                                                                  ? value
+                                                                  : floatValue
+                                                              )
+                                                            }}
+                                                            allowLeadingZeros={
+                                                              true
+                                                            }
+                                                          />
+                                                        </div>
+                                                      </div>
+                                                      <div className="position-relative">
+                                                        <div className="input-group">
+                                                          <div className="input-group-prepend">
+                                                            <span
+                                                              className="input-group-text"
+                                                              style={{
+                                                                height: '100%',
+                                                                borderTopRightRadius: 0,
+                                                                borderBottomRightRadius: 0,
+                                                                fontSize: 13,
+                                                                border:
+                                                                  '1px solid #e4e6ef',
+                                                                color: '#3F4254'
+                                                              }}
+                                                            >
+                                                              Ký hiệu
+                                                            </span>
+                                                          </div>
+                                                          <input
+                                                            className="form-control"
+                                                            type="text"
+                                                            placeholder="Ký hiệu"
+                                                            name={`CONG_CA[${index}].Options[${i}].Symbol`}
+                                                            value={
+                                                              option.Symbol
+                                                            }
+                                                            onChange={event => {
+                                                              setFieldValue(
+                                                                `CONG_CA[${index}].Options[${i}].Symbol`,
+                                                                event.target
+                                                                  .value
+                                                              )
+                                                            }}
+                                                            onBlur={handleBlur}
+                                                          />
+                                                        </div>
+                                                      </div>
+                                                      <div className="position-relative">
+                                                        <div className="input-group">
+                                                          <div className="input-group-prepend">
+                                                            <span
+                                                              className="input-group-text"
+                                                              style={{
+                                                                height: '100%',
+                                                                borderTopRightRadius: 0,
+                                                                borderBottomRightRadius: 0,
+                                                                fontSize: 13,
+                                                                border:
+                                                                  '1px solid #e4e6ef',
+                                                                color: '#3F4254'
+                                                              }}
+                                                            >
+                                                              Mã màu
+                                                            </span>
+                                                          </div>
+                                                          <input
+                                                            className="!rounded-r form-control"
+                                                            type="text"
+                                                            placeholder="Mã màu"
+                                                            name={`CONG_CA[${index}].Options[${i}].Color`}
+                                                            value={option.Color}
+                                                            onChange={event => {
+                                                              setFieldValue(
+                                                                `CONG_CA[${index}].Options[${i}].Color`,
+                                                                event.target
+                                                                  .value
+                                                              )
+                                                            }}
+                                                            onBlur={handleBlur}
+                                                          />
+                                                          <div className="absolute top-0 right-0 flex items-center justify-center w-[44px] h-full bg-[#eaecef] !rounded-r">
+                                                            <input
+                                                              className="w-6 h-6 cursor-pointer"
+                                                              type="color"
+                                                              name={`CONG_CA[${index}].Options[${i}].Color`}
+                                                              value={
+                                                                option.Color
+                                                              }
+                                                              onChange={event => {
+                                                                setFieldValue(
+                                                                  `CONG_CA[${index}].Options[${i}].Color`,
+                                                                  event.target
+                                                                    .value
+                                                                )
+                                                              }}
+                                                              onBlur={
+                                                                handleBlur
+                                                              }
+                                                            />
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                  <div className="flex items-center justify-center min-w-[42px] w-[42px]">
+                                                    <button
+                                                      disabled={
+                                                        values.CONG_CA[index]
+                                                          .Options.length <=
+                                                          1 || isHidden
+                                                      }
+                                                      type="button"
+                                                      className={clsx(
+                                                        'rounded-full border-0 bg-transparent w-[42px] h-[42px] hover:!bg-[#f1f1f1] transition',
+                                                        values.CONG_CA[index]
+                                                          .Options.length <=
+                                                          1 && 'opacity-30'
+                                                      )}
+                                                      onClick={() =>
+                                                        values.CONG_CA[index]
+                                                          .Options.length > 1 &&
+                                                        OptionHelpers.remove(i)
+                                                      }
+                                                    >
+                                                      <svg
+                                                        className="w-24px"
+                                                        fill="currentColor"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 24 24"
+                                                      >
+                                                        <path
+                                                          fillRule="evenodd"
+                                                          d="M8.159 2.659A2.25 2.25 0 0 1 9.75 2h4.5a2.25 2.25 0 0 1 2.25 2.25V5h3.75a.75.75 0 0 1 0 1.5h-.75V20a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20V6.5h-.75a.75.75 0 0 1 0-1.5H7.5v-.75c0-.597.237-1.169.659-1.591ZM6 6.5V20h12V6.5H6ZM15 5H9v-.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75V5ZM9.75 9.5a.75.75 0 0 1 .75.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 .75-.75Zm3.75.75a.75.75 0 0 1 1.5 0v6a.75.75 0 0 1-1.5 0v-6Z"
+                                                          clipRule="evenodd"
+                                                        />
+                                                      </svg>
+                                                    </button>
+                                                  </div>
+                                                </div>
+                                              )
+                                            }
+                                            return (
+                                              <div
+                                                className="d-flex mb-4 last:!mb-0 flex-wrap"
+                                                key={i}
+                                              >
+                                                <div className="flex flex-1 order-2">
+                                                  <div
+                                                    className="w-[42px] flex items-center justify-center mr-2 text-success cursor-pointer"
+                                                    onClick={() =>
+                                                      OptionHelpers.insert(
+                                                        i + 1,
+                                                        {
+                                                          Title: '',
+                                                          TimeFrom: '06:00',
+                                                          TimeTo: '18:00',
+                                                          Value: 1
+                                                        }
+                                                      )
+                                                    }
+                                                  >
+                                                    <i className="far fa-plus text-[17px]"></i>
+                                                  </div>
+                                                  <input
+                                                    className="form-control"
+                                                    type="text"
+                                                    placeholder="Nhập tên"
+                                                    name="Title"
+                                                    value={option.Title}
+                                                    onChange={event => {
+                                                      if (
+                                                        event.target.value &&
+                                                        i ===
+                                                          values.CONG_CA[index]
+                                                            .Options.length -
+                                                            1
+                                                      ) {
+                                                        OptionHelpers.push({
+                                                          Title: '',
+                                                          TimeFrom: '06:00',
+                                                          TimeTo: '18:00',
+                                                          Value: 1
+                                                        })
+                                                      }
+                                                      setFieldValue(
+                                                        `CONG_CA[${index}].Options[${i}].Title`,
+                                                        event.target.value
+                                                      )
+                                                    }}
+                                                    onBlur={handleBlur}
+                                                  />
+                                                </div>
+                                                <div className="d-flex align-items-center mt-2.5 lg:mt-0 md:pl-[39px] lg:px-[15px] w-full lg:w-[450px] order-last lg:!order-3">
+                                                  <>
+                                                    <div className="position-relative">
+                                                      <ReactDatePicker
+                                                        className="form-control"
+                                                        selected={
+                                                          option.TimeFrom
+                                                            ? moment(
+                                                                option.TimeFrom,
+                                                                'HH:mm'
+                                                              ).toDate()
+                                                            : null
+                                                        }
+                                                        onChange={val =>
+                                                          setFieldValue(
+                                                            `CONG_CA[${index}].Options[${i}].TimeFrom`,
+                                                            val
+                                                              ? moment(
+                                                                  val
+                                                                ).format(
+                                                                  'HH:mm'
+                                                                )
+                                                              : ''
+                                                          )
+                                                        }
+                                                        timeCaption="Thời gian"
+                                                        showTimeSelect
+                                                        timeFormat="HH:mm"
+                                                        timeIntervals={5}
+                                                        showTimeSelectOnly
+                                                        dateFormat="HH:mm"
+                                                      />
+                                                      <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
+                                                        <svg
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                          fill="none"
+                                                          viewBox="0 0 24 24"
+                                                          strokeWidth="1.5"
+                                                          stroke="currentColor"
+                                                          aria-hidden="true"
+                                                          className="w-18px"
+                                                        >
+                                                          <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                                          />
+                                                        </svg>
+                                                      </div>
+                                                    </div>
+                                                    <div className="text-center w-40px">
+                                                      -
+                                                    </div>
+                                                    <div className="position-relative">
+                                                      <ReactDatePicker
+                                                        className="form-control"
+                                                        selected={
+                                                          option.TimeTo
+                                                            ? moment(
+                                                                option.TimeTo,
+                                                                'HH:mm'
+                                                              ).toDate()
+                                                            : null
+                                                        }
+                                                        onChange={val =>
+                                                          setFieldValue(
+                                                            `CONG_CA[${index}].Options[${i}].TimeTo`,
+                                                            val
+                                                              ? moment(
+                                                                  val
+                                                                ).format(
+                                                                  'HH:mm'
+                                                                )
+                                                              : ''
+                                                          )
+                                                        }
+                                                        timeCaption="Thời gian"
+                                                        showTimeSelect
+                                                        timeFormat="HH:mm"
+                                                        timeIntervals={5}
+                                                        showTimeSelectOnly
+                                                        dateFormat="HH:mm"
+                                                      />
+                                                      <div className="top-0 right-0 pointer-events-none position-absolute h-100 w-40px d-flex justify-content-center">
+                                                        <svg
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                          fill="none"
+                                                          viewBox="0 0 24 24"
+                                                          strokeWidth="1.5"
+                                                          stroke="currentColor"
+                                                          aria-hidden="true"
+                                                          className="w-18px"
+                                                        >
+                                                          <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                                          />
+                                                        </svg>
+                                                      </div>
+                                                    </div>
+                                                    <div className="ml-3 position-relative w-[200px]">
+                                                      <div className="input-group">
+                                                        <div className="input-group-prepend">
+                                                          <span
+                                                            className="input-group-text"
+                                                            style={{
+                                                              height: '100%',
+                                                              borderTopRightRadius: 0,
+                                                              borderBottomRightRadius: 0,
+                                                              fontSize: 13,
+                                                              border:
+                                                                '1px solid #e4e6ef',
+                                                              color: '#3F4254'
+                                                            }}
+                                                          >
+                                                            Số công
+                                                          </span>
+                                                        </div>
+                                                        <NumericFormat
+                                                          allowNegative
+                                                          className="text-center form-control"
+                                                          placeholder="Số công"
+                                                          name={`CONG_CA[${index}].Options[${i}].Value`}
+                                                          value={option.Value}
+                                                          onValueChange={({
+                                                            value,
+                                                            floatValue
+                                                          }) => {
+                                                            setFieldValue(
+                                                              `CONG_CA[${index}].Options[${i}].Value`,
+                                                              floatValue
+                                                            )
+                                                          }}
+                                                          allowLeadingZeros={
+                                                            true
+                                                          }
+                                                        />
+                                                      </div>
+                                                    </div>
+                                                  </>
+                                                </div>
+                                                <div className="order-4 w-50px d-flex justify-content-center">
+                                                  <button
+                                                    disabled={
+                                                      values.CONG_CA[index]
+                                                        .Options.length <= 1 ||
+                                                      isHidden
+                                                    }
+                                                    type="button"
+                                                    className={clsx(
+                                                      'rounded-full border-0 bg-transparent w-[42px] hover:!bg-[#f1f1f1] transition',
+                                                      values.CONG_CA[index]
+                                                        .Options.length <= 1 &&
+                                                        'opacity-30'
+                                                    )}
+                                                    onClick={() =>
+                                                      values.CONG_CA[index]
+                                                        .Options.length > 1 &&
+                                                      OptionHelpers.remove(i)
+                                                    }
+                                                  >
+                                                    <svg
+                                                      className="w-24px"
+                                                      fill="currentColor"
+                                                      xmlns="http://www.w3.org/2000/svg"
+                                                      viewBox="0 0 24 24"
+                                                    >
+                                                      <path
+                                                        fillRule="evenodd"
+                                                        d="M8.159 2.659A2.25 2.25 0 0 1 9.75 2h4.5a2.25 2.25 0 0 1 2.25 2.25V5h3.75a.75.75 0 0 1 0 1.5h-.75V20a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 20V6.5h-.75a.75.75 0 0 1 0-1.5H7.5v-.75c0-.597.237-1.169.659-1.591ZM6 6.5V20h12V6.5H6ZM15 5H9v-.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75V5ZM9.75 9.5a.75.75 0 0 1 .75.75v6a.75.75 0 0 1-1.5 0v-6a.75.75 0 0 1 .75-.75Zm3.75.75a.75.75 0 0 1 1.5 0v6a.75.75 0 0 1-1.5 0v-6Z"
+                                                        clipRule="evenodd"
+                                                      />
+                                                    </svg>
+                                                  </button>
+                                                </div>
                                               </div>
-                                            </div>
-                                          )
+                                            )
+                                          }
                                         )}
                                         <div className="mt-5 d-flex justify-content-end">
                                           {!isHidden && (
                                             <button
                                               type="button"
                                               className="btn fw-500 btn-success"
-                                              onClick={() =>
-                                                OptionHelpers.push({
-                                                  Title: '',
-                                                  TimeFrom: '06:00',
-                                                  TimeTo: '18:00',
-                                                  Value: 1
-                                                })
-                                              }
+                                              onClick={() => {
+                                                OptionHelpers.push(
+                                                  item.Name &&
+                                                    item.Name.toUpperCase().includes(
+                                                      'ROSTER'
+                                                    )
+                                                    ? {
+                                                        Title: '',
+                                                        TimeFrom: '06:00',
+                                                        TimeTo: '18:00',
+                                                        Value: 1,
+                                                        Color: '#000',
+                                                        Hours: '',
+                                                        Symbol: ''
+                                                      }
+                                                    : {
+                                                        Title: '',
+                                                        TimeFrom: '06:00',
+                                                        TimeTo: '18:00',
+                                                        Value: 1
+                                                      }
+                                                )
+                                              }}
                                               disabled={
                                                 saveConfigMutation.isLoading
                                               }
