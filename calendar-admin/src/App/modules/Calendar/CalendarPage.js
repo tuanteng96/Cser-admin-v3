@@ -32,6 +32,7 @@ import PickerSettingCalendar from "../../../components/PickerSettingCalendar/Pic
 import {
   PickerCalendarClass,
   PickerCalendarRooms,
+  PickerCalendarStaffsSort,
   PickerCareSchedule,
   PickerClass,
   PickerControlBookOnline,
@@ -247,7 +248,7 @@ function CalendarPage(props) {
   });
 
   const [initialValue, setInitialValue] = useState({});
-  const [StaffFull, setStaffFull] = useState([]);
+  //const [StaffFull, setStaffFull] = useState([]);
   // const [initialView, setInitialView] = useState(
   //   window.innerWidth > 767 ? "resourceTimeGridDay" : "timeGridDay"
   // );
@@ -348,12 +349,39 @@ function CalendarPage(props) {
   }, [topCalendar]);
 
   //Get Staff Full
-  useEffect(() => {
-    async function getStaffFull() {
+  // useEffect(() => {
+  //   async function getStaffFull() {
+  //     const { data } = await CalendarCrud.getStaffs({
+  //       StockID: AuthCrStockID,
+  //       All: true,
+  //     });
+  //     const newData =
+  //       Array.isArray(data) && data.length > 0
+  //         ? data.map((item) => ({
+  //             ...item,
+  //             id: item.id,
+  //             title: item.text,
+  //             order: item?.source?.Order || 0,
+  //           }))
+  //         : [];
+  //     setStaffFull([
+  //       { id: 0, title: "Chưa chọn nhân viên", order: 0 },
+  //       ...newData,
+  //     ]);
+  //   }
+
+  //   getStaffFull();
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [topCalendar?.type]);
+
+  const Staffs = useQuery({
+    queryKey: ["CalendarsStaffs", { AuthCrStockID, Type: topCalendar?.type }],
+    queryFn: async () => {
       const { data } = await CalendarCrud.getStaffs({
         StockID: AuthCrStockID,
         All: true,
       });
+
       const newData =
         Array.isArray(data) && data.length > 0
           ? data.map((item) => ({
@@ -363,15 +391,10 @@ function CalendarPage(props) {
               order: item?.source?.Order || 0,
             }))
           : [];
-      setStaffFull([
-        { id: 0, title: "Chưa chọn nhân viên", order: 0 },
-        ...newData,
-      ]);
-    }
 
-    getStaffFull();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [topCalendar?.type]);
+      return [{ id: 0, title: "Chưa chọn nhân viên", order: 0 }, ...newData];
+    },
+  });
 
   useEffect(() => {
     if (calendarRef?.current?.getApi()) {
@@ -1685,36 +1708,18 @@ function CalendarPage(props) {
                         Cài đặt ca Roster
                       </Dropdown.Item>
                     )}
-
-                    {/* <div className="w-100 h-[1px] bg-gray-300 my-2.5"></div>
-                    {lop_hoc_pt && (
-                      <PickerCalendarClass
-                        TimeOpen={TimeOpen}
-                        TimeClose={TimeClose}
-                      >
-                        {({ open }) => (
-                          <Dropdown.Item href="#" onClick={open}>
-                            Bảng lịch lớp học
-                          </Dropdown.Item>
-                        )}
-                      </PickerCalendarClass>
-                    )}
-                    {SettingBookOnline && (
-                      <PickerControlBookOnline>
-                        {({ open }) => (
-                          <Dropdown.Item href="#" onClick={open}>
-                            Kiểm soát đặt lịch Online
-                          </Dropdown.Item>
-                        )}
-                      </PickerControlBookOnline>
-                    )}
-                    <PickerCareSchedule>
+                    <PickerCalendarStaffsSort>
                       {({ open }) => (
-                        <Dropdown.Item href="#" onClick={open}>
-                          Lịch chăm sóc
+                        <Dropdown.Item
+                          href="#"
+                          onClick={() => {
+                            open();
+                          }}
+                        >
+                          Sắp xếp nhân viên
                         </Dropdown.Item>
                       )}
-                    </PickerCareSchedule> */}
+                    </PickerCalendarStaffsSort>
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
@@ -1963,7 +1968,7 @@ function CalendarPage(props) {
                 resources={
                   topCalendar?.type?.value === "resourceTimelineDay"
                     ? ListRooms.data
-                    : StaffFull
+                    : Staffs?.data || []
                 }
                 resourceOrder={
                   topCalendar?.type?.value === "resourceTimelineDay"

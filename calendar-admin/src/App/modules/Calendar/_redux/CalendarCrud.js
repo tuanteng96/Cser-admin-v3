@@ -12,9 +12,7 @@ const getListStaff = (stockid) => {
 };
 
 const getStaffFull = () => {
-  return axiosClient.get(
-    `/api/gl/select2?cmd=user`
-  );
+  return axiosClient.get(`/api/gl/select2?cmd=user`);
 };
 
 const getListStaffs = ({ StockID, Key }) => {
@@ -28,6 +26,10 @@ const getListStaffsOffline = ({ StockID, data }) => {
     `/api/v3/userwork23@workoffList?stockid=${StockID}`,
     JSON.stringify(data)
   );
+};
+
+const updateStaffs = (body) => {
+  return axiosClient.post(`/api/v3/User@EditOrder`, JSON.stringify(body));
 };
 
 const getMembers = (key, CurrentStockID, member = "") => {
@@ -53,9 +55,7 @@ const getStaffs = ({ StockID, key = "", All }) => {
 };
 
 const getBookID = (id) => {
-  return axiosClient.get(
-    `/api/v3/mbookadmin?cmd=getbooks&id=${id}`
-  );
+  return axiosClient.get(`/api/v3/mbookadmin?cmd=getbooks&id=${id}`);
 };
 
 const getStaffsFull = ({ StockID, key = "", All }) => {
@@ -259,10 +259,7 @@ const getReportOverallSales = (data) => {
 };
 
 const getReportOrdersSales = (data) => {
-  return axiosClient.post(
-    `/api/v4/r27@invoke`,
-    JSON.stringify(data)
-  );
+  return axiosClient.post(`/api/v4/r27@invoke`, JSON.stringify(data));
 };
 
 const getReportSellOut = (data) => {
@@ -290,7 +287,11 @@ const getAllWorkSheet = (data) => {
 const urlAction = (body) =>
   axiosClient.post(`/api/v3/UrlAction@invoke`, JSON.stringify(body));
 
-const getRevenueEndExpenditure = (body) => axiosClient.post(`/api/v3/r23/bao-cao-thu-chi/danh-sach`, JSON.stringify(body));
+const getRevenueEndExpenditure = (body) =>
+  axiosClient.post(
+    `/api/v3/r23/bao-cao-thu-chi/danh-sach`,
+    JSON.stringify(body)
+  );
 
 const CalendarCrud = {
   getMembers,
@@ -342,6 +343,7 @@ const CalendarCrud = {
   resetPointOsMember,
   getReportOrdersSales,
   getStaffFull,
-  getRevenueEndExpenditure
+  getRevenueEndExpenditure,
+  updateStaffs
 };
 export default CalendarCrud;

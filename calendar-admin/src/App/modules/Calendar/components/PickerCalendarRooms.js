@@ -429,7 +429,15 @@ const PickerCalendarRooms = forwardRef(
 
             return obj;
           })
-          .sort((a, b) => a?.source?.Order - b?.source?.Order);
+          .sort((a, b) => {
+            const orderA = a.source?.Order ?? 0;
+            const orderB = b.source?.Order ?? 0;
+            if (orderA !== orderB) return orderA - orderB;
+
+            const idA = a.source?.ID ?? 0;
+            const idB = b.source?.ID ?? 0;
+            return idA - idB;
+          });
 
         let Rooms = [];
 

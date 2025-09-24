@@ -20,6 +20,7 @@ import PickerReportMassage from "./PickerReportMassage";
 import PickerCalendarRooms from "./PickerCalendarRooms";
 import PickerReportStaffService from "./PickerReportStaffService";
 import PickerReportMassageV2 from "./PickerReportMassageV2";
+import PickerCalendarStaffsSort from "./PickerCalendarStaffsSort";
 
 export {
   PickerSettingBookOnline,
@@ -43,5 +44,6 @@ export {
   PickerReportMassage,
   PickerCalendarRooms,
   PickerReportStaffService,
-  PickerReportMassageV2
+  PickerReportMassageV2,
+  PickerCalendarStaffsSort
 };
