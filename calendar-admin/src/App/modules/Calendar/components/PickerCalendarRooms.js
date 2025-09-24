@@ -56,6 +56,7 @@ const PickerCalendarRooms = forwardRef(
         };
 
         let data = await CalendarCrud.getBooking(newFilters);
+
         let { data: dataRooms } = await CalendarCrud.getConfigName(`room`);
         const rsRooms =
           dataRooms && dataRooms[0].Value ? JSON.parse(dataRooms[0].Value) : [];
@@ -376,7 +377,7 @@ const PickerCalendarRooms = forwardRef(
               newStaff.NextBooks = dataBooks.filter(
                 (x) =>
                   (!x.StaffIds || x.StaffIds.length === 0) &&
-                  moment(
+                  (moment(
                     moment(CrDate).format("YYYY-MM-DD HH:mm"),
                     "YYYY-MM-DD HH:mm"
                   ).isBetween(
@@ -384,7 +385,13 @@ const PickerCalendarRooms = forwardRef(
                     moment(moment(x.end, "YYYY-MM-DD HH:mm")),
                     null,
                     "[]"
-                  )
+                  ) ||
+                    moment(moment(x.end, "YYYY-MM-DD HH:mm")).isAfter(
+                      moment(
+                        moment(CrDate).format("YYYY-MM-DD HH:mm"),
+                        "YYYY-MM-DD HH:mm"
+                      )
+                    ))
               );
             }
             rs.push(newStaff);
