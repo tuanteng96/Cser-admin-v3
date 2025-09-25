@@ -148,10 +148,11 @@ function TimekeepingHome(props) {
 
   const { usrmng, cong_ca, adminTools_byStock } = useRoles({
     nameRoles: ['usrmng', 'cong_ca', 'adminTools_byStock'],
-    useAuth: { RightTree: rightTree, CrStocks: { ID: filters?.StockID?.ID } }
+    useAuth: { RightTree: rightTree, CrStocks: { ID: CrStockID } }
   })
 
   useEffect(() => {
+    
     if (cong_ca?.hasRight) {
       let newStocks = cong_ca?.StockRoles
       if (cong_ca?.IsStocks) {
@@ -169,7 +170,7 @@ function TimekeepingHome(props) {
           ...newStocks
         ]
       }
-
+      
       if (!CrStockID) {
         setFilters(prevState => ({
           ...prevState,
@@ -181,11 +182,12 @@ function TimekeepingHome(props) {
           StockID: newStocks.filter(o => o.ID === CrStockID)[0]
         }))
       }
+      
       setStocksList(newStocks)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cong_ca?.hasRight])
+  }, [cong_ca])
 
   useEffect(() => {
     setFilters(prevState => ({
@@ -198,6 +200,7 @@ function TimekeepingHome(props) {
   const { isLoading, isFetching, refetch, ...ListWorkSheet } = useQuery({
     queryKey: ['ListWorkSheet', filters],
     queryFn: async () => {
+      
       const newObj = {
         ...filters,
         From: filters.From,
