@@ -904,7 +904,23 @@ function CalendarPage(props) {
       bodyFormCheckIn.append("cmd", "checkin");
       bodyFormCheckIn.append("mid", objBooking.MemberID);
       bodyFormCheckIn.append("desc", "");
-      await CalendarCrud.checkinMember(bodyFormCheckIn);
+      let rsCheckIn = await CalendarCrud.checkinMember(bodyFormCheckIn);
+
+      if (
+        window?.top?.GlobalConfig?.Admin?.khachdenmuahangluon &&
+        rsCheckIn?.mc?.ID &&
+        values.RootIdS &&
+        values.RootIdS.length > 0
+      ) {
+        var bodyFormOrder = new FormData();
+        bodyFormOrder.append("CheckInID", rsCheckIn?.mc?.ID);
+        bodyFormOrder.append(
+          "arr",
+          JSON.stringify(values.RootIdS.map((x) => ({ id: x.value, qty: 1 })))
+        );
+
+        await CalendarCrud.addOrderCheckIn(bodyFormOrder);
+      }
 
       let History = {
         ...(values?.History || {}),
