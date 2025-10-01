@@ -28,7 +28,6 @@ import useWindowSize from 'src/hooks/useWindowSize'
 import PickerTimekeeping from '../../components/Picker/PickerTimekeeping'
 import PickerSalary from '../../components/Picker/PickerSalary'
 import ExcelHepers from 'src/helpers/ExcelHepers'
-import { ArrayHelpers } from 'src/helpers/ArrayHelpers'
 
 moment.locale('vi')
 
@@ -561,7 +560,7 @@ function TimekeepingMember(props) {
 
   const { width } = useWindowSize()
 
-  const [searchParams, setSearchParams] = useSearchParams()
+  const [searchParams] = useSearchParams()
 
   let CrDateQuery = searchParams.get('CrDate')
 
@@ -603,10 +602,25 @@ function TimekeepingMember(props) {
       }
 
       const { data } = await worksheetApi.getAllWorkSheet(newObj)
+
+      let list = data?.list || []
+      let base = { ...list[0], Dates: [...list[0].Dates] }
+
+      // duyệt các item khác
+      for (let i = 1; i < list.length; i++) {
+        list[i].Dates.forEach(d => {
+          if (d.WorkTrack) {
+            // thêm một item mới vào base thay vì gộp
+            base.Dates.push({ ...d, Date: d.Date, WorkTrack: d.WorkTrack })
+          }
+        })
+      }
+
+      base.Dates.sort((a, b) => new Date(a.Date) - new Date(b.Date))
+
       return (
-        data?.list &&
-        data?.list.length > 0 &&
-        data.list.map(item => ({
+        base &&
+        [base].map(item => ({
           ...item,
           Dates: item.Dates
             ? item.Dates.map(date => ({

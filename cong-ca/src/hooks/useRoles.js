@@ -87,7 +87,7 @@ export const useRoles = ({ nameRoles, useAuth }) => {
   const isMultiple = Array.isArray(nameRoles)
   const { RightTree, CrStocks } = useAuth
   let result = {}
-  
+
   const { hasRoles } = hasRolesAuth(RightTree)
 
   if (!isMultiple) {

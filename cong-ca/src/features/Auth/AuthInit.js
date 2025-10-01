@@ -82,7 +82,7 @@ function AuthInit(props) {
               Title: 'Cser Đà nẵng'
             }
           ],
-          CrStockID: 11594, //8975
+          CrStockID: 11593, //8975
           rightsSum: {
             cong_ca: {
               hasRight: true,

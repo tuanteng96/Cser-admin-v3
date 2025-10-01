@@ -152,7 +152,6 @@ function TimekeepingHome(props) {
   })
 
   useEffect(() => {
-    
     if (cong_ca?.hasRight) {
       let newStocks = cong_ca?.StockRoles
       if (cong_ca?.IsStocks) {
@@ -169,8 +168,7 @@ function TimekeepingHome(props) {
           },
           ...newStocks
         ]
-      }
-      
+      } 
       if (!CrStockID) {
         setFilters(prevState => ({
           ...prevState,
