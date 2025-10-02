@@ -708,6 +708,7 @@ function CalendarPage(props) {
             FullName: values.MemberID?.text,
             EmptyPhone: true,
             IsAff: 1,
+            IsNoValidPhone: !window?.top?.GlobalConfig?.Admin?.valid_phone
           },
         };
         const newMember = await CalendarCrud.createMember(objCreate);
@@ -878,6 +879,8 @@ function CalendarPage(props) {
               MobilePhone: values?.IsMemberCurrent?.MemberCreate?.Phone,
               FullName: values?.IsMemberCurrent?.MemberCreate?.FullName,
               EmptyPhone: true,
+              IsNoValidPhone: !window?.top?.GlobalConfig?.Admin?.valid_phone,
+              IsAff: 1,
             },
           };
           const newMember = await CalendarCrud.createMember(objCreate);
