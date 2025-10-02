@@ -185,7 +185,7 @@ function TimekeepingHome(props) {
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cong_ca])
+  }, [cong_ca?.hasRight])
 
   useEffect(() => {
     setFilters(prevState => ({
