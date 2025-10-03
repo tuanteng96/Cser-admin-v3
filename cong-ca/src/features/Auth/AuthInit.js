@@ -4,10 +4,24 @@ import { DevHelpers } from 'src/helpers/DevHelpers'
 import useWindowSize from 'src/hooks/useWindowSize'
 import { LayoutSplashScreen } from 'src/layout/_core/SplashScreen'
 import { setProfile } from './AuthSlice'
+import moreApi from 'src/api/more.api'
 
-function checkInfo(fn) {
+async function checkInfo(fn) {
   if (window.top.Info && window.top.token && window.top.GlobalConfig) {
-    fn()
+    let { data } = await moreApi.getNameConfig('App.webnoti')
+    let FirebaseApp = null
+    if (
+      data?.data &&
+      data?.data.filter(x => x.Name === 'App.webnoti').length > 0
+    ) {
+      let firebaseStr = data?.data.filter(x => x.Name === 'App.webnoti')[0][
+        'ValueText'
+      ]
+
+      FirebaseApp = firebaseStr
+    }
+
+    fn({ FirebaseApp })
   } else {
     setTimeout(() => {
       checkInfo(fn)
@@ -169,12 +183,13 @@ function AuthInit(props) {
           }
         }
       }
-      checkInfo(() => {
+      checkInfo(({ FirebaseApp }) => {
         dispatch(
           setProfile({
             Info: window.top.Info,
             Token: window.top.token,
-            GlobalConfig: window.top.GlobalConfig
+            GlobalConfig: window.top.GlobalConfig,
+            FirebaseApp: FirebaseApp
           })
         )
         setShowSplashScreen(false)
@@ -184,14 +199,29 @@ function AuthInit(props) {
     if (!window.top.Info || !window.top.token || !window.top.GlobalConfig) {
       requestUser()
     } else {
-      dispatch(
-        setProfile({
-          Info: window.top.Info,
-          Token: window.top.token,
-          GlobalConfig: window.top.GlobalConfig
-        })
-      )
-      setShowSplashScreen(false)
+      ;(async () => {
+        let { data } = await moreApi.getNameConfig('App.webnoti')
+        let FirebaseApp = null
+        if (
+          data?.data &&
+          data?.data.filter(x => x.Name === 'App.webnoti').length > 0
+        ) {
+          let firebaseStr = data?.data.filter(x => x.Name === 'App.webnoti')[0][
+            'ValueText'
+          ]
+
+          FirebaseApp = firebaseStr
+        }
+        dispatch(
+          setProfile({
+            Info: window.top.Info,
+            Token: window.top.token,
+            GlobalConfig: window.top.GlobalConfig,
+            FirebaseApp
+          })
+        )
+        setShowSplashScreen(false)
+      })()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])

@@ -11,7 +11,8 @@ const Auth = createSlice({
         ...state,
         Token: payload.Token,
         Info: payload.Info,
-        GlobalConfig: payload.GlobalConfig
+        GlobalConfig: payload.GlobalConfig,
+        FirebaseApp: payload.FirebaseApp
       }
     }
   }

@@ -44,6 +44,8 @@ import Swal from 'sweetalert2'
 import { useRoles } from 'src/hooks/useRoles'
 import ExcelHepers from 'src/helpers/ExcelHepers'
 import PickerRatio from './components/PickerRatio'
+import useFirebase from 'src/hooks/useFirebase'
+import { ref, onValue, off, remove } from 'firebase/database'
 
 moment.locale('vi')
 
@@ -126,12 +128,17 @@ let isHidden =
 
 function TimekeepingHome(props) {
   const navigate = useNavigate()
-  const { CrStockID, rightTree } = useSelector(({ auth }) => ({
+  const { CrStockID, rightTree, FirebaseApp } = useSelector(({ auth }) => ({
     Stocks: auth?.Info?.Stocks || [],
     rightsSum: auth?.Info?.rightsSum?.cong_ca || {},
     CrStockID: auth?.Info?.CrStockID,
-    rightTree: auth?.Info?.rightTree
+    rightTree: auth?.Info?.rightTree,
+    FirebaseApp: auth?.FirebaseApp
   }))
+
+  const firebase = useFirebase(FirebaseApp)
+
+  const database = firebase.db
 
   const [StocksList, setStocksList] = useState([])
   const [CrDate, setCrDate] = useState(new Date())
@@ -145,6 +152,8 @@ function TimekeepingHome(props) {
   const [isExport, setIsExport] = useState(false)
   const { width } = useWindowSize()
   const typingTimeoutRef = useRef(null)
+
+  const [changed, setChanged] = useState(false)
 
   const { usrmng, cong_ca, adminTools_byStock } = useRoles({
     nameRoles: ['usrmng', 'cong_ca', 'adminTools_byStock'],
@@ -168,7 +177,7 @@ function TimekeepingHome(props) {
           },
           ...newStocks
         ]
-      } 
+      }
       if (!CrStockID) {
         setFilters(prevState => ({
           ...prevState,
@@ -180,7 +189,7 @@ function TimekeepingHome(props) {
           StockID: newStocks.filter(o => o.ID === CrStockID)[0]
         }))
       }
-      
+
       setStocksList(newStocks)
     }
 
@@ -198,7 +207,6 @@ function TimekeepingHome(props) {
   const { isLoading, isFetching, refetch, ...ListWorkSheet } = useQuery({
     queryKey: ['ListWorkSheet', filters],
     queryFn: async () => {
-      
       const newObj = {
         ...filters,
         From: filters.From,
@@ -317,9 +325,47 @@ function TimekeepingHome(props) {
           }
         : { list: [] }
     },
+    onSuccess: () => {
+      setChanged(false)
+    },
     enabled: Boolean(filters.StockID && filters.From && filters.To),
     keepPreviousData: true
   })
+
+  useEffect(() => {
+    if (!database) return
+
+    const adminRef = ref(database, 'admincc/')
+    let isInitial = true
+    let debounceTimer = null
+
+    const unsubscribe = onValue(adminRef, snapshot => {
+      if (!snapshot.exists() || filters?.From !== moment().format('DD/MM/YYYY'))
+        return
+
+      if (isInitial) {
+        isInitial = false
+        return
+      }
+
+      //console.log(snapshot.val())
+
+      // Debounce: chỉ gọi refetch sau 500ms kể từ thay đổi cuối
+      if (debounceTimer) clearTimeout(debounceTimer)
+      debounceTimer = setTimeout(() => {
+        //console.log('Có dữ liệu mới:', snapshot.val())
+        //refetch()
+        window?.top?.toastr?.warning?.('Có nhân viên chấm công mới.')
+        setChanged(true)
+      }, 1000)
+    })
+
+    return () => {
+      unsubscribe()
+      if (debounceTimer) clearTimeout(debounceTimer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [database, filters.From])
 
   const resetMutation = useMutation({
     mutationFn: async body => {
@@ -1272,6 +1318,12 @@ function TimekeepingHome(props) {
               timeOut: 1500
             })
         )
+        if (filters?.From === moment().format('DD/MM/YYYY')) {
+          WorksHelpers.addAdminRecord({
+            database,
+            data: newValues.edit.map(x => x.UserID)
+          })
+        }
       },
       onError: error => console.log(error)
     })
@@ -1943,18 +1995,63 @@ function TimekeepingHome(props) {
                           Tự động tính lại
                         </button>
                       )}
-
-                      <button
-                        type="submit"
-                        disabled={saveTimeKeepMutation.isLoading}
-                        className={clsx(
-                          'btn btn-success fw-500',
-                          saveTimeKeepMutation.isLoading &&
-                            'spinner spinner-white spinner-right'
-                        )}
-                      >
-                        Lưu thay đổi
-                      </button>
+                      {changed ? (
+                        <button
+                          type="button"
+                          disabled={isLoading}
+                          className={clsx(
+                            'btn btn-warning fw-500',
+                            isLoading && 'spinner spinner-white spinner-right'
+                          )}
+                          onClick={() => {
+                            Swal.fire({
+                              icon: 'warning',
+                              title: 'Tải lại dữ liệu ?',
+                              html: `Khi tải lại dữ liệu. Dữ liệu bạn đã nhập nhưng chưa thực hiện lưu thay đổi sẽ bị mất. Bạn vui lòng kiểm tra để không bị mất dữ liệu.`,
+                              confirmButtonText: 'Xác nhận',
+                              cancelButtonText: 'Đóng',
+                              showCloseButton: true,
+                              showCancelButton: true,
+                              customClass: {
+                                confirmButton: 'btn btn-success'
+                                //cancelButton: "btn btn-danger",
+                              },
+                              showLoaderOnConfirm: true,
+                              preConfirm: () => {
+                                return new Promise(async (resolve, reject) => {
+                                  await refetch()
+                                  resolve()
+                                })
+                              },
+                              allowOutsideClick: () => !Swal.isLoading()
+                            }).then(result => {
+                              if (result.isConfirmed) {
+                                window?.top?.toastr?.success(
+                                  'Tải lại thành công.',
+                                  '',
+                                  {
+                                    timeOut: 200
+                                  }
+                                )
+                              }
+                            })
+                          }}
+                        >
+                          Tải lại dữ liệu
+                        </button>
+                      ) : (
+                        <button
+                          type="submit"
+                          disabled={saveTimeKeepMutation.isLoading}
+                          className={clsx(
+                            'btn btn-success fw-500',
+                            saveTimeKeepMutation.isLoading &&
+                              'spinner spinner-white spinner-right'
+                          )}
+                        >
+                          Lưu thay đổi
+                        </button>
+                      )}
                     </>
                   )}
                 </div>

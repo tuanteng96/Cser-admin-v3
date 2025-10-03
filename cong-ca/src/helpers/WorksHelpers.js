@@ -1,4 +1,5 @@
 import moment from 'moment'
+import { ref, push, get, remove, child } from 'firebase/database'
 
 const WorksHelpers = {
   getConfirmOutInDivide: ({ WorkTrack }) => {
@@ -308,6 +309,48 @@ const WorksHelpers = {
       }
     }
     return initialValues
+  },
+  addAdminRecord: async ({ database, data }) => {
+    if (!database) {
+      console.log('Thiếu dữ liệu để push.')
+      return
+    }
+
+    const adminRef = ref(database, 'appcc/')
+
+    // Format ngày hiện tại
+    const today = moment().format('DD/MM/YYYY')
+
+    try {
+      // Push dữ liệu mới
+      await push(adminRef, {
+        CreateDate: moment().format('HH:mm DD/MM/YYYY'),
+        data
+      })
+
+      console.log('Thêm mới thành công.')
+
+      // Lấy toàn bộ danh sách hiện tại
+      const snapshot = await get(adminRef)
+
+      if (snapshot.exists()) {
+        const data = snapshot.val()
+
+        // Duyệt từng item
+        for (let key in data) {
+          const item = data[key]
+          const itemDate = item?.CreateDate?.split(' ')[1] // lấy phần DD/MM/YYYY
+
+          // Nếu khác ngày hiện tại thì xoá
+          if (itemDate && itemDate !== today) {
+            await remove(child(adminRef, key))
+            console.log('Đã xoá record cũ:', key, itemDate)
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Lỗi khi push dữ liệu:', err)
+    }
   }
 }
 
