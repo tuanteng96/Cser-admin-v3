@@ -53,6 +53,7 @@ export default function Home() {
   const [BookSet, setBookSet] = useState()
 
   const onSubmit = (values, { resetForm }) => {
+    
     setLoadingBtn(true)
     const itemBooking = {
       ...values
@@ -126,10 +127,24 @@ export default function Home() {
                     } - ${moment(itemBooking?.OldBook?.BookDate).format(
                       'HH:mm DD-MM-YYYY'
                     )}`
-                  : '')
+                  : ''),
+          InfoMore: {
+            Member: {
+              ID: itemBooking.MemberID || '',
+              FullName: itemBooking.FullName || '',
+              MobilePhone: itemBooking.Phone || ''
+            },
+            Roots: itemBooking.RootIdS
+              ? itemBooking.RootIdS.map(x => ({
+                  ID: x.ID,
+                  Title: x.Title
+                }))
+              : null
+          }
         }
       ]
     }
+    
     if (values.ID) {
       newValues.deletes = [
         {
