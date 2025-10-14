@@ -53,7 +53,6 @@ export default function Home() {
   const [BookSet, setBookSet] = useState()
 
   const onSubmit = (values, { resetForm }) => {
-    
     setLoadingBtn(true)
     const itemBooking = {
       ...values
@@ -144,7 +143,7 @@ export default function Home() {
         }
       ]
     }
-    
+
     if (values.ID) {
       newValues.deletes = [
         {
@@ -291,12 +290,14 @@ export default function Home() {
                   className="h-100 tab-book__content tab-confirm"
                   eventKey="confirm"
                 >
-                  <Confirm
-                    formikProps={formikProps}
-                    prevStep={prevStep}
-                    onSubmit={onSubmit}
-                    loadingBtn={loadingBtn}
-                  />
+                  {key === 'confirm' && (
+                    <Confirm
+                      formikProps={formikProps}
+                      prevStep={prevStep}
+                      onSubmit={onSubmit}
+                      loadingBtn={loadingBtn}
+                    />
+                  )}
                 </Tab.Pane>
               </Tab.Container>
             </Form>
