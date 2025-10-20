@@ -651,7 +651,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                             ?.MemberCurrent?.MobilePhone ||
                             "Chưa xác định"} - ${extendedProps.ID ||
                             extendedProps?.os
-                              ?.ID}</span></div><span class="${!extendedProps?.isBook &&
+                              ?.ID}</span></div><span class="${(window?.top?.GlobalConfig?.Admin?.toi_uu_bang_lich || !extendedProps?.isBook) &&
                             "d-none"}">${extendedProps?.BookCount?.Done ||
                             0}/${extendedProps?.BookCount?.Total ||
                             0}</span></div>
@@ -690,7 +690,7 @@ function PickerSettingBookOnline({ children, TimeOpen, TimeClose }) {
                                 60
                               : 30
                           }p - ${extendedProps?.RootTitles ||
-                            "Không xác định"}</span> <span class="${!extendedProps?.isBook &&
+                            "Không xác định"}</span> <span class="${(window?.top?.GlobalConfig?.Admin?.toi_uu_bang_lich || !extendedProps?.isBook) &&
                             "d-none"}">- ${extendedProps?.BookCount?.Done ||
                             0}/${extendedProps?.BookCount?.Total ||
                             0}</span></div>

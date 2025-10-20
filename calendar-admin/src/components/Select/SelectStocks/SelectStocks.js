@@ -57,7 +57,7 @@ function SelectStocks({ value, allStock, StockRoles = null, ...props }) {
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posHasRight, posIsAllStocks, posPermissionStocks]);
-
+  
   return (
     <Select
       placeholder="Chọn cơ cở"

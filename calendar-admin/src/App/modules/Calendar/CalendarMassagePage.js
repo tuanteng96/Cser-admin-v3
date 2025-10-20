@@ -814,6 +814,22 @@ function CalendarMassagePage(props) {
 
       objBooking.History = History;
 
+      objBooking["InfoMore"] = {
+        Member: {
+          ID: Members?.ID || Members?.value || "",
+          FullName:
+            values?.FullName || Members?.FullName || Members?.label || "",
+          MobilePhone:
+            values?.Phone || Members?.MobilePhone || Members?.suffix || "",
+        },
+        Roots: values.RootIdS
+          ? values.RootIdS.map((item) => ({
+              ID: item.value,
+              Title: item.label,
+            }))
+          : null,
+      };
+
       const dataPost = {
         booking: [objBooking],
       };
@@ -960,7 +976,7 @@ function CalendarMassagePage(props) {
           objBooking.MemberID = NextMember?.Member?.ID || 0;
 
           let FullName = NextMember?.Member?.FullName || "";
-          
+
           if (!values.ID) {
             let newFullName = NextMember?.Member?.ID;
 
@@ -1044,6 +1060,22 @@ function CalendarMassagePage(props) {
       };
 
       objBooking.History = History;
+
+      objBooking["InfoMore"] = {
+        Member: {
+          ID: Members?.ID || Members?.value || "",
+          FullName:
+            values?.FullName || Members?.FullName || Members?.label || "",
+          MobilePhone:
+            values?.Phone || Members?.MobilePhone || Members?.suffix || "",
+        },
+        Roots: values.RootIdS
+          ? values.RootIdS.map((item) => ({
+              ID: item.value,
+              Title: item.label,
+            }))
+          : null,
+      };
 
       if (
         values?.ID &&
@@ -1160,7 +1192,10 @@ function CalendarMassagePage(props) {
     const objBooking = {
       ...values,
       MemberID: values.MemberID.value,
-      RootIdS: values.RootIdS.map((item) => item.value).toString(),
+      RootIdS:
+        values.RootIdS && values.RootIdS.length > 0
+          ? values.RootIdS.map((item) => item.value).toString()
+          : "",
       Roots: values.RootIdS,
       UserServiceIDs:
         values.UserServiceIDs && values.UserServiceIDs.length > 0
@@ -1213,6 +1248,9 @@ function CalendarMassagePage(props) {
           objBooking.MemberID = values?.IsMemberCurrent?.MemberPhone.ID;
           Members = { ...values?.IsMemberCurrent?.MemberPhone };
         }
+
+        objBooking.FullName = "";
+        objBooking.Phone = "";
       }
 
       var bodyFormCheckIn = new FormData();
@@ -1265,6 +1303,23 @@ function CalendarMassagePage(props) {
       };
 
       objBooking.History = History;
+
+      objBooking["InfoMore"] = {
+        Member: {
+          ID: Members?.ID || Members?.value || "",
+          FullName:
+            Members?.FullName || values?.FullName || Members?.label || "",
+          MobilePhone:
+            Members?.MobilePhone || values?.Phone || Members?.suffix || "",
+        },
+        Roots:
+          values.RootIdS && values.RootIdS.length > 0
+            ? values.RootIdS.map((item) => ({
+                ID: item.value,
+                Title: item.label,
+              }))
+            : null,
+      };
 
       if (
         values?.ID &&
@@ -1331,21 +1386,22 @@ function CalendarMassagePage(props) {
           booking: objBooking,
           action: "ADD_EDIT",
         });
-      await queryClient.invalidateQueries({
-        queryKey: ["ListCurrentCalendars"],
+      // await queryClient.invalidateQueries({
+      //   queryKey: ["ListCurrentCalendars"],
+      // });
+
+      window.top.location.href = `/admin/?mdl=store&act=sell#mp:${objBooking.MemberID}`;
+      toast.success(getTextToast(values.Status), {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 1500,
       });
-      ListCalendars.refetch().then(() => {
-        window.top.location.href = `/admin/?mdl=store&act=sell#mp:${objBooking.MemberID}`;
-        toast.success(getTextToast(values.Status), {
-          position: toast.POSITION.TOP_RIGHT,
-          autoClose: 1500,
-        });
-        setBtnLoading((prevState) => ({
-          ...prevState,
-          isBtnFinish: false,
-        }));
-        onHideModal();
-      });
+      setBtnLoading((prevState) => ({
+        ...prevState,
+        isBtnFinish: false,
+      }));
+      onHideModal();
+      
+      ListCalendars.refetch();
     } catch (error) {
       setBtnLoading((prevState) => ({
         ...prevState,
@@ -1365,6 +1421,19 @@ function CalendarMassagePage(props) {
       booking: [
         {
           ...values,
+          InfoMore: {
+            Member: {
+              ID: values?.MemberID?.value || "",
+              FullName: values?.MemberID?.label || "",
+              MobilePhone: values?.MemberID?.suffix,
+            },
+            Roots: values.RootIdS
+              ? values.RootIdS.map((item) => ({
+                  ID: item.value,
+                  Title: item.label,
+                }))
+              : null,
+          },
           MemberID: values.MemberID.value,
           RootIdS: values.RootIdS.map((item) => item.value).toString(),
           Roots: values.RootIdS,
@@ -1659,6 +1728,29 @@ function CalendarMassagePage(props) {
         data.books && Array.isArray(data.books)
           ? data.books
               .map((item) => {
+                let newItem = { ...item };
+                if (!item.UserServiceIDs) {
+                  newItem.UserServices = [];
+                } else {
+                  let UserServiceIDsSplit = item.UserServiceIDs.split(
+                    ","
+                  ).map((x) => Number(x));
+                  if (
+                    window?.top?.Info?.AllGroups &&
+                    window?.top?.Info?.AllGroups.length > 0
+                  ) {
+                    newItem.UserServices = UserServiceIDsSplit.map((id) =>
+                      window?.top?.Info?.AllGroups.flatMap((g) => g.Users).find(
+                        (u) => u.ID === id
+                      )
+                    );
+                  } else {
+                    newItem.UserServices = [];
+                  }
+                }
+                return newItem;
+              })
+              .map((item) => {
                 let TreatmentJson = item?.TreatmentJson
                   ? JSON.parse(item?.TreatmentJson)
                   : "";
@@ -1745,6 +1837,8 @@ function CalendarMassagePage(props) {
       Boolean(filters && filters.From) &&
       topCalendar?.type?.value !== "resourceCurrentDay",
   });
+
+  window.top.calendarRefetch = ListCalendars.refetch;
 
   const onRefresh = (callback) =>
     ListCalendars.refetch().then(() => callback && callback());
@@ -2547,7 +2641,9 @@ function CalendarMassagePage(props) {
                               60
                             : 30
                         }p - ${extendedProps?.RootTitles ||
-                          "Không xác định"}</span> <span class="${!extendedProps?.isBook &&
+                          "Không xác định"}</span> <span class="${(window?.top
+                          ?.GlobalConfig?.Admin?.toi_uu_bang_lich ||
+                          !extendedProps?.isBook) &&
                           "d-none"}">- ${extendedProps?.BookCount?.Done ||
                           0}/${extendedProps?.BookCount?.Total ||
                           0}</span></div>

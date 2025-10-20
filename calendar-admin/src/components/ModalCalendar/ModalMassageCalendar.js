@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import { NumericFormat } from "react-number-format";
 import clsx from "clsx";
 import SelectServiceBed from "../Select/SelectServiceBed/SelectServiceBed";
+import { useRoles } from "../../hooks/useRoles";
 moment.locale("vi");
 
 ModalMassageCalendar.propTypes = {
@@ -135,6 +136,8 @@ function ModalMassageCalendar({
 
   const [loading, setLoading] = useState(false);
 
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
+
   useEffect(() => {
     if (show) {
       if (initialValue.ID) {
@@ -145,6 +148,7 @@ function ModalMassageCalendar({
         };
         let TagSetting = [];
         let descSplit = newDesc.split("\n");
+
         for (let i of descSplit) {
           if (i.includes("Số lượng khách:")) {
             let SL = Number(i.match(/\d+/)[0]);
@@ -185,11 +189,13 @@ function ModalMassageCalendar({
           BookDate: initialValue.BookDate,
           StockID: initialValue.StockID,
           Desc: newDesc.replaceAll("</br>", "\n"),
-          UserServiceIDs: initialValue.UserServices.map((item) => ({
-            ...item,
-            value: item.ID,
-            label: item.FullName,
-          })),
+          UserServiceIDs: initialValue.UserServices
+            ? initialValue.UserServices.map((item) => ({
+                ...item,
+                value: item.ID,
+                label: item.FullName,
+              }))
+            : [],
           AtHome: initialValue.AtHome,
           IsMemberCurrent: getIsMember(initialValue),
           CreateBy: initialValue?.CreateBy || "",
@@ -542,7 +548,7 @@ function ModalMassageCalendar({
                     </label>
 
                     <DatePicker
-                      minDate={new Date()}
+                      minDate={adminTools_byStock?.hasRight ? null : new Date()}
                       minTime={
                         new Date(
                           new Date().setHours(

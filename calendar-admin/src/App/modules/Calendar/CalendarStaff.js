@@ -255,7 +255,7 @@ function CalendarStaff({
     }
     return ListOffCurrent.map((item, index) => (
       <div
-        className="w-100 bg-stripes zindex-9 cursor-no-drop position-absolute left-0"
+        className="left-0 w-100 bg-stripes zindex-9 cursor-no-drop position-absolute"
         style={getStyleOff(item)}
         key={index}
       ></div>
@@ -390,7 +390,7 @@ function CalendarStaff({
                     </div>
                   ))}
                 <div
-                  className="timegrid-now-indicator-arrow position-absolute w-100 left-0"
+                  className="left-0 timegrid-now-indicator-arrow position-absolute w-100"
                   style={getStyleTimeCurrent()}
                 ></div>
               </div>
@@ -470,7 +470,7 @@ function CalendarStaff({
                                 <div>
                                   <span className="fullname">
                                     {service.AtHome ? (
-                                      <i className="fas fa-home text-white font-size-xs"></i>
+                                      <i className="text-white fas fa-home font-size-xs"></i>
                                     ) : (
                                       ""
                                     )}{" "}
@@ -482,7 +482,7 @@ function CalendarStaff({
                                     - {service.MemberCurrent?.MobilePhone}
                                   </span>
                                 </div>
-                                {service?.isBook && (
+                                {(window?.top?.GlobalConfig?.Admin?.toi_uu_bang_lich || service?.isBook) && (
                                   <div>
                                     {service?.BookCount?.Done || 0}/
                                     {service?.BookCount?.Total || 0}
@@ -524,7 +524,7 @@ function CalendarStaff({
                   ))}
                 {/* Giờ hiện tại */}
                 <div
-                  className="timegrid-now-indicator-line border-top border-danger position-absolute w-100 left-0"
+                  className="left-0 timegrid-now-indicator-line border-top border-danger position-absolute w-100"
                   style={getStyleTimeCurrent()}
                 ></div>
                 {/* Giờ hiện tại */}

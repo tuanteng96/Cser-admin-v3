@@ -53,9 +53,6 @@ function CheckInPage(props) {
     dispatch(CheckIn(CrStockID));
   };
 
-  //console.log(ListCheckIn);
-  //console.log(initialValues)
-
   return (
     <div
       className={`${
@@ -66,7 +63,7 @@ function CheckInPage(props) {
         <div className="d-flex justify-content-between align-items-center border-bottom px-15px checkin-head">
           <div className="checkin-title">Hóa đơn đang xử lý</div>
           <div
-            className="cursor-pointer w-30px text-center"
+            className="text-center cursor-pointer w-30px"
             onClick={() =>
               window.top &&
               window.top.ShowCheckInDiv &&
@@ -96,7 +93,7 @@ function CheckInPage(props) {
           />
         </div>
       </div>
-      <div className="flex-grow-1 pt-5px overflow-auto">
+      <div className="overflow-auto flex-grow-1 pt-5px">
         {loading && (
           <>
             {Array(3)
@@ -150,7 +147,7 @@ function CheckInPage(props) {
                       alt={item.FullName}
                     />
                   </div>
-                  <div className="px-15px flex-1">
+                  <div className="flex-1 px-15px">
                     <div className="text-app font-weight-bold font-size-15px">
                       {item.FullName} - {item.MobilePhone}
                     </div>

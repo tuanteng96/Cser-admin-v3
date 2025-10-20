@@ -293,6 +293,8 @@ const getRevenueEndExpenditure = (body) =>
     JSON.stringify(body)
   );
 
+const getRootsMinutes = (body) => axiosClient.post(`/api/v5/Auth@Roots`);
+
 const CalendarCrud = {
   getMembers,
   getStaffs,
@@ -344,6 +346,7 @@ const CalendarCrud = {
   getReportOrdersSales,
   getStaffFull,
   getRevenueEndExpenditure,
-  updateStaffs
+  updateStaffs,
+  getRootsMinutes,
 };
 export default CalendarCrud;

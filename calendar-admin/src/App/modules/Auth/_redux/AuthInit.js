@@ -39,7 +39,7 @@ function AuthInit({ isConfig, children }) {
               ParentID: 0,
             },
             {
-              ID: 11340,
+              ID: 11593,
               Title: "Cser Hà Nội",
               KeySEO:
                 "{T2;08:00;18:00;30}{T3;08:00;18:00;30}{T4;08:00;18:00;30}{T5;08:00;18:00;30}{T6;08:00;18:00;30}{T7;08:00;18:00;30}{CN;08:00;18:00;30}",
@@ -167,6 +167,7 @@ function AuthInit({ isConfig, children }) {
             SL_khach: true,
           },
           Admin: {
+            toi_uu_bang_lich: false,
             dat_lich_tag: false,
             MasExportExcel: true,
             TextToSpeech: "zalo",
@@ -182,6 +183,7 @@ function AuthInit({ isConfig, children }) {
             SettingBookOnlineMinutes: 0,
             lop_hoc_pt: true,
             checkout_time: "05:00;06:00",
+            PosStatus: ["KHACH_DEN"]
           },
         };
       }

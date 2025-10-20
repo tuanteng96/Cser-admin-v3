@@ -19,6 +19,7 @@ import clsx from "clsx";
 import SelectServiceBed from "../Select/SelectServiceBed/SelectServiceBed";
 import { useQuery } from "react-query";
 import { withAsyncPaginate, AsyncPaginate } from "react-select-async-paginate";
+import { useRoles } from "../../hooks/useRoles";
 
 moment.locale("vi");
 
@@ -138,6 +139,8 @@ function ModalCalendar({
 
   const [loading, setLoading] = useState(false);
 
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
+
   const { isLoading } = useQuery({
     queryKey: ["BookID", show],
     queryFn: async () => {
@@ -153,6 +156,7 @@ function ModalCalendar({
         };
         let TagSetting = [];
         let descSplit = newDesc.split("\n");
+        let UserServices = [];
         for (let i of descSplit) {
           if (i.includes("Số lượng khách:")) {
             let SL = Number(i.match(/\d+/)[0]);
@@ -171,6 +175,30 @@ function ModalCalendar({
             newDesc = i.replaceAll("Ghi chú: ", "");
           }
         }
+
+        if (
+          window?.top?.Info?.AllGroups &&
+          window?.top?.Info?.AllGroups.length > 0
+        ) {
+          let UserServiceIDsSplit = rs.UserServiceIDs
+            ? rs.UserServiceIDs.split(",").map((x) => Number(x))
+            : [];
+          if (
+            window?.top?.Info?.AllGroups &&
+            window?.top?.Info?.AllGroups.length > 0
+          ) {
+            UserServices = window?.top?.Info?.AllGroups.flatMap((g) =>
+              Array.isArray(g.Users) ? g.Users : []
+            ) // gom tất cả user
+              .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+              .reduce((acc, user) => {
+                // loại trừ trùng ID
+                if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
+                return acc;
+              }, []);
+          }
+        }
+
         setInitialValues((prevState) => ({
           ...prevState,
           ID: rs.ID,
@@ -195,11 +223,13 @@ function ModalCalendar({
           BookDate: rs.BookDate,
           StockID: rs.StockID,
           Desc: newDesc.replaceAll("</br>", "\n"),
-          UserServiceIDs: rs.UserServices.map((item) => ({
-            ...item,
-            value: item.ID,
-            label: item.FullName,
-          })),
+          UserServiceIDs: UserServices
+            ? UserServices.map((item) => ({
+                ...item,
+                value: item.ID,
+                label: item.FullName,
+              }))
+            : [],
           AtHome: rs.AtHome,
           IsMemberCurrent: getIsMember(rs),
           CreateBy: rs?.CreateBy || "",
@@ -244,6 +274,30 @@ function ModalCalendar({
             newDesc = i.replaceAll("Ghi chú: ", "");
           }
         }
+
+        let UserServiceIDs = [];
+
+        if (initialValue.UserServiceIDs) {
+          let UserServiceIDsSplit = initialValue.UserServiceIDs.split(
+            ","
+          ).map((x) => Number(x));
+
+          if (
+            window?.top?.Info?.AllGroups &&
+            window?.top?.Info?.AllGroups.length > 0
+          ) {
+            UserServiceIDs = window?.top?.Info?.AllGroups.flatMap((g) =>
+              Array.isArray(g.Users) ? g.Users : []
+            ) // gom tất cả user
+              .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+              .reduce((acc, user) => {
+                // loại trừ trùng ID
+                if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
+                return acc;
+              }, []);
+          }
+        }
+
         setInitialValues((prevState) => ({
           ...prevState,
           ID: initialValue.ID,
@@ -266,11 +320,13 @@ function ModalCalendar({
           BookDate: initialValue.BookDate,
           StockID: initialValue.StockID,
           Desc: newDesc.replaceAll("</br>", "\n"),
-          UserServiceIDs: initialValue.UserServices.map((item) => ({
-            ...item,
-            value: item.ID,
-            label: item.FullName,
-          })),
+          UserServiceIDs: UserServiceIDs
+            ? UserServiceIDs.map((item) => ({
+                ...item,
+                value: item.ID,
+                label: item.FullName,
+              }))
+            : [],
           AtHome: initialValue.AtHome,
           IsMemberCurrent: getIsMember(initialValue),
           CreateBy: initialValue?.CreateBy || "",
@@ -346,6 +402,7 @@ function ModalCalendar({
     };
     const { lst } = await CalendarCrud.getRootServices(filters);
     const dataResult = lst.map((item) => ({
+      ...item,
       value: item.ID,
       label: item.Title,
     }));
@@ -493,6 +550,7 @@ function ModalCalendar({
               handleBlur,
               setFieldValue,
             } = formikProps;
+
             return (
               <Form className="h-100 d-flex flex-column">
                 <Modal.Header className="open-close" closeButton>
@@ -629,7 +687,7 @@ function ModalCalendar({
                     </span> */}
                     </label>
                     <DatePicker
-                      minDate={new Date()}
+                      minDate={adminTools_byStock?.hasRight ? null : new Date()}
                       minTime={
                         new Date(
                           new Date().setHours(
@@ -839,7 +897,9 @@ function ModalCalendar({
                       classNamePrefix="select"
                       className={clsx(
                         "mt-2 select-control",
-                        errors.TagSetting && touched.TagSetting && "is-invalid solid-invalid"
+                        errors.TagSetting &&
+                          touched.TagSetting &&
+                          "is-invalid solid-invalid"
                       )}
                       options={TagsList}
                       placeholder="Chọn tags"
@@ -890,18 +950,19 @@ function ModalCalendar({
                           )}
                         </div>
                       </div>
-                      {!values?.IsMemberCurrent?.IsAnonymous && (
-                        <div className="w-120px">
-                          <label className="mb-1 d-none d-md-block">
-                            Chỉ số Booking
-                          </label>
-                          <div className="mt-2px font-weight-bolder">
-                            {initialValue?.BookCount?.Done || 0}
-                            <span className="px-2px">/</span>
-                            {initialValue?.BookCount?.Total || 0}
+                      {!values?.IsMemberCurrent?.IsAnonymous &&
+                        !window?.top?.GlobalConfig?.Admin.toi_uu_bang_lich && (
+                          <div className="w-120px">
+                            <label className="mb-1 d-none d-md-block">
+                              Chỉ số Booking
+                            </label>
+                            <div className="mt-2px font-weight-bolder">
+                              {initialValue?.BookCount?.Done || 0}
+                              <span className="px-2px">/</span>
+                              {initialValue?.BookCount?.Total || 0}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </div>
                   )}
                 </Modal.Body>
@@ -1017,6 +1078,12 @@ function ModalCalendar({
                                           <div
                                             className="spinner-border"
                                             role="status"
+                                            style={{
+                                              border: "2px solid currentColor",
+                                              width: "1rem",
+                                              height: "1rem",
+                                              marginLeft: "5px",
+                                            }}
                                           ></div>
                                         )}
                                       </Dropdown.Toggle>
@@ -1046,18 +1113,17 @@ function ModalCalendar({
                                         </Dropdown.Item>
                                       </Dropdown.Menu>
                                     </Dropdown>
+
                                     <button
                                       type="button"
                                       className={`btn btn-sm btn-primary ml-2 flex-1 text-truncate ${
-                                        (btnLoading.isBtnBooking &&
-                                          values.Status === "KHACH_DEN") ||
+                                        btnLoading.isBtnGuestsArrive ||
                                         isLoading
                                           ? "spinner spinner-white spinner-right"
                                           : ""
                                       } w-auto my-0 mr-0 h-auto`}
                                       disabled={
-                                        (btnLoading.isBtnBooking &&
-                                          values.Status === "KHACH_DEN") ||
+                                        btnLoading.isBtnGuestsArrive ||
                                         isLoading
                                       }
                                       onClick={() => onFinish(values)}

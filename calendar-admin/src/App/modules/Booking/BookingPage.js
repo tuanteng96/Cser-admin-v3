@@ -16,6 +16,8 @@ import { useQuery } from "react-query";
 import "../../../_assets/sass/pages/_booking.scss";
 import SelectServiceBed from "../../../components/Select/SelectServiceBed/SelectServiceBed";
 import clsx from "clsx";
+import { useRoles } from "../../../hooks/useRoles";
+
 moment.locale("vi");
 
 const StatusArr = [
@@ -87,6 +89,8 @@ function BookingPage() {
     })
   );
 
+  const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
+
   useEffect(() => {
     if (Book.ID > 0) {
       let newDesc = Book.Desc;
@@ -121,6 +125,7 @@ function BookingPage() {
         MemberID: {
           label: Book.Member.FullName,
           value: Book.Member.ID,
+          suffix: Book.Member.MobilePhone,
         },
         RootIdS: Book.Roots.map((item) => ({
           ...item,
@@ -131,11 +136,13 @@ function BookingPage() {
         BookDate: Book.BookDate,
         StockID: Book.StockID,
         Desc: newDesc.replaceAll("</br>", "\n"),
-        UserServiceIDs: Book.UserServices.map((item) => ({
-          ...item,
-          value: item.ID,
-          label: item.FullName,
-        })),
+        UserServiceIDs: Book.UserServices
+          ? Book.UserServices.map((item) => ({
+              ...item,
+              value: item.ID,
+              label: item.FullName,
+            }))
+          : [],
         AtHome: Book.AtHome,
         AmountPeople,
         TagSetting,
@@ -151,6 +158,7 @@ function BookingPage() {
         MemberID: {
           value: BookMember.ID,
           label: BookMember.FullName,
+          suffix: BookMember.MobilePhone,
         },
         Status: "XAC_NHAN",
       }));
@@ -202,6 +210,19 @@ function BookingPage() {
 
     let objBooking = {
       ...values,
+      InfoMore: {
+        Member: {
+          ID: values?.MemberID?.value || "",
+          FullName: values?.MemberID?.label || "",
+          MobilePhone: values?.MemberID?.suffix,
+        },
+        Roots: values.RootIdS
+          ? values.RootIdS.map((item) => ({
+              ID: item.value,
+              Title: item.label,
+            }))
+          : null,
+      },
       MemberID: values.MemberID.value,
       RootIdS:
         values.RootIdS && values.RootIdS.length > 0
@@ -320,8 +341,21 @@ function BookingPage() {
 
     let objBooking = {
       ...values,
+      InfoMore: {
+        Member: {
+          ID: values?.MemberID?.value || "",
+          FullName: values?.MemberID?.label || "",
+          MobilePhone: values?.MemberID?.suffix,
+        },
+        Roots: values.RootIdS && values.RootIdS.length > 0
+          ? values.RootIdS.map((item) => ({
+              ID: item.value,
+              Title: item.label,
+            }))
+          : null,
+      },
       MemberID: values.MemberID.value,
-      RootIdS: values.RootIdS.map((item) => item.value).toString(),
+      RootIdS: values.RootIdS && values.RootIdS.length > 0 ? values.RootIdS.map((item) => item.value).toString() : "",
       Roots: values.RootIdS,
       UserServiceIDs:
         values.UserServiceIDs && values.UserServiceIDs.length > 0
@@ -427,6 +461,19 @@ function BookingPage() {
 
     let objBooking = {
       ...values,
+      InfoMore: {
+        Member: {
+          ID: values?.MemberID?.value || "",
+          FullName: values?.MemberID?.label || "",
+          MobilePhone: values?.MemberID?.suffix,
+        },
+        Roots: values.RootIdS
+          ? values.RootIdS.map((item) => ({
+              ID: item.value,
+              Title: item.label,
+            }))
+          : null,
+      },
       MemberID: values.MemberID.value,
       RootIdS: values.RootIdS.map((item) => item.value).toString(),
       Roots: values.RootIdS,
@@ -596,6 +643,7 @@ function BookingPage() {
             handleBlur,
             setFieldValue,
           } = formikProps;
+          
           return (
             <Form className="h-100 d-flex flex-column">
               <div className="overflow-auto grow">
@@ -657,7 +705,7 @@ function BookingPage() {
                     Thời gian / Cơ sở
                   </label>
                   <DatePicker
-                    minDate={new Date()}
+                    minDate={adminTools_byStock?.hasRight ? null : new Date()}
                     minTime={
                       new Date(
                         new Date().setHours(
@@ -852,7 +900,9 @@ function BookingPage() {
                     classNamePrefix="select"
                     className={clsx(
                       "mt-2 select-control",
-                      errors.TagSetting && touched.TagSetting && "is-invalid solid-invalid"
+                      errors.TagSetting &&
+                        touched.TagSetting &&
+                        "is-invalid solid-invalid"
                     )}
                     cacheOptions
                     loadOptions={loadOptionsTags}
