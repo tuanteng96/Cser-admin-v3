@@ -2241,7 +2241,7 @@ function CalendarPage(props) {
                             window?.top?.ExtraSalarySettingsModal();
                         }}
                       >
-                        Cài đặt phí ngoài
+                        Cài đặt phụ cấp gửi xe
                       </Dropdown.Item>
                     )}
                     <PickerCalendarStaffsSort>
