@@ -1865,8 +1865,8 @@ function PickerReportMassageV2({ children }) {
                 "TT THẺ TIỀN",
                 "CÒN NỢ",
                 "CHI TIẾT ĐƠN HÀNG",
-                "GHI CHÚ",
                 "DỊCH VỤ / NHÂN VIÊN",
+                "GHI CHÚ",
                 "ĐÁNH GIÁ",
                 "NỘI DUNG",
               ];
@@ -1924,8 +1924,8 @@ function PickerReportMassageV2({ children }) {
                   rowData.DaThToan_ThTien,
                   rowData.ConNo,
                   newOi.map((x) => `${x.name} (x${x.qty})`).join("; "),
-                  rowData?.Desc || "",
                   getServices(rowData).Staffs,
+                  rowData?.Desc || "",
                   getServices(rowData).Rate,
                   getServices(rowData).RateNote,
                 ]);
