@@ -119,6 +119,29 @@ function BookingPage() {
         }
       }
 
+      let UserServices = [];
+
+      if (
+        window?.top?.Info?.AllGroups &&
+        window?.top?.Info?.AllGroups.length > 0
+      ) {
+        if (Book.UserServiceIDs) {
+          let UserServiceIDsSplit = Book.UserServiceIDs.split(",").map((x) =>
+            Number(x)
+          );
+
+          UserServices = window?.top?.Info?.AllGroups.flatMap((g) =>
+            Array.isArray(g.Users) ? g.Users : []
+          ) // gom tất cả user
+            .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+            .reduce((acc, user) => {
+              // loại trừ trùng ID
+              if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
+              return acc;
+            }, []);
+        }
+      }
+
       setInitialValues((prevState) => ({
         ...prevState,
         ID: Book.ID,
@@ -127,17 +150,20 @@ function BookingPage() {
           value: Book.Member.ID,
           suffix: Book.Member.MobilePhone,
         },
-        RootIdS: Book.Roots.map((item) => ({
-          ...item,
-          value: item.ID,
-          label: item.Title,
-        })),
+        RootIdS:
+          Book.Roots && Book.Roots.length > 0
+            ? Book.Roots.map((item) => ({
+                ...item,
+                value: item.ID,
+                label: item.Title,
+              }))
+            : null,
         Status: Book.Status,
         BookDate: Book.BookDate,
         StockID: Book.StockID,
         Desc: newDesc.replaceAll("</br>", "\n"),
-        UserServiceIDs: Book.UserServices
-          ? Book.UserServices.map((item) => ({
+        UserServiceIDs: UserServices
+          ? UserServices.map((item) => ({
               ...item,
               value: item.ID,
               label: item.FullName,
@@ -347,15 +373,19 @@ function BookingPage() {
           FullName: values?.MemberID?.label || "",
           MobilePhone: values?.MemberID?.suffix,
         },
-        Roots: values.RootIdS && values.RootIdS.length > 0
-          ? values.RootIdS.map((item) => ({
-              ID: item.value,
-              Title: item.label,
-            }))
-          : null,
+        Roots:
+          values.RootIdS && values.RootIdS.length > 0
+            ? values.RootIdS.map((item) => ({
+                ID: item.value,
+                Title: item.label,
+              }))
+            : null,
       },
       MemberID: values.MemberID.value,
-      RootIdS: values.RootIdS && values.RootIdS.length > 0 ? values.RootIdS.map((item) => item.value).toString() : "",
+      RootIdS:
+        values.RootIdS && values.RootIdS.length > 0
+          ? values.RootIdS.map((item) => item.value).toString()
+          : "",
       Roots: values.RootIdS,
       UserServiceIDs:
         values.UserServiceIDs && values.UserServiceIDs.length > 0
@@ -643,7 +673,7 @@ function BookingPage() {
             handleBlur,
             setFieldValue,
           } = formikProps;
-          
+
           return (
             <Form className="h-100 d-flex flex-column">
               <div className="overflow-auto grow">
