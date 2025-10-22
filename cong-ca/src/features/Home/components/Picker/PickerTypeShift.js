@@ -21,16 +21,15 @@ function PickerTypeShift({ children, item }) {
   useEffect(() => {
     if (item.WorkTimeSetting) {
       let WorkTimeSetting = JSON.parse(item.WorkTimeSetting)
-      if (WorkTimeSetting.ShiftID) {
-        setInitialValues({
-          UserID: item?.UserID,
-          Shift: {
-            label: WorkTimeSetting.ShiftName,
-            value: WorkTimeSetting.ShiftID
-          },
-          SalaryHours: WorkTimeSetting?.SalaryHours || ''
-        })
-      }
+
+      setInitialValues({
+        UserID: item?.UserID,
+        Shift: WorkTimeSetting.ShiftID ? {
+          label: WorkTimeSetting.ShiftName,
+          value: WorkTimeSetting.ShiftID
+        } : null,
+        SalaryHours: WorkTimeSetting?.SalaryHours || ''
+      })
     }
   }, [item])
 
