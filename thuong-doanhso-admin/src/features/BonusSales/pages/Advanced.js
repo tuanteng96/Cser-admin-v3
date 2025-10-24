@@ -4,6 +4,7 @@ import { Table } from "react-bootstrap";
 import Select from "react-select";
 import NumberFormat from "react-number-format";
 import { Formik, FieldArray, Form } from "formik";
+import SelectType from "../components/SelectType";
 
 const initialValues = {
   advanced: [
@@ -35,7 +36,7 @@ function Advanced({ OrderInfo, onSubmit, loading }) {
           window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
     );
   }
-  
+
   return (
     <Formik
       enableReinitialize
@@ -106,6 +107,21 @@ function Advanced({ OrderInfo, onSubmit, loading }) {
                           isSearchable={false}
                           menuPosition="fixed"
                         />
+                        {item?.Type?.value === "doanh_so" && (
+                          <SelectType
+                            className="mt-2 select-control"
+                            name={`advanced[${index}].KpiType`}
+                            value={item.KpiType}
+                            placeholder="Chọn loại"
+                            onChange={(option) => {
+                              setFieldValue(
+                                `advanced[${index}].KpiType`,
+                                option,
+                                false
+                              );
+                            }}
+                          />
+                        )}
                       </div>
                       <div className="mb-2">
                         <Select
@@ -250,6 +266,21 @@ function Advanced({ OrderInfo, onSubmit, loading }) {
                               isSearchable={false}
                               menuPosition="fixed"
                             />
+                            {item?.Type?.value === "doanh_so" && (
+                              <SelectType
+                                className="mt-2 select-control"
+                                name={`advanced[${index}].KpiType`}
+                                value={item.KpiType}
+                                placeholder="Chọn loại"
+                                onChange={(option) => {
+                                  setFieldValue(
+                                    `advanced[${index}].KpiType`,
+                                    option,
+                                    false
+                                  );
+                                }}
+                              />
+                            )}
                           </td>
                           <td>
                             <Select

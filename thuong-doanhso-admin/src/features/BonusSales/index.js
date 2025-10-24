@@ -54,7 +54,9 @@ const BonusSales = () => {
       Title: "Nâng cao",
       Visible: false,
       IsActive: false,
-      Hide: window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao ? !adminTools_byStock?.hasRight : window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao,
+      Hide: window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao
+        ? !adminTools_byStock?.hasRight
+        : window.top?.GlobalConfig?.Admin?.thuong_ds_nang_cao,
       className: "btn btn-primary",
     },
     {
@@ -124,13 +126,13 @@ const BonusSales = () => {
               label: item.ProdTitle,
               value: item.ID,
             };
-            if(item.gia_tri_thanh_toan === "NaN") {
-              obj.initialRose = item.prodBonus
+            if (item.gia_tri_thanh_toan === "NaN") {
+              obj.initialRose = item.prodBonus;
             }
             return obj;
           }),
         };
-        
+
         setOrderInfo(newData);
         callback && callback();
       })
@@ -364,6 +366,7 @@ const BonusSales = () => {
         Value: item.Value || 0,
         ReceiverUserID: item.Staff?.ID,
         OrderItemID: item.Product?.ID,
+        KpiType: item?.KpiType?.value || "",
       }))
       .filter((o) => o.Value !== null);
     const dataSubmit = {
@@ -373,6 +376,7 @@ const BonusSales = () => {
         them_doanh_so: Doanh_so,
       },
     };
+
     BonusSaleCrud.postOrderItem(dataSubmit)
       .then((response) => {
         getInfoOrder(() => {
