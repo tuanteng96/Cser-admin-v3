@@ -394,6 +394,7 @@ function CalendarPage(props) {
 
       return [{ id: 0, title: "Chưa chọn nhân viên", order: 0 }, ...newData];
     },
+    enabled: Boolean(topCalendar?.day),
   });
 
   const addStaffs = (newStaffs) => {
@@ -2051,6 +2052,9 @@ function CalendarPage(props) {
                       ...prevState,
                       day: moment().toDate(),
                     }));
+                    if (Staffs?.data?.some((x) => x.isPush)) {
+                      Staffs.refetch();
+                    }
                   }}
                   disabled={
                     moment(topCalendar.day).format("DD-MM-YYYY") ===
@@ -2068,6 +2072,9 @@ function CalendarPage(props) {
                         ...prevState,
                         day: val,
                       }));
+                      if (Staffs?.data?.some((x) => x.isPush)) {
+                        Staffs.refetch();
+                      }
                     }}
                     showMonthYearPicker={
                       topCalendar?.type?.value === "dayGridMonth"
@@ -2102,6 +2109,9 @@ function CalendarPage(props) {
                               .toDate(),
                           }));
                         }
+                        if (Staffs?.data?.some((x) => x.isPush)) {
+                          Staffs.refetch();
+                        }
                       }}
                     >
                       <i className="fa-regular fa-chevron-left text-[15px] group-hover:!text-primary"></i>
@@ -2133,6 +2143,10 @@ function CalendarPage(props) {
                               .add(1, "days")
                               .toDate(),
                           }));
+                        }
+                        
+                        if (Staffs?.data?.some((x) => x.isPush)) {
+                          Staffs.refetch();
                         }
                       }}
                     >
@@ -2458,7 +2472,9 @@ function CalendarPage(props) {
                           <div className="capitalize title-staff">
                             {resource._resource.title}
                             {resource.extendedProps?.isPush && (
-                              <span className="pl-1 text-sm text-danger">(*)</span>
+                              <span className="pl-1 text-sm text-danger">
+                                (*)
+                              </span>
                             )}
                           </div>
                         </div>
