@@ -396,6 +396,16 @@ function CalendarPage(props) {
     },
   });
 
+  const addStaffs = (newStaffs) => {
+    queryClient.setQueryData(
+      ["CalendarsStaffs", { AuthCrStockID, Type: topCalendar?.type }],
+      (oldData) => {
+        if (!oldData) return newStaffs;
+        return [...oldData, ...newStaffs];
+      }
+    );
+  };
+
   useEffect(() => {
     if (calendarRef?.current?.getApi()) {
       let calendarApi = calendarRef.current.getApi();
@@ -837,7 +847,7 @@ function CalendarPage(props) {
           if (!Array.isArray(oldData)) return oldData;
 
           if (rs?.data?.items?.length > 0) {
-            const newItem = {...rs.data.items[0]};
+            const newItem = { ...rs.data.items[0] };
 
             if (newItem.UserServiceIDs) {
               let UserServiceIDsSplit = newItem.UserServiceIDs.split(
@@ -1454,7 +1464,7 @@ function CalendarPage(props) {
           if (!Array.isArray(oldData)) return oldData;
 
           if (rs?.data?.items?.length > 0) {
-            let newItem = {...rs.data.items[0]};
+            let newItem = { ...rs.data.items[0] };
 
             if (newItem.UserServiceIDs) {
               let UserServiceIDsSplit = newItem.UserServiceIDs.split(
@@ -1769,6 +1779,8 @@ function CalendarPage(props) {
         }
       }
 
+      let StaffsAdd = [];
+
       let dataBooks =
         data.books && Array.isArray(data.books)
           ? data.books
@@ -1817,6 +1829,20 @@ function CalendarPage(props) {
                   ? JSON.parse(item?.TreatmentJson)
                   : "";
 
+                if (item.UserServices && item.UserServices.length > 0) {
+                  for (let u of item.UserServices) {
+                    let index = Staffs?.data?.findIndex((x) => x.id === u.ID);
+                    if (index === -1) {
+                      StaffsAdd.push({
+                        ...u,
+                        id: u.ID,
+                        title: u.FullName,
+                        order: 99999,
+                        isPush: true,
+                      });
+                    }
+                  }
+                }
                 return {
                   ...item,
                   start: item.BookDate,
@@ -1856,34 +1882,54 @@ function CalendarPage(props) {
 
       let dataBooksAuto =
         data.osList && Array.isArray(data.osList)
-          ? data.osList.map((item) => ({
-              ...item,
-              AtHome: false,
-              Member: item.member,
-              MemberCurrent: {
-                FullName: item?.member?.FullName,
-                MobilePhone: item?.member?.MobilePhone,
-              },
-              start: item.os.BookDate,
-              end: moment(item.os.BookDate)
-                .add(item.os.RootMinutes ?? 60, "minutes")
-                .toDate(),
-              BookDate: item.os.BookDate,
-              title: item.os.Title,
-              RootTitles: item.os.ProdService2 || item.os.ProdService,
-              className: `fc-event-solid-${getStatusClss(item.os.Status)} ${
-                item?.os?.RoomStatus === "done" ? "bg-stripes" : ""
-              }`,
-              resourceIds:
-                topCalendar?.type?.value === "resourceTimelineDay"
-                  ? [item?.os?.RoomID || 0]
-                  : item.staffs &&
-                    Array.isArray(item.staffs) &&
-                    item.staffs.length > 0
-                  ? item.staffs.map((staf) => staf.ID)
-                  : [0],
-            }))
+          ? data.osList.map((item) => {
+              if (item.staffs && item.staffs.length > 0) {
+                for (let u of item.staffs) {
+                  let index = Staffs?.data?.findIndex((x) => x.id === u.ID);
+                  if (index === -1) {
+                    StaffsAdd.push({
+                      ...u,
+                      id: u.ID,
+                      title: u.FullName,
+                      order: 99999,
+                      isPush: true,
+                    });
+                  }
+                }
+              }
+              return {
+                ...item,
+                AtHome: false,
+                Member: item.member,
+                MemberCurrent: {
+                  FullName: item?.member?.FullName,
+                  MobilePhone: item?.member?.MobilePhone,
+                },
+                start: item.os.BookDate,
+                end: moment(item.os.BookDate)
+                  .add(item.os.RootMinutes ?? 60, "minutes")
+                  .toDate(),
+                BookDate: item.os.BookDate,
+                title: item.os.Title,
+                RootTitles: item.os.ProdService2 || item.os.ProdService,
+                className: `fc-event-solid-${getStatusClss(item.os.Status)} ${
+                  item?.os?.RoomStatus === "done" ? "bg-stripes" : ""
+                }`,
+                resourceIds:
+                  topCalendar?.type?.value === "resourceTimelineDay"
+                    ? [item?.os?.RoomID || 0]
+                    : item.staffs &&
+                      Array.isArray(item.staffs) &&
+                      item.staffs.length > 0
+                    ? item.staffs.map((staf) => staf.ID)
+                    : [0],
+              };
+            })
           : [];
+
+      if (StaffsAdd && StaffsAdd.length > 0) {
+        addStaffs(StaffsAdd);
+      }
 
       if (topCalendar?.type?.value === "resourceTimelineDay") {
         dataBooks = dataBooks.filter(
@@ -1895,11 +1941,15 @@ function CalendarPage(props) {
 
       return [...dataBooks, ...dataBooksAuto, ...dataOffline];
     },
-    enabled: Boolean(filters && filters.From && !BanTimeCalendar?.isLoading),
+    enabled: Boolean(
+      filters &&
+        filters.From &&
+        !BanTimeCalendar?.isLoading &&
+        Staffs?.data?.length > 0
+    ),
   });
 
   window.top.calendarRefetch = () => {
-    console.log("Refetch Calendar");
     return ListCalendars.refetch();
   };
 
@@ -2233,7 +2283,8 @@ function CalendarPage(props) {
                         Cài đặt ca Roster
                       </Dropdown.Item>
                     )}
-                    {window?.top?.GlobalConfig?.Admin?.chinhsachluongchitiet && (
+                    {window?.top?.GlobalConfig?.Admin
+                      ?.chinhsachluongchitiet && (
                       <Dropdown.Item
                         href="#"
                         onClick={() => {
@@ -2404,28 +2455,11 @@ function CalendarPage(props) {
                     resourceLabelContent: ({ resource }) => {
                       return (
                         <div className="d-flex align-items-center flex-column">
-                          {/* <div
-                            className="p-1 border border-primary"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              borderRadius: "100%",
-                            }}
-                          >
-                            <div
-                              className="w-100 h-100 d-flex align-items-center justify-content-center text-uppercase text-primary"
-                              style={{
-                                borderRadius: "100%",
-                                background: "#e1f0ff",
-                                fontSize: "13px",
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {getLastFirst(resource._resource.title)}
-                            </div>
-                          </div> */}
                           <div className="capitalize title-staff">
                             {resource._resource.title}
+                            {resource.extendedProps?.isPush && (
+                              <span className="pl-1 text-sm text-danger">(*)</span>
+                            )}
                           </div>
                         </div>
                       );
