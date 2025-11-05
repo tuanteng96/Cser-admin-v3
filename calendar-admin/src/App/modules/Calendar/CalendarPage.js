@@ -1410,7 +1410,7 @@ function CalendarPage(props) {
         CurrentStockID,
         u_id_z4aDf2,
       });
-      //await queryClient.invalidateQueries({ queryKey: ["ListCalendarRooms"] });
+      await queryClient.invalidateQueries({ queryKey: ["ListCalendarRooms"] });
 
       let RootsMinutes = await CalendarCrud.getRootsMinutes();
 

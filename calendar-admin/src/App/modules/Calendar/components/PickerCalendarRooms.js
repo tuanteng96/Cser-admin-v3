@@ -166,6 +166,48 @@ const PickerCalendarRooms = forwardRef(
           data.books && Array.isArray(data.books)
             ? data.books
                 .map((item) => {
+                  let newItem = { ...item };
+
+                  newItem.UserServices = [];
+                  if (
+                    window?.top?.Info?.AllGroups &&
+                    window?.top?.Info?.AllGroups.length > 0
+                  ) {
+                    if (item.UserServiceIDs) {
+                      let UserServiceIDsSplit = item.UserServiceIDs.split(
+                        ","
+                      ).map((x) => Number(x));
+
+                      newItem.UserServices = window?.top?.Info?.AllGroups.flatMap(
+                        (g) => (Array.isArray(g.Users) ? g.Users : [])
+                      ) // gom tất cả user
+                        .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+                        .reduce((acc, user) => {
+                          // loại trừ trùng ID
+                          if (!acc.some((u) => u.ID === user.ID))
+                            acc.push(user);
+                          return acc;
+                        }, []);
+                    }
+
+                    if (newItem.UserID) {
+                      newItem.UserName = window?.top?.Info?.AllGroups.flatMap(
+                        (g) => (Array.isArray(g.Users) ? g.Users : [])
+                      ) // gom tất cả user
+                        .filter((u) => u.ID === newItem.UserID)
+                        .reduce((acc, user) => {
+                          // loại trừ trùng ID
+                          if (!acc.some((u) => u.ID === user.ID))
+                            acc.push(user);
+                          return acc;
+                        }, [])
+                        .map((u) => u.FullName)
+                        .toString();
+                    }
+                  }
+                  return newItem;
+                })
+                .map((item) => {
                   let TreatmentJson = item?.TreatmentJson
                     ? JSON.parse(item?.TreatmentJson)
                     : "";
@@ -860,7 +902,7 @@ const PickerCalendarRooms = forwardRef(
                                   //     item?.Books[0],
                                   //     onRefresh
                                   //   );
-                                  window.top.location.href = `/admin/?mdl=store&act=sell#mp:${item?.Books[0]?.os?.MemberID}`;
+                                  window.top.location.href = `/admin/?mdl=store&act=sell#mp:${item?.Book?.os?.MemberID}`;
                                 } else {
                                   setInitialValue(item?.Book);
                                   onOpenModal();
