@@ -91,10 +91,22 @@ function PickerExchangePoint({ children, MemberID, Points }) {
     let ratio = Math.floor(Point / PointT);
     let maximum = ratio * PointT;
 
+    let Desc = "";
+    if (getResultTranf(true)) {
+      Desc = `${getResultTranf(true)}. \n`;
+    }
+    if (values.Desc) {
+      if (Desc) {
+        Desc = `${Desc} Ghi chú: ${values.Desc}`;
+      } else {
+        Desc = values.Desc;
+      }
+    }
+
     let newValues = {
       ...values,
       Point: maximum || values.Point,
-      Desc: values.Desc + getResultTranf(true),
+      Desc,
     };
 
     changeMutation.mutate(

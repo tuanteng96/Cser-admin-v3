@@ -38,7 +38,7 @@ function PickerEditPoint({ children, data, MemberID }) {
         CreateDate: data.CreateDate,
         Desc: data.Desc,
         MemberID: data.MemberID,
-        Point: data.Point,
+        Point: Math.abs(data.Point),
         ID: data.ID,
       });
     }
