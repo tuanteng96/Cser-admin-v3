@@ -20,6 +20,7 @@ function Equally({ OrderInfo, onSubmit, loading }) {
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
   
   const getValueHH = ({ user, item, Type }) => {
+    
     if (typeof item.initialRose === "object") {
       if (
         item?.prodBonus?.BonusSaleLevels &&
@@ -46,17 +47,20 @@ function Equally({ OrderInfo, onSubmit, loading }) {
       item?.prodBonus?.BonusSaleLevels.some((x) => x.Salary) &&
       Type.value !== "KY_THUAT_VIEN"
     ) {
+      
       let { BonusSaleLevels } = item?.prodBonus;
       let index = BonusSaleLevels.findIndex((x) => x.Level === user.level);
       let Salary = 0;
       if (index > -1) {
         Salary = BonusSaleLevels[index].Salary;
       }
+      
       if (Salary < 100) {
         return Math.round(
           (item.gia_tri_thanh_toan_thuc_te * Salary * (user.Value / 100)) / 100
         );
       }
+        
       return Math.round(
         ((((item.gia_tri_thanh_toan_thuc_te * Salary) / item.ToPay) *
           user.Value) /

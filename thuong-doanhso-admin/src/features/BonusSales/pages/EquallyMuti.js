@@ -54,6 +54,7 @@ function EquallyMuti({ OrderInfo, onSubmit, loading }) {
           (item.gia_tri_thanh_toan_thuc_te * Salary * (user.Value / 100)) / 100
         );
       }
+      
       return Math.round(
         ((((item.gia_tri_thanh_toan_thuc_te * Salary) / item.ToPay) *
           user.Value) /

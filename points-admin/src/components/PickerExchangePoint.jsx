@@ -94,6 +94,7 @@ function PickerExchangePoint({ children, MemberID, Points }) {
     let newValues = {
       ...values,
       Point: maximum || values.Point,
+      Desc: values.Desc + getResultTranf(true),
     };
 
     changeMutation.mutate(
@@ -131,7 +132,7 @@ function PickerExchangePoint({ children, MemberID, Points }) {
 
   let { Point } = watch();
 
-  const getResultTranf = () => {
+  const getResultTranf = (byDesc = false) => {
     let { PointT, Value } = {
       PointT: PointConfig?.data?.Point || 0,
       Value: PointConfig?.data?.Value || 0,
@@ -139,6 +140,14 @@ function PickerExchangePoint({ children, MemberID, Points }) {
 
     let ratio = Math.floor(Point / PointT);
     let maximum = ratio * PointT;
+
+    if (byDesc) {
+      if (maximum < 1 || Point > Points) return "";
+
+      return `(Đổi ${maximum} điểm tương đương ${StringHelpers.formatVND(
+        ratio * Value
+      )} vào ví điện tử. Còn lại ${Points - maximum} điểm)`;
+    }
 
     if (maximum < 1 || Point > Points) return <></>;
 
