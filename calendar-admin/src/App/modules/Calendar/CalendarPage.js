@@ -2665,6 +2665,10 @@ function CalendarPage(props) {
                           ? `<i class="fas fa-home text-white font-size-xs"></i>`
                           : ""
                       } ${
+                        extendedProps?.Desc
+                          ? `<span class="text-[#ffeb3b]"><i class="fas fa-exclamation-triangle text-[#ffeb3b] font-size-xs"></i></span>`
+                          : ""
+                      } ${
                         extendedProps?.Star ? `(${extendedProps.Star})` : ""
                       } ${extendedProps?.MemberCurrent?.FullName ||
                         "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
@@ -2695,6 +2699,10 @@ function CalendarPage(props) {
                         ? `<i class="fas fa-home font-size-xs"></i>`
                         : ""
                     } ${
+                        extendedProps?.Desc
+                          ? `<span class="text-[#ffeb3b]"><i class="fas fa-exclamation-triangle text-[#ffeb3b] font-size-xs"></i></span>`
+                          : ""
+                      } ${
                         extendedProps?.Star ? `(${extendedProps.Star})` : ""
                       } ${extendedProps?.MemberCurrent.FullName ||
                         "Chưa xác định"}</span><span class="d-none d-md-inline"> - ${extendedProps
