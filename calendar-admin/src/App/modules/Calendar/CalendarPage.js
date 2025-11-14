@@ -2640,12 +2640,16 @@ function CalendarPage(props) {
                   italicEl.classList.add("fc-content");
 
                   let AmountPeople = 1;
+                  let newDesc = ""
                   if (extendedProps.Desc) {
                     let descSplit = extendedProps.Desc.split("\n");
                     for (let i of descSplit) {
                       if (i.includes("Số lượng khách:")) {
                         let SL = Number(i.match(/\d+/)[0]);
                         AmountPeople = Number(SL);
+                      }
+                      if (i.includes("Ghi chú:")) {
+                        newDesc = i.replaceAll("Ghi chú: ", "");
                       }
                     }
                   }
@@ -2665,7 +2669,7 @@ function CalendarPage(props) {
                           ? `<i class="fas fa-home text-white font-size-xs"></i>`
                           : ""
                       } ${
-                        extendedProps?.Desc
+                        newDesc
                           ? `<span class="text-[#ffeb3b]"><i class="fas fa-exclamation-triangle text-[#ffeb3b] font-size-xs"></i></span>`
                           : ""
                       } ${
@@ -2699,7 +2703,7 @@ function CalendarPage(props) {
                         ? `<i class="fas fa-home font-size-xs"></i>`
                         : ""
                     } ${
-                        extendedProps?.Desc
+                        newDesc
                           ? `<span class="text-[#ffeb3b]"><i class="fas fa-exclamation-triangle text-[#ffeb3b] font-size-xs"></i></span>`
                           : ""
                       } ${
