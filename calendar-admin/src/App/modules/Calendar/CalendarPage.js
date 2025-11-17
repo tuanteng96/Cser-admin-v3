@@ -264,6 +264,7 @@ function CalendarPage(props) {
 
   const calendarRef = useRef("");
   const CalendarRoomsRef = useRef(null);
+  const CalendarClassRef = useRef(null);
 
   const { isTelesales } = useContext(AppContext);
 
@@ -272,8 +273,11 @@ function CalendarPage(props) {
       if (GlobalConfig?.Admin?.PosActiveCalendar === "PickerCalendarRooms") {
         CalendarRoomsRef?.current?.open();
       }
+      if (GlobalConfig?.Admin?.PosActiveCalendar === "PickerCalendarClass") {
+        CalendarClassRef?.current?.open();
+      }
     }
-  }, [CalendarRoomsRef, GlobalConfig?.Admin?.PosActiveCalendar]);
+  }, [CalendarRoomsRef, CalendarClassRef, GlobalConfig?.Admin?.PosActiveCalendar]);
 
   useEffect(() => {
     if (topCalendar?.type?.value === "resourceTimeGridDay") {
@@ -2162,6 +2166,7 @@ function CalendarPage(props) {
                     <PickerCalendarClass
                       TimeOpen={TimeOpen}
                       TimeClose={TimeClose}
+                      ref={CalendarClassRef}
                     >
                       {(CalendarClass) => (
                         <PickerControlBookOnline>
