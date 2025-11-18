@@ -69,6 +69,7 @@ const BonusSales = () => {
       className: "btn btn-danger",
     },
   ]);
+  
   const [loading, setLoading] = useState({
     divided: false,
     advanced: false,
