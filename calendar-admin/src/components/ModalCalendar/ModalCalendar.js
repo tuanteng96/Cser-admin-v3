@@ -20,6 +20,7 @@ import SelectServiceBed from "../Select/SelectServiceBed/SelectServiceBed";
 import { useQuery } from "react-query";
 import { withAsyncPaginate, AsyncPaginate } from "react-select-async-paginate";
 import { useRoles } from "../../hooks/useRoles";
+import { ServiceOptionColor } from "./ServiceOptionColor";
 
 moment.locale("vi");
 
@@ -404,7 +405,7 @@ function ModalCalendar({
     const dataResult = lst.map((item) => ({
       ...item,
       value: item.ID,
-      label: item.Title,
+      label: item?.IsRootPublic ? item.Title : `${item.Title} (Ẩn)`,
     }));
     return {
       options: dataResult,
@@ -784,6 +785,7 @@ function ModalCalendar({
                           ? "Không có dịch vụ"
                           : "Không tìm thấy dịch vụ"
                       }
+                      components={{ Option: ServiceOptionColor }}
                     />
                     {window?.top?.GlobalConfig?.APP?.Booking?.AtHome && (
                       <div className="mt-3 d-flex align-items-center justify-content-between">

@@ -17,6 +17,7 @@ import "../../../_assets/sass/pages/_booking.scss";
 import SelectServiceBed from "../../../components/Select/SelectServiceBed/SelectServiceBed";
 import clsx from "clsx";
 import { useRoles } from "../../../hooks/useRoles";
+import { ServiceOptionColor } from "../../../components/ModalCalendar/ServiceOptionColor";
 
 moment.locale("vi");
 
@@ -201,8 +202,9 @@ function BookingPage() {
     };
     const { lst } = await CalendarCrud.getRootServices(filters);
     const dataResult = lst.map((item) => ({
+      ...item,
       value: item.ID,
-      label: item.Title,
+      label: item?.IsRootPublic ? item.Title : `${item.Title} (Ẩn)`,
     }));
     return {
       options: dataResult,
@@ -825,6 +827,7 @@ function BookingPage() {
                         ? "Không có dịch vụ"
                         : "Không tìm thấy dịch vụ"
                     }
+                    components={{ Option: ServiceOptionColor }}
                   />
                   {window?.top?.GlobalConfig?.APP?.Booking?.AtHome && (
                     <div className="mt-3 d-flex align-items-center justify-content-between">

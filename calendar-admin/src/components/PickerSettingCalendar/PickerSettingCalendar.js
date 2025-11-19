@@ -6,6 +6,7 @@ import AsyncSelect from "react-select/async";
 import CalendarCrud from "../../App/modules/Calendar/_redux/CalendarCrud";
 import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
+import { ServiceOptionColor } from "../ModalCalendar/ServiceOptionColor";
 
 function PickerSettingCalendar({ children, SettingCalendar }) {
   const queryClient = useQueryClient();
@@ -32,20 +33,22 @@ function PickerSettingCalendar({ children, SettingCalendar }) {
     setVisible(false);
   };
 
-  const loadOptionsServices = (inputValue, callback) => {
+  const loadOptionsServices = async (inputValue) => {
     const filters = {
       Key: inputValue,
       StockID: 0,
       MemberID: "",
     };
-    setTimeout(async () => {
-      const { lst } = await CalendarCrud.getRootServices(filters);
-      const dataResult = lst.map((item) => ({
-        value: item.ID,
-        label: item.Title,
-      }));
-      callback(dataResult);
-    }, 300);
+    const { lst } = await CalendarCrud.getRootServices(filters);
+    const dataResult = lst.map((item) => ({
+      ...item,
+      value: item.ID,
+      label: item?.IsRootPublic ? item.Title : `${item.Title} (Ẩn)`,
+    }));
+    return {
+      options: dataResult,
+      hasMore: false,
+    };
   };
 
   const updateMutation = useMutation({
@@ -168,15 +171,14 @@ function PickerSettingCalendar({ children, SettingCalendar }) {
                               name="OriginalServices"
                               placeholder="Chọn dịch vụ"
                               cacheOptions
-                              loadOptions={(v, callback) =>
-                                loadOptionsServices(v, callback)
-                              }
+                              loadOptions={(v) => loadOptionsServices(v)}
                               defaultOptions
                               noOptionsMessage={({ inputValue }) =>
                                 !inputValue
                                   ? "Không có dịch vụ"
                                   : "Không tìm thấy dịch vụ"
                               }
+                              components={{ Option: ServiceOptionColor }}
                             />
                           </>
                         )}

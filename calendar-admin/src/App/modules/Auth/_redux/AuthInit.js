@@ -182,6 +182,7 @@ function AuthInit({ isConfig, children }) {
             SL_khach: true,
           },
           Admin: {
+            dat_lich_hien_dv_an: true,
             toi_uu_bang_lich: false,
             dat_lich_tag: false,
             MasExportExcel: true,

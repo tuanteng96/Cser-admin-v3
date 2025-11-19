@@ -68,7 +68,7 @@ const getStaffsFull = ({ StockID, key = "", All }) => {
 
 const getRootServices = ({ MemberID, StockID, Key }) => {
   return axiosClient.get(
-    `${GET_ROOT_SERVICES_URL}?cmd=getroot&memberid=${MemberID}&ps=15&pi=1&key=${Key}&stockid=${StockID}`
+    `${GET_ROOT_SERVICES_URL}?cmd=getroot&memberid=${MemberID}&ps=15&pi=1&key=${Key}&stockid=${StockID}${window?.top?.GlobalConfig?.Admin?.dat_lich_hien_dv_an ? "&isrootpublic=-1" : ""}`
   );
 };
 const getCardServices = ({ Key }) => {

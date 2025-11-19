@@ -19,6 +19,7 @@ import { NumericFormat } from "react-number-format";
 import clsx from "clsx";
 import SelectServiceBed from "../Select/SelectServiceBed/SelectServiceBed";
 import { useRoles } from "../../hooks/useRoles";
+import { ServiceOptionColor } from "./ServiceOptionColor";
 moment.locale("vi");
 
 ModalMassageCalendar.propTypes = {
@@ -264,20 +265,22 @@ function ModalMassageCalendar({
     }, 300);
   };
 
-  const loadOptionsServices = (inputValue, callback, stockID, MemberID) => {
+  const loadOptionsServices = async (inputValue, stockID, MemberID) => {
     const filters = {
       Key: inputValue,
       StockID: stockID,
       MemberID: MemberID?.value || "",
     };
-    setTimeout(async () => {
-      const { lst } = await CalendarCrud.getRootServices(filters);
-      const dataResult = lst.map((item) => ({
-        value: item.ID,
-        label: item.Title,
-      }));
-      callback(dataResult);
-    }, 300);
+    const { lst } = await CalendarCrud.getRootServices(filters);
+    const dataResult = lst.map((item) => ({
+      ...item,
+      value: item.ID,
+      label: item?.IsRootPublic ? item.Title : `${item.Title} (Ẩn)`,
+    }));
+    return {
+      options: dataResult,
+      hasMore: false,
+    };
   };
 
   const getTitleModal = (Status, formikProps) => {
@@ -636,13 +639,8 @@ function ModalMassageCalendar({
                       name="RootIdS"
                       placeholder="Chọn dịch vụ"
                       cacheOptions
-                      loadOptions={(v, callback) =>
-                        loadOptionsServices(
-                          v,
-                          callback,
-                          values.StockID,
-                          values.MemberID
-                        )
+                      loadOptions={(v) =>
+                        loadOptionsServices(v, values.StockID, values.MemberID)
                       }
                       defaultOptions
                       noOptionsMessage={({ inputValue }) =>
@@ -650,6 +648,7 @@ function ModalMassageCalendar({
                           ? "Không có dịch vụ"
                           : "Không tìm thấy dịch vụ"
                       }
+                      components={{ Option: ServiceOptionColor }}
                     />
                     {window?.top?.GlobalConfig?.APP?.Booking?.AtHome && (
                       <div className="mt-3 d-flex align-items-center justify-content-between">
