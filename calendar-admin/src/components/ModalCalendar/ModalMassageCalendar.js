@@ -2,7 +2,6 @@ import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import Select, { components } from "react-select";
 import AsyncCreatableSelect from "react-select/async-creatable";
-import AsyncSelect from "react-select/async";
 import { Dropdown, Modal } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import { Form, Formik } from "formik";
@@ -20,6 +19,7 @@ import clsx from "clsx";
 import SelectServiceBed from "../Select/SelectServiceBed/SelectServiceBed";
 import { useRoles } from "../../hooks/useRoles";
 import { ServiceOptionColor } from "./ServiceOptionColor";
+import { AsyncPaginate } from "react-select-async-paginate";
 moment.locale("vi");
 
 ModalMassageCalendar.propTypes = {
@@ -615,7 +615,7 @@ function ModalMassageCalendar({
                   </div>
                   <div className="px-6 pt-3 mb-3 form-group form-group-ezs border-top">
                     <label className="mb-1 d-none d-md-block">Dịch vụ</label>
-                    <AsyncSelect
+                    <AsyncPaginate
                       key={`${
                         values.MemberID && values.MemberID.value
                           ? values.MemberID.value

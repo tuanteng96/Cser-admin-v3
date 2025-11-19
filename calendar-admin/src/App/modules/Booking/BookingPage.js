@@ -795,7 +795,6 @@ function BookingPage() {
                 <div className="px-6 pt-3 form-group form-group-ezs border-top">
                   <label className="mb-1">Dịch vụ</label>
                   <AsyncPaginate
-                    debounceTimeout={500}
                     key={`${
                       values.MemberID && values.MemberID.value
                         ? values.MemberID.value

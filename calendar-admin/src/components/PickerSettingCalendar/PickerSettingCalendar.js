@@ -2,11 +2,11 @@ import { FieldArray, Form, Formik } from "formik";
 import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import CreatableSelect from "react-select/creatable";
-import AsyncSelect from "react-select/async";
 import CalendarCrud from "../../App/modules/Calendar/_redux/CalendarCrud";
 import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import { ServiceOptionColor } from "../ModalCalendar/ServiceOptionColor";
+import { AsyncPaginate } from "react-select-async-paginate";
 
 function PickerSettingCalendar({ children, SettingCalendar }) {
   const queryClient = useQueryClient();
@@ -146,7 +146,7 @@ function PickerSettingCalendar({ children, SettingCalendar }) {
                         name="OriginalServices"
                         render={(arrayHelpers) => (
                           <>
-                            <AsyncSelect
+                            <AsyncPaginate
                               menuPosition="fixed"
                               isMulti
                               className={`select-control`}
