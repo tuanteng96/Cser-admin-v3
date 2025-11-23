@@ -818,9 +818,13 @@ function CalendarMassagePage(props) {
         Member: {
           ID: Members?.ID || Members?.value || "",
           FullName:
-            values?.FullName || Members?.FullName || Members?.label || "",
+            Members?.suffix === "0000000000"
+              ? values?.FullName || ""
+              : Members?.FullName || Members?.label || "",
           MobilePhone:
-            values?.Phone || Members?.MobilePhone || Members?.suffix || "",
+            Members?.suffix === "0000000000"
+              ? values?.Phone || ""
+              : Members?.MobilePhone || Members?.suffix || "",
         },
         Roots: values.RootIdS
           ? values.RootIdS.map((item) => ({
@@ -1065,9 +1069,13 @@ function CalendarMassagePage(props) {
         Member: {
           ID: Members?.ID || Members?.value || "",
           FullName:
-            values?.FullName || Members?.FullName || Members?.label || "",
+            Members?.suffix === "0000000000"
+              ? values?.FullName || ""
+              : Members?.FullName || Members?.label || "",
           MobilePhone:
-            values?.Phone || Members?.MobilePhone || Members?.suffix || "",
+            Members?.suffix === "0000000000"
+              ? values?.Phone || ""
+              : Members?.MobilePhone || Members?.suffix || "",
         },
         Roots: values.RootIdS
           ? values.RootIdS.map((item) => ({
@@ -1308,9 +1316,13 @@ function CalendarMassagePage(props) {
         Member: {
           ID: Members?.ID || Members?.value || "",
           FullName:
-            Members?.FullName || values?.FullName || Members?.label || "",
+            Members?.suffix === "0000000000"
+              ? values?.FullName || ""
+              : Members?.FullName || Members?.label || "",
           MobilePhone:
-            Members?.MobilePhone || values?.Phone || Members?.suffix || "",
+            Members?.suffix === "0000000000"
+              ? values?.Phone || ""
+              : Members?.MobilePhone || Members?.suffix || "",
         },
         Roots:
           values.RootIdS && values.RootIdS.length > 0
@@ -1400,7 +1412,7 @@ function CalendarMassagePage(props) {
         isBtnFinish: false,
       }));
       onHideModal();
-      
+
       ListCalendars.refetch();
     } catch (error) {
       setBtnLoading((prevState) => ({

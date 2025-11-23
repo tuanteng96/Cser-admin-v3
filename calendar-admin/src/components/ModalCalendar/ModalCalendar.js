@@ -177,6 +177,8 @@ function ModalCalendar({
           }
         }
 
+        let UserName = "";
+
         if (
           window?.top?.Info?.AllGroups &&
           window?.top?.Info?.AllGroups.length > 0
@@ -184,19 +186,28 @@ function ModalCalendar({
           let UserServiceIDsSplit = rs.UserServiceIDs
             ? rs.UserServiceIDs.split(",").map((x) => Number(x))
             : [];
-          if (
-            window?.top?.Info?.AllGroups &&
-            window?.top?.Info?.AllGroups.length > 0
-          ) {
-            UserServices = window?.top?.Info?.AllGroups.flatMap((g) =>
+          UserServices = window?.top?.Info?.AllGroups.flatMap((g) =>
+            Array.isArray(g.Users) ? g.Users : []
+          ) // gom tất cả user
+            .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+            .reduce((acc, user) => {
+              // loại trừ trùng ID
+              if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
+              return acc;
+            }, []);
+
+          if (rs.UserID) {
+            UserName = window?.top?.Info?.AllGroups.flatMap((g) =>
               Array.isArray(g.Users) ? g.Users : []
             ) // gom tất cả user
-              .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+              .filter((u) => u.ID === rs.UserID)
               .reduce((acc, user) => {
                 // loại trừ trùng ID
                 if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
                 return acc;
-              }, []);
+              }, [])
+              .map((u) => u.FullName)
+              .toString();
           }
         }
 
@@ -239,6 +250,7 @@ function ModalCalendar({
           TagSetting,
           TreatmentJson: rs?.TreatmentJson ? JSON.parse(rs?.TreatmentJson) : "",
           History: rs?.HistoryJSON ? JSON.parse(rs?.HistoryJSON) : "",
+          UserName,
         }));
       } else {
         onHide();
@@ -929,6 +941,7 @@ function ModalCalendar({
                       onBlur={handleBlur}
                     ></textarea>
                   </div>
+
                   {values?.ID && (
                     <div className="px-6 pt-3 mb-3 form-group form-group-ezs border-top d-flex">
                       <div className="flex-1">

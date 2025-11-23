@@ -277,7 +277,11 @@ function CalendarPage(props) {
         CalendarClassRef?.current?.open();
       }
     }
-  }, [CalendarRoomsRef, CalendarClassRef, GlobalConfig?.Admin?.PosActiveCalendar]);
+  }, [
+    CalendarRoomsRef,
+    CalendarClassRef,
+    GlobalConfig?.Admin?.PosActiveCalendar,
+  ]);
 
   useEffect(() => {
     if (topCalendar?.type?.value === "resourceTimeGridDay") {
@@ -660,6 +664,7 @@ function CalendarPage(props) {
   };
 
   const onSubmitBooking = async (values) => {
+    
     setBtnLoading((prevState) => ({
       ...prevState,
       isBtnBooking: true,
@@ -782,9 +787,13 @@ function CalendarPage(props) {
         Member: {
           ID: Members?.ID || Members?.value || "",
           FullName:
-            values?.FullName || Members?.FullName || Members?.label || "",
+            Members?.suffix === "0000000000"
+              ? values?.FullName || ""
+              : Members?.FullName || Members?.label || "",
           MobilePhone:
-            values?.Phone || Members?.MobilePhone || Members?.suffix || "",
+            Members?.suffix === "0000000000"
+              ? values?.Phone || ""
+              : Members?.MobilePhone || Members?.suffix || "",
         },
         Roots: values.RootIdS
           ? values.RootIdS.map((item) => ({
@@ -793,7 +802,6 @@ function CalendarPage(props) {
             }))
           : null,
       };
-
       const dataPost = {
         booking: [objBooking],
       };
@@ -1137,9 +1145,13 @@ function CalendarPage(props) {
         Member: {
           ID: Members?.ID || Members?.value || "",
           FullName:
-            Members?.FullName || values?.FullName || Members?.label || "",
+            Members?.suffix === "0000000000"
+              ? values?.FullName || ""
+              : Members?.FullName || Members?.label || "",
           MobilePhone:
-            Members?.MobilePhone || values?.Phone || Members?.suffix || "",
+            Members?.suffix === "0000000000"
+              ? values?.Phone || ""
+              : Members?.MobilePhone || Members?.suffix || "",
         },
         Roots:
           values.RootIdS && values.RootIdS.length > 0
@@ -2148,7 +2160,7 @@ function CalendarPage(props) {
                               .toDate(),
                           }));
                         }
-                        
+
                         if (Staffs?.data?.some((x) => x.isPush)) {
                           Staffs.refetch();
                         }
@@ -2645,7 +2657,7 @@ function CalendarPage(props) {
                   italicEl.classList.add("fc-content");
 
                   let AmountPeople = 1;
-                  let newDesc = ""
+                  let newDesc = "";
                   if (extendedProps.Desc) {
                     let descSplit = extendedProps.Desc.split("\n");
                     for (let i of descSplit) {
