@@ -664,7 +664,6 @@ function CalendarPage(props) {
   };
 
   const onSubmitBooking = async (values) => {
-    
     setBtnLoading((prevState) => ({
       ...prevState,
       isBtnBooking: true,
@@ -1453,7 +1452,10 @@ function CalendarPage(props) {
           booking: {
             ...values,
             MemberID: values.MemberID.value,
-            RootIdS: values.RootIdS.map((item) => item.value).toString(),
+            RootIdS:
+              values.RootIdS && values.RootIdS.length > 0
+                ? values.RootIdS.map((item) => item.value).toString()
+                : "",
             Roots: values.RootIdS,
             UserServiceIDs:
               values.UserServiceIDs && values.UserServiceIDs.length > 0

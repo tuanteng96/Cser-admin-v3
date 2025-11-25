@@ -6,7 +6,7 @@ import { setConfig } from "./jsonSlice";
 import { setInfo } from "./authSlice";
 
 function checkInfo(fn) {
-  if (window.top.token && window.top.Info && window.top.GlobalConfig) {
+  if (window.top.Info && window.top.GlobalConfig) {
     fn();
   } else {
     setTimeout(() => {

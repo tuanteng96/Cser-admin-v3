@@ -216,10 +216,19 @@ function ModalCalendar({
           ID: rs.ID,
           MemberID: rs?.Member
             ? {
-                label: rs.Member.FullName,
-                text: rs.FullName || rs.Member.FullName,
+                label:
+                  rs?.MobilePhone === "0000000000"
+                    ? rs.FullName
+                    : rs.Member.FullName,
+                text:
+                  rs?.MobilePhone === "0000000000"
+                    ? rs.FullName
+                    : rs.Member.FullName,
                 value: rs.Member.ID,
-                suffix: rs.Phone || rs.Member.MobilePhone,
+                suffix:
+                  rs?.MobilePhone === "0000000000"
+                    ? rs.Phone
+                    : rs.Member.MobilePhone,
               }
             : null,
           FullName: rs?.FullName || "",
@@ -315,10 +324,19 @@ function ModalCalendar({
           ...prevState,
           ID: initialValue.ID,
           MemberID: {
-            label: initialValue.Member.FullName,
-            text: initialValue.FullName || initialValue.Member.FullName,
+            label:
+              initialValue?.Member?.MobilePhone === "0000000000"
+                ? initialValue.FullName
+                : initialValue.Member.FullName,
+            text:
+              initialValue?.Member?.MobilePhone === "0000000000"
+                ? initialValue.FullName
+                : initialValue.Member.FullName,
             value: initialValue.Member.ID,
-            suffix: initialValue.Phone || initialValue.Member.MobilePhone,
+            suffix:
+              initialValue?.Member?.MobilePhone === "0000000000"
+                ? initialValue.Phone
+                : initialValue.Member.MobilePhone,
           },
           FullName: initialValue?.FullName || "",
           Phone: initialValue?.Phone || "",
