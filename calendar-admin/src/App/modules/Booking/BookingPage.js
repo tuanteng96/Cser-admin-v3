@@ -507,7 +507,10 @@ function BookingPage() {
           : null,
       },
       MemberID: values.MemberID.value,
-      RootIdS: values.RootIdS && values.RootIdS.length > 0 ? values.RootIdS.map((item) => item.value).toString() : "",
+      RootIdS:
+        values.RootIdS && values.RootIdS.length > 0
+          ? values.RootIdS.map((item) => item.value).toString()
+          : "",
       Roots: values.RootIdS,
       UserServiceIDs:
         values.UserServiceIDs && values.UserServiceIDs.length > 0
@@ -737,7 +740,7 @@ function BookingPage() {
                     Thời gian / Cơ sở
                   </label>
                   <DatePicker
-                    minDate={(adminTools_byStock?.hasRight || Book.ID) ? null : new Date()}
+                    minDate={adminTools_byStock?.hasRight ? null : new Date()}
                     minTime={
                       new Date(
                         new Date().setHours(
