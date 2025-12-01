@@ -718,7 +718,7 @@ function ModalCalendar({
                     </span> */}
                     </label>
                     <DatePicker
-                      minDate={adminTools_byStock?.hasRight ? null : new Date()}
+                      minDate={(adminTools_byStock?.hasRight || initialValue?.ID) ? null : new Date()}
                       minTime={
                         new Date(
                           new Date().setHours(

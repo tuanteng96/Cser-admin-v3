@@ -737,7 +737,7 @@ function BookingPage() {
                     Thời gian / Cơ sở
                   </label>
                   <DatePicker
-                    minDate={adminTools_byStock?.hasRight ? null : new Date()}
+                    minDate={(adminTools_byStock?.hasRight || Book.ID) ? null : new Date()}
                     minTime={
                       new Date(
                         new Date().setHours(
