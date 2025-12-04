@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -38,6 +38,8 @@ import {
   PickerControlBookOnline,
   PickerSettingBookOnline,
 } from "./components";
+import { useRoles } from "../../../hooks/useRoles";
+import { setCrStockID } from "../Auth/_redux/authSlice";
 
 moment.locale("vi");
 
@@ -143,6 +145,7 @@ const getStatusClss = (Status, item) => {
 
 function CalendarPage(props) {
   const queryClient = useQueryClient();
+  const dispatch = useDispatch();
 
   const {
     AuthCrStockID,
@@ -154,7 +157,11 @@ function CalendarPage(props) {
     SettingBookOnline,
     lop_hoc_pt,
     GlobalConfig,
+    isQLDL,
   } = useSelector(({ Auth, JsonConfig }) => ({
+    isQLDL: Auth?.Groups?.some(
+      (x) => x.Title.toUpperCase() === "QUẢN LÝ ĐẶT LỊCH"
+    ),
     AuthCrStockID: Auth.CrStockID,
     StocksList: Auth?.Stocks.filter((x) => x.ParentID !== 0),
     GTimeOpen: JsonConfig?.APP?.Working?.TimeOpen || "00:00:00",
@@ -173,6 +180,10 @@ function CalendarPage(props) {
       : [],
   }));
 
+  let { pos_mng_pos_mng } = useRoles(["pos_mng_pos_mng"], {
+    ID: AuthCrStockID,
+  });
+  
   let optionsCalendar = [
     {
       value: "dayGridMonth",
@@ -221,9 +232,13 @@ function CalendarPage(props) {
       "XAC_NHAN",
       "XAC_NHAN_TU_DONG",
       "CHUA_XAC_NHAN",
-      ...(!GlobalConfig?.Admin?.isAdminBooks ? ["DANG_THUC_HIEN"] : []),
+      ...(!GlobalConfig?.Admin?.isAdminBooks && !isQLDL
+        ? ["DANG_THUC_HIEN"]
+        : []),
       ...(GlobalConfig?.Admin?.PosStatus
-        ? [...GlobalConfig?.Admin?.PosStatus]
+        ? [...GlobalConfig?.Admin?.PosStatus].filter((x) =>
+            isQLDL ? x !== "DANG_THUC_HIEN" && x !== "THUC_HIEN_XONG" : true
+          )
         : []),
       // "THUC_HIEN_XONG",
     ],
@@ -294,7 +309,7 @@ function CalendarPage(props) {
                 "XAC_NHAN",
                 "XAC_NHAN_TU_DONG",
                 "CHUA_XAC_NHAN",
-                ...(!GlobalConfig?.Admin?.isAdminBooks
+                ...(!GlobalConfig?.Admin?.isAdminBooks && !isQLDL
                   ? ["DANG_THUC_HIEN"]
                   : []),
                 ...(GlobalConfig?.Admin?.PosStatus
@@ -2174,7 +2189,35 @@ function CalendarPage(props) {
                 </div>
               </div>
 
-              <div className="flex">
+              <div className="flex gap-[8px]">
+                {isQLDL && (
+                  <Select
+                    placeholder="Chọn cơ sở"
+                    options={pos_mng_pos_mng?.StockRoles || []}
+                    value={pos_mng_pos_mng?.StockRoles?.filter(
+                      (x) => x.ID === Number(AuthCrStockID)
+                    )}
+                    onChange={(val) => {
+                      dispatch(
+                        setCrStockID({
+                          CrStockID: val?.value,
+                        })
+                      );
+                    }}
+                    menuPosition="fixed"
+                    styles={{
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999,
+                      }),
+                    }}
+                    menuPortalTarget={document.body}
+                    isClearable={false}
+                    className="select-control w-[165px] md:w-[230px] select-control-solid font-medium"
+                    classNamePrefix="select"
+                  />
+                )}
+
                 <PickerCareSchedule>
                   {(CareSchedule) => (
                     <PickerCalendarClass
@@ -2258,7 +2301,7 @@ function CalendarPage(props) {
                   )}
                 </PickerCareSchedule>
 
-                <Dropdown className="w-auto ml-[8px]">
+                <Dropdown className="w-auto">
                   <Dropdown.Toggle className="!bg-[#ede7fe] hover:!bg-[#8561f9] !border-0 h-[40px] px-10px w-100 hide-icon-after no-after group">
                     <i className="fa-light fa-gear pr-0 text-[15px] !text-[#8561f9] group-hover:!text-white"></i>
                   </Dropdown.Toggle>

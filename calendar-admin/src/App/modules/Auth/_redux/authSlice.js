@@ -10,10 +10,16 @@ export const authSlice = createSlice({
         ...payload,
       };
     },
+    setCrStockID: (state, { payload }) => {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setInfo } = authSlice.actions;
+export const { setInfo, setCrStockID } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -42,6 +42,11 @@ function AuthInit({ isConfig, children }) {
               ],
             },
           ],
+          Groups: [
+            {
+              Title: "Quản lý đặt lịch",
+            },
+          ],
           User: {
             FullName: "Admin System",
             UserName: "admin",
@@ -56,29 +61,44 @@ function AuthInit({ isConfig, children }) {
             {
               ID: 11620,
               Title: "Cser Hà Nội",
-              KeySEO:
-                "{T2;08:00;18:00;30}{T3;08:00;18:00;30}{T4;08:00;18:00;30}{T5;08:00;18:00;30}{T6;08:00;18:00;30}{T7;08:00;18:00;30}{CN;08:00;18:00;30}",
-              ParentID: 778,
             },
             {
-              ID: 11542,
+              ID: 11621,
               Title: "Cser Hồ Chí Minh",
-              KeySEO: "",
-              ParentID: 778,
+            },
+            {
+              ID: 11623,
+              Title: "11622.Cser Đà Nẵng",
+            },
+            {
+              ID: 11625,
+              Title: "Cơ sở A",
+            },
+            {
+              ID: 11626,
+              Title: "Cơ sở B",
             },
           ],
           StockRights: [
             {
-              ID: 11520,
+              ID: 11620,
               Title: "Cser Hà Nội",
-              KeySEO: "[18:20;20:20]{T6;10:20;18:30}{CN;10:20;18:30}",
-              ParentID: 778,
             },
             {
-              ID: 11542,
+              ID: 11621,
               Title: "Cser Hồ Chí Minh",
-              KeySEO: "",
-              ParentID: 778,
+            },
+            {
+              ID: 11623,
+              Title: "11622.Cser Đà Nẵng",
+            },
+            {
+              ID: 11625,
+              Title: "Cơ sở A",
+            },
+            {
+              ID: 11626,
+              Title: "Cơ sở B",
             },
           ],
           CrStockID: 11620, //8975
@@ -140,6 +160,8 @@ function AuthInit({ isConfig, children }) {
               IsAllStock: false,
             },
           },
+          token:
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjExMjQ2MTAxMDE5MDAwMDEiLCJuYmYiOjE3NjQ4MjY4NzgsImV4cCI6MTg1MTIyNjg3OCwiaWF0IjoxNzY0ODI2ODc4fQ.0r3tzR4b63LDmlxGJnYGCEtsNB5ZoegxKcJAHIkS8LM",
           rightTree: {
             groups: [
               {
@@ -168,10 +190,50 @@ function AuthInit({ isConfig, children }) {
                   },
                 ],
               },
+              {
+                group: "Phần mềm",
+                rights: [
+                  {
+                    IsAllStock: true,
+                    hasRight: true,
+                    name: "pos_mng",
+                    subs: [
+                      {
+                        IsAllStock: true,
+                        hasRight: true,
+                        name: "pos_mng",
+                        name_and_group: "pos_mng_pos_mng",
+                        stocks: "",
+                        text: "Pos quản lý",
+                        stocksList: [
+                          {
+                            ID: 11620,
+                            Title: "Cser Hà Nội",
+                          },
+                          {
+                            ID: 11621,
+                            Title: "Cser Hồ Chí Minh",
+                          },
+                          {
+                            ID: 11623,
+                            Title: "11622.Cser Đà Nẵng",
+                          },
+                          {
+                            ID: 11625,
+                            Title: "Cơ sở A",
+                          },
+                          {
+                            ID: 11626,
+                            Title: "Cơ sở B",
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
             ],
           },
-          token:
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjExMjQ2MTAxMDE5MDAwMDEiLCJuYmYiOjE3NjM0NzgxMTUsImV4cCI6MTg0OTg3ODExNSwiaWF0IjoxNzYzNDc4MTE1fQ.Z4XhCFtoSu2qSlndkTvjbHavH2D3r90EaYe-jRGzkgw',
         };
         window.GlobalConfig = {
           APP: {

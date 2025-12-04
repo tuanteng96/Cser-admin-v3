@@ -13,7 +13,7 @@ const formatArray = {
     let response = null;
     let findNameItem = (tree) => {
       let result = null;
-      if (tree.name === name) {
+      if (tree.name === name || tree?.name_and_group === name) {
         return tree;
       }
 
@@ -106,10 +106,11 @@ const getHasRole = (Roles, CrStocks) => {
   };
 };
 
-export const useRoles = (nameRoles) => {
+export const useRoles = (nameRoles, CrStocks = window?.top?.Info?.CrStocks) => {
+  
   const isMultiple = Array.isArray(nameRoles);
-  const { rightTree, CrStocks } = window?.top?.Info;
-
+  const { rightTree } = window?.top?.Info;
+  
   let result = {};
 
   const { hasRoles } = hasRolesAuth(rightTree);
