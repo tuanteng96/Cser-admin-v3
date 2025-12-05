@@ -13,7 +13,7 @@ const ValueChangeListener = () => {
   return null;
 };
 
-function CheckInFilter({ onSubmit, initialValues }) {
+function CheckInFilter({ onSubmit, initialValues, loading }) {
   return (
     <Formik
       initialValues={initialValues}

@@ -46,5 +46,6 @@ const worksheetApi = {
   updateLatLng: body =>
     http.post(`/api/v3/cate25@UpdateLatLng`, JSON.stringify(body)),
   resetPwd: body => http.post(`/api/v3/User24@ResetPwd`, JSON.stringify(body)),
+  getRoster: body => http.post(`/api/v4/roster@get`, JSON.stringify(body))
 }
 export default worksheetApi

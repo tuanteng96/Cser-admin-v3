@@ -70,33 +70,49 @@ function AuthInit(props) {
               ParentID: 0
             },
             {
-              ID: 11593,
+              ID: 11620,
               Title: 'Cser Hà Nội'
             },
             {
-              ID: 11594,
+              ID: 11621,
               Title: 'Cser Hồ Chí Minh'
             },
             {
-              ID: 11595,
-              Title: 'Cser Đà nẵng'
+              ID: 11623,
+              Title: '11622.Cser Đà Nẵng'
+            },
+            {
+              ID: 11625,
+              Title: 'Cơ sở A'
+            },
+            {
+              ID: 11626,
+              Title: 'Cơ sở B'
             }
           ],
           StockRights: [
             {
-              ID: 11593,
+              ID: 11620,
               Title: 'Cser Hà Nội'
             },
             {
-              ID: 11594,
+              ID: 11621,
               Title: 'Cser Hồ Chí Minh'
             },
             {
-              ID: 11595,
-              Title: 'Cser Đà nẵng'
+              ID: 11623,
+              Title: '11622.Cser Đà Nẵng'
+            },
+            {
+              ID: 11625,
+              Title: 'Cơ sở A'
+            },
+            {
+              ID: 11626,
+              Title: 'Cơ sở B'
             }
           ],
-          CrStockID: 11593, //8975
+          CrStockID: 11620, //8975
           rightsSum: {
             cong_ca: {
               hasRight: true,
@@ -152,7 +168,7 @@ function AuthInit(props) {
                         text: 'Công ca',
                         stocksList: [
                           {
-                            ID: 11593,
+                            ID: 11620,
                             Title: 'Cser Hà Nội'
                           },
                           {
@@ -173,8 +189,11 @@ function AuthInit(props) {
           }
         }
         window.token =
-          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjE5ODExMjA1NjYiLCJuYmYiOjE3NTQ4OTY4NjQsImV4cCI6MTg0MTI5Njg2NCwiaWF0IjoxNzU0ODk2ODY0fQ.dkHZyNDoB5suWCPi-uqMMZB_g5H5jGpphOdTdA8UuCU'
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjExMjQ2MTAxMDE5MDAwMDEiLCJuYmYiOjE3NjQ5MDIwMTQsImV4cCI6MTg1MTMwMjAxNCwiaWF0IjoxNzY0OTAyMDE0fQ.6CfqMi94GFG-sVBYZW8SA5U3Abd_9UnDu61n2kSKwvQ'
         window.GlobalConfig = {
+          Admin: {
+            roster: true
+          },
           APP: {
             Working: {
               TimeClose: '21:00:00',

@@ -40,6 +40,7 @@ function CheckInPage(props) {
 
   useEffect(() => {
     if (CrStockID) {
+      if (loading) return;
       dispatch(CheckIn(CrStockID));
     }
   }, [dispatch, CrStockID]);
@@ -50,6 +51,7 @@ function CheckInPage(props) {
 
   window.top.UpdateSideBarCheckIn = () => {
     window.ResetForm && window.ResetForm();
+    if (loading) return;
     dispatch(CheckIn(CrStockID));
   };
 
@@ -90,6 +92,7 @@ function CheckInPage(props) {
           <CheckInFilter
             onSubmit={(values) => onFilter(values)}
             initialValues={initialValues}
+            loading={loading}
           />
         </div>
       </div>

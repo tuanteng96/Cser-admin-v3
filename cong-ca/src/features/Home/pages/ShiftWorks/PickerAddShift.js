@@ -35,7 +35,7 @@ function PickerAddShift({ children, onSubmit, Title }) {
   const onHide = () => {
     setVisible(false)
   }
-  
+
   return (
     <>
       {children({
@@ -57,7 +57,8 @@ function PickerAddShift({ children, onSubmit, Title }) {
         >
           {formikProps => {
             // errors, touched, handleChange, handleBlur
-            const { handleChange, handleBlur, errors, touched, values } = formikProps
+            const { handleChange, handleBlur, errors, touched, values } =
+              formikProps
             return (
               <Form className="h-100 card" autoComplete="off">
                 <Modal.Header closeButton>

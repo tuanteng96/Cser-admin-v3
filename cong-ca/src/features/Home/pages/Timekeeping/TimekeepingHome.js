@@ -46,6 +46,7 @@ import ExcelHepers from 'src/helpers/ExcelHepers'
 import PickerRatio from './components/PickerRatio'
 import useFirebase from 'src/hooks/useFirebase'
 import { ref, onValue, off, remove } from 'firebase/database'
+import PickerAutoMarkOffday from './components/PickerAutoMarkOffday'
 
 moment.locale('vi')
 
@@ -1934,6 +1935,22 @@ function TimekeepingHome(props) {
                   />
                 </div>
                 <div className="gap-2 card-footer d-flex justify-content-end align-items-center">
+                  {window.top?.GlobalConfig?.Admin?.roster && (
+                    <PickerAutoMarkOffday filters={filters} refetch={refetch}>
+                      {({ open }) => (
+                        <button
+                          onClick={open}
+                          type="button"
+                          className={clsx(
+                            'bg-[#ecf1f6] fw-500 border-0 h-[39px] rounded w-[42px]'
+                          )}
+                        >
+                          <i className="fal fa-clipboard-list-check text-[18px]"></i>
+                        </button>
+                      )}
+                    </PickerAutoMarkOffday>
+                  )}
+
                   {adminTools_byStock?.hasRight && (
                     <PickerRatio
                       filters={filters}
