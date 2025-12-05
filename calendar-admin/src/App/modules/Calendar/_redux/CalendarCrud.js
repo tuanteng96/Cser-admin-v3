@@ -115,8 +115,8 @@ const getBooking = ({
   );
 };
 
-const createMember = (data) => {
-  return axiosClient.post("/api/v3/member23?cmd=add", JSON.stringify(data));
+const createMember = (data, StockID) => {
+  return axiosClient.post(`/api/v3/member23?cmd=add${StockID ? `&stockid=${StockID}` : ''}`, JSON.stringify(data));
 };
 const checkinMember = (data) => {
   return axiosClient.post("/services/preview.aspx?cmd=checkin", data);

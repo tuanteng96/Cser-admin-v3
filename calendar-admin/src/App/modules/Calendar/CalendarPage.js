@@ -183,7 +183,7 @@ function CalendarPage(props) {
   let { pos_mng_pos_mng } = useRoles(["pos_mng_pos_mng"], {
     ID: AuthCrStockID,
   });
-  
+
   let optionsCalendar = [
     {
       value: "dayGridMonth",
@@ -263,10 +263,7 @@ function CalendarPage(props) {
   });
 
   const [initialValue, setInitialValue] = useState({});
-  //const [StaffFull, setStaffFull] = useState([]);
-  // const [initialView, setInitialView] = useState(
-  //   window.innerWidth > 767 ? "resourceTimeGridDay" : "timeGridDay"
-  // );
+  
   const [headerTitle, setHeaderTitle] = useState("");
   const [isModalLock, setIsModalLock] = useState(false);
   const [isModalRoom, setIsModalRoom] = useState(false);
@@ -275,6 +272,7 @@ function CalendarPage(props) {
   const [ListLock, setListLock] = useState({
     ListLocks: [],
   });
+
   const [btnLoadingLock, setBtnLoadingLock] = useState(false);
 
   const calendarRef = useRef("");
@@ -313,7 +311,11 @@ function CalendarPage(props) {
                   ? ["DANG_THUC_HIEN"]
                   : []),
                 ...(GlobalConfig?.Admin?.PosStatus
-                  ? [...GlobalConfig?.Admin?.PosStatus]
+                  ? [...GlobalConfig?.Admin?.PosStatus].filter((x) =>
+                      isQLDL
+                        ? x !== "DANG_THUC_HIEN" && x !== "THUC_HIEN_XONG"
+                        : true
+                    )
                   : []),
               ]),
             ]
@@ -370,32 +372,6 @@ function CalendarPage(props) {
     }
     setFilters((prevState) => ({ ...prevState, ...params }));
   }, [topCalendar]);
-
-  //Get Staff Full
-  // useEffect(() => {
-  //   async function getStaffFull() {
-  //     const { data } = await CalendarCrud.getStaffs({
-  //       StockID: AuthCrStockID,
-  //       All: true,
-  //     });
-  //     const newData =
-  //       Array.isArray(data) && data.length > 0
-  //         ? data.map((item) => ({
-  //             ...item,
-  //             id: item.id,
-  //             title: item.text,
-  //             order: item?.source?.Order || 0,
-  //           }))
-  //         : [];
-  //     setStaffFull([
-  //       { id: 0, title: "Chưa chọn nhân viên", order: 0 },
-  //       ...newData,
-  //     ]);
-  //   }
-
-  //   getStaffFull();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [topCalendar?.type]);
 
   const Staffs = useQuery({
     queryKey: ["CalendarsStaffs", { AuthCrStockID, Type: topCalendar?.type }],
@@ -482,6 +458,15 @@ function CalendarPage(props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [AuthCrStockID, Stocks, topCalendar.day]);
+
+  useEffect(() => {
+    if (isQLDL) {
+      setFilters((prevState) => ({
+        ...prevState,
+        StockID: AuthCrStockID,
+      }));
+    }
+  }, [AuthCrStockID, isQLDL]);
 
   const ListRooms = useQuery({
     queryKey: ["ListRooms", AuthCrStockID],
@@ -745,7 +730,7 @@ function CalendarPage(props) {
             IsNoValidPhone: !window?.top?.GlobalConfig?.Admin?.valid_phone,
           },
         };
-        const newMember = await CalendarCrud.createMember(objCreate);
+        const newMember = await CalendarCrud.createMember(objCreate, AuthCrStockID);
         if (newMember?.error) {
           toast.error(newMember?.error || JSON.stringify(newMember), {
             position: toast.POSITION.TOP_RIGHT,
