@@ -1936,7 +1936,7 @@ function TimekeepingHome(props) {
                 </div>
                 <div className="gap-2 card-footer d-flex justify-content-end align-items-center">
                   {window.top?.GlobalConfig?.Admin?.roster && (
-                    <PickerAutoMarkOffday filters={filters} refetch={refetch}>
+                    <PickerAutoMarkOffday filters={filters} refetch={refetch} StocksList={StocksList}>
                       {({ open }) => (
                         <button
                           onClick={open}

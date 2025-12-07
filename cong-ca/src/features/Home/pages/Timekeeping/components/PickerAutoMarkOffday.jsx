@@ -6,54 +6,97 @@ import { useMutation } from 'react-query'
 import worksheetApi from 'src/api/worksheet.api'
 import moment from 'moment'
 import clsx from 'clsx'
+import Select from 'react-select'
 
-function PickerAutoMarkOffday({ children, filters, refetch }) {
+function getDaysOfMonth(yyyyMM) {
+  const start = moment(yyyyMM, 'YYYY-MM').startOf('month')
+  const end = moment(yyyyMM, 'YYYY-MM').endOf('month')
+  const days = []
+
+  let current = start.clone()
+  while (current <= end) {
+    days.push(current.clone())
+    current.add(1, 'day')
+  }
+  return days
+}
+
+function PickerAutoMarkOffday({ children, filters, refetch, StocksList }) {
   const [visible, setVisible] = useState(false)
   const [CrDate, setCrDate] = useState(new Date())
+  const [CrStocks, setCrStocks] = useState(filters?.StockID || null)
   const [Items, setItems] = useState([])
+  const [currentDate, setCurrentDate] = useState(null)
 
   useEffect(() => {
     if (visible) {
       setCrDate(new Date())
       setItems([])
+      setCrStocks(filters?.StockID || null)
     }
   }, [visible])
 
   const rosterMutation = useMutation({
     mutationFn: async body => {
-      let keyFind = window?.top?.GlobalConfig?.Admin?.roster_phep || 'NP'
+      let keyFind = window?.top?.GlobalConfig?.Admin?.roster_phep || 'AL'
 
-      const newObj = {
-        ...filters,
-        From: moment(body?.filter?.Mon, 'YYYY-MM')
-          .startOf('month')
-          .format('DD/MM/YYYY'),
-        To: moment(body?.filter?.Mon).endOf('month').format('DD/MM/YYYY'),
-        StockID: body?.filter?.StockID,
-        key: ''
+      const days = getDaysOfMonth(body?.filter?.Mon)
+      let list = []
+
+      for (let day of days) {
+        setCurrentDate(day.format('DD/MM/YYYY'))
+        const start = Date.now()
+
+        const newObj = {
+          ...filters,
+          From: day.format('DD/MM/YYYY'),
+          To: day.format('DD/MM/YYYY'),
+          StockID: body?.filter?.StockID,
+          key: ''
+        }
+
+        const { data: AllWorkSheet } = await worksheetApi.getAllWorkSheet(
+          newObj
+        )
+
+        if (AllWorkSheet?.list) {
+          for (let work of AllWorkSheet?.list) {
+            let index = list.findIndex(x => work.UserID === x.UserID)
+            if (index > -1) {
+              list[index].Dates = [...list[index].Dates, ...work.Dates]
+            } else {
+              list.push(work)
+            }
+          }
+        }
+
+        const duration = Date.now() - start
+        if (duration < 2000) {
+          await new Promise(resolve => setTimeout(resolve, 1000))
+        }
       }
 
-      const { data: AllWorkSheet } = await worksheetApi.getAllWorkSheet(newObj)
-      let { list } = AllWorkSheet
-
       let { data } = await worksheetApi.getRoster(body)
+
       let rs = []
 
       if (data?.items && data?.items.length > 0) {
-        for (let item of data?.items[0]?.Data?.Users || []) {
-          let newDates = item.Dates
-            ? item.Dates.filter(
-                x =>
-                  x.WorkShiftType &&
-                  x.WorkShiftType.length > 0 &&
-                  x.WorkShiftType.some(k => k?.Symbol === keyFind)
-              )
-            : []
-          if (newDates && newDates.length > 0) {
-            rs.push({
-              ...item,
-              Dates: newDates
-            })
+        for (let stock of data?.items) {
+          for (let item of stock?.Data?.Users || []) {
+            let newDates = item.Dates
+              ? item.Dates.filter(
+                  x =>
+                    x.WorkShiftType &&
+                    x.WorkShiftType.length > 0 &&
+                    x.WorkShiftType.some(k => k?.Symbol === keyFind)
+                )
+              : []
+            if (newDates && newDates.length > 0) {
+              rs.push({
+                ...item,
+                Dates: newDates
+              })
+            }
           }
         }
       }
@@ -102,7 +145,7 @@ function PickerAutoMarkOffday({ children, filters, refetch }) {
           //"ID": ",2,3",
           Status: '3',
           Mon: moment(CrDate).format('YYYY-MM'),
-          StockID: filters?.StockID?.value
+          StockID: CrStocks?.value
         }
       },
       {
@@ -199,13 +242,34 @@ function PickerAutoMarkOffday({ children, filters, refetch }) {
           onHide={() => setVisible(false)}
           centered
           scrollable
+          size="lg"
         >
           <Modal.Header closeButton>
             <Modal.Title>Tự động tạo công cho ngày nghỉ</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="flex gap-2.5">
-              <div className="flex-1 position-relative">
+              <div className="flex-1">
+                <Select
+                  options={StocksList}
+                  className="select-control"
+                  classNamePrefix="select"
+                  placeholder="Chọn cơ sở"
+                  value={CrStocks}
+                  onChange={otp => {
+                    setCrStocks(otp)
+                  }}
+                  menuPosition="fixed"
+                  styles={{
+                    menuPortal: base => ({
+                      ...base,
+                      zIndex: 9999
+                    })
+                  }}
+                  menuPortalTarget={document.body}
+                />
+              </div>
+              <div className="w-[120px] position-relative">
                 <DatePicker
                   locale="vi"
                   className="form-control fw-500"
@@ -257,7 +321,7 @@ function PickerAutoMarkOffday({ children, filters, refetch }) {
                 </button>
               </div>
             </div>
-            {Items && Items.length > 0 && (
+            {!rosterMutation.isLoading && Items && Items.length > 0 && (
               <div className="overflow-x-auto border border-[#eee] relative grow mt-3.5">
                 <table className="min-w-full border-separate border-spacing-0">
                   <thead
@@ -273,12 +337,16 @@ function PickerAutoMarkOffday({ children, filters, refetch }) {
                       <th className="px-3.5 py-2.5 text-sm font-semibold text-left z-[1000] max-w-[200px] min-w-[200px] border-b border-b-[#eee] border-r border-r-[#eee] last:border-r-0 bg-[#f8f8f8] h-[50px] uppercase">
                         Tên Nhân viên
                       </th>
+                      <th className="px-3.5 py-2.5 text-sm font-semibold text-left z-[1000] max-w-[200px] min-w-[200px] border-b border-b-[#eee] border-r border-r-[#eee] last:border-r-0 bg-[#f8f8f8] h-[50px] uppercase">
+                        Cơ sở
+                      </th>
                       <th className="px-3.5 py-2.5 text-sm font-semibold text-left z-[1000] max-w-[140px] min-w-[140px] border-b border-b-[#eee] border-r border-r-[#eee] last:border-r-0 bg-[#f8f8f8] h-[50px] uppercase">
                         Ngày
                       </th>
                     </tr>
                   </thead>
                   <tbody>
+                    {console.log(Items)}
                     {Items.map((item, index) => (
                       <Fragment key={index}>
                         {item.Dates.map((d, i) => (
@@ -297,10 +365,19 @@ function PickerAutoMarkOffday({ children, filters, refetch }) {
                                 >
                                   {item.UserName}
                                 </td>
+                                <td
+                                  className="px-3.5 py-3.5 border-b border-b-[#eee] border-r border-r-[#eee] last:border-r-0"
+                                  rowSpan={item.Dates.length}
+                                >
+                                  {StocksList?.find(x => x.ID === item.StockID)
+                                    ?.Title || 'Chưa xác định'}
+                                </td>
                               </>
                             )}
                             <td className="px-3.5 py-3.5 border-b border-b-[#eee] border-r border-r-[#eee] last:border-r-0 min-h-[50px]">
-                              {d.Date}
+                              {moment(d.Date, 'YYYY-MM-DD').format(
+                                'DD-MM-YYYY'
+                              )}
                             </td>
                           </tr>
                         ))}
@@ -308,6 +385,11 @@ function PickerAutoMarkOffday({ children, filters, refetch }) {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+            {rosterMutation.isLoading && (
+              <div className="relative grow mt-3.5">
+                Đang tìm ngày {currentDate} ...
               </div>
             )}
           </Modal.Body>
