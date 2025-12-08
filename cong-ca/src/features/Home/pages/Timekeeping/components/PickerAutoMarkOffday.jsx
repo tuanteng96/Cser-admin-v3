@@ -346,7 +346,7 @@ function PickerAutoMarkOffday({ children, filters, refetch, StocksList }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {console.log(Items)}
+                    
                     {Items.map((item, index) => (
                       <Fragment key={index}>
                         {item.Dates.map((d, i) => (
