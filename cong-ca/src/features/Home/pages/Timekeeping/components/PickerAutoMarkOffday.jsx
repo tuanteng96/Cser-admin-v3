@@ -174,6 +174,11 @@ function PickerAutoMarkOffday({ children, filters, refetch, StocksList }) {
 
     for (let item of Items) {
       for (let d of item.Dates) {
+        let index = edit.findIndex(
+          x => x.UserID === item.UserID && x.CreateDate === d.Date
+        )
+        if (index > -1) continue // tránh trùng ngày
+
         edit.push({
           CheckIn: moment(d.Date, 'YYYY-MM-DD')
             .set({
@@ -346,7 +351,6 @@ function PickerAutoMarkOffday({ children, filters, refetch, StocksList }) {
                     </tr>
                   </thead>
                   <tbody>
-                    
                     {Items.map((item, index) => (
                       <Fragment key={index}>
                         {item.Dates.map((d, i) => (
