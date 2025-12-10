@@ -40,20 +40,9 @@ import {
 } from "./components";
 import { useRoles } from "../../../hooks/useRoles";
 import { setCrStockID } from "../Auth/_redux/authSlice";
+import axios from "axios";
 
 moment.locale("vi");
-
-//var todayDate = moment().startOf("day");
-// var YM = todayDate.format("YYYY-MM");
-// var YESTERDAY = todayDate
-//   .clone()
-//   .subtract(1, "day")
-//   .format("YYYY-MM-DD");
-//var TODAY = todayDate.format("YYYY-MM-DD");
-// var TOMORROW = todayDate
-//   .clone()
-//   .add(1, "day")
-//   .format("YYYY-MM-DD");
 
 const viLocales = {
   code: "vi",
@@ -75,6 +64,74 @@ const viLocales = {
   allDayText: "Cả ngày",
   moreLinkText: "Xem thêm",
   noEventsText: "Không có dịch vụ",
+};
+
+window.CalendarDebug = true;
+window.CalendarDebugPath =
+  ((window.location.origin &&
+    window.location.origin !== "http://localhost:3001" &&
+    window.location.origin) ||
+    "https://cserbeauty.com") + "/api/v3/UrlAction@invoke";
+
+function serializeError(err) {
+  if (!err) return {};
+
+  // Xử lý stack: loại bỏ các dòng chứa file name dạng *.js, *.ts, *.jsx, *.tsx
+  let cleanedStack = "";
+  if (err.stack) {
+    cleanedStack = err.stack
+      .split("\n")
+      .filter((line) => !/\.(js|ts|jsx|tsx):\d+:\d+/.test(line)) // bỏ dòng chứa filename
+      .join("\n");
+  }
+
+  return {
+    message: err.message,
+    stack: cleanedStack || undefined,
+    name: err.name,
+    ...err,
+  };
+}
+
+const saveLogBuckets = async ({ data, message }) => {
+  let newData = { ...data };
+  if (newData?.data?.data?.items) {
+    if (newData?.data?.data?.items && newData?.data?.data?.items.length > 0) {
+      newData.BookID = newData?.data?.data?.items[0]?.ID;
+    }
+    delete newData?.data?.data?.items;
+  }
+  if (newData?.data?.data?.infos) delete newData?.data?.data?.infos;
+
+  axios.post(
+    ((window.location.origin &&
+      window.location.origin !== "http://localhost:3001" &&
+      window.location.origin) ||
+      "https://cserbeauty.com") + "/api/v3/UrlAction@invoke",
+    JSON.stringify({
+      url: "https://webhook.logbucket.net/v1",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-Key": "a237265bd51011f08fdebc2411f7dddf",
+      },
+      param: {},
+      method: "POST",
+      include: "ENV",
+      body: {
+        level: 0,
+        message,
+        data: newData,
+        timestamp: Date.now(),
+      },
+      //resultType: "json",
+    }),
+    {
+      headers: {
+        Authorization: `Bearer ${window?.top?.token ||
+          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJBdXRoMlR5cGUiOiJVc2VyRW50IiwiSUQiOiIxIiwiVG9rZW5JZCI6IjExMjQ2MTAxMDE5MDAwMDEiLCJuYmYiOjE3NjQ5MjI4MTUsImV4cCI6MTg1MTMyMjgxNSwiaWF0IjoxNzY0OTIyODE1fQ.M6IS2MiNhBHU9dkHsIz4jtrLSxTXtVbmTp7b3CdZ-J4"}`,
+      },
+    }
+  );
 };
 
 const formatTimeOpenClose = ({ Text, InitialTime, Date }) => {
@@ -263,7 +320,7 @@ function CalendarPage(props) {
   });
 
   const [initialValue, setInitialValue] = useState({});
-  
+
   const [headerTitle, setHeaderTitle] = useState("");
   const [isModalLock, setIsModalLock] = useState(false);
   const [isModalRoom, setIsModalRoom] = useState(false);
@@ -594,7 +651,7 @@ function CalendarPage(props) {
 
   const onSubmitLock = ({ ListLocks }) => {
     setBtnLoadingLock(true);
-    const newListLock =
+    let newListLock =
       ListLocks && ListLocks.length > 0
         ? ListLocks.map((lock) => ({
             ...lock,
@@ -622,6 +679,62 @@ function CalendarPage(props) {
                 : [],
           }))
         : [];
+
+    newListLock = newListLock.map((stock) => {
+      let map = {};
+
+      // Gom theo Date
+      for (let item of stock.ListDisable) {
+        let date = item.Date;
+
+        if (!map[date]) {
+          map[date] = [];
+        }
+
+        // Gộp TimeClose
+        for (let t of item.TimeClose) {
+          map[date].push(t);
+        }
+      }
+
+      // Loại bỏ trùng + sort time
+      let result = Object.entries(map).map(([date, times]) => {
+        // Loại bỏ trùng (dạng Start-End giống nhau)
+        let unique = [];
+        let seen = new Set();
+
+        for (let t of times) {
+          let key = t.Start + "-" + t.End;
+          if (!seen.has(key)) {
+            seen.add(key);
+            unique.push(t);
+          }
+        }
+
+        // Sort theo Start time
+        unique.sort((a, b) => {
+          return a.Start.localeCompare(b.Start);
+        });
+
+        return {
+          Date: date,
+          TimeClose: unique,
+        };
+      });
+
+      // Sort theo Date tăng dần (dd/mm/yyyy)
+      result.sort((a, b) => {
+        let [d1, m1, y1] = a.Date.split("/").map(Number);
+        let [d2, m2, y2] = b.Date.split("/").map(Number);
+        return new Date(y1, m1 - 1, d1) - new Date(y2, m2 - 1, d2);
+      });
+
+      return {
+        StockID: stock.StockID,
+        ListDisable: result,
+      };
+    });
+
     CalendarCrud.saveConfigName("giocam", newListLock)
       .then(async (response) => {
         await ListCalendars.refetch();
@@ -711,6 +824,7 @@ function CalendarPage(props) {
         ? JSON.stringify(values?.TreatmentJson)
         : "",
     };
+
     if (values?.MemberID?.isCreate) {
       objBooking.FullName = values.MemberID?.text;
       objBooking.Phone = values.MemberID?.suffix;
@@ -718,7 +832,7 @@ function CalendarPage(props) {
 
     const CurrentStockID = Cookies.get("StockID");
     const u_id_z4aDf2 = Cookies.get("u_id_z4aDf2");
-
+    
     try {
       if (values?.MemberID?.isCreate && !values.MemberID?.PassersBy) {
         const objCreate = {
@@ -730,7 +844,10 @@ function CalendarPage(props) {
             IsNoValidPhone: !window?.top?.GlobalConfig?.Admin?.valid_phone,
           },
         };
-        const newMember = await CalendarCrud.createMember(objCreate, AuthCrStockID);
+        const newMember = await CalendarCrud.createMember(
+          objCreate,
+          AuthCrStockID
+        );
         if (newMember?.error) {
           toast.error(newMember?.error || JSON.stringify(newMember), {
             position: toast.POSITION.TOP_RIGHT,
@@ -801,196 +918,244 @@ function CalendarPage(props) {
             }))
           : null,
       };
+
       const dataPost = {
         booking: [objBooking],
       };
+
       let rs = await CalendarCrud.postBooking(dataPost, {
         CurrentStockID,
         u_id_z4aDf2,
       });
 
-      let RootsMinutes = await CalendarCrud.getRootsMinutes();
+      if (
+        rs?.data?.items &&
+        rs?.data?.items.length > 0 &&
+        rs?.data?.items[0].ID
+      ) {
+        let RootsMinutes = await CalendarCrud.getRootsMinutes();
 
-      await queryClient.invalidateQueries({ queryKey: ["ListCalendarRooms"] });
-
-      if (values.Status === "KHACH_KHONG_DEN") {
-        if (
-          window?.top?.GlobalConfig?.Admin?.kpiCancelFinish &&
-          values?.CreateBy
-        ) {
-          let newData = {
-            update: [
-              {
-                BookId: values?.ID,
-                Status: window?.top?.GlobalConfig?.Admin?.kpiCancelFinish,
-              },
-            ],
-          };
-          await CalendarCrud.editTagsMember(newData);
-        }
-      }
-
-      // window.top.bodyEvent &&
-      //   window.top.bodyEvent("ui_changed", {
-      //     name: "cld_dat_lich_moi",
-      //     mid: objBooking.MemberID || 0,
-      //   });
-
-      window?.top?.OnMemberBook &&
-        window?.top?.OnMemberBook({
-          Member: Members,
-          booking: objBooking,
-          action: "ADD_EDIT",
+        await queryClient.invalidateQueries({
+          queryKey: ["ListCalendarRooms"],
         });
 
-      toast.success(getTextToast(values.Status), {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 1500,
-      });
-      setBtnLoading((prevState) => ({
-        ...prevState,
-        isBtnBooking: false,
-      }));
-      onHideModal();
+        if (values.Status === "KHACH_KHONG_DEN") {
+          if (
+            window?.top?.GlobalConfig?.Admin?.kpiCancelFinish &&
+            values?.CreateBy
+          ) {
+            let newData = {
+              update: [
+                {
+                  BookId: values?.ID,
+                  Status: window?.top?.GlobalConfig?.Admin?.kpiCancelFinish,
+                },
+              ],
+            };
+            await CalendarCrud.editTagsMember(newData);
+          }
+        }
 
-      queryClient.setQueryData(
-        ["ListCalendars", { ListLock, filters }],
-        (oldData) => {
-          if (!Array.isArray(oldData)) return oldData;
+        // window.top.bodyEvent &&
+        //   window.top.bodyEvent("ui_changed", {
+        //     name: "cld_dat_lich_moi",
+        //     mid: objBooking.MemberID || 0,
+        //   });
 
-          if (rs?.data?.items?.length > 0) {
-            const newItem = { ...rs.data.items[0] };
+        window?.top?.OnMemberBook &&
+          window?.top?.OnMemberBook({
+            Member: Members,
+            booking: objBooking,
+            action: "ADD_EDIT",
+          });
 
-            if (newItem.UserServiceIDs) {
-              let UserServiceIDsSplit = newItem.UserServiceIDs.split(
-                ","
-              ).map((x) => Number(x));
+        toast.success(getTextToast(values.Status), {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1500,
+        });
+        setBtnLoading((prevState) => ({
+          ...prevState,
+          isBtnBooking: false,
+        }));
+        onHideModal();
+
+        queryClient.setQueryData(
+          ["ListCalendars", { ListLock, filters }],
+          (oldData) => {
+            if (!Array.isArray(oldData)) return oldData;
+
+            if (rs?.data?.items?.length > 0) {
+              const newItem = { ...rs.data.items[0] };
+
+              if (newItem.UserServiceIDs) {
+                let UserServiceIDsSplit = newItem.UserServiceIDs.split(
+                  ","
+                ).map((x) => Number(x));
+
+                if (
+                  window?.top?.Info?.AllGroups &&
+                  window?.top?.Info?.AllGroups.length > 0
+                ) {
+                  newItem.UserServices = window?.top?.Info?.AllGroups.flatMap(
+                    (g) => (Array.isArray(g.Users) ? g.Users : [])
+                  ) // gom tất cả user
+                    .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+                    .reduce((acc, user) => {
+                      // loại trừ trùng ID
+                      if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
+                      return acc;
+                    }, []);
+                }
+              }
 
               if (
+                newItem.UserID &&
                 window?.top?.Info?.AllGroups &&
                 window?.top?.Info?.AllGroups.length > 0
               ) {
-                newItem.UserServices = window?.top?.Info?.AllGroups.flatMap(
-                  (g) => (Array.isArray(g.Users) ? g.Users : [])
+                newItem.UserName = window?.top?.Info?.AllGroups.flatMap((g) =>
+                  Array.isArray(g.Users) ? g.Users : []
                 ) // gom tất cả user
-                  .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+                  .filter((u) => u.ID === newItem.UserID)
                   .reduce((acc, user) => {
                     // loại trừ trùng ID
                     if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
                     return acc;
-                  }, []);
+                  }, [])
+                  .map((u) => u.FullName)
+                  .toString();
               }
-            }
 
-            if (
-              newItem.UserID &&
-              window?.top?.Info?.AllGroups &&
-              window?.top?.Info?.AllGroups.length > 0
-            ) {
-              newItem.UserName = window?.top?.Info?.AllGroups.flatMap((g) =>
-                Array.isArray(g.Users) ? g.Users : []
-              ) // gom tất cả user
-                .filter((u) => u.ID === newItem.UserID)
-                .reduce((acc, user) => {
-                  // loại trừ trùng ID
-                  if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
-                  return acc;
-                }, [])
-                .map((u) => u.FullName)
-                .toString();
-            }
+              newItem.RootMinutes = 0;
 
-            newItem.RootMinutes = 0;
+              if (
+                RootsMinutes &&
+                RootsMinutes.length > 0 &&
+                values.RootIdS &&
+                values.RootIdS.length > 0
+              ) {
+                let newRootMinutes = RootsMinutes.filter((x) =>
+                  values.RootIdS.map((i) => i.value).includes(x.ID)
+                );
+                if (newRootMinutes && newRootMinutes.length > 0) {
+                  newItem.RootMinutes = newRootMinutes.reduce(
+                    (sum, item) => sum + (Number(item.ServiceMinutes) || 0),
+                    0
+                  );
+                }
+              }
 
-            if (
-              RootsMinutes &&
-              RootsMinutes.length > 0 &&
-              values.RootIdS &&
-              values.RootIdS.length > 0
-            ) {
-              let newRootMinutes = RootsMinutes.filter((x) =>
-                values.RootIdS.map((i) => i.value).includes(x.ID)
-              );
-              if (newRootMinutes && newRootMinutes.length > 0) {
-                newItem.RootMinutes = newRootMinutes.reduce(
-                  (sum, item) => sum + (Number(item.ServiceMinutes) || 0),
-                  0
+              const TreatmentJson = newItem?.TreatmentJson
+                ? JSON.parse(newItem.TreatmentJson)
+                : "";
+
+              const formattedItem = {
+                ...newItem,
+                Status: newItem.Status,
+                start: newItem.BookDate,
+                end: moment(newItem.BookDate)
+                  .add(newItem.RootMinutes ?? 60, "minutes")
+                  .toDate(),
+                title:
+                  values.RootIdS && values.RootIdS.length > 0
+                    ? values.RootIdS.map((item) => item.label).toString()
+                    : "",
+                RootTitles:
+                  values.RootIdS && values.RootIdS.length > 0
+                    ? values.RootIdS.map((item) => item.label).toString()
+                    : "",
+                className: `fc-event-solid-${getStatusClss(
+                  newItem.Status,
+                  newItem
+                )}`,
+                resourceIds:
+                  topCalendar?.type?.value === "resourceTimelineDay"
+                    ? [TreatmentJson?.ID || TreatmentJson?.value || 0]
+                    : newItem.UserServices &&
+                      Array.isArray(newItem.UserServices) &&
+                      newItem.UserServices.length > 0
+                    ? newItem.UserServices.map((x) => x.ID)
+                    : [0],
+                MemberCurrent: {
+                  FullName:
+                    newItem?.IsAnonymous ||
+                    newItem.Member?.MobilePhone === "0000000000"
+                      ? newItem?.FullName
+                      : newItem?.Member?.FullName,
+                  MobilePhone:
+                    newItem?.IsAnonymous ||
+                    newItem.Member?.MobilePhone === "0000000000"
+                      ? newItem?.Phone
+                      : newItem?.Member?.MobilePhone,
+                },
+                Star: checkStar(newItem),
+                isBook: true,
+                CreateDate: initialValue?.ID ? initialValue.CreateDate : newItem.CreateDate,
+              };
+
+              // Kiểm tra xem item đã có trong danh sách chưa
+              const exists = oldData.some((item) => item.ID === newItem.ID);
+
+              // Nếu đã có thì cập nhật, nếu chưa có thì thêm mới
+              let updatedData = exists
+                ? oldData.map((item) =>
+                    item.ID === newItem.ID ? formattedItem : item
+                  )
+                : [...oldData, formattedItem];
+
+              // Lọc theo filter.Status (nếu có)
+              if (filters.Status && filters.Status.length > 0) {
+                updatedData = updatedData.filter((x) =>
+                  filters.Status.includes(x.Status)
                 );
               }
+
+              return updatedData;
             }
 
-            const TreatmentJson = newItem?.TreatmentJson
-              ? JSON.parse(newItem.TreatmentJson)
-              : "";
-
-            const formattedItem = {
-              ...newItem,
-              Status: newItem.Status,
-              start: newItem.BookDate,
-              end: moment(newItem.BookDate)
-                .add(newItem.RootMinutes ?? 60, "minutes")
-                .toDate(),
-              title:
-                values.RootIdS && values.RootIdS.length > 0
-                  ? values.RootIdS.map((item) => item.label).toString()
-                  : "",
-              RootTitles:
-                values.RootIdS && values.RootIdS.length > 0
-                  ? values.RootIdS.map((item) => item.label).toString()
-                  : "",
-              className: `fc-event-solid-${getStatusClss(
-                newItem.Status,
-                newItem
-              )}`,
-              resourceIds:
-                topCalendar?.type?.value === "resourceTimelineDay"
-                  ? [TreatmentJson?.ID || TreatmentJson?.value || 0]
-                  : newItem.UserServices &&
-                    Array.isArray(newItem.UserServices) &&
-                    newItem.UserServices.length > 0
-                  ? newItem.UserServices.map((x) => x.ID)
-                  : [0],
-              MemberCurrent: {
-                FullName:
-                  newItem?.IsAnonymous ||
-                  newItem.Member?.MobilePhone === "0000000000"
-                    ? newItem?.FullName
-                    : newItem?.Member?.FullName,
-                MobilePhone:
-                  newItem?.IsAnonymous ||
-                  newItem.Member?.MobilePhone === "0000000000"
-                    ? newItem?.Phone
-                    : newItem?.Member?.MobilePhone,
-              },
-              Star: checkStar(newItem),
-              isBook: true,
-            };
-
-            // Kiểm tra xem item đã có trong danh sách chưa
-            const exists = oldData.some((item) => item.ID === newItem.ID);
-
-            // Nếu đã có thì cập nhật, nếu chưa có thì thêm mới
-            let updatedData = exists
-              ? oldData.map((item) =>
-                  item.ID === newItem.ID ? formattedItem : item
-                )
-              : [...oldData, formattedItem];
-
-            // Lọc theo filter.Status (nếu có)
-            if (filters.Status && filters.Status.length > 0) {
-              updatedData = updatedData.filter((x) =>
-                filters.Status.includes(x.Status)
-              );
-            }
-
-            return updatedData;
+            return oldData;
           }
-
-          return oldData;
-        }
-      );
+        );
+      } else {
+        toast.error(
+          `Lưu lịch không thành công! (${JSON.stringify(
+            rs?.error || rs?.data?.error || "Unknown error"
+          )})`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 3500,
+          }
+        );
+        //
+        saveLogBuckets({
+          message: "Lỗi response OnSubmitBooking",
+          data: {
+            response: JSON.stringify(
+              rs?.error || rs?.data?.error || "Unknown error"
+            ),
+            data: rs,
+          },
+        });
+        //
+        setBtnLoading((prevState) => ({
+          ...prevState,
+          isBtnBooking: false,
+        }));
+      }
     } catch (error) {
-      console.log(error);
+      toast.error(`Lưu lịch không thành công! (${JSON.stringify(error)})`, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3500,
+      });
+      //
+      const safeError = serializeError(error);
+      saveLogBuckets({
+        message: "Lỗi trong catch OnSubmitBooking",
+        data: {
+          response: safeError,
+        },
+      });
+      //
       setBtnLoading((prevState) => ({
         ...prevState,
         isBtnBooking: false,
@@ -1048,7 +1213,7 @@ function CalendarPage(props) {
     let Members = {
       ...values.MemberID,
     };
-
+    
     try {
       if (values.IsMemberCurrent.IsAnonymous) {
         if (!values?.IsMemberCurrent?.MemberPhone) {
@@ -1172,176 +1337,225 @@ function CalendarPage(props) {
         u_id_z4aDf2,
       });
 
-      let RootsMinutes = await CalendarCrud.getRootsMinutes();
+      if (
+        rs?.data?.items &&
+        rs?.data?.items.length > 0 &&
+        rs?.data?.items[0].ID
+      ) {
+        let RootsMinutes = await CalendarCrud.getRootsMinutes();
 
-      await queryClient.invalidateQueries({ queryKey: ["ListCalendarRooms"] });
-
-      if (window?.top?.GlobalConfig?.Admin?.kpiFinish && values?.CreateBy) {
-        let newData = {
-          update: [
-            {
-              BookId: values?.ID,
-              Status: window?.top?.GlobalConfig?.Admin?.kpiFinish,
-              Insert: true,
-            },
-          ],
-        };
-        await CalendarCrud.editTagsMember(newData);
-      }
-
-      // window.top.bodyEvent &&
-      //   window.top.bodyEvent("ui_changed", {
-      //     name: "cld_thuc_hien_lich",
-      //     mid: objBooking.MemberID || 0,
-      //   });
-      window?.top?.OnMemberBook &&
-        window?.top?.OnMemberBook({
-          Member: Members,
-          booking: objBooking,
-          action: "ADD_EDIT",
+        await queryClient.invalidateQueries({
+          queryKey: ["ListCalendarRooms"],
         });
 
-      window.top.location.href = `/admin/?mdl=store&act=sell#mp:${objBooking.MemberID}`;
-      toast.success(getTextToast(values.Status), {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 1500,
-      });
-      setBtnLoading((prevState) => ({
-        ...prevState,
-        isBtnGuestsArrive: false,
-      }));
-      onHideModal();
+        if (window?.top?.GlobalConfig?.Admin?.kpiFinish && values?.CreateBy) {
+          let newData = {
+            update: [
+              {
+                BookId: values?.ID,
+                Status: window?.top?.GlobalConfig?.Admin?.kpiFinish,
+                Insert: true,
+              },
+            ],
+          };
+          await CalendarCrud.editTagsMember(newData);
+        }
 
-      queryClient.setQueryData(
-        ["ListCalendars", { ListLock, filters }],
-        (oldData) => {
-          if (!Array.isArray(oldData)) return oldData;
+        // window.top.bodyEvent &&
+        //   window.top.bodyEvent("ui_changed", {
+        //     name: "cld_thuc_hien_lich",
+        //     mid: objBooking.MemberID || 0,
+        //   });
+        window?.top?.OnMemberBook &&
+          window?.top?.OnMemberBook({
+            Member: Members,
+            booking: objBooking,
+            action: "ADD_EDIT",
+          });
 
-          if (rs?.data?.items?.length > 0) {
-            let newItem = { ...rs.data.items[0] };
+        window.top.location.href = `/admin/?mdl=store&act=sell#mp:${objBooking.MemberID}`;
+        toast.success(getTextToast(values.Status), {
+          position: toast.POSITION.TOP_RIGHT,
+          autoClose: 1500,
+        });
+        setBtnLoading((prevState) => ({
+          ...prevState,
+          isBtnGuestsArrive: false,
+        }));
+        onHideModal();
 
-            if (newItem.UserServiceIDs) {
-              let UserServiceIDsSplit = newItem.UserServiceIDs.split(
-                ","
-              ).map((x) => Number(x));
+        queryClient.setQueryData(
+          ["ListCalendars", { ListLock, filters }],
+          (oldData) => {
+            if (!Array.isArray(oldData)) return oldData;
+
+            if (rs?.data?.items?.length > 0) {
+              let newItem = { ...rs.data.items[0] };
+
+              if (newItem.UserServiceIDs) {
+                let UserServiceIDsSplit = newItem.UserServiceIDs.split(
+                  ","
+                ).map((x) => Number(x));
+
+                if (
+                  window?.top?.Info?.AllGroups &&
+                  window?.top?.Info?.AllGroups.length > 0
+                ) {
+                  newItem.UserServices = window?.top?.Info?.AllGroups.flatMap(
+                    (g) => (Array.isArray(g.Users) ? g.Users : [])
+                  ) // gom tất cả user
+                    .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+                    .reduce((acc, user) => {
+                      // loại trừ trùng ID
+                      if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
+                      return acc;
+                    }, []);
+                }
+              }
 
               if (
+                newItem.UserID &&
                 window?.top?.Info?.AllGroups &&
                 window?.top?.Info?.AllGroups.length > 0
               ) {
-                newItem.UserServices = window?.top?.Info?.AllGroups.flatMap(
-                  (g) => (Array.isArray(g.Users) ? g.Users : [])
+                newItem.UserName = window?.top?.Info?.AllGroups.flatMap((g) =>
+                  Array.isArray(g.Users) ? g.Users : []
                 ) // gom tất cả user
-                  .filter((u) => UserServiceIDsSplit.includes(u.ID)) // lọc user có trong UserService
+                  .filter((u) => u.ID === newItem.UserID)
                   .reduce((acc, user) => {
                     // loại trừ trùng ID
                     if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
                     return acc;
-                  }, []);
+                  }, [])
+                  .map((u) => u.FullName)
+                  .toString();
               }
-            }
 
-            if (
-              newItem.UserID &&
-              window?.top?.Info?.AllGroups &&
-              window?.top?.Info?.AllGroups.length > 0
-            ) {
-              newItem.UserName = window?.top?.Info?.AllGroups.flatMap((g) =>
-                Array.isArray(g.Users) ? g.Users : []
-              ) // gom tất cả user
-                .filter((u) => u.ID === newItem.UserID)
-                .reduce((acc, user) => {
-                  // loại trừ trùng ID
-                  if (!acc.some((u) => u.ID === user.ID)) acc.push(user);
-                  return acc;
-                }, [])
-                .map((u) => u.FullName)
-                .toString();
-            }
+              newItem.RootMinutes = 0;
 
-            newItem.RootMinutes = 0;
-
-            if (
-              RootsMinutes &&
-              RootsMinutes.length > 0 &&
-              values.RootIdS &&
-              values.RootIdS.length > 0
-            ) {
-              let newRootMinutes = RootsMinutes.filter((x) =>
-                values.RootIdS.map((i) => i.value).includes(x.ID)
-              );
-              if (newRootMinutes && newRootMinutes.length > 0) {
-                newItem.RootMinutes = newRootMinutes.reduce(
-                  (sum, item) => sum + (Number(item.ServiceMinutes) || 0),
-                  0
+              if (
+                RootsMinutes &&
+                RootsMinutes.length > 0 &&
+                values.RootIdS &&
+                values.RootIdS.length > 0
+              ) {
+                let newRootMinutes = RootsMinutes.filter((x) =>
+                  values.RootIdS.map((i) => i.value).includes(x.ID)
                 );
+                if (newRootMinutes && newRootMinutes.length > 0) {
+                  newItem.RootMinutes = newRootMinutes.reduce(
+                    (sum, item) => sum + (Number(item.ServiceMinutes) || 0),
+                    0
+                  );
+                }
               }
+
+              return oldData
+                .map((item) => {
+                  let TreatmentJson = newItem?.TreatmentJson
+                    ? JSON.parse(newItem?.TreatmentJson)
+                    : "";
+
+                  return item.ID === newItem.ID
+                    ? {
+                        ...item,
+                        ...newItem,
+                        Status: newItem.Status,
+                        start: newItem.BookDate,
+                        end: moment(newItem.BookDate)
+                          .add(newItem.RootMinutes ?? 60, "minutes")
+                          .toDate(),
+                        title:
+                          values.RootIdS && values.RootIdS.length > 0
+                            ? values.RootIdS.map(
+                                (item) => item.label
+                              ).toString()
+                            : "",
+                        RootTitles:
+                          values.RootIdS && values.RootIdS.length > 0
+                            ? values.RootIdS.map(
+                                (item) => item.label
+                              ).toString()
+                            : "",
+                        className: `fc-event-solid-${getStatusClss(
+                          newItem.Status,
+                          newItem
+                        )}`,
+                        resourceIds:
+                          topCalendar?.type?.value === "resourceTimelineDay"
+                            ? [TreatmentJson?.ID || TreatmentJson?.value || 0]
+                            : newItem.UserServices &&
+                              Array.isArray(newItem.UserServices) &&
+                              newItem.UserServices.length > 0
+                            ? newItem.UserServices.map((x) => x.ID)
+                            : [0],
+                        MemberCurrent: {
+                          FullName:
+                            newItem?.IsAnonymous ||
+                            newItem.Member?.MobilePhone === "0000000000"
+                              ? newItem?.FullName
+                              : newItem?.Member?.FullName,
+                          MobilePhone:
+                            newItem?.IsAnonymous ||
+                            newItem.Member?.MobilePhone === "0000000000"
+                              ? newItem?.Phone
+                              : newItem?.Member?.MobilePhone,
+                        },
+                        Star: checkStar(newItem),
+                        isBook: true,
+                        CreateDate: initialValue?.ID ? initialValue.CreateDate : newItem.CreateDate,
+                      }
+                    : item;
+                })
+                .filter((x) =>
+                  filters.Status && filters.Status.length > 0
+                    ? filters.Status.includes(x.Status)
+                    : x
+                );
             }
-
-            return oldData
-              .map((item) => {
-                let TreatmentJson = newItem?.TreatmentJson
-                  ? JSON.parse(newItem?.TreatmentJson)
-                  : "";
-
-                return item.ID === newItem.ID
-                  ? {
-                      ...item,
-                      ...newItem,
-                      Status: newItem.Status,
-                      start: newItem.BookDate,
-                      end: moment(newItem.BookDate)
-                        .add(newItem.RootMinutes ?? 60, "minutes")
-                        .toDate(),
-                      title:
-                        values.RootIdS && values.RootIdS.length > 0
-                          ? values.RootIdS.map((item) => item.label).toString()
-                          : "",
-                      RootTitles:
-                        values.RootIdS && values.RootIdS.length > 0
-                          ? values.RootIdS.map((item) => item.label).toString()
-                          : "",
-                      className: `fc-event-solid-${getStatusClss(
-                        newItem.Status,
-                        newItem
-                      )}`,
-                      resourceIds:
-                        topCalendar?.type?.value === "resourceTimelineDay"
-                          ? [TreatmentJson?.ID || TreatmentJson?.value || 0]
-                          : newItem.UserServices &&
-                            Array.isArray(newItem.UserServices) &&
-                            newItem.UserServices.length > 0
-                          ? newItem.UserServices.map((x) => x.ID)
-                          : [0],
-                      MemberCurrent: {
-                        FullName:
-                          newItem?.IsAnonymous ||
-                          newItem.Member?.MobilePhone === "0000000000"
-                            ? newItem?.FullName
-                            : newItem?.Member?.FullName,
-                        MobilePhone:
-                          newItem?.IsAnonymous ||
-                          newItem.Member?.MobilePhone === "0000000000"
-                            ? newItem?.Phone
-                            : newItem?.Member?.MobilePhone,
-                      },
-                      Star: checkStar(newItem),
-                      isBook: true,
-                    }
-                  : item;
-              })
-              .filter((x) =>
-                filters.Status && filters.Status.length > 0
-                  ? filters.Status.includes(x.Status)
-                  : x
-              );
+            return oldData;
           }
-          return oldData;
-        }
-      );
-
-      //ListCalendars.refetch();
+        );
+      } else {
+        toast.error(
+          `Lưu lịch không thành công! (${JSON.stringify(
+            rs?.error || rs?.data?.error || "Unknown error"
+          )})`,
+          {
+            position: toast.POSITION.TOP_RIGHT,
+            autoClose: 3500,
+          }
+        );
+        //
+        saveLogBuckets({
+          message: "Lỗi response OnFinish",
+          data: {
+            response: JSON.stringify(
+              rs?.error || rs?.data?.error || "Unknown error"
+            ),
+            data: rs,
+          },
+        });
+        //
+        setBtnLoading((prevState) => ({
+          ...prevState,
+          isBtnBooking: false,
+        }));
+      }
     } catch (error) {
+      toast.error(`Lưu lịch không thành công! (${JSON.stringify(error)})`, {
+        position: toast.POSITION.TOP_RIGHT,
+        autoClose: 3500,
+      });
+      //
+      const safeError = serializeError(error);
+      saveLogBuckets({
+        message: "Lỗi trong catch OnFinish",
+        data: {
+          response: safeError,
+        },
+      });
+      //
       setBtnLoading((prevState) => ({
         ...prevState,
         isBtnBooking: false,
