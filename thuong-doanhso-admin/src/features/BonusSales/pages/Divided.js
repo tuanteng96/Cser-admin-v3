@@ -9,6 +9,10 @@ import { useSelector } from "react-redux";
 import { useRoles } from "../../../helpers/useRoles";
 import ConditionsHelpers from "../../../helpers/ConditionsHelpers";
 
+import Text from "react-texty";
+
+import "react-texty/styles.css";
+
 function Divided({ OrderInfo, onSubmit, loading }) {
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
 
@@ -276,9 +280,9 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                     className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
+                                    <Text className="cursor-pointer text-truncate font-weight-boldest w-140px pe-3">
                                       {sub.Staff.Fn}
-                                    </label>
+                                    </Text>
                                     <NumberFormat
                                       type={isHiddenPrice ? "password" : "text"}
                                       allowNegative
@@ -324,9 +328,9 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                     className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
+                                    <Text className="cursor-pointer text-truncate font-weight-boldest w-140px pe-3">
                                       {sub.Staff.Fn}
-                                    </label>
+                                    </Text>
                                     <NumberFormat
                                       type={isHiddenPrice ? "password" : "text"}
                                       allowNegative
@@ -390,9 +394,9 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
+                                      <Text className="cursor-pointer text-truncate font-weight-boldest w-140px pe-3">
                                         {sub.Staff.Fn}
-                                      </label>
+                                      </Text>
                                       <NumberFormat
                                         type={
                                           isHiddenPrice ? "password" : "text"
@@ -435,9 +439,9 @@ function Divided({ OrderInfo, onSubmit, loading }) {
                                       className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
+                                      <Text className="cursor-pointer text-truncate font-weight-boldest w-140px pe-3">
                                         {sub.Staff.Fn}
-                                      </label>
+                                      </Text>
                                       <NumberFormat
                                         type={
                                           isHiddenPrice ? "password" : "text"

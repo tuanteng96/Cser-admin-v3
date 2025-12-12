@@ -979,6 +979,19 @@ function CalendarPage(props) {
         }));
         onHideModal();
 
+        saveLogBuckets({
+          message: objBooking?.ID ? "Đặt lịch mới" : "Chỉnh sửa đặt lịch",
+          data: {
+            ID: rs?.data?.items[0].ID,
+            MemberID: objBooking.MemberID,
+            StockID: objBooking.StockID,
+            CrStockID: window?.top?.Info?.CrStockID,
+            ResponseStockID: rs?.data?.items[0]?.StockID,
+            UserID: window?.top?.Info?.User?.ID,
+            UserFullName: window?.top?.Info?.User?.FullName,
+          },
+        });
+
         queryClient.setQueryData(
           ["ListCalendars", { ListLock, filters }],
           (oldData) => {
@@ -1383,6 +1396,19 @@ function CalendarPage(props) {
           isBtnGuestsArrive: false,
         }));
         onHideModal();
+
+        saveLogBuckets({
+          message: objBooking?.ID ? "Đặt lịch mới" : "Chỉnh sửa đặt lịch",
+          data: {
+            ID: rs?.data?.items[0].ID,
+            MemberID: objBooking.MemberID,
+            StockID: objBooking.StockID,
+            CrStockID: window?.top?.Info?.CrStockID,
+            ResponseStockID: rs?.data?.items[0]?.StockID,
+            UserID: window?.top?.Info?.User?.ID,
+            UserFullName: window?.top?.Info?.User?.FullName,
+          },
+        });
 
         queryClient.setQueryData(
           ["ListCalendars", { ListLock, filters }],

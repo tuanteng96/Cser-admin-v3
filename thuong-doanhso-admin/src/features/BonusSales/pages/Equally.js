@@ -11,6 +11,10 @@ import { formatArray } from "../../../helpers/formatArray";
 import { useRoles } from "../../../helpers/useRoles";
 import ConditionsHelpers from "../../../helpers/ConditionsHelpers";
 
+import Text from "react-texty";
+
+import "react-texty/styles.css";
+
 function Equally({ OrderInfo, onSubmit, loading }) {
   const [initialValues, setInitialValues] = useState({ equally: [] });
   const { UserID } = useSelector(({ Auth }) => ({
@@ -18,9 +22,8 @@ function Equally({ OrderInfo, onSubmit, loading }) {
   }));
 
   const { adminTools_byStock } = useRoles(["adminTools_byStock"]);
-  
+
   const getValueHH = ({ user, item, Type }) => {
-    
     if (typeof item.initialRose === "object") {
       if (
         item?.prodBonus?.BonusSaleLevels &&
@@ -47,20 +50,19 @@ function Equally({ OrderInfo, onSubmit, loading }) {
       item?.prodBonus?.BonusSaleLevels.some((x) => x.Salary) &&
       Type.value !== "KY_THUAT_VIEN"
     ) {
-      
       let { BonusSaleLevels } = item?.prodBonus;
       let index = BonusSaleLevels.findIndex((x) => x.Level === user.level);
       let Salary = 0;
       if (index > -1) {
         Salary = BonusSaleLevels[index].Salary;
       }
-      
+
       if (Salary < 100) {
         return Math.round(
           (item.gia_tri_thanh_toan_thuc_te * Salary * (user.Value / 100)) / 100
         );
       }
-        
+
       return Math.round(
         ((((item.gia_tri_thanh_toan_thuc_te * Salary) / item.ToPay) *
           user.Value) /
@@ -377,9 +379,9 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                     className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
+                                    <Text className="cursor-pointer text-truncate font-weight-boldest w-140px pe-3">
                                       {sub.Staff.Fn}
-                                    </label>
+                                    </Text>
                                     <NumberFormat
                                       type={isHiddenPrice ? "password" : "text"}
                                       allowNegative
@@ -425,9 +427,9 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                     className="my-2 d-flex align-items-center"
                                     key={idx}
                                   >
-                                    <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
+                                    <Text className="cursor-pointer text-truncate font-weight-boldest w-140px pe-3">
                                       {sub.Staff.Fn}
-                                    </label>
+                                    </Text>
                                     <NumberFormat
                                       type={isHiddenPrice ? "password" : "text"}
                                       allowNegative
@@ -517,9 +519,9 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
+                                      <Text className="cursor-pointer text-truncate font-weight-boldest w-140px pe-3">
                                         {sub.Staff.Fn}
-                                      </label>
+                                      </Text>
                                       <NumberFormat
                                         type={
                                           isHiddenPrice ? "password" : "text"
@@ -561,9 +563,9 @@ function Equally({ OrderInfo, onSubmit, loading }) {
                                       className="my-2 d-flex align-items-center"
                                       key={idx}
                                     >
-                                      <label className="mb-1 font-weight-boldest w-140px text-truncate pe-3">
+                                      <Text className="cursor-pointer text-truncate font-weight-boldest w-140px pe-3">
                                         {sub.Staff.Fn}
-                                      </label>
+                                      </Text>
                                       <NumberFormat
                                         type={
                                           isHiddenPrice ? "password" : "text"

@@ -7,6 +7,11 @@ import NumberFormat from "react-number-format";
 import moment from "moment";
 import SelectType from "../components/SelectType";
 import { useRoles } from "../../../helpers/useRoles";
+
+import Text from "react-texty";
+
+import "react-texty/styles.css";
+
 moment.locale(); // vi
 
 function AutoBouns({ OrderInfo, onSubmit, loading }) {
@@ -95,9 +100,11 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
             x.Product.ProdTitle !==
               window.top?.GlobalConfig?.Admin?.cai_dat_phi?.TIP?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU?.ProdTitle &&
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIDICHVU
+                ?.ProdTitle &&
             x.Product.ProdTitle !==
-              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE?.ProdTitle
+              window.top?.GlobalConfig?.Admin?.cai_dat_phi?.PHIQUETTHE
+                ?.ProdTitle
         );
       }
 
@@ -182,9 +189,9 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                   key={idx}
                                 >
                                   <div className="mb-1 w-120px pe-2">
-                                    <label className="line-height-md font-weight-500 w-100">
+                                    <Text className="mb-2 cursor-pointer text-truncate line-height-md font-weight-500 w-100">
                                       {sub.User.FullName}
-                                    </label>
+                                    </Text>
                                   </div>
                                   <NumberFormat
                                     type={isHiddenPrice ? "password" : "text"}
@@ -240,9 +247,9 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                   key={idx}
                                 >
                                   <div className="mb-1 w-120px pe-2">
-                                    <label className="line-height-md font-weight-500 w-100">
+                                    <Text className="mb-2 cursor-pointer text-truncate line-height-md font-weight-500 w-100">
                                       {sub.User.FullName}
-                                    </label>
+                                    </Text>
                                   </div>
                                   <NumberFormat
                                     type={isHiddenPrice ? "password" : "text"}
@@ -382,9 +389,9 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                   key={idx}
                                 >
                                   <div className="mb-1 w-120px pe-2">
-                                    <label className="text-truncate line-height-sm font-weight-boldest w-100">
+                                    <Text className="mb-2 cursor-pointer text-truncate line-height-sm font-weight-500 w-100">
                                       {sub.User.FullName}
-                                    </label>
+                                    </Text>
                                   </div>
                                   <NumberFormat
                                     type={isHiddenPrice ? "password" : "text"}
@@ -429,9 +436,9 @@ function AutoBouns({ OrderInfo, onSubmit, loading }) {
                                   key={idx}
                                 >
                                   <div className="mb-1 w-120px pe-2">
-                                    <label className="text-truncate line-height-sm font-weight-boldest w-100">
+                                    <Text className="mb-2 cursor-pointer text-truncate line-height-sm font-weight-500 w-100">
                                       {sub.User.FullName}
-                                    </label>
+                                    </Text>
                                   </div>
                                   <NumberFormat
                                     type={isHiddenPrice ? "password" : "text"}

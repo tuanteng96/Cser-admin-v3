@@ -17,6 +17,10 @@ import * as Yup from "yup";
 import clsx from "clsx";
 import ConditionsHelpers from "../../../helpers/ConditionsHelpers";
 
+import Text from "react-texty";
+
+import "react-texty/styles.css";
+
 moment.locale(); // vi
 
 const UpdateSchema = Yup.object().shape({
@@ -394,9 +398,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                               item.Hoa_Hong.map((sub, idx) => (
                                 <div className="my-3" key={idx}>
                                   <div className="mb-2 w-100">
-                                    <label className="text-truncate line-height-md font-weight-500 w-100">
+                                    <Text className="mb-2 cursor-pointer text-truncate line-height-md font-weight-500 w-100">
                                       {sub.User.FullName}
-                                    </label>
+                                    </Text>
                                     <div
                                       className="text-muted line-height-sm"
                                       style={{ fontSize: "12px" }}
@@ -509,9 +513,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                               item.Doanh_So.map((sub, idx) => (
                                 <div className="my-3" key={idx}>
                                   <div className="mb-2 w-100">
-                                    <label className="text-truncate line-height-md font-weight-500 w-100">
+                                    <Text className="mb-2 cursor-pointer text-truncate line-height-md font-weight-500 w-100">
                                       {sub.User.FullName}
-                                    </label>
+                                    </Text>
                                     <div
                                       className="text-muted line-height-sm"
                                       style={{ fontSize: "12px" }}
@@ -703,9 +707,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                   key={idx}
                                 >
                                   <div className="mb-1 w-180px pe-2">
-                                    <label className="text-truncate line-height-sm font-weight-boldest w-100">
+                                    <Text className="mb-2 cursor-pointer text-truncate line-height-sm font-weight-boldest w-100">
                                       {sub.User.FullName}
-                                    </label>
+                                    </Text>
                                     <div className="text-muted line-height-sm">
                                       {!ConditionsHelpers.isDisabledSalesSommission(
                                         sub,
@@ -807,9 +811,9 @@ function BounsSalesIn({ OrderInfo, onSubmit, onRefresh, loading, setLoading }) {
                                   key={idx}
                                 >
                                   <div className="mb-1 w-180px pe-2">
-                                    <label className="text-truncate line-height-sm font-weight-boldest w-100">
+                                    <Text className="mb-2 cursor-pointer text-truncate line-height-sm font-weight-boldest w-100">
                                       {sub.User.FullName}
-                                    </label>
+                                    </Text>
                                     <div className="text-muted line-height-sm">
                                       {!ConditionsHelpers.isDisabledSalesSommission(
                                         sub,
